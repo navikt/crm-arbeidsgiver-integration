@@ -26,13 +26,13 @@ public class KafkaSykefravaerHandlerTest {
         // Create two KafkaMessages with Base64 encoded JSON-payloads matching two of the three inserted accounts
         List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'public-potensielle-dagsverk';
+        msg1.CRM_Topic__c = 'public-sykefravarsstatistikk-crm';
         msg1.CRM_Key__c = 'd60775ed-249f-49e6-bd15-ff790b56cc07';
         msg1.CRM_Value__c = 'eyJvcmduciI6Ijk4NzYzMzk5OSIsInBvdGVuc2llbGxlRGFnc3ZlcmsiOjk5LCJtdWxpZ2VEYWdzdmVyayI6NzksInRhcHRlRGFnc3ZlcmsiOjIzfQ==';
         messages.add(msg1);
 
         KafkaMessage__c msg2 = new KafkaMessage__c();
-        msg2.CRM_Topic__c = 'public-potensielle-dagsverk';
+        msg2.CRM_Topic__c = 'public-sykefravarsstatistikk-crm';
         msg2.CRM_Key__c = '27a3cca9-0b2e-486a-8632-3a95391dfc18';
         msg2.CRM_Value__c = 'eyJvcmduciI6Ijk5OTY1NDk5OSIsInBvdGVuc2llbGxlRGFnc3ZlcmsiOjEwLCJtdWxpZ2VEYWdzdmVyayI6MTAsInRhcHRlRGFnc3ZlcmsiOjEwfQ==';
         messages.add(msg2);
