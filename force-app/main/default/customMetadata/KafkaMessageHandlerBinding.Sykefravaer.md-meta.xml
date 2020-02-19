@@ -12,6 +12,6 @@
     </values>
     <values>
         <field>Topic__c</field>
-        <value xsi:type="xsd:string">public-potensielle-dagsverk</value>
+        <value xsi:type="xsd:string">public-sykefravarsstatistikk-crm</value>
     </values>
 </CustomMetadata>
