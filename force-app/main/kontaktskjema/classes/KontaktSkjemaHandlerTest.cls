@@ -1,5 +1,5 @@
 @isTest
-private without sharing class TAG_ContactFormWebService_mainTest {
+private without sharing class KontaktSkjemaHandlerTest {
 
 	@isTest
 	private static void doPost_arbeidstrening() {
@@ -22,7 +22,7 @@ private without sharing class TAG_ContactFormWebService_mainTest {
 		RestContext.response = res;
 
 		Test.startTest();
-		TAG_ContactFormWebService_main.doPost();
+		KontaktSkjemaHandler.doPost();
 		Test.stopTest();
 
 		CustomOpportunities = [SELECT Id, InquiryCategory__c, RecordTypeId, INT_RegionNumber__c, INT_MunicipalityNumber__c, TAG_OrganizationNameFromForm__c, Contact__r.FirstName, Contact__r.LastName, Contact__r.Email, Contact__r.MobilePhone, Account__r.INT_OrganizationNumber__c FROM CustomOpportunity__c];
@@ -61,7 +61,7 @@ private without sharing class TAG_ContactFormWebService_mainTest {
 		RestContext.response = res;
 
 		Test.startTest();
-		TAG_ContactFormWebService_main.doPost();
+		KontaktSkjemaHandler.doPost();
 		Test.stopTest();
 
 		CustomOpportunities = [SELECT Id, InquiryCategory__c, RecordTypeId, INT_RegionNumber__c, INT_MunicipalityNumber__c, TAG_OrganizationNameFromForm__c, Contact__r.FirstName, Contact__r.LastName, Contact__r.Email, Contact__r.MobilePhone, Account__r.INT_OrganizationNumber__c FROM CustomOpportunity__c];
@@ -100,7 +100,7 @@ private without sharing class TAG_ContactFormWebService_mainTest {
 		RestContext.response = res;
 
 		Test.startTest();
-		TAG_ContactFormWebService_main.doPost();
+		KontaktSkjemaHandler.doPost();
 		Test.stopTest();
 
 		CustomOpportunities = [SELECT Id, InquiryCategory__c, RecordTypeId, INT_RegionNumber__c, INT_MunicipalityNumber__c, TAG_OrganizationNameFromForm__c, Contact__r.FirstName, Contact__r.LastName, Contact__r.Email, Contact__r.MobilePhone, Account__r.INT_OrganizationNumber__c FROM CustomOpportunity__c];
@@ -139,7 +139,7 @@ private without sharing class TAG_ContactFormWebService_mainTest {
 		RestContext.response = res;
 
 		Test.startTest();
-		TAG_ContactFormWebService_main.doPost();
+		KontaktSkjemaHandler.doPost();
 		Test.stopTest();
 
 		CustomOpportunities = [SELECT Id, InquiryCategory__c, RecordTypeId, INT_RegionNumber__c, INT_MunicipalityNumber__c, TAG_OrganizationNameFromForm__c, Contact__r.FirstName, Contact__r.LastName, Contact__r.Email, Contact__r.MobilePhone, Account__r.INT_OrganizationNumber__c FROM CustomOpportunity__c];
@@ -177,7 +177,7 @@ private without sharing class TAG_ContactFormWebService_mainTest {
 		RestContext.response = res;
 
 		Test.startTest();
-		TAG_ContactFormWebService_main.doPost();
+		KontaktSkjemaHandler.doPost();
 		Test.stopTest();
 
 		CustomOpportunities = [SELECT Id, InquiryCategory__c, RecordTypeId, Contact__r.FirstName, Contact__r.LastName, Contact__r.Email, Contact__r.MobilePhone, Account__r.INT_OrganizationNumber__c FROM CustomOpportunity__c];
@@ -208,7 +208,7 @@ private without sharing class TAG_ContactFormWebService_mainTest {
 		RestContext.response = res;
 
 		Test.startTest();
-		TAG_ContactFormWebService_main.doPost();
+		KontaktSkjemaHandler.doPost();
 		Test.stopTest();
 
 		customOpportunities = [SELECT Id, InquiryCategory__c, RecordTypeId, INT_RegionNumber__c, INT_MunicipalityNumber__c, TAG_OrganizationNameFromForm__c, Contact__r.FirstName, Contact__r.LastName, Contact__r.Email, Contact__r.AccountId, Contact__r.MobilePhone, Account__r.INT_OrganizationNumber__c FROM CustomOpportunity__c LIMIT 1];
@@ -239,7 +239,7 @@ private without sharing class TAG_ContactFormWebService_mainTest {
 		RestContext.response = res;
 
 		Test.startTest();
-		TAG_ContactFormWebService_main.doPost();
+		KontaktSkjemaHandler.doPost();
 		Test.stopTest();
 
 		CustomOpportunities = [SELECT Id, InquiryCategory__c, RecordTypeId, Contact__r.FirstName, Contact__r.LastName, Contact__r.Email, Contact__r.MobilePhone, Account__r.INT_OrganizationNumber__c FROM CustomOpportunity__c];
@@ -269,7 +269,7 @@ private without sharing class TAG_ContactFormWebService_mainTest {
 		RestContext.response = res;
 
 		Test.startTest();
-		TAG_ContactFormWebService_main.doPost();
+		KontaktSkjemaHandler.doPost();
 		Test.stopTest();
 
 		CustomOpportunities = [SELECT Id, InquiryCategory__c, RecordTypeId, INT_RegionNumber__c, INT_MunicipalityNumber__c, TAG_OrganizationNameFromForm__c, Contact__r.FirstName, Contact__r.LastName, Contact__r.AccountId, Contact__r.Email, Contact__r.MobilePhone, Account__r.INT_OrganizationNumber__c FROM CustomOpportunity__c];
@@ -309,7 +309,7 @@ private without sharing class TAG_ContactFormWebService_mainTest {
 		RestContext.response = res;
 
 		Test.startTest();
-		TAG_ContactFormWebService_main.doPost();
+		KontaktSkjemaHandler.doPost();
 		Test.stopTest();
 
 		CustomOpportunities = [SELECT Id, InquiryCategory__c, RecordTypeId, Contact__r.FirstName, Contact__r.LastName, Contact__r.Email, Contact__r.MobilePhone, Account__r.INT_OrganizationNumber__c FROM CustomOpportunity__c];
@@ -332,7 +332,7 @@ private without sharing class TAG_ContactFormWebService_mainTest {
 		RestContext.response = res;
 
 		Test.startTest();
-		TAG_ContactFormWebService_main.doPost();
+		KontaktSkjemaHandler.doPost();
 		Test.stopTest();
 
 		CustomOpportunities = [SELECT Id, InquiryCategory__c, RecordTypeId, Contact__r.FirstName, Contact__r.LastName, Contact__r.Email, Contact__r.MobilePhone, Account__r.INT_OrganizationNumber__c FROM CustomOpportunity__c];

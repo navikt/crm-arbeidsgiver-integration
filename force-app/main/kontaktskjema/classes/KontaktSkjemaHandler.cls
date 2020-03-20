@@ -1,5 +1,5 @@
 @RestResource(urlMapping = '/ContactForm/*')
-global with sharing class TAG_ContactFormWebService_main {
+global with sharing class KontaktSkjemaHandler {
 
 	private static List<String> PILOT_MUNICIPALITIES = new List<String> { '3033', '3034', '3003', '3035', '3020' };
 
