@@ -9,15 +9,15 @@
 			"dependencies": [
 				{
 					"package": "crm-platform-base",
-					"versionNumber": "0.8.0.1"
+					"versionNumber": "0.8.0.3"
 				},
 				{
 					"package": "crm-platform-access-control",
-					"versionNumber": "0.10.0.1"
+					"versionNumber": "0.11.0.2"
 				},
 				{
 					"package": "crm-arbeidsgiver-base",
-					"versionNumber": "0.23.0.14"
+					"versionNumber": "0.24.0.1"
 				},
 				{
 					"package": "crm-platform-integration",
