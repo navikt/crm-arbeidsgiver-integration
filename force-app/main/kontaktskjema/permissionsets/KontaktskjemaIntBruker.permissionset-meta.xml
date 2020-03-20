@@ -66,7 +66,7 @@
 		<readable>true</readable>
 	</fieldPermissions>
 	<hasActivationRequired>false</hasActivationRequired>
-	<label>Int_Kontaktskjema</label>
+	<label>KontaktskjemaIntBruker</label>
 	<objectPermissions>
 		<allowCreate>false</allowCreate>
 		<allowDelete>false</allowDelete>
