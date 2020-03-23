@@ -2,6 +2,7 @@
 # profiles
 **/profiles/*
 !**/unpackagable/profiles/*
+
 # NOTE!! Do NOT use **/ before
 !non_deployable_metadata/profiles/*
 # NOTE!! Do NOT use **/ before

@@ -32,7 +32,7 @@ public with sharing class SharedIntegrationFunctions {
 			emails.add( cw.email );
 		}
 
-		List<Contact> existingContacts = [SELECT Id, Email FROM Contact WHERE Email IN : emails];
+		List<Contact> existingContacts = [SELECT Id, Email, Account.INT_OrganizationNumber__c FROM Contact WHERE Email IN : emails];
 		Map<String, Contact> contactMap = new Map<String, Contact>();
 
 		for ( Contact con : existingContacts ) {
@@ -43,7 +43,6 @@ public with sharing class SharedIntegrationFunctions {
 		for ( ContactWrapper cw : wrapperList ) {
 
 			if ( !contactMap.containsKey( cw.email ) ) {
-
 				Id accountId = accountMap.containsKey( cw.companyNumber ) ? accountMap.get( cw.companyNumber ).Id : null;
 				Contact con = new Contact( FirstName = cw.firstName, LastName = cw.lastName, Email = cw.email, MobilePhone = cw.phone, AccountId = accountId, TAG_Informed__c = true );
 				newContacts.add( con );
@@ -52,6 +51,8 @@ public with sharing class SharedIntegrationFunctions {
 
 		insert newContacts;
 
+		mapUnmappedContacts( wrapperList, existingContacts, accountMap );
+
 		for ( Contact con : newContacts ) {
 			contactMap.put( con.Email, con );
 		}
@@ -59,4 +60,29 @@ public with sharing class SharedIntegrationFunctions {
 		return contactMap;
 	}
 
+	public static void mapUnmappedContacts( List<ContactWrapper> wrapperList, List<Contact> existingContacts, Map<String, Account> accountMap ) {
+
+		Map<String, ContactWrapper> contactWrapperMap = new Map<String, ContactWrapper>();
+		for ( ContactWrapper cw : wrapperList ) {
+			contactWrapperMap.put( cw.email, cw );
+		}
+
+		List<AccountContactRelation> relationships = new List<AccountContactRelation>();
+
+		Map<Id, Id> contactAndAccountToMap = new Map<Id, Id>();
+		for ( Contact con : existingContacts ) {
+
+			String postedCompanyNumber = contactWrapperMap.get( con.Email ).companyNumber;
+			String currentCompanyNumber = con.Account.INT_OrganizationNumber__c;
+
+			if ( postedCompanyNumber != currentCompanyNumber ) {
+				System.debug( 'accountMap: ' + accountMap );
+				System.debug( 'currentCompanyNumber: ' + postedCompanyNumber );
+				Id accId = accountMap.get( postedCompanyNumber ).Id;
+				relationships.add( new AccountContactRelation( AccountId = accId, ContactId = con.Id ) );
+			}
+		}
+
+		Database.insert( relationships, false );
+	}
 }
