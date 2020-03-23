@@ -18,7 +18,7 @@ public inherited sharing class KafkaPermitteringHandler implements IKafkaMessage
 	}
 
 	public void processMessages( List<KafkaMessage__c> messages ) {
-		System.debug( 'tetetetet' );
+
 		List<Permittering> permitteringer = new List<Permittering>();
 		for ( KafkaMessage__c msg : messages ) {
 			try {
@@ -37,8 +37,26 @@ public inherited sharing class KafkaPermitteringHandler implements IKafkaMessage
 			organisationNumbers.add( p.bedriftsnummer );
 		}
 
-		Map<String, Account> accountMap = fetchAccounts( organisationNumbers );
-		Map<String, Contact> contactMap = fetchOrCreateContact( permitteringer, accountMap );
+
+		List<SharedIntegrationFunctions.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions.ContactWrapper>();
+
+		for ( Permittering p : permitteringer ) {
+
+			List<String> name = p.kontaktNavn.split( ' ' );
+			String lastName = name[name.size() - 1];
+			String firstName = p.kontaktNavn.removeEnd( ' ' + lastName );
+
+			SharedIntegrationFunctions.ContactWrapper wrapper = new SharedIntegrationFunctions.ContactWrapper();
+			wrapper.firstName = firstName;
+			wrapper.lastName = lastName;
+			wrapper.phone = p.kontaktTlf;
+			wrapper.email = p.kontaktEpost;
+			wrapper.companyNumber = p.bedriftsnummer;
+			wrapperList.add( wrapper );
+		}
+
+		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( organisationNumbers );
+		Map<String, Contact> contactMap = SharedIntegrationFunctions.fetchOrCreateContact( wrapperList, accountMap );
 
 		for ( Permittering p : permitteringer ) {
 			layoffs.add( jsonToTemporaryLayoff( p, accountMap, contactMap ) );
@@ -46,60 +64,6 @@ public inherited sharing class KafkaPermitteringHandler implements IKafkaMessage
 		insert layoffs;
 
 	}
-
-	public static Map<String, Account> fetchAccounts( List<String> organisationNumbers ) {
-		List<Account> accounts = [SELECT Id, INT_OrganizationNumber__c, INT_MunicipalityNumber__c FROM Account
-
-		                          WHERE
-		                              ( INT_OrganizationNumber__c IN : organisationNumbers ) AND
-		                              ( INT_OrganizationNumber__c != null ) AND
-		                              ( IsPersonAccount = false )];
-
-
-		Map<String, Account> accountMap = new Map<String, Account>();
-		for ( Account acc : accounts ) {
-			accountMap.put( acc.INT_OrganizationNumber__c, acc );
-		}
-
-		return accountMap;
-	}
-
-	public static Map<String, Contact> fetchOrCreateContact( List<Permittering> permitteringer, Map<String, Account> accountMap ) {
-
-		List<String> emails = new List<String>();
-		for ( Permittering p : permitteringer ) {
-			emails.add( p.kontaktEpost );
-		}
-
-		List<Contact> existingContacts = [SELECT Id, Email FROM Contact WHERE Email IN : emails];
-		Map<String, Contact> contactMap = new Map<String, Contact>();
-
-		for ( Contact con : existingContacts ) {
-			contactMap.put( con.Email, con );
-		}
-
-		List<Contact> newContacts = new List<Contact>();
-		for ( Permittering p : permitteringer ) {
-
-			if ( !contactMap.containsKey( p.kontaktEpost ) ) {
-
-				List<String> name = p.kontaktNavn.split( ' ' );
-				String lastName = name[name.size() - 1];
-				String firstName = p.kontaktNavn.removeEnd( ' ' + lastName );
-				Id accountId = accountMap.containsKey( p.bedriftsnummer ) ? accountMap.get( p.bedriftsnummer ).Id : null;
-				Contact con = new Contact( FirstName = firstName, LastName = lastName, Email = p.kontaktEpost, MobilePhone = p.kontaktTlf, AccountId = accountId, TAG_Informed__c = true );
-				newContacts.add( con );
-			}
-		}
-		insert newContacts;
-
-		for ( Contact con : newContacts ) {
-			contactMap.put( con.Email, con );
-		}
-
-		return contactMap;
-	}
-
 
 	public static TemporaryLayoff__c jsonToTemporaryLayoff( Permittering p, Map<String, Account> accountMap, Map<String, Contact> contactMap ) {
 
@@ -114,10 +78,6 @@ public inherited sharing class KafkaPermitteringHandler implements IKafkaMessage
 		tl.OtherComments__c = p.fritekst;
 		tl.StartDate__c = p.startDato;
 		tl.Type__c = p.type;
-
-		// tl.NAV_Unit__c = null;
-		// tl.Profession__c = ?????????
-		// tl.Reason__c = ????????????
 
 		return tl;
 	}
