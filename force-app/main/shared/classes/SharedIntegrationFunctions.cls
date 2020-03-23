@@ -62,9 +62,13 @@ public with sharing class SharedIntegrationFunctions {
 
 	public static void mapUnmappedContacts( List<ContactWrapper> wrapperList, List<Contact> existingContacts, Map<String, Account> accountMap ) {
 
-		Map<String, ContactWrapper> contactWrapperMap = new Map<String, ContactWrapper>();
+		Map<String, List<ContactWrapper> > contactWrapperMap = new Map<String, List<ContactWrapper> >();
 		for ( ContactWrapper cw : wrapperList ) {
-			contactWrapperMap.put( cw.email, cw );
+			if ( contactWrapperMap.containsKey( cw.email ) ) {
+				contactWrapperMap.get( cw.email ).add( cw );
+			} else {
+				contactWrapperMap.put( cw.email, new List<ContactWrapper> { cw } );
+			}
 		}
 
 		List<AccountContactRelation> relationships = new List<AccountContactRelation>();
@@ -72,14 +76,19 @@ public with sharing class SharedIntegrationFunctions {
 		Map<Id, Id> contactAndAccountToMap = new Map<Id, Id>();
 		for ( Contact con : existingContacts ) {
 
-			String postedCompanyNumber = contactWrapperMap.get( con.Email ).companyNumber;
-			String currentCompanyNumber = con.Account.INT_OrganizationNumber__c;
+			List<ContactWrapper> wrapper = contactWrapperMap.get( con.Email );
+			for ( ContactWrapper cw : wrapper ) {
 
-			if ( postedCompanyNumber != currentCompanyNumber ) {
-				System.debug( 'accountMap: ' + accountMap );
-				System.debug( 'currentCompanyNumber: ' + postedCompanyNumber );
-				Id accId = accountMap.get( postedCompanyNumber ).Id;
-				relationships.add( new AccountContactRelation( AccountId = accId, ContactId = con.Id ) );
+				if ( con.Email == cw.email ) {
+
+					String postedCompanyNumber = cw.companyNumber;
+					String currentCompanyNumber = con.Account.INT_OrganizationNumber__c;
+
+					if ( postedCompanyNumber != currentCompanyNumber && accountMap.containsKey( postedCompanyNumber ) ) {
+						Id accId = accountMap.get( postedCompanyNumber ).Id;
+						relationships.add( new AccountContactRelation( AccountId = accId, ContactId = con.Id ) );
+					}
+				}
 			}
 		}
 
