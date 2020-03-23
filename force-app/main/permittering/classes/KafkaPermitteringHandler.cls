@@ -12,7 +12,6 @@ public inherited sharing class KafkaPermitteringHandler implements IKafkaMessage
 		Date varsletNavDato;
 		Date startDato;
 		Date sluttDato;
-		Boolean ukjentSluttDato;
 		String fritekst;
 		Integer antallBerorte;
 	}
@@ -72,12 +71,13 @@ public inherited sharing class KafkaPermitteringHandler implements IKafkaMessage
 		if ( accountMap.containsKey( p.bedriftsnummer ) ) { tl.Account__c = accountMap.get( p.bedriftsnummer ).Id; }
 		if ( contactMap.containsKey( p.kontaktEpost ) ) { tl.Contact__c = contactMap.get( p.kontaktEpost ).Id; }
 
+		tl.NumberOfEmployees__c = p.antallBerorte;
+		tl.Type__c = p.type;
+
+		tl.StartDate__c = p.startDato;
 		tl.EndDate__c = p.sluttDato;
 
-		tl.NumberOfEmployees__c = p.antallBerorte;
 		tl.OtherComments__c = p.fritekst;
-		tl.StartDate__c = p.startDato;
-		tl.Type__c = p.type;
 
 		return tl;
 	}
