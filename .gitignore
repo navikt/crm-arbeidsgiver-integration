@@ -27,6 +27,9 @@
 # translations
 **/translations/en_US.translation-meta.xml
 
+# default is ignored, to force sorting metadata in separate folders
+# **/force-app/main/default/*
+
 
 
 # VS Code
