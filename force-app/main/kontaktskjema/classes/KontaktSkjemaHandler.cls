@@ -29,8 +29,18 @@ global with sharing class KontaktSkjemaHandler {
 			return null;
 		}
 
-		Id accountId = fetchAccount( rw.organisationNumber );
-		Id contactId = fetchOrCreateContact( rw, accountId );
+		SharedIntegrationFunctions.ContactWrapper wrapper = new SharedIntegrationFunctions.ContactWrapper();
+		wrapper.firstName = rw.firstName;
+		wrapper.lastName = rw.lastName;
+		wrapper.phone = rw.phoneNo;
+		wrapper.email = rw.email;
+		wrapper.companyNumber = rw.organisationNumber;
+		List<SharedIntegrationFunctions.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions.ContactWrapper> { wrapper };
+
+		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new List<String> { rw.organisationNumber } );
+		Id accountId = accountMap.containsKey( rw.organisationNumber ) ? accountMap.get( rw.organisationNumber ).Id : null;
+		Map<String, Contact> contactMap = SharedIntegrationFunctions.fetchOrCreateContact( wrapperList, accountMap );
+		Id contactId = contactMap.containsKey( rw.email ) ? contactMap.get( rw.email ).Id : null;
 
 		CustomOpportunity__c co = new CustomOpportunity__c(
 			Account__c = accountId,
@@ -49,34 +59,6 @@ global with sharing class KontaktSkjemaHandler {
 		insert co;
 
 		return [SELECT Name FROM CustomOpportunity__c WHERE Id = : co.Id LIMIT 1].Name;
-	}
-
-	public static Id fetchAccount( String organisationNumber ) {
-		List<Account> acc = [SELECT Id FROM Account
-
-		                     WHERE
-		                         ( INT_OrganizationNumber__c = : organisationNumber ) AND
-		                         ( INT_OrganizationNumber__c != null ) AND
-		                         ( IsPersonAccount = false )
-
-		                     LIMIT 1];
-
-		if ( acc.size() > 0 ) { return acc[0].Id; }
-		else { return null; }
-	}
-
-	public static Id fetchOrCreateContact( RequestWrapper rw, Id accountId ) {
-
-		List<Contact> existingContact = [SELECT Id FROM Contact WHERE Email = : rw.email LIMIT 1];
-
-		if ( existingContact.size() == 0 ) {
-			Contact con = new Contact( FirstName = rw.firstName, LastName = rw.lastName, Email = rw.email, MobilePhone = rw.phoneNo, AccountId = accountId, TAG_Informed__c = true );
-			insert con;
-
-			return con.Id;
-		} else {
-			return existingContact[0].Id;
-		}
 	}
 
 	public static Id getRecordType( String val ) {
