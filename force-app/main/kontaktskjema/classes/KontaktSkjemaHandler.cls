@@ -8,15 +8,18 @@ global with sharing class KontaktSkjemaHandler {
 
 	public class RequestWrapper {
 
-		public String type;
-		public String municipalityCode;
-		public String regionCode;
-		public String organisationName;
-		public String organisationNumber;
-		public String firstName;
-		public String lastName;
-		public String email;
-		public String phoneNo;
+		String type;
+		String municipalityCode;
+		String regionCode;
+		String organisationName;
+		String organisationNumber;
+		String firstName;
+		String lastName;
+		String email;
+		String phoneNo;
+
+		String jsonPayload;
+
 	}
 
 	@HttpPost
@@ -24,6 +27,7 @@ global with sharing class KontaktSkjemaHandler {
 
 		String requestString = RestContext.request.requestBody.toString();
 		RequestWrapper rw = (RequestWrapper) JSON.deserialize( requestString, RequestWrapper.class );
+		rw.jsonPayload = requestString;
 
 		if ( !PILOT_MUNICIPALITIES.contains( rw.municipalityCode ) ) {
 			return null;
@@ -51,6 +55,8 @@ global with sharing class KontaktSkjemaHandler {
 			InquiryCategory__c = getType( rw.type ),
 			RecordTypeId = getRecordType( rw.type ),
 			InclusionStage__c = 'Ny henvendelse' );
+
+		if ( Date.today().year() == 2020 ) { co.JsonPayload__c = rw.jsonPayload; }
 
 		if ( isIA( rw.type ) ) {
 			co.INT_RegionNumber__c = rw.regionCode;

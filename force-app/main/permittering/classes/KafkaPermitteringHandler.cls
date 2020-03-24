@@ -14,6 +14,8 @@ public inherited sharing class KafkaPermitteringHandler implements IKafkaMessage
 		Date sluttDato;
 		String fritekst;
 		Integer antallBerorte;
+
+		String jsonPayload;
 	}
 
 	public void processMessages( List<KafkaMessage__c> messages ) {
@@ -23,7 +25,8 @@ public inherited sharing class KafkaPermitteringHandler implements IKafkaMessage
 			try {
 				msg.CRM_IsProcessed__c = true;
 				String decodedValue = EncodingUtil.base64Decode( msg.CRM_Value__c ).toString();
-				Permittering p = (Permittering) JSON.deserialize( decodedValue, KafkaPermitteringHandler.Permittering.class );
+				Permittering p = (Permittering) JSON.deserialize( decodedValue, Permittering.class );
+				p.jsonPayload = decodedValue;
 				permitteringer.add( p );
 			} catch ( Exception e ) {
 				msg.CRM_Error__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
@@ -78,6 +81,8 @@ public inherited sharing class KafkaPermitteringHandler implements IKafkaMessage
 		tl.EndDate__c = p.sluttDato;
 
 		tl.OtherComments__c = p.fritekst;
+
+		if ( Date.today().year() == 2020 ) { tl.JsonPayload__c = p.jsonPayload; }
 
 		return tl;
 	}
