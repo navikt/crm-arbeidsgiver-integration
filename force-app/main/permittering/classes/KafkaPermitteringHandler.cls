@@ -75,7 +75,9 @@ public inherited sharing class KafkaPermitteringHandler implements IKafkaMessage
 		if ( contactMap.containsKey( p.kontaktEpost ) ) { tl.Contact__c = contactMap.get( p.kontaktEpost ).Id; }
 
 		tl.NumberOfEmployees__c = p.antallBerorte;
-		tl.Type__c = p.type;
+		tl.Type__c = p.type.replace( '_', ' ' );
+
+		tl.ContactEmail__c = p.kontaktEpost;
 
 		tl.StartDate__c = p.startDato;
 		tl.EndDate__c = p.sluttDato;
