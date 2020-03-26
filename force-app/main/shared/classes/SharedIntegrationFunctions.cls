@@ -56,11 +56,7 @@ public with sharing class SharedIntegrationFunctions {
 		}
 
 		insert newContacts;
-
 		mapUnmappedContacts( wrapperList, existingContacts, accountMap );
-
-		for ( Contact con : newContacts ) {
-		}
 
 		return contactMap;
 	}
