@@ -39,7 +39,6 @@ public inherited sharing class KafkaPermitteringHandler implements IKafkaMessage
 			organisationNumbers.add( p.bedriftsnummer );
 		}
 
-
 		List<SharedIntegrationFunctions.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions.ContactWrapper>();
 
 		for ( Permittering p : permitteringer ) {
@@ -77,7 +76,7 @@ public inherited sharing class KafkaPermitteringHandler implements IKafkaMessage
 		tl.NumberOfEmployees__c = p.antallBerorte;
 		tl.Type__c = p.type.replace( '_', ' ' );
 
-		tl.ContactEmail__c = p.kontaktEpost;
+		tl.ContactEmail__c = p.kontaktEpost.containsAny( 'æøå' ) ? null : p.kontaktEpost;
 
 		tl.StartDate__c = p.startDato;
 		tl.EndDate__c = p.sluttDato;
