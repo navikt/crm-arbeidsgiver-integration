@@ -44,7 +44,13 @@ public with sharing class SharedIntegrationFunctions {
 
 			if ( !contactMap.containsKey( cw.email.toLowerCase() ) ) {
 				Id accountId = accountMap.containsKey( cw.companyNumber ) ? accountMap.get( cw.companyNumber ).Id : null;
-				Contact con = new Contact( FirstName = cw.firstName, LastName = cw.lastName, Email = cw.email, MobilePhone = cw.phone, AccountId = accountId, TAG_Informed__c = true );
+				Contact con = new Contact( FirstName = cw.firstName, LastName = cw.lastName, MobilePhone = cw.phone, AccountId = accountId, TAG_Informed__c = true );
+				if ( cw.email.containsAny( 'æøå' ) ) {
+					contactMap.put( cw.email.toLowerCase(), con );
+				} else {
+					con.Email = cw.email;
+					contactMap.put( con.Email.toLowerCase(), con );
+				}
 				newContacts.add( con );
 			}
 		}
@@ -54,7 +60,6 @@ public with sharing class SharedIntegrationFunctions {
 		mapUnmappedContacts( wrapperList, existingContacts, accountMap );
 
 		for ( Contact con : newContacts ) {
-			contactMap.put( con.Email.toLowerCase(), con );
 		}
 
 		return contactMap;

@@ -51,6 +51,31 @@ private without sharing class KafkaPermitteringHandlerTest {
 	}
 
 	@IsTest
+	public static void testHandleMessages_invalidEmail() {
+
+		Account acc = new Account( Name = 'Test Employer 1', INT_OrganizationNumber__c = '99999999' );
+		insert acc;
+
+		KafkaMessage__c msg = new KafkaMessage__c();
+		msg.CRM_Topic__c = 'aapen-permittering-arbeidsgiver';
+		msg.CRM_Key__c = 'd60775ed-249f-49e6-bd15-ff790b56cc07';
+		msg.CRM_Value__c = 'ewogICJpZCI6ICI1ZjYwMjdiZi0wNjA0LTRhY2YtODE2OC0wYzE2MTFmMzNjMGQiLAogICJiZWRyaWZ0c251bW1lciI6IDc3Nzc3Nzc3LAogICJzZW5kdElublRpZHNwdW5rdCI6ICIyMDIwLTAzLTE4VDEwOjE5OjMwLjM4MFoiLAogICJ0eXBlIjogIk1BU1NFT1BQU0lHRUxTRSIsCiAgImtvbnRha3ROYXZuIjogIlRvcmUgVG9yw6VzZW4iLAogICJrb250YWt0VGxmIjogIjY2Nzc4ODk5IiwKICAia29udGFrdEVwb3N0IjogInRvcmUudG9yw6VzZW5AZXhhbXBsZS5jb20iLAogICJ2YXJzbGV0QW5zYXR0RGF0byI6ICIyMDIwLTAzLTE0IiwKICAidmFyc2xldE5hdkRhdG8iOiAiMjAyMC0wMy0xNCIsCiAgInN0YXJ0RGF0byI6ICIyMDIwLTAzLTE2IiwKICAic2x1dHREYXRvIjogIjIwMjAtMDktMjAiLAogICJmcml0ZWtzdCI6ICJMb3JlbSBpcHN1bSwgZG9yZW0gZGltc3VtIiwKICAiYW50YWxsQmVyb3J0ZSI6IDEyMwp9';
+		insert msg;
+
+		List<TemporaryLayoff__c> layoffs = [SELECT Id FROM TemporaryLayoff__c];
+		System.assertEquals( 0, layoffs.size(), 'No messages added' );
+
+		Test.startTest();
+		Test.stopTest();
+
+		layoffs = [SELECT Contact__r.Email FROM TemporaryLayoff__c];
+		System.assertEquals( 1, layoffs.size(), 'one layoffs' );
+		System.assertEquals( null, layoffs[0].Contact__r.Email, 'Email should be empty because it contained invalid characters' );
+
+	}
+
+
+	@IsTest
 	public static void testHandleMessages_upperCaseEmail() {
 
 		Account acc = new Account( Name = 'Test Employer', INT_OrganizationNumber__c = '77777777' );
