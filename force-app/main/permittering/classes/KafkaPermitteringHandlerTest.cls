@@ -49,4 +49,29 @@ private without sharing class KafkaPermitteringHandlerTest {
 		System.assertEquals( acc2.Id, layoffs[0].Account__c, 'Should have used the existing second account' );
 		System.assertEquals( acc2.Id, layoffs[0].Contact__r.AccountId, 'Contact should be attached to the second Account' );
 	}
+
+	@IsTest
+	public static void testHandleMessages_upperCaseEmail() {
+
+		Account acc = new Account( Name = 'Test Employer', INT_OrganizationNumber__c = '77777777' );
+		insert acc;
+
+		Contact con = new Contact( LastName = 'test', FirstName = 'test', Email = 'TORE.toresen@example.com', AccountId = acc.Id );
+		insert con;
+
+		KafkaMessage__c msg = new KafkaMessage__c();
+		msg.CRM_Topic__c = 'aapen-permittering-arbeidsgiver';
+		msg.CRM_Key__c = 'd60775ed-249f-49e6-bd15-ff790b56cc07';
+		msg.CRM_Value__c = 'ewogICJpZCI6ICI1ZjYwMjdiZi0wNjA0LTRhY2YtODE2OC0wYzE2MTFmMzNjMGQiLAogICJiZWRyaWZ0c251bW1lciI6IDk5OTk5OTk5LAogICJzZW5kdElublRpZHNwdW5rdCI6ICIyMDIwLTAzLTE4VDEwOjE5OjMwLjM4MFoiLAogICJ0eXBlIjogIk1BU1NFT1BQU0lHRUxTRSIsCiAgImtvbnRha3ROYXZuIjogIlRvcmUgVG9yZXNlbiIsCiAgImtvbnRha3RUbGYiOiAiNjY3Nzg4OTkiLAogICJrb250YWt0RXBvc3QiOiAidG9yZS50b3Jlc2VuQGV4YW1wbGUuY29tIiwKICAidmFyc2xldEFuc2F0dERhdG8iOiAiMjAyMC0wMy0xNCIsCiAgInZhcnNsZXROYXZEYXRvIjogIjIwMjAtMDMtMTQiLAogICJzdGFydERhdG8iOiAiMjAyMC0wMy0xNiIsCiAgInNsdXR0RGF0byI6ICIyMDIwLTA5LTIwIiwKICAiZnJpdGVrc3QiOiAiTG9yZW0gaXBzdW0sIGRvcmVtIGRpbXN1bSIsCiAgImFudGFsbEJlcm9ydGUiOiAxMjMKfQ==';
+		insert msg;
+
+		List<Contact> contacts = [SELECT Id FROM Contact];
+		System.assertEquals( 1, contacts.size(), 'Only one contact created' );
+
+		Test.startTest();
+		Test.stopTest();
+
+		contacts = [SELECT Id FROM Contact];
+		System.assertEquals( 1, contacts.size(), 'Still only one contact created' );
+	}
 }

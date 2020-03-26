@@ -39,7 +39,6 @@ public inherited sharing class KafkaPermitteringHandler implements IKafkaMessage
 			organisationNumbers.add( p.bedriftsnummer );
 		}
 
-
 		List<SharedIntegrationFunctions.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions.ContactWrapper>();
 
 		for ( Permittering p : permitteringer ) {
