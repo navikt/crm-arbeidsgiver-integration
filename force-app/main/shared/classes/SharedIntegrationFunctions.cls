@@ -32,7 +32,7 @@ public with sharing class SharedIntegrationFunctions {
 			emails.add( cw.email );
 		}
 
-		List<Contact> existingContacts = [SELECT Id, Email, Account.INT_OrganizationNumber__c FROM Contact WHERE Email IN : emails];
+		List<Contact> existingContacts = [SELECT Id, Email, Account.INT_OrganizationNumber__c FROM Contact WHERE Email IN : emails AND Email != null];
 		Map<String, Contact> contactMap = new Map<String, Contact>();
 
 		for ( Contact con : existingContacts ) {

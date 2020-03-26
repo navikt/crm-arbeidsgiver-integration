@@ -74,7 +74,6 @@ private without sharing class KafkaPermitteringHandlerTest {
 
 	}
 
-
 	@IsTest
 	public static void testHandleMessages_upperCaseEmail() {
 

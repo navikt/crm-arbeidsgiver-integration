@@ -56,6 +56,40 @@ private without sharing class SharedIntegrationFunctionsTest {
 		System.assertEquals( 1, contactRelationships, 'Should have added the contact to the new accounts as a relationship' );
 	}
 
+	@isTest
+	private static void testFetchOrCreateContact_emptyEmail() {
+
+		Account acc = new Account( Name = 'Test Employer 1', INT_OrganizationNumber__c = '99999999' );
+		insert acc;
+
+		Account acc2 = new Account( Name = 'Test Employer 1', INT_OrganizationNumber__c = '677777' );
+		insert acc2;
+
+		Contact con = new Contact( LastName = 'test', FirstName = 'test', AccountId = acc.Id );
+		insert con;
+
+		List<SharedIntegrationFunctions.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions.ContactWrapper>();
+		SharedIntegrationFunctions.ContactWrapper wrapper = new SharedIntegrationFunctions.ContactWrapper();
+		wrapper.firstName = 'test';
+		wrapper.lastName = 'etternavn';
+		wrapper.phone = '90080900';
+		wrapper.email = '';
+		wrapper.companyNumber = '677777';
+		wrapperList.add( wrapper );
+
+		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new List<String> { wrapper.companyNumber } );
+
+		List<Contact> contacts = [SELECT Id FROM Contact];
+		System.assertEquals( 1, contacts.size(), 'Before, only 1 contact' );
+
+		Test.StartTest();
+		SharedIntegrationFunctions.fetchOrCreateContact( wrapperList, accountMap );
+		Test.StopTest();
+
+		contacts = [SELECT Id FROM Contact];
+		System.assertEquals( 2, contacts.size(), 'After, 2 contacts despite empty email' );
+	}
+
 
 	@isTest
 	private static void testFetchOrCreateContact_existingContact() {
