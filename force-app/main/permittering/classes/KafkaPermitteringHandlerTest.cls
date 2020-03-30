@@ -68,9 +68,10 @@ private without sharing class KafkaPermitteringHandlerTest {
 		Test.startTest();
 		Test.stopTest();
 
-		layoffs = [SELECT Contact__r.Email FROM TemporaryLayoff__c];
+		layoffs = [SELECT Contact__r.Email, Contact__r.InvalidEmail__c FROM TemporaryLayoff__c];
 		System.assertEquals( 1, layoffs.size(), 'one layoffs' );
 		System.assertEquals( null, layoffs[0].Contact__r.Email, 'Email should be empty because it contained invalid characters' );
+		System.assertEquals( 'tore.toråsen@example.com', layoffs[0].Contact__r.InvalidEmail__c, 'Email should be empty because it contained invalid characters' );
 
 	}
 
