@@ -90,6 +90,80 @@ private without sharing class SharedIntegrationFunctionsTest {
 		System.assertEquals( 2, contacts.size(), 'After, 2 contacts despite empty email' );
 	}
 
+	@isTest
+	private static void testFetchOrCreateContact_invalidEmail() {
+
+		Account acc = new Account( Name = 'Test Employer 1', INT_OrganizationNumber__c = '99999999' );
+		insert acc;
+
+		List<SharedIntegrationFunctions.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions.ContactWrapper>();
+		SharedIntegrationFunctions.ContactWrapper wrapper = new SharedIntegrationFunctions.ContactWrapper();
+		wrapper.firstName = 'test';
+		wrapper.lastName = 'etternavn';
+		wrapper.phone = '90080900';
+		wrapper.email = 'test @domain.com';
+		wrapper.companyNumber = '99999999';
+		wrapperList.add( wrapper );
+
+		SharedIntegrationFunctions.ContactWrapper wrapper2 = new SharedIntegrationFunctions.ContactWrapper();
+		wrapper2.firstName = 'test';
+		wrapper2.lastName = 'etternavn';
+		wrapper2.phone = '90080900';
+		wrapper2.email = 'testÆØÅ@domain.com';
+		wrapper2.companyNumber = '99999999';
+		wrapperList.add( wrapper2 );
+
+		SharedIntegrationFunctions.ContactWrapper wrapper3 = new SharedIntegrationFunctions.ContactWrapper();
+		wrapper3.firstName = 'test';
+		wrapper3.lastName = 'etternavn';
+		wrapper3.phone = '90080900';
+		wrapper3.email = 'test@domaincom';
+		wrapper3.companyNumber = '99999999';
+		wrapperList.add( wrapper3 );
+
+		SharedIntegrationFunctions.ContactWrapper wrapper4 = new SharedIntegrationFunctions.ContactWrapper();
+		wrapper4.firstName = 'test';
+		wrapper4.lastName = 'etternavn';
+		wrapper4.phone = '90080900';
+		wrapper4.email = 'te@st@domain.com';
+		wrapper4.companyNumber = '99999999';
+		wrapperList.add( wrapper4 );
+
+		SharedIntegrationFunctions.ContactWrapper wrapper5 = new SharedIntegrationFunctions.ContactWrapper();
+		wrapper5.firstName = 'test';
+		wrapper5.lastName = 'etternavn';
+		wrapper5.phone = '90080900';
+		wrapper5.email = 'test@domain';
+		wrapper5.companyNumber = '99999999';
+		wrapperList.add( wrapper5 );
+
+		SharedIntegrationFunctions.ContactWrapper wrapper6 = new SharedIntegrationFunctions.ContactWrapper();
+		wrapper6.firstName = 'test';
+		wrapper6.lastName = 'etternavn';
+		wrapper6.phone = '90080900';
+		wrapper6.email = 'test£@domain.com';
+		wrapper6.companyNumber = '99999999';
+		wrapperList.add( wrapper6 );
+
+		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new List<String> { wrapper.companyNumber } );
+
+		List<Contact> contacts = [SELECT Id FROM Contact];
+		System.assertEquals( 0, contacts.size(), 'Before, only 1 contact' );
+
+		Test.StartTest();
+		SharedIntegrationFunctions.fetchOrCreateContact( wrapperList, accountMap );
+		Test.StopTest();
+
+		contacts = [SELECT Id, InvalidEmail__c, Email FROM Contact];
+		System.assertEquals( 6, contacts.size(), 'After, 6 contacts despite invalid email' );
+
+		for ( Contact c : contacts ) {
+			System.assertEquals( null, c.Email, 'Email should be null, as the emailed added is invalid' );
+			System.assertNotEquals( null, c.InvalidEmail__c, 'InvalidEmail__c should not be null, as the email added is invalid' );
+		}
+
+	}
+
 
 	@isTest
 	private static void testFetchOrCreateContact_existingContact() {
