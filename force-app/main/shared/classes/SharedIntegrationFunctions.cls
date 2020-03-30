@@ -45,12 +45,17 @@ public with sharing class SharedIntegrationFunctions {
 			if ( !contactMap.containsKey( cw.email.toLowerCase() ) ) {
 				Id accountId = accountMap.containsKey( cw.companyNumber ) ? accountMap.get( cw.companyNumber ).Id : null;
 				Contact con = new Contact( FirstName = cw.firstName, LastName = cw.lastName, MobilePhone = cw.phone, AccountId = accountId, TAG_Informed__c = true );
-				if ( cw.email.containsAny( 'æøå' ) ) {
-					contactMap.put( cw.email.toLowerCase(), con );
-				} else {
+
+				String emailRegex = '^[a-zA-Z0-9._|\\\\%#~`=?&/$^*!}{+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$'; // source: <a href="http://www.regular-expressions.info/email.html" target="_blank" rel="nofollow">http://www.regular-expressions.info/email.html</a>
+				Pattern MyPattern = Pattern.compile( emailRegex );
+				Matcher MyMatcher = MyPattern.matcher( cw.email );
+
+				if ( MyMatcher.matches() ) { // if cw.email is a valid email, add the email
 					con.Email = cw.email;
-					contactMap.put( con.Email.toLowerCase(), con );
+				} else { // if invalid, add it only to the invalid email field (to be later fixed by an employee)
+					con.InvalidEmail__c = cw.email;
 				}
+				contactMap.put( cw.email.toLowerCase(), con );
 				newContacts.add( con );
 			}
 		}
