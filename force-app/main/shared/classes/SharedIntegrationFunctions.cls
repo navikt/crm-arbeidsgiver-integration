@@ -32,11 +32,20 @@ public with sharing class SharedIntegrationFunctions {
 			emails.add( cw.email );
 		}
 
-		List<Contact> existingContacts = [SELECT Id, Email, Account.INT_OrganizationNumber__c FROM Contact WHERE Email IN : emails AND Email != null];
+		List<Contact> existingContacts = [SELECT Id, Email, Account.INT_OrganizationNumber__c, InvalidEmail__c
+		                                  FROM Contact
+		                                  WHERE
+		                                      ( Email IN : emails AND Email != null ) OR
+		                                      ( InvalidEmail__c IN : emails AND InvalidEmail__c != null )];
+
 		Map<String, Contact> contactMap = new Map<String, Contact>();
 
 		for ( Contact con : existingContacts ) {
-			contactMap.put( con.Email.toLowerCase(), con );
+			if ( con.Email != null ) {
+				contactMap.put( con.Email.toLowerCase(), con );
+			} else if ( con.InvalidEmail__c != null ) {
+				contactMap.put( con.InvalidEmail__c.toLowerCase(), con );
+			}
 		}
 
 		List<Contact> newContacts = new List<Contact>();
@@ -46,11 +55,8 @@ public with sharing class SharedIntegrationFunctions {
 				Id accountId = accountMap.containsKey( cw.companyNumber ) ? accountMap.get( cw.companyNumber ).Id : null;
 				Contact con = new Contact( FirstName = cw.firstName, LastName = cw.lastName, MobilePhone = cw.phone, AccountId = accountId, TAG_Informed__c = true );
 
-				String emailRegex = '^[a-zA-Z0-9._|\\\\%#~`=?&/$^*!}{+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$'; // source: <a href="http://www.regular-expressions.info/email.html" target="_blank" rel="nofollow">http://www.regular-expressions.info/email.html</a>
-				Pattern MyPattern = Pattern.compile( emailRegex );
-				Matcher MyMatcher = MyPattern.matcher( cw.email );
 
-				if ( MyMatcher.matches() ) { // if cw.email is a valid email, add the email
+				if ( checkIfValidEmail( cw.email ) ) { // if cw.email is a valid email, add the email
 					con.Email = cw.email;
 				} else { // if invalid, add it only to the invalid email field (to be later fixed by an employee)
 					con.InvalidEmail__c = cw.email;
@@ -82,12 +88,19 @@ public with sharing class SharedIntegrationFunctions {
 		Map<Id, Id> contactAndAccountToMap = new Map<Id, Id>();
 		for ( Contact con : existingContacts ) {
 
-			if ( contactWrapperMap.containsKey( con.Email.toLowerCase() ) ) {
+			String email = '';
+			if ( con.Email != null ) {
+				email = con.Email;
+			} else if ( con.InvalidEmail__c != null ) {
+				email = con.InvalidEmail__c;
+			}
 
-				List<ContactWrapper> wrapper = contactWrapperMap.get( con.Email.toLowerCase() );
+			if ( contactWrapperMap.containsKey( email.toLowerCase() ) ) {
+
+				List<ContactWrapper> wrapper = contactWrapperMap.get( email.toLowerCase() );
 				for ( ContactWrapper cw : wrapper ) {
 
-					if ( con.Email == cw.email ) {
+					if ( email == cw.email ) {
 
 						String postedCompanyNumber = cw.companyNumber;
 						String currentCompanyNumber = con.Account.INT_OrganizationNumber__c;
@@ -102,5 +115,14 @@ public with sharing class SharedIntegrationFunctions {
 		}
 
 		Database.insert( relationships, false );
+	}
+
+	public static Boolean checkIfValidEmail( String email ) {
+		String emailRegex = '^[a-zA-Z0-9._|\\\\%#~`=?&/$^*!}{+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$'; // source: <a href="http://www.regular-expressions.info/email.html" target="_blank" rel="nofollow">http://www.regular-expressions.info/email.html</a>
+		Pattern MyPattern = Pattern.compile( emailRegex );
+		Matcher MyMatcher = MyPattern.matcher( email );
+
+		return MyMatcher.matches();
+
 	}
 }

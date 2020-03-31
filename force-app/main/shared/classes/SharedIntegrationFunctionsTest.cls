@@ -161,6 +161,43 @@ private without sharing class SharedIntegrationFunctionsTest {
 			System.assertEquals( null, c.Email, 'Email should be null, as the emailed added is invalid' );
 			System.assertNotEquals( null, c.InvalidEmail__c, 'InvalidEmail__c should not be null, as the email added is invalid' );
 		}
+	}
+
+	@isTest
+	private static void testFetchOrCreateContact_invalidEmailExisting_CreateNewWithInvalidEmail() {
+
+		Account acc = new Account( Name = 'Test Employer 1', INT_OrganizationNumber__c = '99999999' );
+		insert acc;
+
+		Contact con = new Contact( LastName = 'Toråsen', InvalidEmail__c = 'test @domain.com', AccountId = acc.Id );
+		insert con;
+
+		List<SharedIntegrationFunctions.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions.ContactWrapper>();
+		SharedIntegrationFunctions.ContactWrapper wrapper = new SharedIntegrationFunctions.ContactWrapper();
+		wrapper.firstName = 'test';
+		wrapper.lastName = 'etternavn';
+		wrapper.phone = '90080900';
+		wrapper.email = 'test @domain.com';
+		wrapper.companyNumber = '99999999';
+		wrapperList.add( wrapper );
+
+		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new List<String> { wrapper.companyNumber } );
+
+		List<Contact> contacts = [SELECT Id FROM Contact];
+		System.assertEquals( 1, contacts.size(), 'Before, only 1 contact' );
+
+		Test.StartTest();
+		SharedIntegrationFunctions.fetchOrCreateContact( wrapperList, accountMap );
+		Test.StopTest();
+
+		contacts = [SELECT Id, InvalidEmail__c, Email FROM Contact];
+		System.assertEquals( 1, contacts.size(), 'After, still only one contact despite invalid email' );
+
+		for ( Contact c : contacts ) {
+			System.assertEquals( null, c.Email, 'Email should be null, as the emailed added is invalid' );
+			System.assertEquals( 'test @domain.com', c.InvalidEmail__c, 'InvalidEmail__c should not be null, as the email added is invalid' );
+			System.assertEquals( con.Id, c.Id, 'Same contact' );
+		}
 
 	}
 
