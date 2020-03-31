@@ -33,13 +33,13 @@ global with sharing class KontaktSkjemaHandler {
 			return null;
 		}
 
-		SharedIntegrationFunctions.ContactWrapper wrapper = new SharedIntegrationFunctions.ContactWrapper();
+		SharedIntegrationFunctions_Helper.ContactWrapper wrapper = new SharedIntegrationFunctions_Helper.ContactWrapper();
 		wrapper.firstName = rw.firstName;
 		wrapper.lastName = rw.lastName;
 		wrapper.phone = rw.phoneNo;
 		wrapper.email = rw.email;
 		wrapper.companyNumber = rw.organisationNumber;
-		List<SharedIntegrationFunctions.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions.ContactWrapper> { wrapper };
+		List<SharedIntegrationFunctions_Helper.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions_Helper.ContactWrapper> { wrapper };
 
 		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new List<String> { rw.organisationNumber } );
 		Id accountId = accountMap.containsKey( rw.organisationNumber ) ? accountMap.get( rw.organisationNumber ).Id : null;
