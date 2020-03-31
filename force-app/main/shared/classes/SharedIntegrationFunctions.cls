@@ -1,12 +1,5 @@
 public with sharing class SharedIntegrationFunctions {
 
-	public class ContactWrapper {
-		public String firstName;
-		public String lastName;
-		public String phone;
-		public String email;
-		public String companyNumber;
-	}
 
 	public static Map<String, Account> fetchAccounts( List<String> organisationNumbers ) {
 
@@ -25,104 +18,20 @@ public with sharing class SharedIntegrationFunctions {
 		return accountMap;
 	}
 
-	public static Map<String, Contact> fetchOrCreateContact( List<ContactWrapper> wrapperList, Map<String, Account> accountMap ) {
+	public static Map<String, Contact> fetchOrCreateContact( List<SharedIntegrationFunctions_Helper.ContactWrapper> wrapperList, Map<String, Account> accountMap ) {
 
-		List<String> emails = new List<String>();
-		for ( ContactWrapper cw : wrapperList ) {
-			emails.add( cw.email );
-		}
+		// get existing contacts based on email address on Contact.Email or Contact.InvalidEmail__c
+		List<Contact> existingContacts = SharedIntegrationFunctions_Helper.getExistingContacts( wrapperList );
 
-		List<Contact> existingContacts = [SELECT Id, Email, Account.INT_OrganizationNumber__c, InvalidEmail__c
-		                                  FROM Contact
-		                                  WHERE
-		                                      ( Email IN : emails AND Email != null ) OR
-		                                      ( InvalidEmail__c IN : emails AND InvalidEmail__c != null )];
+		// map existing conacts to a new account (if user sent a request on behalf on a another account but same email)
+		SharedIntegrationFunctions_Helper.mapUnmappedContacts( wrapperList, existingContacts, accountMap );
 
-		Map<String, Contact> contactMap = new Map<String, Contact>();
+		// create a map from the existing conacts
+		Map<String, Contact> contactMap = SharedIntegrationFunctions_Helper.createContactMapWithEmailAsKey( existingContacts );
 
-		for ( Contact con : existingContacts ) {
-			if ( con.Email != null ) {
-				contactMap.put( con.Email.toLowerCase(), con );
-			} else if ( con.InvalidEmail__c != null ) {
-				contactMap.put( con.InvalidEmail__c.toLowerCase(), con );
-			}
-		}
-
-		List<Contact> newContacts = new List<Contact>();
-		for ( ContactWrapper cw : wrapperList ) {
-
-			if ( !contactMap.containsKey( cw.email.toLowerCase() ) ) {
-				Id accountId = accountMap.containsKey( cw.companyNumber ) ? accountMap.get( cw.companyNumber ).Id : null;
-				Contact con = new Contact( FirstName = cw.firstName, LastName = cw.lastName, MobilePhone = cw.phone, AccountId = accountId, TAG_Informed__c = true );
-
-
-				if ( checkIfValidEmail( cw.email ) ) { // if cw.email is a valid email, add the email
-					con.Email = cw.email;
-				} else { // if invalid, add it only to the invalid email field (to be later fixed by an employee)
-					con.InvalidEmail__c = cw.email;
-				}
-				contactMap.put( cw.email.toLowerCase(), con );
-				newContacts.add( con );
-			}
-		}
-
-		insert newContacts;
-		mapUnmappedContacts( wrapperList, existingContacts, accountMap );
+		// will create contacts that don't already exists and add them to contactMap
+		SharedIntegrationFunctions_Helper.createRemainingContacts( wrapperList, accountMap, contactMap );
 
 		return contactMap;
-	}
-
-	public static void mapUnmappedContacts( List<ContactWrapper> wrapperList, List<Contact> existingContacts, Map<String, Account> accountMap ) {
-
-		Map<String, List<ContactWrapper> > contactWrapperMap = new Map<String, List<ContactWrapper> >();
-		for ( ContactWrapper cw : wrapperList ) {
-			if ( contactWrapperMap.containsKey( cw.email.toLowerCase() ) ) {
-				contactWrapperMap.get( cw.email.toLowerCase() ).add( cw );
-			} else {
-				contactWrapperMap.put( cw.email.toLowerCase(), new List<ContactWrapper> { cw } );
-			}
-		}
-
-		List<AccountContactRelation> relationships = new List<AccountContactRelation>();
-
-		Map<Id, Id> contactAndAccountToMap = new Map<Id, Id>();
-		for ( Contact con : existingContacts ) {
-
-			String email = '';
-			if ( con.Email != null ) {
-				email = con.Email;
-			} else if ( con.InvalidEmail__c != null ) {
-				email = con.InvalidEmail__c;
-			}
-
-			if ( contactWrapperMap.containsKey( email.toLowerCase() ) ) {
-
-				List<ContactWrapper> wrapper = contactWrapperMap.get( email.toLowerCase() );
-				for ( ContactWrapper cw : wrapper ) {
-
-					if ( email == cw.email ) {
-
-						String postedCompanyNumber = cw.companyNumber;
-						String currentCompanyNumber = con.Account.INT_OrganizationNumber__c;
-
-						if ( postedCompanyNumber != currentCompanyNumber && accountMap.containsKey( postedCompanyNumber ) ) {
-							Id accId = accountMap.get( postedCompanyNumber ).Id;
-							relationships.add( new AccountContactRelation( AccountId = accId, ContactId = con.Id ) );
-						}
-					}
-				}
-			}
-		}
-
-		Database.insert( relationships, false );
-	}
-
-	public static Boolean checkIfValidEmail( String email ) {
-		String emailRegex = '^[a-zA-Z0-9._|\\\\%#~`=?&/$^*!}{+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$'; // source: <a href="http://www.regular-expressions.info/email.html" target="_blank" rel="nofollow">http://www.regular-expressions.info/email.html</a>
-		Pattern MyPattern = Pattern.compile( emailRegex );
-		Matcher MyMatcher = MyPattern.matcher( email );
-
-		return MyMatcher.matches();
-
 	}
 }

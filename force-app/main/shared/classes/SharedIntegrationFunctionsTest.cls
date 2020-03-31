@@ -35,8 +35,8 @@ private without sharing class SharedIntegrationFunctionsTest {
 		Account acc = new Account( Name = 'Test Employer 1', INT_OrganizationNumber__c = '99999999' );
 		insert acc;
 
-		List<SharedIntegrationFunctions.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions.ContactWrapper>();
-		SharedIntegrationFunctions.ContactWrapper wrapper = new SharedIntegrationFunctions.ContactWrapper();
+		List<SharedIntegrationFunctions_Helper.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions_Helper.ContactWrapper>();
+		SharedIntegrationFunctions_Helper.ContactWrapper wrapper = new SharedIntegrationFunctions_Helper.ContactWrapper();
 		wrapper.firstName = 'test';
 		wrapper.lastName = 'etternavn';
 		wrapper.phone = '90080900';
@@ -68,8 +68,8 @@ private without sharing class SharedIntegrationFunctionsTest {
 		Contact con = new Contact( LastName = 'test', FirstName = 'test', AccountId = acc.Id );
 		insert con;
 
-		List<SharedIntegrationFunctions.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions.ContactWrapper>();
-		SharedIntegrationFunctions.ContactWrapper wrapper = new SharedIntegrationFunctions.ContactWrapper();
+		List<SharedIntegrationFunctions_Helper.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions_Helper.ContactWrapper>();
+		SharedIntegrationFunctions_Helper.ContactWrapper wrapper = new SharedIntegrationFunctions_Helper.ContactWrapper();
 		wrapper.firstName = 'test';
 		wrapper.lastName = 'etternavn';
 		wrapper.phone = '90080900';
@@ -96,8 +96,8 @@ private without sharing class SharedIntegrationFunctionsTest {
 		Account acc = new Account( Name = 'Test Employer 1', INT_OrganizationNumber__c = '99999999' );
 		insert acc;
 
-		List<SharedIntegrationFunctions.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions.ContactWrapper>();
-		SharedIntegrationFunctions.ContactWrapper wrapper = new SharedIntegrationFunctions.ContactWrapper();
+		List<SharedIntegrationFunctions_Helper.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions_Helper.ContactWrapper>();
+		SharedIntegrationFunctions_Helper.ContactWrapper wrapper = new SharedIntegrationFunctions_Helper.ContactWrapper();
 		wrapper.firstName = 'test';
 		wrapper.lastName = 'etternavn';
 		wrapper.phone = '90080900';
@@ -105,7 +105,7 @@ private without sharing class SharedIntegrationFunctionsTest {
 		wrapper.companyNumber = '99999999';
 		wrapperList.add( wrapper );
 
-		SharedIntegrationFunctions.ContactWrapper wrapper2 = new SharedIntegrationFunctions.ContactWrapper();
+		SharedIntegrationFunctions_Helper.ContactWrapper wrapper2 = new SharedIntegrationFunctions_Helper.ContactWrapper();
 		wrapper2.firstName = 'test';
 		wrapper2.lastName = 'etternavn';
 		wrapper2.phone = '90080900';
@@ -113,7 +113,7 @@ private without sharing class SharedIntegrationFunctionsTest {
 		wrapper2.companyNumber = '99999999';
 		wrapperList.add( wrapper2 );
 
-		SharedIntegrationFunctions.ContactWrapper wrapper3 = new SharedIntegrationFunctions.ContactWrapper();
+		SharedIntegrationFunctions_Helper.ContactWrapper wrapper3 = new SharedIntegrationFunctions_Helper.ContactWrapper();
 		wrapper3.firstName = 'test';
 		wrapper3.lastName = 'etternavn';
 		wrapper3.phone = '90080900';
@@ -121,7 +121,7 @@ private without sharing class SharedIntegrationFunctionsTest {
 		wrapper3.companyNumber = '99999999';
 		wrapperList.add( wrapper3 );
 
-		SharedIntegrationFunctions.ContactWrapper wrapper4 = new SharedIntegrationFunctions.ContactWrapper();
+		SharedIntegrationFunctions_Helper.ContactWrapper wrapper4 = new SharedIntegrationFunctions_Helper.ContactWrapper();
 		wrapper4.firstName = 'test';
 		wrapper4.lastName = 'etternavn';
 		wrapper4.phone = '90080900';
@@ -129,7 +129,7 @@ private without sharing class SharedIntegrationFunctionsTest {
 		wrapper4.companyNumber = '99999999';
 		wrapperList.add( wrapper4 );
 
-		SharedIntegrationFunctions.ContactWrapper wrapper5 = new SharedIntegrationFunctions.ContactWrapper();
+		SharedIntegrationFunctions_Helper.ContactWrapper wrapper5 = new SharedIntegrationFunctions_Helper.ContactWrapper();
 		wrapper5.firstName = 'test';
 		wrapper5.lastName = 'etternavn';
 		wrapper5.phone = '90080900';
@@ -137,7 +137,7 @@ private without sharing class SharedIntegrationFunctionsTest {
 		wrapper5.companyNumber = '99999999';
 		wrapperList.add( wrapper5 );
 
-		SharedIntegrationFunctions.ContactWrapper wrapper6 = new SharedIntegrationFunctions.ContactWrapper();
+		SharedIntegrationFunctions_Helper.ContactWrapper wrapper6 = new SharedIntegrationFunctions_Helper.ContactWrapper();
 		wrapper6.firstName = 'test';
 		wrapper6.lastName = 'etternavn';
 		wrapper6.phone = '90080900';
@@ -172,8 +172,8 @@ private without sharing class SharedIntegrationFunctionsTest {
 		Contact con = new Contact( LastName = 'Toråsen', InvalidEmail__c = 'test @domain.com', AccountId = acc.Id );
 		insert con;
 
-		List<SharedIntegrationFunctions.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions.ContactWrapper>();
-		SharedIntegrationFunctions.ContactWrapper wrapper = new SharedIntegrationFunctions.ContactWrapper();
+		List<SharedIntegrationFunctions_Helper.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions_Helper.ContactWrapper>();
+		SharedIntegrationFunctions_Helper.ContactWrapper wrapper = new SharedIntegrationFunctions_Helper.ContactWrapper();
 		wrapper.firstName = 'test';
 		wrapper.lastName = 'etternavn';
 		wrapper.phone = '90080900';
@@ -211,8 +211,8 @@ private without sharing class SharedIntegrationFunctionsTest {
 		Contact con = new Contact( LastName = 'test', FirstName = 'test', Email = 'test@test.com', AccountId = acc.Id );
 		insert con;
 
-		List<SharedIntegrationFunctions.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions.ContactWrapper>();
-		SharedIntegrationFunctions.ContactWrapper wrapper = new SharedIntegrationFunctions.ContactWrapper();
+		List<SharedIntegrationFunctions_Helper.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions_Helper.ContactWrapper>();
+		SharedIntegrationFunctions_Helper.ContactWrapper wrapper = new SharedIntegrationFunctions_Helper.ContactWrapper();
 		wrapper.firstName = 'test';
 		wrapper.lastName = 'etternavn';
 		wrapper.phone = '90080900';
@@ -244,8 +244,8 @@ private without sharing class SharedIntegrationFunctionsTest {
 		Contact con = new Contact( LastName = 'test', FirstName = 'test', Email = 'test@test.com', AccountId = acc.Id );
 		insert con;
 
-		List<SharedIntegrationFunctions.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions.ContactWrapper>();
-		SharedIntegrationFunctions.ContactWrapper wrapper = new SharedIntegrationFunctions.ContactWrapper();
+		List<SharedIntegrationFunctions_Helper.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions_Helper.ContactWrapper>();
+		SharedIntegrationFunctions_Helper.ContactWrapper wrapper = new SharedIntegrationFunctions_Helper.ContactWrapper();
 		wrapper.firstName = 'test';
 		wrapper.lastName = 'etternavn';
 		wrapper.phone = '90080900';
@@ -280,8 +280,8 @@ private without sharing class SharedIntegrationFunctionsTest {
 		Contact con = new Contact( LastName = 'test', FirstName = 'test', Email = 'test@test.com', AccountId = acc.Id );
 		insert con;
 
-		List<SharedIntegrationFunctions.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions.ContactWrapper>();
-		SharedIntegrationFunctions.ContactWrapper wrapper = new SharedIntegrationFunctions.ContactWrapper();
+		List<SharedIntegrationFunctions_Helper.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions_Helper.ContactWrapper>();
+		SharedIntegrationFunctions_Helper.ContactWrapper wrapper = new SharedIntegrationFunctions_Helper.ContactWrapper();
 		wrapper.firstName = 'test';
 		wrapper.lastName = 'etternavn';
 		wrapper.phone = '90080900';
@@ -290,7 +290,7 @@ private without sharing class SharedIntegrationFunctionsTest {
 		wrapperList.add( wrapper );
 
 
-		SharedIntegrationFunctions.ContactWrapper wrapper2 = new SharedIntegrationFunctions.ContactWrapper();
+		SharedIntegrationFunctions_Helper.ContactWrapper wrapper2 = new SharedIntegrationFunctions_Helper.ContactWrapper();
 		wrapper2.firstName = 'test';
 		wrapper2.lastName = 'etternavn';
 		wrapper2.phone = '90080900';
@@ -332,8 +332,8 @@ private without sharing class SharedIntegrationFunctionsTest {
 		Account acc4 = new Account( Name = 'Test Employer 1', INT_OrganizationNumber__c = '3333' );
 		insert acc4;
 
-		List<SharedIntegrationFunctions.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions.ContactWrapper>();
-		SharedIntegrationFunctions.ContactWrapper wrapper = new SharedIntegrationFunctions.ContactWrapper();
+		List<SharedIntegrationFunctions_Helper.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions_Helper.ContactWrapper>();
+		SharedIntegrationFunctions_Helper.ContactWrapper wrapper = new SharedIntegrationFunctions_Helper.ContactWrapper();
 		wrapper.firstName = 'test';
 		wrapper.lastName = 'etternavn';
 		wrapper.phone = '90080900';
@@ -342,7 +342,7 @@ private without sharing class SharedIntegrationFunctionsTest {
 		wrapperList.add( wrapper );
 
 
-		SharedIntegrationFunctions.ContactWrapper wrapper2 = new SharedIntegrationFunctions.ContactWrapper();
+		SharedIntegrationFunctions_Helper.ContactWrapper wrapper2 = new SharedIntegrationFunctions_Helper.ContactWrapper();
 		wrapper2.firstName = 'test2';
 		wrapper2.lastName = 'etternavn2';
 		wrapper2.phone = '34430400';
@@ -372,8 +372,8 @@ private without sharing class SharedIntegrationFunctionsTest {
 		Contact con = new Contact( LastName = 'test', FirstName = 'test', Email = 'test@test.com', AccountId = acc.Id );
 		insert con;
 
-		List<SharedIntegrationFunctions.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions.ContactWrapper>();
-		SharedIntegrationFunctions.ContactWrapper wrapper = new SharedIntegrationFunctions.ContactWrapper();
+		List<SharedIntegrationFunctions_Helper.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions_Helper.ContactWrapper>();
+		SharedIntegrationFunctions_Helper.ContactWrapper wrapper = new SharedIntegrationFunctions_Helper.ContactWrapper();
 		wrapper.firstName = 'test';
 		wrapper.lastName = 'etternavn';
 		wrapper.phone = '90080900';
