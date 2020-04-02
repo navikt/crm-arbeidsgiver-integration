@@ -43,7 +43,7 @@ jobs:
 
       # Install packages this repo is dependant on
       - name: "Install dependant packages"
-        run: "sfdx rstk:package:dependencies:install -u scratch-org -w 20 --noprecheck -k "1:$SFDX_PACKAGE_KEY 2:$SFDX_PACKAGE_KEY 3:$SFDX_PACKAGE_KEY 4:$SFDX_PACKAGE_KEY 5:$SFDX_PACKAGE_KEY"
+        run: "sfdx rstk:package:dependencies:install -u scratch-org -w 20 --noprecheck -k '1:$SFDX_PACKAGE_KEY 2:$SFDX_PACKAGE_KEY 3:$SFDX_PACKAGE_KEY 4:$SFDX_PACKAGE_KEY 5:$SFDX_PACKAGE_KEY'"
 
       # Deploy source to scratch org
       - name: "Push source to scratch org"
