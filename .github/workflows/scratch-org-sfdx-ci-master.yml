@@ -37,13 +37,13 @@ jobs:
       - name: "Create scratch org"
         run: "sfdx force:org:create -f config/project-scratch-def.json -a scratch-org -s -d 1"
 
-      # Install rstk plugin used to install multiple packages only by version number
-      - name: "Install rstk plugin"
-        run: "echo y | sfdx plugins:install rstk-sfdx-package-utils@0.1.12"
+      # Install sfpowerkit plugin used to install multiple packages only by version number
+      - name: "Install sfpowerkit plugin"
+        run: "echo y | sfdx plugins:install sfpowerkit"
 
       # Install packages this repo is dependant on
       - name: "Install dependant packages"
-        run: "sfdx rstk:package:dependencies:install -u scratch-org -w 20 --noprecheck -k '1:$SFDX_PACKAGE_KEY 2:$SFDX_PACKAGE_KEY 3:$SFDX_PACKAGE_KEY 4:$SFDX_PACKAGE_KEY 5:$SFDX_PACKAGE_KEY'"
+        run: "sfdx sfpowerkit:package:dependencies:install -u scratch-org -r -w 20 -k '1:navcrm 2:navcrm 3:navcrm 4:navcrm 5:navcrm 6:navcrm 7:navcrm 8:navcrm 9:navcrm 10:navcrm'"
 
       # Deploy source to scratch org
       - name: "Push source to scratch org"
