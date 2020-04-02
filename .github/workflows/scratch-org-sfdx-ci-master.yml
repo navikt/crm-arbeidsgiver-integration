@@ -1,5 +1,5 @@
 # Unique name for this workflow
-name: Salesforce DX (scratch org)
+name: Validate Metadata
 
 # Definition when the workflow should run
 on:
@@ -43,7 +43,7 @@ jobs:
 
       # Install packages this repo is dependant on
       - name: "Install dependant packages"
-        run: "sfdx sfpowerkit:package:dependencies:install -u scratch-org -r -w 20 -k '1:navcrm 2:navcrm 3:navcrm 4:navcrm 5:navcrm 6:navcrm 7:navcrm 8:navcrm 9:navcrm 10:navcrm'"
+        run: "sfdx sfpowerkit:package:dependencies:install -u scratch-org -r -a -w 20 -k '1:${{ secrets.PACKAGE_KEY }} 2:${{ secrets.PACKAGE_KEY }} 3:${{ secrets.PACKAGE_KEY }} 4:${{ secrets.PACKAGE_KEY }} 5:${{ secrets.PACKAGE_KEY }} 6:${{ secrets.PACKAGE_KEY }} 7:${{ secrets.PACKAGE_KEY }} 8:${{ secrets.PACKAGE_KEY }} 9:${{ secrets.PACKAGE_KEY }} 10:${{ secrets.PACKAGE_KEY }}'"
 
       # Deploy source to scratch org
       - name: "Push source to scratch org"
