@@ -19,7 +19,6 @@ global with sharing class KontaktSkjemaHandler {
 		String phoneNo;
 
 		String jsonPayload;
-
 	}
 
 	@HttpPost
