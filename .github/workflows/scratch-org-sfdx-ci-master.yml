@@ -36,6 +36,7 @@ jobs:
       - name: "Remove auth files"
         run: "rm -f ./PROD_SFDX_URL.txt"
 
+jobs:
   create-scratch-org:
     needs: prerequisites
     runs-on: ubuntu-latest
@@ -44,6 +45,7 @@ jobs:
       - name: "Create scratch org"
         run: "sfdx force:org:create -f config/project-scratch-def.json -a scratch-org -s -d 1"
 
+jobs:
   install-dependant-packages:
     needs: prerequisites
     runs-on: ubuntu-latest
@@ -56,6 +58,7 @@ jobs:
       - name: "Install dependant packages"
         run: "sfdx sfpowerkit:package:dependencies:install -u scratch-org -r -a -w 20 -k '1:${{ secrets.PACKAGE_KEY }} 2:${{ secrets.PACKAGE_KEY }} 3:${{ secrets.PACKAGE_KEY }} 4:${{ secrets.PACKAGE_KEY }} 5:${{ secrets.PACKAGE_KEY }} 6:${{ secrets.PACKAGE_KEY }} 7:${{ secrets.PACKAGE_KEY }} 8:${{ secrets.PACKAGE_KEY }} 9:${{ secrets.PACKAGE_KEY }} 10:${{ secrets.PACKAGE_KEY }}'"
 
+jobs:
   push-metadata:
     needs: install-dependant-packages
     runs-on: ubuntu-latest
@@ -64,6 +67,7 @@ jobs:
       - name: "Push source to scratch org"
         run: "sfdx force:source:push"
 
+jobs:
   run-tests:
     needs: push-metadata
     runs-on: ubuntu-latest
@@ -72,6 +76,7 @@ jobs:
       - name: "Run Apex tests"
         run: "sfdx force:apex:test:run -c -r human -d ./tests/apex -w 20"
 
+jobs:
   delete-scratch-org:
     needs: run-tests
     runs-on: ubuntu-latest
