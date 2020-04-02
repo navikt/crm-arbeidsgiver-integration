@@ -4,7 +4,7 @@ name: Salesforce DX (scratch org)
 # Definition when the workflow should run
 on:
   pull_request:
-    branches-ignore:
+    branches:
       - master
 
 # Jobs to be executed
