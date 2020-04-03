@@ -100,7 +100,6 @@ jobs:
         run: |
           echo "::set-output name=tagName::v$(cat sfdx-project.json | jq '.packageDirectories[0].versionNumber' -r | sed 's/.\{5\}$//')-beta$(cat sfdx-project.json | jq '.packageAliases | keys_unsorted[-1]' -r | sed 's/.*-//')"
           echo "::set-output name=releaseName::$(cat sfdx-project.json | jq '.packageDirectories[0].versionNumber' -r | sed 's/.\{5\}$//')-beta$(cat sfdx-project.json | jq '.packageAliases | keys_unsorted[-1]' -r | sed 's/.*-//')"
-          echo "::set-output name=bodyTitle::# $(cat sfdx-project.json | jq '.packageDirectories[0].package' -r)"
           echo "::set-output name=bodyVersion::**Version**: $(cat sfdx-project.json | jq '.packageDirectories[0].versionNumber' -r | sed 's/.\{5\}$//') (beta $(cat sfdx-project.json | jq '.packageAliases | keys_unsorted[-1]' -r | sed 's/.*-//'))"
           echo "::set-output name=bodyPackage::**Package ID**: ${{ steps.extract-data-package-version-create.outputs.packageVersionId }}"
 
@@ -115,8 +114,8 @@ jobs:
           tag_name: ${{steps.release-fields.outputs.tagName}}
           release_name: ${{steps.release-fields.outputs.releaseName}}
           body: |
-            ${{steps.release-fields.outputs.bodyTitle}}
             ${{steps.release-fields.outputs.bodyVersion}}
+            **User**: ${{github.actor}}
             ${{steps.release-fields.outputs.bodyPackage}}
           draft: false
           prerelease: true
