@@ -38,7 +38,7 @@ jobs:
 
       # set variables
       - name: "Set release fields"
-        if: (success()
+        if: success()
         id: release-fields
         run: |
           echo "::set-output name=tagName::v$(cat sfdx-project.json | jq '.packageDirectories[0].versionNumber' -r | sed 's/.\{5\}$//')"
@@ -48,7 +48,7 @@ jobs:
 
       # create github release
       - name: "Create Release"
-        if: (success()
+        if: success()
         id: create_release
         uses: actions/create-release@latest
         env:
