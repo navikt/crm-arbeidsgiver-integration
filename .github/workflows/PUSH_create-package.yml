@@ -12,7 +12,7 @@ on:
 # Jobs to be executed
 jobs:
   packaging:
-    name: Create new package
+    name: Create new package 
     runs-on: ubuntu-latest
     steps:
       # Install Salesforce CLI
@@ -92,12 +92,12 @@ jobs:
           commit_message: ${{steps.build-commit-message.outputs.message}}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  build:
-    name: Create prerelease
-    runs-on: ubuntu-latest
-    steps:
+
+      # checkout new code on master
       - name: Checkout code
         uses: actions/checkout@master
+
+      # create github release
       - name: Create Release
         id: create_release
         uses: actions/create-release@latest
