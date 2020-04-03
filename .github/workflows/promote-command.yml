@@ -58,12 +58,11 @@ jobs:
           release_name: ${{steps.release-fields.outputs.releaseName}}
           body: |
             ${{steps.release-fields.outputs.bodyVersion}}
-            **User**: ${{github.actor}}
             ${{steps.release-fields.outputs.bodyPackage}}
 
-            ${{ github.event.client_payload.slash_command.arg2 }}
+            ${{ github.event.client_payload.slash_command.unnamed_args }}
           draft: false
-          prerelease: true
+          prerelease: false
 
       # Add a hooray reaction to comment on success
       - name: "Add success reaction"

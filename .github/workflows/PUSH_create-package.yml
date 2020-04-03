@@ -6,8 +6,8 @@ on:
   push:
     branches:
       - master
-    paths:
-      - "force-app/**"
+    # paths:
+    #   - "force-app/**"
 
 # Jobs to be executed
 jobs:
