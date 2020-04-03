@@ -5,7 +5,7 @@ name: Push to master
 on:
   push:
     branches:
-      - dev
+      - master
     #################paths:
     ################   - "force-app/**"
 
@@ -88,7 +88,7 @@ jobs:
         if: (success() || failure()) && steps.packaging-updater.outputs.isSuccess
         uses: Automattic/action-commit-to-branch@master
         with:
-          branch: "dev" ################ "master"
+          branch: "master" ################ "master"
           commit_message: ${{steps.build-commit-message.outputs.message}}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
