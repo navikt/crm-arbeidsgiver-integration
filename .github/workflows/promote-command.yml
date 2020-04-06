@@ -65,8 +65,8 @@ jobs:
           draft: false
           prerelease: false
 
-      # Update sfdx-project.json and README to use only latest package version
-      - name: 'Update sfdx-project.json and README'
+      # Update version number
+      - name: 'Update version number'
         id: packaging-updater
         uses: navikt/github-action-sfdx-version-updater@master
 
@@ -76,7 +76,7 @@ jobs:
         run: echo "::set-output name=message::(CI) Updated to new version number $(cat sfdx-project.json | jq '.packageDirectories[0].versionNumber' -r | sed 's/.\{5\}$//')"
 
       # Re-add changes back to source
-      - name: 'Update version number'
+      - name: 'Commit changes'
         uses: Automattic/action-commit-to-branch@master
         with:
           branch: 'master'
