@@ -65,26 +65,39 @@ jobs:
           draft: false
           prerelease: false
 
-      # # Create commit message by extracting the latest version number from sfdx-project.json
-      # - name: "Build commit message"
-      #   if: success() || (failure() && steps.packaging-updater.outputs.isSuccess)
-      #   id: build-commit-message
-      #   run: echo "::set-output name=message::[CI] Create package version $(cut -d '@' -f 2 <<< $(cat sfdx-project.json | jq '.packageAliases | keys[-1]' -r))"
+      # Update sfdx-project.json and README to use only latest package version
+      - name: 'Update sfdx-project.json and README'
+        id: packaging-updater
+        uses: navikt/github-action-sfdx-version-updater@master
 
-      # # Re-add changes back to source
-      # - name: "Add new package version, updated sfdx-project.json and README to source"
-      #   if: (success() || failure()) && steps.packaging-updater.outputs.isSuccess
-      #   uses: Automattic/action-commit-to-branch@master
-      #   with:
-      #     branch: "master"
-      #     commit_message: ${{steps.build-commit-message.outputs.message}}
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Create commit message by extracting the latest version number from sfdx-project.json
+      - name: 'Build commit message'
+        id: build-commit-message
+        run: echo "::set-output name=message::(CI) Create package version $(cut -d '@' -f 2 <<< $(cat sfdx-project.json | jq '.packageAliases | keys[-1]' -r))"
 
-      # Add a hooray reaction to comment on success
+      # Re-add changes back to source
+      - name: 'Add new package version, updated sfdx-project.json and README to source'
+        uses: Automattic/action-commit-to-branch@master
+        with:
+          branch: 'master'
+          commit_message: ${{steps.build-commit-message.outputs.message}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      # Add success reaction
       - name: "Add success reaction"
+        if: success()
         uses: peter-evans/create-or-update-comment@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
           reaction-type: hooray
+
+      # Add error reaction
+      - name: "Add error reaction"
+        if: failure()
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
+          reaction-type: '-1'
