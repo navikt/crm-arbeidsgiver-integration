@@ -44,7 +44,6 @@ jobs:
           echo "::set-output name=tagName::v$(cat sfdx-project.json | jq '.packageDirectories[0].versionNumber' -r | sed 's/.\{5\}$//')"
           echo "::set-output name=releaseName::$(cat sfdx-project.json | jq '.packageDirectories[0].versionNumber' -r | sed 's/.\{5\}$//')"
           echo "::set-output name=bodyVersion::**Version**: $(cat sfdx-project.json | jq '.packageDirectories[0].versionNumber' -r | sed 's/.\{5\}$//')"
-          echo "::set-output name=bodyPackage::**Package ID**: ${{ github.event.client_payload.slash_command.arg1 }}"
 
       # create github release
       - name: "Create Release"
@@ -57,12 +56,30 @@ jobs:
           tag_name: ${{steps.release-fields.outputs.tagName}}
           release_name: ${{steps.release-fields.outputs.releaseName}}
           body: |
-            ${{steps.release-fields.outputs.bodyVersion}}
-            ${{steps.release-fields.outputs.bodyPackage}}
+            ${{ steps.release-fields.outputs.bodyVersion }}
+            ${{ github.event.client_payload.slash_command.arg1 }}
+
+            **Author**: ${{ github.event.client_payload.slash_command.arg2 }}
 
             ${{ github.event.client_payload.slash_command.unnamed_args }}
           draft: false
           prerelease: false
+
+      # # Create commit message by extracting the latest version number from sfdx-project.json
+      # - name: "Build commit message"
+      #   if: success() || (failure() && steps.packaging-updater.outputs.isSuccess)
+      #   id: build-commit-message
+      #   run: echo "::set-output name=message::[CI] Create package version $(cut -d '@' -f 2 <<< $(cat sfdx-project.json | jq '.packageAliases | keys[-1]' -r))"
+
+      # # Re-add changes back to source
+      # - name: "Add new package version, updated sfdx-project.json and README to source"
+      #   if: (success() || failure()) && steps.packaging-updater.outputs.isSuccess
+      #   uses: Automattic/action-commit-to-branch@master
+      #   with:
+      #     branch: "master"
+      #     commit_message: ${{steps.build-commit-message.outputs.message}}
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Add a hooray reaction to comment on success
       - name: "Add success reaction"
