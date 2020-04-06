@@ -66,17 +66,17 @@ jobs:
         with:
           json: ${{steps.package-version-create.outputs.result}}
 
-      # Install package version into integration sandbox
-      - name: "Install new package version into test org"
-        if: steps.extract-data-package-version-create.outputs.isSuccess
+      # Install new package version into integration org
+      - name: "Install new package version into integration org"
+        if: success() || (failure() && steps.extract-data-package-version-create.outputs.isSuccess)
         id: install-package-version-to-integration
         run: |
           echo "::set-output name=result::$(sfdx force:package:install --package ${{ steps.extract-data-package-version-create.outputs.packageVersionId }} -w 10 -b 10 -u integration-sandbox -r -k ${{ secrets.PACKAGE_KEY }}"
           echo "::set-output name=isSuccess::true"
 
-      # set variables
+      # set release variables
       - name: "Set release fields"
-        if: steps.package-version-create.outputs.isSuccess
+        if: success() || (failure() && steps.package-version-create.outputs.isSuccess)
         id: release-fields
         run: |
           echo "::set-output name=tagName::v$(cat sfdx-project.json | jq '.packageDirectories[0].versionNumber' -r | sed 's/.\{5\}$//')-beta$(cat sfdx-project.json | jq '.packageAliases | keys_unsorted[-1]' -r | sed 's/.*-//')"
