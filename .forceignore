@@ -1,10 +1,9 @@
 
 # profiles
 **/profiles/*
-!**/unpackagable/profiles/*
 
 # NOTE!! Do NOT use **/ before
-!non_deployable_metadata/profiles/*
+!unpackagable/profiles/*
 # NOTE!! Do NOT use **/ before
 
 # standard fields not needed in source control
