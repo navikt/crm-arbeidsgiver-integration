@@ -73,10 +73,10 @@ jobs:
       # Create commit message by extracting the latest version number from sfdx-project.json
       - name: 'Build commit message'
         id: build-commit-message
-        run: echo "::set-output name=message::(CI) Create package version $(cut -d '@' -f 2 <<< $(cat sfdx-project.json | jq '.packageAliases | keys[-1]' -r))"
+        run: echo "::set-output name=message::(CI) Updated to new version number $(cat sfdx-project.json | jq '.packageDirectories[0].versionNumber' -r | sed 's/.\{5\}$//')"
 
       # Re-add changes back to source
-      - name: 'Add new package version, updated sfdx-project.json and README to source'
+      - name: 'Update version number'
         uses: Automattic/action-commit-to-branch@master
         with:
           branch: 'master'
