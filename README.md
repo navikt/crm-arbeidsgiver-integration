@@ -22,13 +22,14 @@ Pakken er avhengig av følgende pakker:
 ## Komme i gang
 
 1. Salesforce DX-bruker. Kontakt #crm-plattform-team på Slack om du ikke har dette
-2. Installer Salesforce, DX CLI (SFDX)
+2. Installer Salesforce DX CLI (SFDX)
 	- Last ned fra [Salesforce.com](https://developer.salesforce.com/tools/sfdxcli)
     - Eller benytt npm: `npm install sfdx-cli --global`
 3. Klon dette repoet ([GitHub Desktop](https://desktop.github.com) anbefales for ikke-utviklere)
 4. Installer [SSDX](https://github.com/navikt/ssdx)
-    - Du kan nå lage scratch orger og gjøre deklarative endringer (gjøre endringer i nettleseren på Salesforce, altså ikke-utvikling)
-5. Skal du utvikle? Installer [VS Code](https://code.visualstudio.com) (anbefalt)
+    - Med SSDX kan du lage scratch orger og gjøre deklarative endringer (gjøre endringer i nettleseren på Salesforce, altså ikke-utvikling)
+	- **Trenger du ikke verktøy utvikling kan du stoppe her**
+5. Installer [VS Code](https://code.visualstudio.com) (anbefalt)
 6. Installer [Salesforce Extension Pack](https://marketplace.visualstudio.com/items?itemName=salesforce.salesforcedx-vscode)
 7. Installer [AdoptOpenJDK](https://adoptopenjdk.net) (kun versjon 8 eller 11)
 8. Åpne VS Code Settings og søk etter `salesforcedx-vscode-apex`
