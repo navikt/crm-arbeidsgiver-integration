@@ -71,7 +71,7 @@ jobs:
         if: success() || (failure() && steps.extract-data-package-version-create.outputs.isSuccess)
         id: install-package-version-to-integration
         run: |
-          echo "::set-output name=result::$(sfdx force:package:install --package ${{ steps.extract-data-package-version-create.outputs.packageVersionId }} -w 10 -b 10 -u integration-sandbox -r -k ${{ secrets.PACKAGE_KEY }}"
+          echo "::set-output name=result::$(sfdx force:package:install --package ${{ steps.extract-data-package-version-create.outputs.packageVersionId }} -w 10 -b 10 -u integration-sandbox -r -k ${{ secrets.PACKAGE_KEY }})"
           echo "::set-output name=isSuccess::true"
 
       # set release variables
@@ -84,7 +84,12 @@ jobs:
           echo "::set-output name=bodyVersion::**Version**: $(cat sfdx-project.json | jq '.packageDirectories[0].versionNumber' -r | sed 's/.\{5\}$//') (beta $(cat sfdx-project.json | jq '.packageAliases | keys_unsorted[-1]' -r | sed 's/.*-//'))"
           echo "::set-output name=bodyPackage::**Package ID**: ${{ steps.extract-data-package-version-create.outputs.packageVersionId }}"
 
-      # TODO add commit messages / commits
+      - name: Generate changelog
+        id: changelog
+        uses: metcalfc/changelog-generator@v0.2.3
+        with:
+          myToken: ${{ secrets.GITHUB_TOKEN }}
+
 
       # create github release
       - name: "Create Release - Success"
@@ -98,11 +103,14 @@ jobs:
           body: |
             ${{ steps.release-fields.outputs.bodyVersion }}
             ${{ steps.release-fields.outputs.bodyPackage }}
-            
-            ✅ Created package successfully
-            ✅ Installed package successfully in Integration Sandbox
-
             **Author**: ${{ github.actor }}
+            
+            ✅ Package Creation
+            ✅ Package Installation
+
+            ## Changelog
+            
+            ${{ steps.changelog.outputs.changelog }}
           draft: false
           prerelease: true
 
@@ -118,30 +126,13 @@ jobs:
           body: |
             ${{ steps.release-fields.outputs.bodyVersion }}
             ${{ steps.release-fields.outputs.bodyPackage }}
-            
-            ✅ Created package successfully
-            ❌ Failed to install package in Integration Sandbox (see Actions)
-
             **Author**: ${{ github.actor }}
-          draft: false
-          prerelease: true
-
-      # create github release
-      - name: "Create Release - Failed to create"
-        if: failure() && !steps.package-version-create.outputs.isSuccess && !steps.install-package-version-to-integration.outputs.isSuccess
-        uses: actions/create-release@latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.release-fields.outputs.tagName }}
-          release_name: ${{ steps.release-fields.outputs.releaseName }}
-          body: |
-            ${{ steps.release-fields.outputs.bodyVersion }}
-            ${{ steps.release-fields.outputs.bodyPackage }}
             
-            ❌ Failed to create package (see Actions)
-            ❌ Failed to install package in Integration Sandbox
+            ✅ Package Creation
+            ❌ Package Installation
+            
+            ## Changelog
 
-            **Author**: ${{ github.actor }}
+            ${{ steps.changelog.outputs.changelog }}
           draft: false
           prerelease: true
