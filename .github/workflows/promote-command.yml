@@ -58,7 +58,6 @@ jobs:
           body: |
             **Version**: ${{ steps.release-fields.outputs.bodyVersion }}
             **Package ID**: ${{ github.event.client_payload.slash_command.arg1 }}
-
             **Author**: ${{ github.event.client_payload.slash_command.arg2 }}
 
             ${{ github.event.client_payload.slash_command.unnamed_args }}
