@@ -44,7 +44,7 @@ jobs:
           echo "::set-output name=tagName::v$(cat sfdx-project.json | jq '.packageDirectories[0].versionNumber' -r | sed 's/.\{5\}$//')"
           echo "::set-output name=releaseName::$(cat sfdx-project.json | jq '.packageDirectories[0].versionNumber' -r | sed 's/.\{5\}$//')"
           echo "::set-output name=bodyVersion::**Version**: $(cat sfdx-project.json | jq '.packageDirectories[0].versionNumber' -r | sed 's/.\{5\}$//')"
-          echo "::set-output name=bodyPackage::**Package ID**: ${{ steps.extract-data-package-version-create.outputs.packageVersionId }}"
+          echo "::set-output name=bodyPackage::**Package ID**: ${{ github.event.client_payload.slash_command.arg1 }}"
 
       # create github release
       - name: "Create Release"
