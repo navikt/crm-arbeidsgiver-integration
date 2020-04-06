@@ -1,6 +1,6 @@
 # crm-arbeidsgiver-integrasjon
 
-[![Build](https://github.com/navikt/crm-arbeidsgiver-integration/workflows/Build/badge.svg)](https://github.com/navikt/crm-arbeidsgiver-integration/actions?query=workflow%3ABuild)
+[![Build](https://github.com/navikt/crm-arbeidsgiver-integration/workflows/master/badge.svg)](https://github.com/navikt/crm-arbeidsgiver-integration/actions?query=workflow%3ABuild)
 [![GitHub Release](https://img.shields.io/github/v/release/navikt/crm-arbeidsgiver-integration.svg?style=flat)](https://github.com/navikt/crm-arbeidsgiver-integration/releases)
 [![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/navikt/crm-arbeidsgiver-integration/blob/master/LICENSE)
 

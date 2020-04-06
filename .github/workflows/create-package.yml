@@ -1,5 +1,5 @@
 # Unique name for this workflow
-name: Build
+name: master
 
 # Definition when the workflow should run
 on:
@@ -89,7 +89,6 @@ jobs:
       # create github release
       - name: "Create Release - Success"
         if: success() && steps.package-version-create.outputs.isSuccess && steps.install-package-version-to-integration.outputs.isSuccess
-        id: create_release
         uses: actions/create-release@latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -110,7 +109,6 @@ jobs:
       # create github release
       - name: "Create Release - Failed to install"
         if: failure() && steps.package-version-create.outputs.isSuccess && !steps.install-package-version-to-integration.outputs.isSuccess
-        id: create_release
         uses: actions/create-release@latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -131,7 +129,6 @@ jobs:
       # create github release
       - name: "Create Release - Failed to create"
         if: failure() && !steps.package-version-create.outputs.isSuccess && !steps.install-package-version-to-integration.outputs.isSuccess
-        id: create_release
         uses: actions/create-release@latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
