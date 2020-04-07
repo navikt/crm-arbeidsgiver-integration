@@ -87,8 +87,8 @@ jobs:
       # Merge pull request
       - name: Merge Pull request
         uses: actions/setup-node@v1
-          with:
-            node-version: 12
+        with:
+          node-version: 12
         run: "npm ci"
         run: "node ./.github/actions/merge.js"
           env:
