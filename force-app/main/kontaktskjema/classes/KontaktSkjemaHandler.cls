@@ -17,7 +17,6 @@ global with sharing class KontaktSkjemaHandler {
 		String lastName;
 		String email;
 		String phoneNo;
-
 		String jsonPayload;
 	}
 
