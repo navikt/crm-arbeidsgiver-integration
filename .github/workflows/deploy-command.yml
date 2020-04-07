@@ -26,6 +26,15 @@ jobs:
         shell: bash
         run: 'echo ${{ secrets.PREPROD_SFDX_URL }} > ./SFDX_AUTH_URL.txt'
 
+      # Store secret for dev hub
+      - name: "Populate auth file with PROD_SFDX_URL secret"
+        shell: bash
+        run: "echo ${{ secrets.PROD_SFDX_URL}} > ./PROD_SFDX_URL.txt"
+
+      # Authenticate dev hub
+      - name: "Authenticate Dev Hub"
+        run: "sfdx force:auth:sfdxurl:store -f ./PROD_SFDX_URL.txt -a devhub -d"
+
       # Authenticate org as installation target
       - name: 'Authenticate deployment org'
         run: 'sfdx force:auth:sfdxurl:store -f ./SFDX_AUTH_URL.txt -a targetOrg -s'
@@ -34,6 +43,7 @@ jobs:
       - name: 'Remove auth files'
         run: |
           rm -f ./SFDX_AUTH_URL.txt
+          rm -f ./PROD_SFDX_URL.txt
 
       # Install package in target org
       - name: 'Install package in target org'
