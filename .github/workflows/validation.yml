@@ -6,10 +6,6 @@ on:
   pull_request:
     branches:
       - "*"
-    paths:
-      - "force-app/**"
-      - "config/**"
-      - ".forceignore"
 
 jobs:
   validate:
