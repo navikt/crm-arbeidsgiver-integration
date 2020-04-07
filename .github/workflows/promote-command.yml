@@ -90,7 +90,7 @@ jobs:
           add: 'sfdx-project.json'
           message: ${{steps.build-commit-message.outputs.message}}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
+          GITHUB_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN  }} # Leave this line unchanged
 
       # Add success reaction
       - name: "Add success reaction"
