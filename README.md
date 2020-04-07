@@ -2,7 +2,6 @@
 
 [![Build](https://github.com/navikt/crm-arbeidsgiver-integration/workflows/master/badge.svg)](https://github.com/navikt/crm-arbeidsgiver-integration/actions?query=workflow%3ABuild)
 [![GitHub version](https://badgen.net/github/release/navikt/crm-arbeidsgiver-integration/stable)](https://github.com/navikt/crm-arbeidsgiver-integration)
-[![GitHub version](https://badgen.net/github/release/navikt/crm-arbeidsgiver-integration)](https://github.com/navikt/crm-arbeidsgiver-integration)
 [![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/navikt/crm-arbeidsgiver-integration/blob/master/LICENSE)
 
 Denne pakken inneholder kun integrasjoner på arbeidsgiver-nivået. Følgende tre integrasjoner er aktive:
