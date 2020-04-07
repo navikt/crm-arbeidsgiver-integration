@@ -72,17 +72,26 @@ jobs:
       # Create commit message by extracting the latest version number from sfdx-project.json
       - name: 'Build commit message'
         id: build-commit-message
-        run: echo "::set-output name=message::(CI) Updated to new version number $(cat sfdx-project.json | jq '.packageDirectories[0].versionNumber' -r | sed 's/.\{5\}$//')"
+        run: |
+          echo "::set-output name=message::(CI) Updated to new version number $(cat sfdx-project.json | jq '.packageDirectories[0].versionNumber' -r | sed 's/.\{5\}$//')"
+          cat sfdx-project.json
 
-      # Re-add changes back to source
-      - name: 'Commit changes'
-        uses: Automattic/action-commit-to-branch@master
-        with:
-          branch: 'master'
-          commit_message: ${{steps.build-commit-message.outputs.message}}
-        env:
-          GITHUB_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
+      # # Re-add changes back to source
+      # - name: 'Commit changes'
+      #   uses: Automattic/action-commit-to-branch@master
+      #   with:
+      #     branch: 'master'
+      #     commit_message: ${{steps.build-commit-message.outputs.message}}
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
       
+      - uses: EndBug/add-and-commit@master
+        with:
+          add: 'sfdx-project.json'
+          message: ${{steps.build-commit-message.outputs.message}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
+
       # Add success reaction
       - name: "Add success reaction"
         if: success()
