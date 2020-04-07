@@ -82,7 +82,7 @@ jobs:
           branch: 'master'
           commit_message: ${{steps.build-commit-message.outputs.message}}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
       
       # Add success reaction
       - name: "Add success reaction"
