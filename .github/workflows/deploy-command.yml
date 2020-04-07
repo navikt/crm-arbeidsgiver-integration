@@ -56,16 +56,16 @@ jobs:
       # Get report of package
       - name: Get report of package
         id: package-report
-        run: |
-          echo "::set-output name=output::$(sfdx force:package:version:report -p ${{ github.event.client_payload.slash_command.arg2 }} --json)"
+        shell: bash
+        run: sfdx force:package:version:report -p ${{ github.event.client_payload.slash_command.arg2 }} --json > ./REPORT.TXT
 
       # set variables
       - name: "Set release fields"
         if: success()
         id: release-fields
         run: |
-          echo "::set-output name=tagName::v$( ${{ steps.package-report.outputs.output }} | jq '.result.Name' -r )-beta$( ${{ steps.package-report.outputs.output }} | jq '.result.BuildNumber' -r )"
-          echo "::set-output name=releaseName::$( ${{ steps.package-report.outputs.output }} | jq '.result.Name' -r )-beta$( ${{ steps.package-report.outputs.output }} | jq '.result.BuildNumber' -r )"
+          echo "::set-output name=tagName::v$( cat REPORT.TXT | jq '.result.Name' -r )-beta$( cat REPORT.TXT | jq '.result.BuildNumber' -r )"
+          echo "::set-output name=releaseName::$( cat REPORT.TXT | jq '.result.Name' -r )-beta$( cat REPORT.TXT | jq '.result.BuildNumber' -r )"
 
       # Updates release with install logs
       - name: Update release with install logs
