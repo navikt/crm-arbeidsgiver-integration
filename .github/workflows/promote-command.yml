@@ -84,6 +84,16 @@ jobs:
           body: ''
           commit-message: ${{steps.build-commit-message.outputs.message}}
 
+      # Merge pull request
+      - name: Merge Pull request
+        - uses: actions/setup-node@v1
+            with:
+              node-version: 12
+          - run: "npm ci"
+          - run: "node ./.github/actions/merge.js"
+            env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       # Add success reaction
       - name: "Add success reaction"
         if: success()
