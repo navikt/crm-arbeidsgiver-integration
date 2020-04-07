@@ -6,63 +6,64 @@ jobs:
   promoteCommand:
     runs-on: ubuntu-latest
     steps:
-      # Install Salesforce CLI
-      - name: Install Salesforce CLI
-        run: |
-          wget https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
-          mkdir sfdx-cli
-          tar xJf sfdx-linux-amd64.tar.xz -C sfdx-cli --strip-components 1
-          ./sfdx-cli/install
+      # # Install Salesforce CLI
+      # - name: Install Salesforce CLI
+      #   run: |
+      #     wget https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
+      #     mkdir sfdx-cli
+      #     tar xJf sfdx-linux-amd64.tar.xz -C sfdx-cli --strip-components 1
+      #     ./sfdx-cli/install
 
-      # Checkout the code in the pull request
-      - name: "Checkout source code"
-        uses: actions/checkout@v2
-
-      # Store secret for dev hub
-      - name: "Populate auth file with PROD_SFDX_URL secret"
-        shell: bash
-        run: "echo ${{ secrets.PROD_SFDX_URL}} > ./PROD_SFDX_URL.txt"
-
-      # Authenticate dev hub
-      - name: "Authenticate Dev Hub"
-        run: "sfdx force:auth:sfdxurl:store -f ./PROD_SFDX_URL.txt -a devhub -d"
-
-      # Remove auth file
-      - name: "Remove auth files"
-        run: |
-          rm -f ./PROD_SFDX_URL.txt
-
-      # Promote package
-      - name: "Promote package"
-        run: "sfdx force:package:version:promote --package ${{ github.event.client_payload.slash_command.arg1 }} --noprompt"
-
-      # set variables
-      - name: "Set release fields"
-        if: success()
-        id: release-fields
-        run: |
-          echo "::set-output name=tagName::v$(cat sfdx-project.json | jq '.packageDirectories[0].versionNumber' -r | sed 's/.\{5\}$//')"
-          echo "::set-output name=releaseName::$(cat sfdx-project.json | jq '.packageDirectories[0].versionNumber' -r | sed 's/.\{5\}$//')"
-          echo "::set-output name=bodyVersion::$(cat sfdx-project.json | jq '.packageDirectories[0].versionNumber' -r | sed 's/.\{5\}$//')"
-
-      # create github release
-      - name: "Create Release"
-        if: success()
-        id: create_release
-        uses: actions/create-release@latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v2
         with:
-          tag_name: ${{steps.release-fields.outputs.tagName}}
-          release_name: ${{steps.release-fields.outputs.releaseName}}
-          body: |
-            **Version**: ${{ steps.release-fields.outputs.bodyVersion }}
-            **Package ID**: ${{ github.event.client_payload.slash_command.arg1 }}
-            **Author**: ${{ github.event.client_payload.slash_command.arg2 }}
+          fetch-depth: 2
+      - run: git checkout HEAD^
 
-            ${{ github.event.client_payload.slash_command.unnamed_args }}
-          draft: false
-          prerelease: false
+      # # Store secret for dev hub
+      # - name: "Populate auth file with PROD_SFDX_URL secret"
+      #   shell: bash
+      #   run: "echo ${{ secrets.PROD_SFDX_URL}} > ./PROD_SFDX_URL.txt"
+
+      # # Authenticate dev hub
+      # - name: "Authenticate Dev Hub"
+      #   run: "sfdx force:auth:sfdxurl:store -f ./PROD_SFDX_URL.txt -a devhub -d"
+
+      # # Remove auth file
+      # - name: "Remove auth files"
+      #   run: |
+      #     rm -f ./PROD_SFDX_URL.txt
+
+      # # Promote package
+      # - name: "Promote package"
+      #   run: "sfdx force:package:version:promote --package ${{ github.event.client_payload.slash_command.arg1 }} --noprompt"
+
+      # # set variables
+      # - name: "Set release fields"
+      #   if: success()
+      #   id: release-fields
+      #   run: |
+      #     echo "::set-output name=tagName::v$(cat sfdx-project.json | jq '.packageDirectories[0].versionNumber' -r | sed 's/.\{5\}$//')"
+      #     echo "::set-output name=releaseName::$(cat sfdx-project.json | jq '.packageDirectories[0].versionNumber' -r | sed 's/.\{5\}$//')"
+      #     echo "::set-output name=bodyVersion::$(cat sfdx-project.json | jq '.packageDirectories[0].versionNumber' -r | sed 's/.\{5\}$//')"
+
+      # # create github release
+      # - name: "Create Release"
+      #   if: success()
+      #   id: create_release
+      #   uses: actions/create-release@latest
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     tag_name: ${{steps.release-fields.outputs.tagName}}
+      #     release_name: ${{steps.release-fields.outputs.releaseName}}
+      #     body: |
+      #       **Version**: ${{ steps.release-fields.outputs.bodyVersion }}
+      #       **Package ID**: ${{ github.event.client_payload.slash_command.arg1 }}
+      #       **Author**: ${{ github.event.client_payload.slash_command.arg2 }}
+
+      #       ${{ github.event.client_payload.slash_command.unnamed_args }}
+      #     draft: false
+      #     prerelease: false
 
       # Update version number
       - name: 'Update version number'
