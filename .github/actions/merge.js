@@ -30,9 +30,11 @@ async function merge() {
 		return;
 	}
 
-	const duePullRequests = pullRequests.filter(
-		pullRequest => new Date(pullRequest.scheduledDate) < new Date()
-	);
+	// const duePullRequests = pullRequests.filter(
+	// 	pullRequest => new Date(pullRequest.scheduledDate) < new Date()
+	// );
+
+	const duePullRequests = pullRequests;
 
 	console.log(`${duePullRequests.length} due pull requests found`);
 
