@@ -16,6 +16,25 @@ public inherited sharing class KafkaArenaHandler_Helper {
 		return arenaModels;
 	}
 
+	public static Set<String> getOrgNumbers( List<KafkaArenaHandler_Model> models ) {
+		Set<String> orgNumbers = new Set<String>();
+		for ( KafkaArenaHandler_Model model : models ) {
+			// orgNumbers.add( model.bedriftsnr );
+		}
+
+		return orgNumbers;
+	}
+
+	public static Set<String> getUserTitles( List<KafkaArenaHandler_Model> models ) {
+		Set<String> userTitles = new Set<String>();
+		for ( KafkaArenaHandler_Model model : models ) {
+			userTitles.add( model.regUser );
+			userTitles.add( model.saksbehandler );
+		}
+
+		return userTitles;
+	}
+
 	public static List<ArenaActivity__c> convertArenaModelToSObject( List<KafkaArenaHandler_Model> models, Map<String, User> userMap, Map<String, Account> accountMap ) {
 		return null;
 	}
