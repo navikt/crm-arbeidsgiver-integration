@@ -19,7 +19,7 @@ public inherited sharing class KafkaArenaHandler_Helper {
 	public static Set<String> getOrgNumbers( List<KafkaArenaHandler_Model> models ) {
 		Set<String> orgNumbers = new Set<String>();
 		for ( KafkaArenaHandler_Model model : models ) {
-			// orgNumbers.add( model.bedriftsnr );
+			orgNumbers.add( String.valueOf( model.bedriftsnr ) );
 		}
 
 		return orgNumbers;
@@ -36,6 +36,38 @@ public inherited sharing class KafkaArenaHandler_Helper {
 	}
 
 	public static List<ArenaActivity__c> convertArenaModelToSObject( List<KafkaArenaHandler_Model> models, Map<String, User> userMap, Map<String, Account> accountMap ) {
-		return null;
+
+		List<ArenaActivity__c> arenaActivities = new List<ArenaActivity__c>();
+
+		for ( KafkaArenaHandler_Model model : models ) {
+
+			ArenaActivity__c aa = new ArenaActivity__c(
+				AktivitetstypeBeskrivelse__c = model.AktivitetstypeBeskrivelse,
+				Aktivitetsgruppekode__c = model.Aktivitetsgruppekode,
+				AktivitetStatuskode__c = model.AktivitetStatuskode,
+				AktivitetsKode__c = model.AktivitetsKode,
+				Aktivitetstype__c = model.aktivitetstypenavn,
+				DateRegistered__c = stringToDate( model.regDato ),
+				Description__c = model.beskrivelse,
+				DateFrom__c = stringToDate( model.fraDato ),
+				DateTo__c = stringToDate( model.tilDato )
+				);
+
+			aa.RegisteredBy__c = userMap.containsKey( model.regUser ) ? userMap.get( model.regUser ).Id : null;
+			aa.OwnerId = userMap.containsKey( model.saksbehandler ) ? userMap.get( model.saksbehandler ).Id : null;
+			aa.Account__c = accountMap.containsKey( String.valueOf( model.bedriftsnr ) ) ? accountMap.get( String.valueOf( model.bedriftsnr ) ).Id : null;
+
+			arenaActivities.add( aa );
+		}
+
+		return arenaActivities;
+	}
+
+	public static Date stringToDate( String dateString ) {
+		try {
+			return Date.valueOf( dateString.replace( 'T', ' ' ) );
+		} catch ( Exception e ) {
+			return null;
+		}
 	}
 }
