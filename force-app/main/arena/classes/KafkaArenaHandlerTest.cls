@@ -49,4 +49,24 @@ private without sharing class KafkaArenaHandlerTest {
 		System.assertEquals( null, arenaActivities[0].AktivitetstypeBeskrivelse__c );
 		System.assertEquals( 'Utdanning', arenaActivities[0].Aktivitetstype__c );
 	}
+
+	@isTest
+	private static void testHandleMessages_usersAndAccountsDontExists() {
+
+		KafkaMessage__c msg1 = new KafkaMessage__c();
+		msg1.CRM_Topic__c = 'aapen-arena-arbeidsgiver';
+		msg1.CRM_Key__c = 'd60gwew775ed-249f-49e6-bd15-ff790b56cc07';
+		msg1.CRM_Value__c = 'ewogICAgImFrdGl2aXRldFN0YXR1c2tvZGUiOiAiRlVMTEYiLAogICAgImJlZHJpZnRzbnIiOiAxMjMsCiAgICAiYmVza3JpdmVsc2UiOiAiQmVkcmlmdHPDuGtvbm9tc3R1ZGlldCAyMCB2dFxuSMO4Z3Nrb2xla2FuZGlkYXRzdHVkaWV0IG1lZCByZXRuaW5nIGZvciByZWduc2thcHNmw7hyZXJlLiAyMHZ0IiwKICAgICJvcmduck1vcnNlbHNrYXAiOiAxMjMxMjMsCiAgICAic2Frc2JlaGFuZGxlciI6ICJXSUxMTk9URVhJU1RTMiIsCiAgICAiYWt0aXZpdGV0c2tvZGUiOiAiVVREWVJLIiwKICAgICJmcmFEYXRvIjogIjIwMDMtMDEtMDEiLAogICAgInRpbERhdG8iOiAiMjAwNC0xMi0zMSIsCiAgICAicmVnRGF0byI6ICIyMDAzLTAzLTI1IiwKICAgICJyZWdVc2VyIjogIldJTExOT1RFWElTVFMiLAogICAgImFrdGl2aXRldHNncnVwcGVrb2RlIjogIlRMVEFLIiwKICAgICJha3Rpdml0ZXRzdHlwZWJlc2tyaXZlbHNlIjogbnVsbCwKICAgICJha3Rpdml0ZXRzdHlwZW5hdm4iOiAiVXRkYW5uaW5nIiwKICAgICJmb3JuYXZuIjogIkpvbm4gRWdpbCIsCiAgICAiZXR0ZXJuYXZuIjogIkluZHJldm9sbCIsCiAgICAibmF2SWRlbnQiOiAiSTExMTM0NSIKfQ==';
+		insert msg1;
+
+		Test.StartTest();
+		Test.StopTest();
+
+		List<ArenaActivity__c> arenaActivities = [SELECT Id, Account__c, RegisteredBy__c, OwnerId FROM ArenaActivity__c];
+
+		System.assertEquals( 1, arenaActivities.size(), 'Only one activity added' );
+		System.assertEquals( null, arenaActivities[0].Account__c );
+		System.assertEquals( null, arenaActivities[0].RegisteredBy__c );
+		System.assertEquals( System.UserInfo.getUserId(), arenaActivities[0].OwnerId );
+	}
 }
