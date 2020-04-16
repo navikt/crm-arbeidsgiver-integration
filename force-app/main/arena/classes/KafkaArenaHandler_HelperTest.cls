@@ -61,7 +61,7 @@ private without sharing class KafkaArenaHandler_HelperTest {
 
 		List<KafkaArenaHandler_Model> models = KafkaArenaHandler_Helper.convertKafkaToArenaModel( new List<KafkaMessage__c> { msg1 } );
 		Map<String, User> userMap = SharedIntegrationFunctions.getUsersByTitle( new Set<String> { 'GL1812', 'JEI1812' } );
-		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new List<String> { '973113631' } );
+		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new Set<String> { '973113631' } );
 
 
 		Test.StartTest();

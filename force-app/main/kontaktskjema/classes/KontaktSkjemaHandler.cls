@@ -39,7 +39,7 @@ global with sharing class KontaktSkjemaHandler {
 		wrapper.companyNumber = rw.organisationNumber;
 		List<SharedIntegrationFunctions_Helper.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions_Helper.ContactWrapper> { wrapper };
 
-		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new List<String> { rw.organisationNumber } );
+		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new Set<String> { rw.organisationNumber } );
 		Id accountId = accountMap.containsKey( rw.organisationNumber ) ? accountMap.get( rw.organisationNumber ).Id : null;
 		Map<String, Contact> contactMap = SharedIntegrationFunctions.fetchOrCreateContact( wrapperList, accountMap );
 		Id contactId = contactMap.containsKey( rw.email ) ? contactMap.get( rw.email ).Id : null;
