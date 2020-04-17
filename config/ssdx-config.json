@@ -1,8 +1,8 @@
 {
 	"locations": {
-		"dummy-data": "dummy-data",
-		"users": "config/users",
-		"manifest": "manifest",
+		"dummy-data": "",
+		"users": "",
+		"manifest": "",
 		"unpackagable": "unpackagable",
 		"package-key": ".ssdx/.packageKey"
 	},
