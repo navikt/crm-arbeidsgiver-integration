@@ -59,7 +59,6 @@ global with sharing class KontaktSkjemaHandler {
 		if ( isIA( rw.type ) ) {
 			co.INT_RegionNumber__c = rw.regionCode;
 		}
-
 		insert co;
 
 		return [SELECT Name FROM CustomOpportunity__c WHERE Id = : co.Id LIMIT 1].Name;
