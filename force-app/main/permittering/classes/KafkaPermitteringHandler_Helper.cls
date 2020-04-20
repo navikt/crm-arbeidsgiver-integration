@@ -69,14 +69,16 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
 		tl.OtherComments__c = p.fritekst;
 
 		List<String> professions = new List<String>();
-		for ( KafkaPermitteringHandler_Model.Yrkeskategorier profession : p.yrkeskategorier ) {
-			professions.add( profession.label );
+		if ( p.yrkeskategorier != null ) {
+			for ( KafkaPermitteringHandler_Model.Yrkeskategorier profession : p.yrkeskategorier ) {
+				professions.add( profession.label );
+			}
 		}
 
-		tl.OtherField__c = p.fritekst.split( '### Annet\\n' )[1];
+		tl.OtherField__c = p.fritekst.contains( '### Annet\\n' ) ? p.fritekst.split( '### Annet\\n' )[1] : null;
 		tl.Profession__c = String.join( professions, ';' );
 		tl.Reason__c = p.arsakskode;
-		tl.ReasonOther__c = p.arsakskode == 'ANDRE_ÅRSAKER' ? p.arsakstekst : null;
+		tl.ReasonOther__c = p.arsakstekst;
 
 		return tl;
 	}

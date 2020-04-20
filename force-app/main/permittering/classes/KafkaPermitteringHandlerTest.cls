@@ -27,12 +27,13 @@ private without sharing class KafkaPermitteringHandlerTest {
 		msg2.CRM_Value__c = 'ewogICJpZCI6ICI1ZjYwMjdiZi0wNjA0LTRhY2YtODE2OC0wYzE2MTFmMzNjMGQiLAogICJiZWRyaWZ0c251bW1lciI6IDc3Nzc3Nzc3LAogICJzZW5kdElublRpZHNwdW5rdCI6ICIyMDIwLTAzLTE4VDEwOjE5OjMwLjM4MFoiLAogICJ0eXBlIjogIk1BU1NFT1BQU0lHRUxTRSIsCiAgImtvbnRha3ROYXZuIjogIlRvcmUgVG9yZXNlbiIsCiAgImtvbnRha3RUbGYiOiAiNjY3Nzg4OTkiLAogICJrb250YWt0RXBvc3QiOiAidG9yZS50b3Jlc2VuX2Zha2VAZXhhbXBsZS5jb20iLAogICJ2YXJzbGV0QW5zYXR0RGF0byI6ICIyMDIwLTAzLTE0IiwKICAidmFyc2xldE5hdkRhdG8iOiAiMjAyMC0wMy0xNCIsCiAgInN0YXJ0RGF0byI6ICIyMDIwLTAzLTE2IiwKICAic2x1dHREYXRvIjogIjIwMjAtMDktMjAiLAogICJmcml0ZWtzdCI6ICJMb3JlbSBpcHN1bSwgZG9yZW0gZGltc3VtIiwKICAiYW50YWxsQmVyb3J0ZSI6IDEyMwp9';
 		messages.add( msg2 );
 
-		insert messages;
-
 		List<TemporaryLayoff__c> layoffs = [SELECT Id FROM TemporaryLayoff__c];
 		System.assertEquals( 0, layoffs.size(), 'No messages added' );
 
+		KafkaPermitteringHandler perm = new KafkaPermitteringHandler();
+
 		Test.startTest();
+		perm.processMessages( messages );
 		Test.stopTest();
 
 		layoffs = [SELECT Id, Contact__c, Contact__r.AccountId, Account__c FROM TemporaryLayoff__c];
@@ -60,12 +61,14 @@ private without sharing class KafkaPermitteringHandlerTest {
 		msg.CRM_Topic__c = 'aapen-permittering-arbeidsgiver';
 		msg.CRM_Key__c = 'd60775ed-249f-49e6-bd15-ff790b56cc07';
 		msg.CRM_Value__c = 'ewogICJpZCI6ICI1ZjYwMjdiZi0wNjA0LTRhY2YtODE2OC0wYzE2MTFmMzNjMGQiLAogICJiZWRyaWZ0c251bW1lciI6IDc3Nzc3Nzc3LAogICJzZW5kdElublRpZHNwdW5rdCI6ICIyMDIwLTAzLTE4VDEwOjE5OjMwLjM4MFoiLAogICJ0eXBlIjogIk1BU1NFT1BQU0lHRUxTRSIsCiAgImtvbnRha3ROYXZuIjogIlRvcmUgVG9yw6VzZW4iLAogICJrb250YWt0VGxmIjogIjY2Nzc4ODk5IiwKICAia29udGFrdEVwb3N0IjogInRvcmUudG9yw6VzZW5AZXhhbXBsZS5jb20iLAogICJ2YXJzbGV0QW5zYXR0RGF0byI6ICIyMDIwLTAzLTE0IiwKICAidmFyc2xldE5hdkRhdG8iOiAiMjAyMC0wMy0xNCIsCiAgInN0YXJ0RGF0byI6ICIyMDIwLTAzLTE2IiwKICAic2x1dHREYXRvIjogIjIwMjAtMDktMjAiLAogICJmcml0ZWtzdCI6ICJMb3JlbSBpcHN1bSwgZG9yZW0gZGltc3VtIiwKICAiYW50YWxsQmVyb3J0ZSI6IDEyMwp9';
-		insert msg;
 
 		List<TemporaryLayoff__c> layoffs = [SELECT Id FROM TemporaryLayoff__c];
 		System.assertEquals( 0, layoffs.size(), 'No messages added' );
 
+		KafkaPermitteringHandler perm = new KafkaPermitteringHandler();
+
 		Test.startTest();
+		perm.processMessages( new List<KafkaMessage__c> { msg } );
 		Test.stopTest();
 
 		layoffs = [SELECT ContactEmail__c, Contact__r.Email, Contact__r.InvalidEmail__c FROM TemporaryLayoff__c];
@@ -89,12 +92,14 @@ private without sharing class KafkaPermitteringHandlerTest {
 		msg.CRM_Topic__c = 'aapen-permittering-arbeidsgiver';
 		msg.CRM_Key__c = 'd60775ed-249f-49e6-bd15-ff790b56cc07';
 		msg.CRM_Value__c = 'ewogICJpZCI6ICI1ZjYwMjdiZi0wNjA0LTRhY2YtODE2OC0wYzE2MTFmMzNjMGQiLAogICJiZWRyaWZ0c251bW1lciI6IDc3Nzc3Nzc3LAogICJzZW5kdElublRpZHNwdW5rdCI6ICIyMDIwLTAzLTE4VDEwOjE5OjMwLjM4MFoiLAogICJ0eXBlIjogIk1BU1NFT1BQU0lHRUxTRSIsCiAgImtvbnRha3ROYXZuIjogIlRvcmUgVG9yw6VzZW4iLAogICJrb250YWt0VGxmIjogIjY2Nzc4ODk5IiwKICAia29udGFrdEVwb3N0IjogInRvcmUudG9yw6VzZW5AZXhhbXBsZS5jb20iLAogICJ2YXJzbGV0QW5zYXR0RGF0byI6ICIyMDIwLTAzLTE0IiwKICAidmFyc2xldE5hdkRhdG8iOiAiMjAyMC0wMy0xNCIsCiAgInN0YXJ0RGF0byI6ICIyMDIwLTAzLTE2IiwKICAic2x1dHREYXRvIjogIjIwMjAtMDktMjAiLAogICJmcml0ZWtzdCI6ICJMb3JlbSBpcHN1bSwgZG9yZW0gZGltc3VtIiwKICAiYW50YWxsQmVyb3J0ZSI6IDEyMwp9';
-		insert msg;
 
 		List<TemporaryLayoff__c> layoffs = [SELECT Id FROM TemporaryLayoff__c];
 		System.assertEquals( 0, layoffs.size(), 'No messages added' );
 
+		KafkaPermitteringHandler perm = new KafkaPermitteringHandler();
+
 		Test.startTest();
+		perm.processMessages( new List<KafkaMessage__c> { msg } );
 		Test.stopTest();
 
 		layoffs = [SELECT ContactEmail__c, Contact__c, Contact__r.Email, Contact__r.InvalidEmail__c FROM TemporaryLayoff__c];
@@ -119,12 +124,14 @@ private without sharing class KafkaPermitteringHandlerTest {
 		msg.CRM_Topic__c = 'aapen-permittering-arbeidsgiver';
 		msg.CRM_Key__c = 'd60775ed-249f-49e6-bd15-ff790b56cc07';
 		msg.CRM_Value__c = 'ewogICJpZCI6ICI1ZjYwMjdiZi0wNjA0LTRhY2YtODE2OC0wYzE2MTFmMzNjMGQiLAogICJiZWRyaWZ0c251bW1lciI6IDk5OTk5OTk5LAogICJzZW5kdElublRpZHNwdW5rdCI6ICIyMDIwLTAzLTE4VDEwOjE5OjMwLjM4MFoiLAogICJ0eXBlIjogIk1BU1NFT1BQU0lHRUxTRSIsCiAgImtvbnRha3ROYXZuIjogIlRvcmUgVG9yZXNlbiIsCiAgImtvbnRha3RUbGYiOiAiNjY3Nzg4OTkiLAogICJrb250YWt0RXBvc3QiOiAidG9yZS50b3Jlc2VuQGV4YW1wbGUuY29tIiwKICAidmFyc2xldEFuc2F0dERhdG8iOiAiMjAyMC0wMy0xNCIsCiAgInZhcnNsZXROYXZEYXRvIjogIjIwMjAtMDMtMTQiLAogICJzdGFydERhdG8iOiAiMjAyMC0wMy0xNiIsCiAgInNsdXR0RGF0byI6ICIyMDIwLTA5LTIwIiwKICAiZnJpdGVrc3QiOiAiTG9yZW0gaXBzdW0sIGRvcmVtIGRpbXN1bSIsCiAgImFudGFsbEJlcm9ydGUiOiAxMjMKfQ==';
-		insert msg;
 
 		List<Contact> contacts = [SELECT Id FROM Contact];
 		System.assertEquals( 1, contacts.size(), 'Only one contact created' );
 
+		KafkaPermitteringHandler perm = new KafkaPermitteringHandler();
+
 		Test.startTest();
+		perm.processMessages( new List<KafkaMessage__c> { msg } );
 		Test.stopTest();
 
 		contacts = [SELECT Id FROM Contact];
