@@ -73,7 +73,7 @@ private without sharing class KafkaPermitteringHandler_HelperTest {
 		Account acc = new Account( Name = 'Test Employer 1', INT_OrganizationNumber__c = '920845908' );
 		insert acc;
 
-		Contact con = new Contact( LastName = 'test', FirstName = 'test', Email = 'ververvr@test.com', AccountId = acc.Id );
+		Contact con = new Contact( TAG_Informed__c = true, LastName = 'test', FirstName = 'test', Email = 'ververvr@test.com', AccountId = acc.Id );
 		insert con;
 
 		String testJson = KafkaPermitteringHandler_ModelTest.json;
@@ -99,6 +99,11 @@ private without sharing class KafkaPermitteringHandler_HelperTest {
 		System.assertEquals( 'ververvr@test.com', result[0].ContactEmail__c );
 		System.assertEquals( Date.newInstance( 2020, 03, 14 ), result[0].StartDate__c );
 		System.assertEquals( Date.newInstance( 2020, 04, 26 ), result[0].EndDate__c );
+		System.assertEquals( 'ANDRE_ÅRSAKER', result[0].Reason__c );
+		System.assertEquals( 'Corona-virus', result[0].ReasonOther__c );
+		System.assert ( result[0].Profession__c.split( ';' ).contains( 'Daglig leder' ) );
+		System.assert ( result[0].Profession__c.split( ';' ).contains( 'Kafemedarbeider' ) );
+		System.assertEquals( 'Har tidligere sendt inn permitteringsvarsel fra dag 1 (14. mars 2020). Dette er varsel om forlenging frem til 27, april 2020. ', result[0].OtherField__c );
 	}
 
 }

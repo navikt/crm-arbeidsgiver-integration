@@ -62,13 +62,22 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
 		if ( Date.today().year() == 2020 ) { tl.JsonPayload__c = p.jsonPayload; }
 
 		tl.NumberOfEmployees__c = p.antallBerorte;
-		tl.Type__c = p.type.replace( '_', ' ' );
+		tl.Type__c = p.type;
 		tl.ContactEmail__c = SharedIntegrationFunctions_Helper.checkIfValidEmail( p.kontaktEpost ) ? p.kontaktEpost : null;
 		tl.StartDate__c = p.startDato;
 		tl.EndDate__c = p.sluttDato;
 		tl.OtherComments__c = p.fritekst;
 
+		List<String> professions = new List<String>();
+		for ( KafkaPermitteringHandler_Model.Yrkeskategorier profession : p.yrkeskategorier ) {
+			professions.add( profession.label );
+		}
+
+		tl.OtherField__c = p.fritekst.split( '### Annet\\n' )[1];
+		tl.Profession__c = String.join( professions, ';' );
+		tl.Reason__c = p.arsakskode;
+		tl.ReasonOther__c = p.arsakskode == 'ANDRE_ÅRSAKER' ? p.arsakstekst : null;
+
 		return tl;
 	}
-
 }
