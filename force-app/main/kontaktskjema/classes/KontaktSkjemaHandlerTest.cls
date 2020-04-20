@@ -252,7 +252,7 @@ private without sharing class KontaktSkjemaHandlerTest {
 	private static void other_contactAlreadyExists() {
 
 		insert new Account( name = 'test', INT_OrganizationNumber__c = '960507878' );
-		Contact con = new Contact( lastName = 'TestEtternavn', Email = 'test@nav.no' );
+		Contact con = new Contact( TAG_Informed__c = true, lastName = 'TestEtternavn', Email = 'test@nav.no' );
 		insert con;
 
 		List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];

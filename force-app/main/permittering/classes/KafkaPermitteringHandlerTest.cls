@@ -10,7 +10,7 @@ private without sharing class KafkaPermitteringHandlerTest {
 		Account acc2 = new Account( Name = 'Test Employer 2', INT_OrganizationNumber__c = '77777777' );
 		insert acc2;
 
-		Contact con = new Contact( LastName = 'test', FirstName = 'test', Email = 'tore.toresen@example.com', AccountId = acc.Id );
+		Contact con = new Contact( TAG_Informed__c = true, LastName = 'test', FirstName = 'test', Email = 'tore.toresen@example.com', AccountId = acc.Id );
 		insert con;
 
 		// Create two KafkaMessages with Base64 encoded JSON-payloads matching two of the three inserted accounts
@@ -82,7 +82,7 @@ private without sharing class KafkaPermitteringHandlerTest {
 		Account acc = new Account( Name = 'Test Employer 1', INT_OrganizationNumber__c = '99999999' );
 		insert acc;
 
-		Contact con = new Contact( LastName = 'Toråsen', InvalidEmail__c = 'tore.toråsen@example.com' );
+		Contact con = new Contact( TAG_Informed__c = true, LastName = 'Toråsen', InvalidEmail__c = 'tore.toråsen@example.com' );
 		insert con;
 
 		KafkaMessage__c msg = new KafkaMessage__c();
@@ -112,7 +112,7 @@ private without sharing class KafkaPermitteringHandlerTest {
 		Account acc = new Account( Name = 'Test Employer', INT_OrganizationNumber__c = '77777777' );
 		insert acc;
 
-		Contact con = new Contact( LastName = 'test', FirstName = 'test', Email = 'TORE.toresen@example.com', AccountId = acc.Id );
+		Contact con = new Contact( TAG_Informed__c = true, LastName = 'test', FirstName = 'test', Email = 'TORE.toresen@example.com', AccountId = acc.Id );
 		insert con;
 
 		KafkaMessage__c msg = new KafkaMessage__c();
