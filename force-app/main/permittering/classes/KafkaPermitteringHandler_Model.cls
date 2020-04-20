@@ -121,14 +121,13 @@ public class KafkaPermitteringHandler_Model {
 		}
 	}
 
-	public KafkaPermitteringHandler_Model( String json ) {
-		parse( json );
-	}
-
 	public static KafkaPermitteringHandler_Model parse( String json ) {
 		System.JSONParser parser = System.JSON.createParser( json );
 
-		return new KafkaPermitteringHandler_Model( parser );
+		KafkaPermitteringHandler_Model p = new KafkaPermitteringHandler_Model( parser );
+		p.jsonPayload = json;
+
+		return p;
 	}
 
 	public static void consumeObject( System.JSONParser parser ) {
@@ -147,7 +146,7 @@ public class KafkaPermitteringHandler_Model {
 
 	private static List<Yrkeskategorier> arrayOfYrkeskategorier( System.JSONParser p ) {
 		List<Yrkeskategorier> res = new List<Yrkeskategorier>();
-		if ( p.getCurrentToken() == null ) p.nextToken();
+		if ( p.getCurrentToken() == null ) { p.nextToken(); }
 		while ( p.nextToken() != System.JSONToken.END_ARRAY ) {
 			res.add( new Yrkeskategorier( p ) );
 		}
@@ -157,7 +156,7 @@ public class KafkaPermitteringHandler_Model {
 
 	private static List<Bedrift> arrayOfBedrift( System.JSONParser p ) {
 		List<Bedrift> res = new List<Bedrift>();
-		if ( p.getCurrentToken() == null ) p.nextToken();
+		if ( p.getCurrentToken() == null ) { p.nextToken(); }
 		while ( p.nextToken() != System.JSONToken.END_ARRAY ) {
 			res.add( new Bedrift( p ) );
 		}

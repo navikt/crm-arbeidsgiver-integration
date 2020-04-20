@@ -43,6 +43,7 @@ public class KafkaPermitteringHandler_ModelTest {
 	static testMethod void testParse() {
 		KafkaPermitteringHandler_Model r = KafkaPermitteringHandler_Model.parse( json );
 		System.assert (r != null);
+		System.assertEquals( r.arsakskode, 'ANDRE_ÅRSAKER' );
 
 		json = '{\"TestAMissingObject\": { \"TestAMissingArray\": [ { \"TestAMissingProperty\": \"Some Value\" } ] } }';
 		KafkaPermitteringHandler_Model objKafkaPermitteringHandler_Model = new KafkaPermitteringHandler_Model( System.JSON.createParser( json ) );
