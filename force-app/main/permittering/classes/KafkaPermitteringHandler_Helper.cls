@@ -75,7 +75,7 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
 			}
 		}
 
-		tl.OtherField__c = p.fritekst.contains( '### Annet\\n' ) ? p.fritekst.split( '### Annet\\n' )[1] : null;
+		tl.OtherField__c = p.fritekst.contains( '### Annet' ) ? p.fritekst.split( '### Annet\\n' )[1] : null;
 		tl.Profession__c = String.join( professions, ';' );
 		tl.Reason__c = p.arsakskode;
 		tl.ReasonOther__c = p.arsakstekst;
