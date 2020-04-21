@@ -58,7 +58,7 @@ private without sharing class KafkaPermitteringHandler_HelperTest {
 		List<SharedIntegrationFunctions_Helper.ContactWrapper> result = KafkaPermitteringHandler_Helper.convertPermitteringToContactWrapper( permitteringer );
 		Test.StopTest();
 
-		System.assertEquals( 2, result.size(), 'Only one contact' );
+		System.assertEquals( 1, result.size(), 'Only one contact' );
 		System.assertEquals( 'test', result[0].firstName, 'firstName should be set from testJson' );
 		System.assertEquals( 'nav', result[0].lastName, 'lastName should be set from testJson' );
 		System.assertEquals( '920845908', result[0].companyNumber, 'companyNumber should be set from testJson' );
