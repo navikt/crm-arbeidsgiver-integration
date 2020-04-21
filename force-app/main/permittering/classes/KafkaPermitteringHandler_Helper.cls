@@ -1,40 +1,21 @@
 public inherited sharing class KafkaPermitteringHandler_Helper {
 
-	public class Permittering {
-		String id;
-		String bedriftsnummer;
-		Datetime sendtInnTidspunkt;
-		String type;
-		String kontaktNavn;
-		String kontaktTlf;
-		String kontaktEpost;
-		Date varsletAnsattDato;
-		Date varsletNavDato;
-		Date startDato;
-		Date sluttDato;
-		String fritekst;
-		Integer antallBerorte;
-
-		String jsonPayload;
-	}
-
-	public static List<String> getOrgNumbersFromPermittering( List<Permittering> permitteringer ) {
+	public static List<String> getOrgNumbersFromPermittering( List<KafkaPermitteringHandler_Model> permitteringer ) {
 		List<String> organisationNumbers = new List<String>();
-		for ( Permittering p : permitteringer ) {
+		for ( KafkaPermitteringHandler_Model p : permitteringer ) {
 			organisationNumbers.add( p.bedriftsnummer );
 		}
 
 		return organisationNumbers;
 	}
 
-	public static List<Permittering> convertKafkaToPermittering( List<KafkaMessage__c> messages ) {
-		List<Permittering> permitteringer = new List<Permittering>();
+	public static List<KafkaPermitteringHandler_Model> convertKafkaToPermittering( List<KafkaMessage__c> messages ) {
+		List<KafkaPermitteringHandler_Model> permitteringer = new List<KafkaPermitteringHandler_Model>();
 		for ( KafkaMessage__c msg : messages ) {
 			try {
 				msg.CRM_IsProcessed__c = true;
 				String decodedValue = EncodingUtil.base64Decode( msg.CRM_Value__c ).toString();
-				Permittering p = (Permittering) JSON.deserialize( decodedValue, Permittering.class );
-				p.jsonPayload = decodedValue;
+				KafkaPermitteringHandler_Model p = KafkaPermitteringHandler_Model.parse( decodedValue );
 				permitteringer.add( p );
 			} catch ( Exception e ) {
 				msg.CRM_Error__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
@@ -44,10 +25,10 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
 		return permitteringer;
 	}
 
-	public static List<SharedIntegrationFunctions_Helper.ContactWrapper> convertPermitteringToContactWrapper( List<Permittering> permitteringer ) {
+	public static List<SharedIntegrationFunctions_Helper.ContactWrapper> convertPermitteringToContactWrapper( List<KafkaPermitteringHandler_Model> permitteringer ) {
 		List<SharedIntegrationFunctions_Helper.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions_Helper.ContactWrapper>();
 
-		for ( Permittering p : permitteringer ) {
+		for ( KafkaPermitteringHandler_Model p : permitteringer ) {
 			List<String> name = p.kontaktNavn.split( ' ' );
 			String lastName = name[name.size() - 1];
 			String firstName = p.kontaktNavn.removeEnd( ' ' + lastName );
@@ -63,16 +44,16 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
 		return wrapperList;
 	}
 
-	public static List<TemporaryLayoff__c> convertPermitteringToLayoff( List<Permittering> permitteringer, Map<String, Account> accountMap, Map<String, Contact> contactMap ) {
+	public static List<TemporaryLayoff__c> convertPermitteringToLayoff( List<KafkaPermitteringHandler_Model> permitteringer, Map<String, Account> accountMap, Map<String, Contact> contactMap ) {
 		List<TemporaryLayoff__c> layoffs = new List<TemporaryLayoff__c>();
-		for ( Permittering p : permitteringer ) {
+		for ( KafkaPermitteringHandler_Model p : permitteringer ) {
 			layoffs.add( jsonToTemporaryLayoff( p, accountMap, contactMap ) );
 		}
 
 		return layoffs;
 	}
 
-	public static TemporaryLayoff__c jsonToTemporaryLayoff( Permittering p, Map<String, Account> accountMap, Map<String, Contact> contactMap ) {
+	public static TemporaryLayoff__c jsonToTemporaryLayoff( KafkaPermitteringHandler_Model p, Map<String, Account> accountMap, Map<String, Contact> contactMap ) {
 
 		TemporaryLayoff__c tl = new TemporaryLayoff__c();
 
@@ -81,13 +62,24 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
 		if ( Date.today().year() == 2020 ) { tl.JsonPayload__c = p.jsonPayload; }
 
 		tl.NumberOfEmployees__c = p.antallBerorte;
-		tl.Type__c = p.type.replace( '_', ' ' );
+		tl.Type__c = p.type;
 		tl.ContactEmail__c = SharedIntegrationFunctions_Helper.checkIfValidEmail( p.kontaktEpost ) ? p.kontaktEpost : null;
 		tl.StartDate__c = p.startDato;
 		tl.EndDate__c = p.sluttDato;
 		tl.OtherComments__c = p.fritekst;
 
+		List<String> professions = new List<String>();
+		if ( p.yrkeskategorier != null ) {
+			for ( KafkaPermitteringHandler_Model.Yrkeskategorier profession : p.yrkeskategorier ) {
+				professions.add( profession.label );
+			}
+		}
+
+		tl.OtherField__c = p.fritekst.contains( '### Annet' ) ? p.fritekst.split( '### Annet\\n' )[1] : null;
+		tl.Profession__c = String.join( professions, ';' );
+		tl.Reason__c = p.arsakskode;
+		tl.ReasonOther__c = p.arsakstekst;
+
 		return tl;
 	}
-
 }

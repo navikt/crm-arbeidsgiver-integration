@@ -55,18 +55,11 @@ jobs:
 
       # Deploy source to scratch org
       - name: "Push source to scratch org"
-        run: "sfdx force:source:push"
-      
-      # # Assign permsets
-      # - name: "Assign permsets"
-      #   run: |
-      #     for row in $(cat config/ssdx-config.json | jq -r '.permsets_to_assign[]'); do
-      #     sfdx force:user:permset:assign -n ${row}
-      #     done
+        run: sfdx force:source:push 
 
       # Run Apex tests in scratch org
       - name: "Run Apex tests"
-        run: "sfdx force:apex:test:run -l RunLocalTests -c -r human -d ./tests/apex -w 30"
+        run: sfdx force:source:deploy -m ApexClass --testlevel=RunLocalTests --checkonly
 
       # Delete scratch orgs
       - name: "Delete scratch org"

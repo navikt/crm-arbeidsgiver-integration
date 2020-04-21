@@ -2,7 +2,7 @@ public inherited sharing class KafkaPermitteringHandler implements IKafkaMessage
 
 	public void processMessages( List<KafkaMessage__c> messages ) {
 
-		List<KafkaPermitteringHandler_Helper.Permittering> permitteringer = KafkaPermitteringHandler_Helper.convertKafkaToPermittering( messages );
+		List<KafkaPermitteringHandler_Model> permitteringer = KafkaPermitteringHandler_Helper.convertKafkaToPermittering( messages );
 		List<String> organisationNumbers = KafkaPermitteringHandler_Helper.getOrgNumbersFromPermittering( permitteringer );
 		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( organisationNumbers );
 
@@ -14,7 +14,6 @@ public inherited sharing class KafkaPermitteringHandler implements IKafkaMessage
 
 		// create SObject version of layoff
 		List<TemporaryLayoff__c> layoffs = KafkaPermitteringHandler_Helper.convertPermitteringToLayoff( permitteringer, accountMap, contactMap );
-
 		insert layoffs;
 	}
 }

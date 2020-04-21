@@ -15,7 +15,7 @@ private without sharing class SharedIntegrationFunctionsTest {
 		Account acc2 = new Account( Name = 'Test Employer 2', INT_OrganizationNumber__c = '77777777' );
 		insert acc2;
 
-		Contact con = new Contact( LastName = 'test', FirstName = 'test', Email = 'tore.toresen@example.com', AccountId = acc.Id );
+		Contact con = new Contact( TAG_Informed__c = true, LastName = 'test', FirstName = 'test', Email = 'tore.toresen@example.com', AccountId = acc.Id );
 		insert con;
 
 		Test.StartTest();
@@ -65,7 +65,7 @@ private without sharing class SharedIntegrationFunctionsTest {
 		Account acc2 = new Account( Name = 'Test Employer 1', INT_OrganizationNumber__c = '677777' );
 		insert acc2;
 
-		Contact con = new Contact( LastName = 'test', FirstName = 'test', AccountId = acc.Id );
+		Contact con = new Contact( TAG_Informed__c = true, LastName = 'test', FirstName = 'test', AccountId = acc.Id );
 		insert con;
 
 		List<SharedIntegrationFunctions_Helper.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions_Helper.ContactWrapper>();
@@ -169,7 +169,7 @@ private without sharing class SharedIntegrationFunctionsTest {
 		Account acc = new Account( Name = 'Test Employer 1', INT_OrganizationNumber__c = '99999999' );
 		insert acc;
 
-		Contact con = new Contact( LastName = 'Toråsen', InvalidEmail__c = 'test @domain.com', AccountId = acc.Id );
+		Contact con = new Contact( TAG_Informed__c = true, LastName = 'Toråsen', InvalidEmail__c = 'test @domain.com', AccountId = acc.Id );
 		insert con;
 
 		List<SharedIntegrationFunctions_Helper.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions_Helper.ContactWrapper>();
@@ -208,7 +208,7 @@ private without sharing class SharedIntegrationFunctionsTest {
 		Account acc = new Account( Name = 'Test Employer 1', INT_OrganizationNumber__c = '99999999' );
 		insert acc;
 
-		Contact con = new Contact( LastName = 'test', FirstName = 'test', Email = 'test@test.com', AccountId = acc.Id );
+		Contact con = new Contact( TAG_Informed__c = true, LastName = 'test', FirstName = 'test', Email = 'test@test.com', AccountId = acc.Id );
 		insert con;
 
 		List<SharedIntegrationFunctions_Helper.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions_Helper.ContactWrapper>();
@@ -241,7 +241,7 @@ private without sharing class SharedIntegrationFunctionsTest {
 		Account acc2 = new Account( Name = 'Test Employer 2', INT_OrganizationNumber__c = '77777777' );
 		insert acc2;
 
-		Contact con = new Contact( LastName = 'test', FirstName = 'test', Email = 'test@test.com', AccountId = acc.Id );
+		Contact con = new Contact( TAG_Informed__c = true, LastName = 'test', FirstName = 'test', Email = 'test@test.com', AccountId = acc.Id );
 		insert con;
 
 		List<SharedIntegrationFunctions_Helper.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions_Helper.ContactWrapper>();
@@ -277,7 +277,7 @@ private without sharing class SharedIntegrationFunctionsTest {
 		Account acc3 = new Account( Name = 'Test Employer 2', INT_OrganizationNumber__c = '4444' );
 		insert acc3;
 
-		Contact con = new Contact( LastName = 'test', FirstName = 'test', Email = 'test@test.com', AccountId = acc.Id );
+		Contact con = new Contact( TAG_Informed__c = true, LastName = 'test', FirstName = 'test', Email = 'test@test.com', AccountId = acc.Id );
 		insert con;
 
 		List<SharedIntegrationFunctions_Helper.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions_Helper.ContactWrapper>();
@@ -320,10 +320,10 @@ private without sharing class SharedIntegrationFunctionsTest {
 		Account acc2 = new Account( Name = 'Test Employer 2', INT_OrganizationNumber__c = '4444' );
 		insert acc2;
 
-		Contact con = new Contact( LastName = 'test', FirstName = 'test', Email = 'test@test.com', AccountId = acc.Id );
+		Contact con = new Contact( TAG_Informed__c = true, LastName = 'test', FirstName = 'test', Email = 'test@test.com', AccountId = acc.Id );
 		insert con;
 
-		Contact con2 = new Contact( LastName = 'test', FirstName = 'test', Email = 'test_new@test.com', AccountId = acc2.Id );
+		Contact con2 = new Contact( TAG_Informed__c = true, LastName = 'test', FirstName = 'test', Email = 'test_new@test.com', AccountId = acc2.Id );
 		insert con2;
 
 		Account acc3 = new Account( Name = 'Test Employer 1', INT_OrganizationNumber__c = '9999999' );
@@ -369,7 +369,7 @@ private without sharing class SharedIntegrationFunctionsTest {
 		Account acc = new Account( Name = 'Test Employer 1', INT_OrganizationNumber__c = '99999999' );
 		insert acc;
 
-		Contact con = new Contact( LastName = 'test', FirstName = 'test', Email = 'test@test.com', AccountId = acc.Id );
+		Contact con = new Contact( TAG_Informed__c = true, LastName = 'test', FirstName = 'test', Email = 'test@test.com', AccountId = acc.Id );
 		insert con;
 
 		List<SharedIntegrationFunctions_Helper.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions_Helper.ContactWrapper>();
