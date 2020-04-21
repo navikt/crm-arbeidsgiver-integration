@@ -105,4 +105,28 @@ private without sharing class KafkaPermitteringHandler_HelperTest {
 		System.assertEquals( 'Har tidligere sendt inn permitteringsvarsel fra dag 1 (14. mars 2020). Dette er varsel om forlenging frem til 27, april 2020. ', result[0].OtherField__c );
 	}
 
+	@isTest
+	private static void testConvertPermitteringToLayoff_EmptyAnnet() {
+
+		String b64String = 'ewogICJpZCIgOiAiYTIwMzY4MGQtZDUyYS00Y2EwLTk2ODctMzUzMzE3YmJlYmIzIiwKICAiYmVkcmlmdHNudW1tZXIiIDogIjkxMDgyNTUxOCIsCiAgInNlbmR0SW5uVGlkc3B1bmt0IiA6ICIyMDIwLTA0LTIxVDEwOjM3OjU1Ljk2NjU4OFoiLAogICJ0eXBlIiA6ICJQRVJNSVRURVJJTkdfVVRFTl9Mw5hOTiIsCiAgImtvbnRha3ROYXZuIiA6ICJiZW5kaWsgdGVzdCBmb3Igam9obiAyIiwKICAia29udGFrdFRsZiIgOiAiMTIzNDU2NzgiLAogICJrb250YWt0RXBvc3QiIDogImJlbm55QGJhem9va2EuY29tIiwKICAidmFyc2xldEFuc2F0dERhdG8iIDogIjIwMjAtMDQtMjEiLAogICJ2YXJzbGV0TmF2RGF0byIgOiAiMjAyMC0wNC0yMSIsCiAgInN0YXJ0RGF0byIgOiAiMjAyMC0wNC0xMyIsCiAgImZyaXRla3N0IiA6ICJcbiMjIyDDhXJzYWtcbkJyYW5uXG4jIyMgWXJrZXJcbktva2sgKHNraXApXG4jIyMgQW5uZXRcbiIsCiAgImFudGFsbEJlcm9ydGUiIDogMTMzOCwKICAiw6Vyc2Frc2tvZGUiIDogIkJSQU5OIiwKICAieXJrZXNrYXRlZ29yaWVyIiA6IFsgewogICAgImtvbnNlcHRJZCIgOiAyMTg0NCwKICAgICJzdHlyazA4IiA6ICI1MTIwIiwKICAgICJsYWJlbCIgOiAiS29rayAoc2tpcCkiCiAgfSBdCn0';
+		String testJson = EncodingUtil.base64Decode( b64String ).toString();
+
+		List<KafkaPermitteringHandler_Model> permitteringer = new List<KafkaPermitteringHandler_Model>  { KafkaPermitteringHandler_Model.parse( testJson ) };
+
+		List<String> organisationNumbers = KafkaPermitteringHandler_Helper.getOrgNumbersFromPermittering( permitteringer );
+		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( organisationNumbers );
+
+		List<SharedIntegrationFunctions_Helper.ContactWrapper> wrapperList = KafkaPermitteringHandler_Helper.convertPermitteringToContactWrapper( permitteringer );
+		Map<String, Contact> contactMap = SharedIntegrationFunctions.fetchOrCreateContact( wrapperList, accountMap );
+
+		Test.StartTest();
+		List<TemporaryLayoff__c> result = KafkaPermitteringHandler_Helper.convertPermitteringToLayoff( permitteringer, accountMap, contactMap );
+		Test.StopTest();
+
+		System.assertEquals( 1, result.size(), 'Only one permittering' );
+
+		System.assertEquals( 1338, result[0].NumberOfEmployees__c );
+		System.assertEquals( null, result[0].OtherField__c );
+	}
+
 }
