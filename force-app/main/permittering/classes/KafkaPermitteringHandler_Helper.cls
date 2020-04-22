@@ -61,6 +61,7 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
 		if ( contactMap.containsKey( p.kontaktEpost ) ) { tl.Contact__c = contactMap.get( p.kontaktEpost ).Id; }
 		if ( Date.today().year() == 2020 ) { tl.JsonPayload__c = p.jsonPayload; }
 
+		tl.KafkaId__c = p.id;
 		tl.NumberOfEmployees__c = p.antallBerorte;
 		tl.Type__c = p.type;
 		tl.ContactEmail__c = SharedIntegrationFunctions_Helper.checkIfValidEmail( p.kontaktEpost ) ? p.kontaktEpost : null;
