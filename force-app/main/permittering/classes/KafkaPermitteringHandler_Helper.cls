@@ -14,7 +14,7 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
 		for ( KafkaMessage__c msg : messages ) {
 			try {
 				msg.CRM_IsProcessed__c = true;
-				String decodedValue = EncodingUtil.base64Decode( msg.CRM_Value__c ).toString();
+				String decodedValue = KafkaMessageUtils.base64ULSafeDecode( msg.CRM_Value__c ).toString();
 				KafkaPermitteringHandler_Model p = KafkaPermitteringHandler_Model.parse( decodedValue );
 				permitteringer.add( p );
 			} catch ( Exception e ) {

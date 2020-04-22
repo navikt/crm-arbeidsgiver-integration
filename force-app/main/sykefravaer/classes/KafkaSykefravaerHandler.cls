@@ -5,7 +5,7 @@ public inherited sharing class KafkaSykefravaerHandler implements IKafkaMessageC
         for (KafkaMessage__c msg : messages) {
             try {
                 msg.CRM_IsProcessed__c = true;
-                String decodedValue = EncodingUtil.base64Decode(msg.CRM_Value__c).toString();
+                String decodedValue = KafkaMessageUtils.base64ULSafeDecode(msg.CRM_Value__c).toString();
                 PotensieltDagsverk pd = (PotensieltDagsverk) JSON.deserialize(decodedValue, KafkaSykefravaerHandler.PotensieltDagsverk.class);
                 pdByOrgNumber.put(pd.orgnr, pd);
             } catch (Exception e) {
