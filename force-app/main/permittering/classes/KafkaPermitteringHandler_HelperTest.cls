@@ -154,7 +154,7 @@ private without sharing class KafkaPermitteringHandler_HelperTest {
 		List<TemporaryLayoff__c> layoffs = KafkaPermitteringHandler_Helper.removeExistingTempLayoffs( new List<TemporaryLayoff__c> { tl2 } );
 		Test.StopTest();
 
-		System.assertEquals( 1, layoffs.size(), 'Same KafkaId, thus, it shouldn\'t be added' );
+		System.assertEquals( 1, layoffs.size(), 'Different KafkaId, thus, it should be added' );
 	}
 
 }
