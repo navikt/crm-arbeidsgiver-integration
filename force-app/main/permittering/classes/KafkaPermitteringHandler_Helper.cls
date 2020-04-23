@@ -1,14 +1,5 @@
 public inherited sharing class KafkaPermitteringHandler_Helper {
 
-	public static List<String> getOrgNumbersFromPermittering( List<KafkaPermitteringHandler_Model> permitteringer ) {
-		List<String> organisationNumbers = new List<String>();
-		for ( KafkaPermitteringHandler_Model p : permitteringer ) {
-			organisationNumbers.add( p.bedriftsnummer );
-		}
-
-		return organisationNumbers;
-	}
-
 	public static List<KafkaPermitteringHandler_Model> convertKafkaToPermittering( List<KafkaMessage__c> messages ) {
 		List<KafkaPermitteringHandler_Model> permitteringer = new List<KafkaPermitteringHandler_Model>();
 		for ( KafkaMessage__c msg : messages ) {
@@ -23,6 +14,15 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
 		}
 
 		return permitteringer;
+	}
+
+	public static List<String> getOrgNumbersFromPermittering( List<KafkaPermitteringHandler_Model> permitteringer ) {
+		List<String> organisationNumbers = new List<String>();
+		for ( KafkaPermitteringHandler_Model p : permitteringer ) {
+			organisationNumbers.add( p.bedriftsnummer );
+		}
+
+		return organisationNumbers;
 	}
 
 	public static List<SharedIntegrationFunctions_Helper.ContactWrapper> convertPermitteringToContactWrapper( List<KafkaPermitteringHandler_Model> permitteringer ) {
