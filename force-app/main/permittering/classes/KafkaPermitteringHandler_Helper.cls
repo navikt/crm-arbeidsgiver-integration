@@ -89,4 +89,30 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
 
 		return tl;
 	}
+
+	public static List<TemporaryLayoff__c> removeExistingTempLayoffs( List<TemporaryLayoff__c> layoffs ) {
+
+		Set<String> uuids = new Set<String>();
+
+		for ( TemporaryLayoff__c layoff : layoffs ) {
+			uuids.add( layoff.KafkaId__c );
+		}
+
+		Map<String, TemporaryLayoff__c> existingLayoffMap = new Map<String, TemporaryLayoff__c>();
+		List<TemporaryLayoff__c> existingLayoffs = [SELECT Id, KafkaId__c FROM TemporaryLayoff__c WHERE KafkaId__c IN : uuids];
+		for ( TemporaryLayoff__c layoff : existingLayoffs ) {
+			existingLayoffMap.put( layoff.KafkaId__c, layoff );
+		}
+
+		Integer i = 0;
+		while ( i < layoffs.size() ) {
+			if ( existingLayoffMap.containsKey( layoffs.get( i ).KafkaId__c ) ) {
+				layoffs.remove( i );
+			}
+			i++;
+		}
+
+		return layoffs;
+
+	}
 }

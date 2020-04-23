@@ -96,6 +96,47 @@ private without sharing class KafkaPermitteringHandlerTest {
 	}
 
 	@IsTest
+	public static void testHandleMessages_insertDuplicate() {
+
+		Account acc = new Account( Name = 'Test Employer 1', INT_OrganizationNumber__c = '99999999' );
+		insert acc;
+
+		Contact con = new Contact( TAG_Informed__c = true, LastName = 'test', FirstName = 'test', Email = 'tore.toresen@example.com', AccountId = acc.Id );
+		insert con;
+
+		// Create two KafkaMessages with Base64 encoded JSON-payloads matching two of the three inserted accounts
+		KafkaMessage__c msg1 = new KafkaMessage__c();
+		msg1.CRM_Topic__c = 'aapen-permittering-arbeidsgiver';
+		msg1.CRM_Key__c = 'd60775ed-249f-49e6-bd15-ff790b56cc07';
+		msg1.CRM_Value__c = 'ewogICJhbnRhbGxCZXJvcnRlIjogMiwKICAiYmVkcmlmdHNudW1tZXIiOiAiOTk5OTk5OTkiLAogICJmcml0ZWtzdCI6ICJcbiMjIyDDhXJzYWtcbkNvcm9uYS12aXJ1c1xuIyMjIFlya2VyXG5TZWxnZXIsIERhZ2xpZyBsZWRlciIsCiAgImlkIjogIjJkNzI3Y2ViLWYzZjEtNDE2NS1hMTQ2LTJhMjY2NWQ2NDQ0MSIsCiAgImtvbnRha3RFcG9zdCI6ICJ0b3JlLnRvcmVzZW5AZXhhbXBsZS5jb20iLAogICJrb250YWt0TmF2biI6ICJUb3JlIFRvcmVzZW4iLAogICJrb250YWt0VGxmIjogIjkwMDgwMDkwMCIsCiAgInNlbmR0SW5uVGlkc3B1bmt0IjogIjIwMjAtMDQtMTlUMTY6MDI6MjIuMDMzNDIwWiIsCiAgInNsdXR0RGF0byI6ICIyMDIwLTA0LTI2IiwKICAic3RhcnREYXRvIjogIjIwMjAtMDMtMTQiLAogICJ0eXBlIjogIlBFUk1JVFRFUklOR19VVEVOX0zDmE5OIiwKICAidmFyc2xldEFuc2F0dERhdG8iOiAiMjAyMC0wNC0xOSIsCiAgInZhcnNsZXROYXZEYXRvIjogIjIwMjAtMDQtMTkiLAogICJ5cmtlc2thdGVnb3JpZXIiOiBbCiAgICB7CiAgICAgICJrb25zZXB0SWQiOiA3MDAyOSwKICAgICAgImxhYmVsIjogIlNlbGdlciIsCiAgICAgICJzdHlyazA4IjogIjUyNDYiCiAgICB9LAogICAgewogICAgICAia29uc2VwdElkIjogNzAwMjksCiAgICAgICJsYWJlbCI6ICJLb25zdWxlbnQiLAogICAgICAic3R5cmswOCI6ICI1MjQ2IgogICAgfSwKICAgIHsKICAgICAgImtvbnNlcHRJZCI6IDMxMzgwOCwKICAgICAgImxhYmVsIjogIkRhZ2xpZyBsZWRlciIsCiAgICAgICJzdHlyazA4IjogIjExMjAiCiAgICB9CiAgXSwKICAiw6Vyc2Frc2tvZGUiOiAiTUFOR0VMX1DDhV9BUkJFSUQiCn0=';
+		insert msg1;
+
+		List<TemporaryLayoff__c> result = [SELECT Id FROM TemporaryLayoff__c];
+		System.assertEquals( 0, result.size(), 'No messages added' );
+
+		Test.startTest();
+		Test.stopTest();
+
+		result = [SELECT Id FROM TemporaryLayoff__c];
+		System.assertEquals( 1, result.size(), 'one layoffs' );
+
+
+		List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
+		KafkaMessage__c msg2 = new KafkaMessage__c();
+		msg2.CRM_Topic__c = 'aapen-permittering-arbeidsgiver';
+		msg2.CRM_Key__c = 'd60775ed-249f-49e6-bd15-ff790b56cc07';
+		msg2.CRM_Value__c = 'ewogICJhbnRhbGxCZXJvcnRlIjogMiwKICAiYmVkcmlmdHNudW1tZXIiOiAiOTk5OTk5OTkiLAogICJmcml0ZWtzdCI6ICJcbiMjIyDDhXJzYWtcbkNvcm9uYS12aXJ1c1xuIyMjIFlya2VyXG5TZWxnZXIsIERhZ2xpZyBsZWRlciIsCiAgImlkIjogIjJkNzI3Y2ViLWYzZjEtNDE2NS1hMTQ2LTJhMjY2NWQ2NDQ0MSIsCiAgImtvbnRha3RFcG9zdCI6ICJ0b3JlLnRvcmVzZW5AZXhhbXBsZS5jb20iLAogICJrb250YWt0TmF2biI6ICJUb3JlIFRvcmVzZW4iLAogICJrb250YWt0VGxmIjogIjkwMDgwMDkwMCIsCiAgInNlbmR0SW5uVGlkc3B1bmt0IjogIjIwMjAtMDQtMTlUMTY6MDI6MjIuMDMzNDIwWiIsCiAgInNsdXR0RGF0byI6ICIyMDIwLTA0LTI2IiwKICAic3RhcnREYXRvIjogIjIwMjAtMDMtMTQiLAogICJ0eXBlIjogIlBFUk1JVFRFUklOR19VVEVOX0zDmE5OIiwKICAidmFyc2xldEFuc2F0dERhdG8iOiAiMjAyMC0wNC0xOSIsCiAgInZhcnNsZXROYXZEYXRvIjogIjIwMjAtMDQtMTkiLAogICJ5cmtlc2thdGVnb3JpZXIiOiBbCiAgICB7CiAgICAgICJrb25zZXB0SWQiOiA3MDAyOSwKICAgICAgImxhYmVsIjogIlNlbGdlciIsCiAgICAgICJzdHlyazA4IjogIjUyNDYiCiAgICB9LAogICAgewogICAgICAia29uc2VwdElkIjogNzAwMjksCiAgICAgICJsYWJlbCI6ICJLb25zdWxlbnQiLAogICAgICAic3R5cmswOCI6ICI1MjQ2IgogICAgfSwKICAgIHsKICAgICAgImtvbnNlcHRJZCI6IDMxMzgwOCwKICAgICAgImxhYmVsIjogIkRhZ2xpZyBsZWRlciIsCiAgICAgICJzdHlyazA4IjogIjExMjAiCiAgICB9CiAgXSwKICAiw6Vyc2Frc2tvZGUiOiAiTUFOR0VMX1DDhV9BUkJFSUQiCn0=';
+		messages.add( msg2 );
+
+		KafkaPermitteringHandler perm = new KafkaPermitteringHandler();
+		perm.processMessages( messages );
+
+		result = [SELECT Id FROM TemporaryLayoff__c];
+		System.assertEquals( 1, result.size(), 'still one layoffs' );
+
+	}
+
+	@IsTest
 	public static void testHandleMessages_invalidEmail() {
 
 		Account acc = new Account( Name = 'Test Employer 1', INT_OrganizationNumber__c = '99999999' );

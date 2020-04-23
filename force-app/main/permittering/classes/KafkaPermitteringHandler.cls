@@ -14,6 +14,9 @@ public inherited sharing class KafkaPermitteringHandler implements IKafkaMessage
 
 		// create SObject version of layoff
 		List<TemporaryLayoff__c> layoffs = KafkaPermitteringHandler_Helper.convertPermitteringToLayoff( permitteringer, accountMap, contactMap );
+
+		layoffs = KafkaPermitteringHandler_Helper.removeExistingTempLayoffs( layoffs );
+
 		insert layoffs;
 	}
 }
