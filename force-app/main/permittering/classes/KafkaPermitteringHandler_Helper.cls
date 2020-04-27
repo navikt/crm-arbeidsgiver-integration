@@ -56,9 +56,8 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
 	public static TemporaryLayoff__c jsonToTemporaryLayoff( KafkaPermitteringHandler_Model p, Map<String, Account> accountMap, Map<String, Contact> contactMap ) {
 
 		TemporaryLayoff__c tl = new TemporaryLayoff__c();
-
 		if ( accountMap.containsKey( p.bedriftsnummer ) ) { tl.Account__c = accountMap.get( p.bedriftsnummer ).Id; }
-		if ( contactMap.containsKey( p.kontaktEpost ) ) { tl.Contact__c = contactMap.get( p.kontaktEpost ).Id; }
+		if ( contactMap.containsKey( p.kontaktEpost.toLowerCase() ) ) { tl.Contact__c = contactMap.get( p.kontaktEpost.toLowerCase() ).Id; }
 		if ( Date.today().year() == 2020 ) { tl.JsonPayload__c = p.jsonPayload; }
 
 		tl.KafkaId__c = p.id;

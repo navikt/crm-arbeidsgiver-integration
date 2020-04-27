@@ -235,7 +235,7 @@ private without sharing class KafkaPermitteringHandlerTest {
 		KafkaMessage__c msg = new KafkaMessage__c();
 		msg.CRM_Topic__c = 'aapen-permittering-arbeidsgiver';
 		msg.CRM_Key__c = 'd60775ed-249f-49e6-bd15-ff790b56cc07';
-		msg.CRM_Value__c = 'ewogICJpZCI6ICI1ZjYwMjdiZi0wNjA0LTRhY2YtODE2OC0wYzE2MTFmMzNjMGQiLAogICJiZWRyaWZ0c251bW1lciI6IDk5OTk5OTk5LAogICJzZW5kdElublRpZHNwdW5rdCI6ICIyMDIwLTAzLTE4VDEwOjE5OjMwLjM4MFoiLAogICJ0eXBlIjogIk1BU1NFT1BQU0lHRUxTRSIsCiAgImtvbnRha3ROYXZuIjogIlRvcmUgVG9yZXNlbiIsCiAgImtvbnRha3RUbGYiOiAiNjY3Nzg4OTkiLAogICJrb250YWt0RXBvc3QiOiAidG9yZS50b3Jlc2VuQGV4YW1wbGUuY29tIiwKICAidmFyc2xldEFuc2F0dERhdG8iOiAiMjAyMC0wMy0xNCIsCiAgInZhcnNsZXROYXZEYXRvIjogIjIwMjAtMDMtMTQiLAogICJzdGFydERhdG8iOiAiMjAyMC0wMy0xNiIsCiAgInNsdXR0RGF0byI6ICIyMDIwLTA5LTIwIiwKICAiZnJpdGVrc3QiOiAiTG9yZW0gaXBzdW0sIGRvcmVtIGRpbXN1bSIsCiAgImFudGFsbEJlcm9ydGUiOiAxMjMKfQ==';
+		msg.CRM_Value__c = 'ewogICJpZCI6ICI1ZjYwMjdiZi0wNjA0LTRhY2YtODE2OC0wYzE2MTFmMzNjMGQiLAogICJiZWRyaWZ0c251bW1lciI6IDk5OTk5OTk5LAogICJzZW5kdElublRpZHNwdW5rdCI6ICIyMDIwLTAzLTE4VDEwOjE5OjMwLjM4MFoiLAogICJ0eXBlIjogIk1BU1NFT1BQU0lHRUxTRSIsCiAgImtvbnRha3ROYXZuIjogIlRvcmUgVG9yZXNlbiIsCiAgImtvbnRha3RUbGYiOiAiNjY3Nzg4OTkiLAogICJrb250YWt0RXBvc3QiOiAiVG9yZS50b3Jlc2VuQGV4YW1wbGUuY29tIiwKICAidmFyc2xldEFuc2F0dERhdG8iOiAiMjAyMC0wMy0xNCIsCiAgInZhcnNsZXROYXZEYXRvIjogIjIwMjAtMDMtMTQiLAogICJzdGFydERhdG8iOiAiMjAyMC0wMy0xNiIsCiAgInNsdXR0RGF0byI6ICIyMDIwLTA5LTIwIiwKICAiZnJpdGVrc3QiOiAiTG9yZW0gaXBzdW0sIGRvcmVtIGRpbXN1bSIsCiAgImFudGFsbEJlcm9ydGUiOiAxMjMKfQ==';
 
 		List<Contact> contacts = [SELECT Id FROM Contact];
 		System.assertEquals( 1, contacts.size(), 'Only one contact created' );
@@ -248,5 +248,9 @@ private without sharing class KafkaPermitteringHandlerTest {
 
 		contacts = [SELECT Id FROM Contact];
 		System.assertEquals( 1, contacts.size(), 'Still only one contact created' );
+
+		List<TemporaryLayoff__c> layoffs = [SELECT ContactEmail__c, Contact__c, Contact__r.Email, Contact__r.InvalidEmail__c FROM TemporaryLayoff__c];
+		System.assertEquals( con.Id, layoffs[0].Contact__c, 'Contact should be existing contact' );
+
 	}
 }
