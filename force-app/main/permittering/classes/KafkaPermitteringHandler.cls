@@ -13,11 +13,12 @@ public inherited sharing class KafkaPermitteringHandler implements IKafkaMessage
 		Map<String, Contact> contactMap = SharedIntegrationFunctions.fetchOrCreateContact( wrapperList, accountMap );
 
 		// create SObject version of layoff
-		List<TemporaryLayoff__c> layoffs = KafkaPermitteringHandler_Helper.convertPermitteringToLayoff( permitteringer, accountMap, contactMap );
+		KafkaPermitteringHandler_Helper.LayoffWrapper resultWrapper = KafkaPermitteringHandler_Helper.convertPermitteringToLayoff( permitteringer, accountMap, contactMap );
 
-		layoffs = KafkaPermitteringHandler_Helper.removeExistingTempLayoffs( layoffs );
-		layoffs = KafkaPermitteringHandler_Helper.removeDuplicateTempLayoffsInList( layoffs );
+		// layoffs = KafkaPermitteringHandler_Helper.removeExistingTempLayoffs( layoffs );
+		// layoffs = KafkaPermitteringHandler_Helper.removeDuplicateTempLayoffsInList( layoffs );
 
-		insert layoffs;
+		insert resultWrapper.layoffs;
+		insert resultWrapper.layoffJunction;
 	}
 }

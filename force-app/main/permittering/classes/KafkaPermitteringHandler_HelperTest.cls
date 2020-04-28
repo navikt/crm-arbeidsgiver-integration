@@ -11,7 +11,7 @@ private without sharing class KafkaPermitteringHandler_HelperTest {
 		List<String> orgNumbers = KafkaPermitteringHandler_Helper.getOrgNumbersFromPermittering( permitteringer );
 		Test.StopTest();
 
-		System.assertEquals( 1, orgNumbers.size(), 'Only one json sent in' );
+		System.assertEquals( 3, orgNumbers.size(), 'Only one json sent in, but contains two subsidiaries as well' );
 		System.assertEquals( '920845908', orgNumbers[0], 'Only one json sent in' );
 	}
 
@@ -71,7 +71,9 @@ private without sharing class KafkaPermitteringHandler_HelperTest {
 	private static void testConvertPermitteringToLayoff() {
 
 		Account acc = new Account( Name = 'Test Employer 1', INT_OrganizationNumber__c = '920845908' );
-		insert acc;
+		Account sub1 = new Account( Name = 'Subsidiary 1', INT_OrganizationNumber__c = '12345678' );
+		Account sub2 = new Account( Name = 'Subsidiary 1', INT_OrganizationNumber__c = '87654321' );
+		insert new List<Account> { acc, sub1, sub2 };
 
 		Contact con = new Contact( TAG_Informed__c = true, LastName = 'test', FirstName = 'test', Email = 'ververvr@test.com', AccountId = acc.Id );
 		insert con;
@@ -86,8 +88,21 @@ private without sharing class KafkaPermitteringHandler_HelperTest {
 		Map<String, Contact> contactMap = SharedIntegrationFunctions.fetchOrCreateContact( wrapperList, accountMap );
 
 		Test.StartTest();
-		List<TemporaryLayoff__c> result = KafkaPermitteringHandler_Helper.convertPermitteringToLayoff( permitteringer, accountMap, contactMap );
+		KafkaPermitteringHandler_Helper.LayoffWrapper resultWrapper = KafkaPermitteringHandler_Helper.convertPermitteringToLayoff( permitteringer, accountMap, contactMap );
 		Test.StopTest();
+
+		List<TemporaryLayoff__c> result = resultWrapper.layoffs;
+		List<TemporaryLayoffJunction__c> resultJunction = resultWrapper.layoffJunction;
+
+		System.assertEquals( 2, resultJunction.size(), 'Two permittering subsidiaries' );
+		for ( TemporaryLayoffJunction__c lj : resultJunction ) {
+			System.assertEquals( result[0].Id, lj.TemporaryLayoff__c, 'Both junction records should have same parent' );
+			if ( lj.Account__c == sub1.Id ) {
+				System.assertEquals( 12, lj.NumberOfEmployees__c, '12 employees in subsidiary 1 is affected' );
+			} else if ( lj.Account__c == sub2.Id ) {
+				System.assertEquals( 124, lj.NumberOfEmployees__c, '12 employees in subsidiary 1 is affected' );
+			}
+		}
 
 		System.assertEquals( 1, result.size(), 'Only one permittering' );
 		System.assertEquals( Con.Id, result[0].Contact__c );
@@ -120,8 +135,10 @@ private without sharing class KafkaPermitteringHandler_HelperTest {
 		Map<String, Contact> contactMap = SharedIntegrationFunctions.fetchOrCreateContact( wrapperList, accountMap );
 
 		Test.StartTest();
-		List<TemporaryLayoff__c> result = KafkaPermitteringHandler_Helper.convertPermitteringToLayoff( permitteringer, accountMap, contactMap );
+		KafkaPermitteringHandler_Helper.LayoffWrapper resultWrapper = KafkaPermitteringHandler_Helper.convertPermitteringToLayoff( permitteringer, accountMap, contactMap );
 		Test.StopTest();
+
+		List<TemporaryLayoff__c> result = resultWrapper.layoffs;
 
 		System.assertEquals( 1, result.size(), 'Only one permittering' );
 

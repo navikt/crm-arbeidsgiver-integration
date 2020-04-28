@@ -1,5 +1,10 @@
 public inherited sharing class KafkaPermitteringHandler_Helper {
 
+	public class LayoffWrapper {
+		public List<TemporaryLayoff__c> layoffs;
+		public List<TemporaryLayoffJunction__c> layoffJunction;
+	}
+
 	public static List<KafkaPermitteringHandler_Model> convertKafkaToPermittering( List<KafkaMessage__c> messages ) {
 		List<KafkaPermitteringHandler_Model> permitteringer = new List<KafkaPermitteringHandler_Model>();
 		for ( KafkaMessage__c msg : messages ) {
@@ -20,6 +25,14 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
 		List<String> organisationNumbers = new List<String>();
 		for ( KafkaPermitteringHandler_Model p : permitteringer ) {
 			organisationNumbers.add( p.bedriftsnummer );
+
+			if ( p.bedrift != null ) {
+				for ( KafkaPermitteringHandler_Model.Bedrift subsidiary : p.bedrift ) {
+					if ( subsidiary.bedriftNr != null ) {
+						organisationNumbers.add( subsidiary.bedriftNr );
+					}
+				}
+			}
 		}
 
 		return organisationNumbers;
@@ -44,16 +57,53 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
 		return wrapperList;
 	}
 
-	public static List<TemporaryLayoff__c> convertPermitteringToLayoff( List<KafkaPermitteringHandler_Model> permitteringer, Map<String, Account> accountMap, Map<String, Contact> contactMap ) {
+	public static LayoffWrapper convertPermitteringToLayoff( List<KafkaPermitteringHandler_Model> permitteringer, Map<String, Account> accountMap, Map<String, Contact> contactMap ) {
+
+		LayoffWrapper lw = new LayoffWrapper();
 		List<TemporaryLayoff__c> layoffs = new List<TemporaryLayoff__c>();
+		List<TemporaryLayoffJunction__c> layoffJunctions = new List<TemporaryLayoffJunction__c>();
+
 		for ( KafkaPermitteringHandler_Model p : permitteringer ) {
-			layoffs.add( jsonToTemporaryLayoff( p, accountMap, contactMap ) );
+
+			Boolean onlySubsidiary = false;
+			if ( p.bedrift != null ) {
+				onlySubsidiary = p.bedrift.size() == 1;
+			}
+
+			TemporaryLayoff__c tl = jsonToTemporaryLayoff( p, accountMap, contactMap, onlySubsidiary );
+			layoffs.add( tl );
+
+			if ( p.bedrift != null && !onlySubsidiary ) {
+				layoffJunctions.addAll( jsonToTemporaryLayoffJunction( p, accountMap, tl ) );
+			}
 		}
 
-		return layoffs;
+		lw.layoffs = layoffs;
+		lw.layoffJunction = layoffJunctions;
+
+		return lw;
 	}
 
-	public static TemporaryLayoff__c jsonToTemporaryLayoff( KafkaPermitteringHandler_Model p, Map<String, Account> accountMap, Map<String, Contact> contactMap ) {
+	public static List<TemporaryLayoffJunction__c> jsonToTemporaryLayoffJunction( KafkaPermitteringHandler_Model p, Map<String, Account> accountMap, TemporaryLayoff__c tl ) {
+
+		List<TemporaryLayoffJunction__c> tljList = new List<TemporaryLayoffJunction__c> ();
+
+		for ( KafkaPermitteringHandler_Model.Bedrift subsidiary : p.bedrift ) {
+			TemporaryLayoffJunction__c tlj = new TemporaryLayoffJunction__c();
+
+			if ( accountMap.containsKey( subsidiary.bedriftNr ) ) { tlj.Account__c = accountMap.get( subsidiary.bedriftNr ).Id; }
+			tlj.TemporaryLayoff__r = new TemporaryLayoff__c( KafkaId__c = tl.KafkaId__c );
+
+			tlj.NumberOfEmployees__c = subsidiary.antallBerorte;
+
+			tljList.add( tlj );
+		}
+
+		return tljList;
+
+	}
+
+	public static TemporaryLayoff__c jsonToTemporaryLayoff( KafkaPermitteringHandler_Model p, Map<String, Account> accountMap, Map<String, Contact> contactMap, Boolean onlyOneSubsidiary ) {
 
 		TemporaryLayoff__c tl = new TemporaryLayoff__c();
 		if ( accountMap.containsKey( p.bedriftsnummer ) ) { tl.Account__c = accountMap.get( p.bedriftsnummer ).Id; }
