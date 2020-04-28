@@ -15,10 +15,10 @@ public inherited sharing class KafkaPermitteringHandler implements IKafkaMessage
 		// create SObject version of layoff
 		KafkaPermitteringHandler_Helper.LayoffWrapper resultWrapper = KafkaPermitteringHandler_Helper.convertPermitteringToLayoff( permitteringer, accountMap, contactMap );
 
-		// layoffs = KafkaPermitteringHandler_Helper.removeExistingTempLayoffs( layoffs );
-		// layoffs = KafkaPermitteringHandler_Helper.removeDuplicateTempLayoffsInList( layoffs );
+		KafkaPermitteringHandler_Helper.removeExistingTempLayoffs( resultWrapper );
+		// layoffs = KafkaPermitteringHandler_Helper.removeDuplicateTempLayoffsInList( layoffs ); // ! deprecated due to use of map for saving
 
-		insert resultWrapper.layoffs;
-		insert resultWrapper.layoffJunction;
+		insert resultWrapper.layoffs.values();
+		insert KafkaPermitteringHandler_Helper.convertDoubleListToList( resultWrapper.layoffJunction.values() );
 	}
 }

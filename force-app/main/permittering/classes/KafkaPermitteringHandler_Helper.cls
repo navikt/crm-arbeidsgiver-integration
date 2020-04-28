@@ -1,8 +1,8 @@
 public inherited sharing class KafkaPermitteringHandler_Helper {
 
 	public class LayoffWrapper {
-		public List<TemporaryLayoff__c> layoffs;
-		public List<TemporaryLayoffJunction__c> layoffJunction;
+		public Map<String, TemporaryLayoff__c> layoffs;
+		public Map<String, List<TemporaryLayoffJunction__c> > layoffJunction;
 	}
 
 	public static List<KafkaPermitteringHandler_Model> convertKafkaToPermittering( List<KafkaMessage__c> messages ) {
@@ -60,16 +60,18 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
 	public static LayoffWrapper convertPermitteringToLayoff( List<KafkaPermitteringHandler_Model> permitteringer, Map<String, Account> accountMap, Map<String, Contact> contactMap ) {
 
 		LayoffWrapper lw = new LayoffWrapper();
-		List<TemporaryLayoff__c> layoffs = new List<TemporaryLayoff__c>();
-		List<TemporaryLayoffJunction__c> layoffJunctions = new List<TemporaryLayoffJunction__c>();
+		Map<String, TemporaryLayoff__c> layoffs = new Map<String, TemporaryLayoff__c>();
+		Map<String, List<TemporaryLayoffJunction__c> > layoffJunctions = new Map<String, List<TemporaryLayoffJunction__c> >();
 
 		for ( KafkaPermitteringHandler_Model p : permitteringer ) {
 
 			TemporaryLayoff__c tl = jsonToTemporaryLayoff( p, accountMap, contactMap );
-			layoffs.add( tl );
+			layoffs.put( tl.KafkaId__c, tl );
 
 			if ( multipleSubsidiaries( p ) ) {
-				layoffJunctions.addAll( jsonToTemporaryLayoffJunction( p, accountMap, tl ) );
+				List<TemporaryLayoffJunction__c> tljList = new List<TemporaryLayoffJunction__c>();
+				tljList.addAll( jsonToTemporaryLayoffJunction( p, accountMap, tl ) );
+				layoffJunctions.put( tl.KafkaId__c, tljList );
 			}
 		}
 
@@ -152,27 +154,24 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
 		return tl;
 	}
 
-	public static List<TemporaryLayoff__c> removeExistingTempLayoffs( List<TemporaryLayoff__c> layoffs ) {
+	public static void removeExistingTempLayoffs( LayoffWrapper wrapper ) {
 
 		Set<String> uuids = new Set<String>();
-
-		for ( TemporaryLayoff__c layoff : layoffs ) {
+		for ( TemporaryLayoff__c layoff : wrapper.layoffs.values() ) {
 			uuids.add( layoff.KafkaId__c );
 		}
 
 		Set<String> existingLayoffUuids = new Set<String>();
-		for ( TemporaryLayoff__c layoff : [SELECT Id, KafkaId__c FROM TemporaryLayoff__c WHERE KafkaId__c IN : uuids] ) {
+		for ( TemporaryLayoff__c layoff : [SELECT KafkaId__c FROM TemporaryLayoff__c WHERE KafkaId__c IN : uuids] ) {
 			existingLayoffUuids.add( layoff.KafkaId__c );
 		}
 
-		List<TemporaryLayoff__c> filteredLayoffs = new List<TemporaryLayoff__c>();
-		for ( TemporaryLayoff__c layoff : layoffs ) {
-			if ( !existingLayoffUuids.contains( layoff.KafkaId__c ) ) {
-				filteredLayoffs.add( layoff );
+		for ( String existingKafkaId : existingLayoffUuids ) {
+			if ( wrapper.layoffs.containsKey( existingKafkaId ) ) {
+				wrapper.layoffs.remove( existingKafkaId );
+				wrapper.layoffJunction.remove( existingKafkaId );
 			}
 		}
-
-		return filteredLayoffs;
 	}
 
 	public static List<TemporaryLayoff__c> removeDuplicateTempLayoffsInList( List<TemporaryLayoff__c> layoffs ) {
@@ -185,5 +184,14 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
 		}
 
 		return layoffMap.values();
+	}
+
+	public static List<TemporaryLayoffJunction__c> convertDoubleListToList( List<List<TemporaryLayoffJunction__c> > listOfList ) {
+		List<TemporaryLayoffJunction__c> tlj = new List<TemporaryLayoffJunction__c>();
+		for ( List<TemporaryLayoffJunction__c> tljList : listOfList ) {
+			tlj.addAll( tljList );
+		}
+
+		return tlj;
 	}
 }

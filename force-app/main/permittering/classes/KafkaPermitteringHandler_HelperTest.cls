@@ -91,8 +91,8 @@ private without sharing class KafkaPermitteringHandler_HelperTest {
 		KafkaPermitteringHandler_Helper.LayoffWrapper resultWrapper = KafkaPermitteringHandler_Helper.convertPermitteringToLayoff( permitteringer, accountMap, contactMap );
 		Test.StopTest();
 
-		List<TemporaryLayoff__c> result = resultWrapper.layoffs;
-		List<TemporaryLayoffJunction__c> resultJunction = resultWrapper.layoffJunction;
+		List<TemporaryLayoff__c> result = resultWrapper.layoffs.values();
+		List<TemporaryLayoffJunction__c> resultJunction = resultWrapper.layoffJunction.values()[0];
 
 		System.assertEquals( 2, resultJunction.size(), 'Two permittering subsidiaries' );
 		for ( TemporaryLayoffJunction__c lj : resultJunction ) {
@@ -138,7 +138,7 @@ private without sharing class KafkaPermitteringHandler_HelperTest {
 		KafkaPermitteringHandler_Helper.LayoffWrapper resultWrapper = KafkaPermitteringHandler_Helper.convertPermitteringToLayoff( permitteringer, accountMap, contactMap );
 		Test.StopTest();
 
-		List<TemporaryLayoff__c> result = resultWrapper.layoffs;
+		List<TemporaryLayoff__c> result = resultWrapper.layoffs.values();
 
 		System.assertEquals( 1, result.size(), 'Only one permittering' );
 
@@ -151,27 +151,51 @@ private without sharing class KafkaPermitteringHandler_HelperTest {
 
 		TemporaryLayoff__c tl = new TemporaryLayoff__c( KafkaId__c = 'test' );
 		insert tl;
+
+		Account acc = new Account( Name = 'Test Employer 1', INT_OrganizationNumber__c = '99999999' );
+		insert acc;
 		TemporaryLayoff__c tl2 = new TemporaryLayoff__c( KafkaId__c = 'test' );
+		TemporaryLayoffJunction__c tlj2 = new TemporaryLayoffJunction__c( TemporaryLayoff__r = tl2, Account__c = acc.Id );
+
+		KafkaPermitteringHandler_Helper.LayoffWrapper resultWrapper = new KafkaPermitteringHandler_Helper.LayoffWrapper();
+		resultWrapper.layoffs = new Map<String, TemporaryLayoff__c>();
+		resultWrapper.layoffs.put( 'test', tl2 );
+		resultWrapper.layoffJunction = new Map<String, List<TemporaryLayoffJunction__c> >();
+		resultWrapper.layoffJunction.put( 'test', new List<TemporaryLayoffJunction__c> { tlj2 } );
+
 
 		Test.StartTest();
-		List<TemporaryLayoff__c> layoffs = KafkaPermitteringHandler_Helper.removeExistingTempLayoffs( new List<TemporaryLayoff__c> { tl2 } );
+		KafkaPermitteringHandler_Helper.removeExistingTempLayoffs( resultWrapper );
 		Test.StopTest();
 
-		System.assertEquals( 0, layoffs.size(), 'Same KafkaId, thus, it shouldn\'t be added' );
+		System.assertEquals( 0, resultWrapper.layoffs.size(), 'Same KafkaId, thus, it shouldn\'t be added' );
+		System.assertEquals( 0, resultWrapper.layoffJunction.size(), 'Same KafkaId, thus, it shouldn\'t be added' );
 	}
 
 	@isTest
 	private static void testRemoveExistingTempLayoffs_shouldNotRemove() {
 
-		TemporaryLayoff__c tl = new TemporaryLayoff__c( KafkaId__c = 'test' );
+		TemporaryLayoff__c tl = new TemporaryLayoff__c( KafkaId__c = 'uniqueId' );
 		insert tl;
-		TemporaryLayoff__c tl2 = new TemporaryLayoff__c( KafkaId__c = 'test2' );
+
+		Account acc = new Account( Name = 'Test Employer 1', INT_OrganizationNumber__c = '99999999' );
+		insert acc;
+		TemporaryLayoff__c tl2 = new TemporaryLayoff__c( KafkaId__c = 'test' );
+		TemporaryLayoffJunction__c tlj2 = new TemporaryLayoffJunction__c( TemporaryLayoff__r = tl2, Account__c = acc.Id );
+
+		KafkaPermitteringHandler_Helper.LayoffWrapper resultWrapper = new KafkaPermitteringHandler_Helper.LayoffWrapper();
+		resultWrapper.layoffs = new Map<String, TemporaryLayoff__c>();
+		resultWrapper.layoffs.put( 'test', tl2 );
+		resultWrapper.layoffJunction = new Map<String, List<TemporaryLayoffJunction__c> >();
+		resultWrapper.layoffJunction.put( 'test', new List<TemporaryLayoffJunction__c> { tlj2 } );
+
 
 		Test.StartTest();
-		List<TemporaryLayoff__c> layoffs = KafkaPermitteringHandler_Helper.removeExistingTempLayoffs( new List<TemporaryLayoff__c> { tl2 } );
+		KafkaPermitteringHandler_Helper.removeExistingTempLayoffs( resultWrapper );
 		Test.StopTest();
 
-		System.assertEquals( 1, layoffs.size(), 'Different KafkaId, thus, it should be added' );
+		System.assertEquals( 1, resultWrapper.layoffs.size(), 'Different KafkaId, thus, it should be added' );
+		System.assertEquals( 1, resultWrapper.layoffJunction.size(), 'Different KafkaId, thus, it should be added' );
 	}
 
 	@isTest
