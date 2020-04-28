@@ -50,7 +50,7 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
 			wrapper.lastName = lastName;
 			wrapper.phone = p.kontaktTlf;
 			wrapper.email = p.kontaktEpost;
-			wrapper.companyNumber = p.bedriftsnummer;
+			wrapper.companyNumber = onlyOneSubsidiary( p ) ? p.bedrift[0].bedriftNr : p.bedriftsnummer;
 			wrapperList.add( wrapper );
 		}
 
@@ -65,15 +65,10 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
 
 		for ( KafkaPermitteringHandler_Model p : permitteringer ) {
 
-			Boolean onlySubsidiary = false;
-			if ( p.bedrift != null ) {
-				onlySubsidiary = p.bedrift.size() == 1;
-			}
-
-			TemporaryLayoff__c tl = jsonToTemporaryLayoff( p, accountMap, contactMap, onlySubsidiary );
+			TemporaryLayoff__c tl = jsonToTemporaryLayoff( p, accountMap, contactMap );
 			layoffs.add( tl );
 
-			if ( p.bedrift != null && !onlySubsidiary ) {
+			if ( multipleSubsidiaries( p ) ) {
 				layoffJunctions.addAll( jsonToTemporaryLayoffJunction( p, accountMap, tl ) );
 			}
 		}
@@ -82,6 +77,22 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
 		lw.layoffJunction = layoffJunctions;
 
 		return lw;
+	}
+
+	public static Boolean multipleSubsidiaries( KafkaPermitteringHandler_Model p ) {
+		if ( p.bedrift != null ) {
+			return p.bedrift.size() > 1;
+		}
+
+		return false;
+	}
+
+	public static Boolean onlyOneSubsidiary( KafkaPermitteringHandler_Model p ) {
+		if ( p.bedrift != null ) {
+			return p.bedrift.size() == 1;
+		}
+
+		return false;
 	}
 
 	public static List<TemporaryLayoffJunction__c> jsonToTemporaryLayoffJunction( KafkaPermitteringHandler_Model p, Map<String, Account> accountMap, TemporaryLayoff__c tl ) {
@@ -103,10 +114,12 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
 
 	}
 
-	public static TemporaryLayoff__c jsonToTemporaryLayoff( KafkaPermitteringHandler_Model p, Map<String, Account> accountMap, Map<String, Contact> contactMap, Boolean onlyOneSubsidiary ) {
+	public static TemporaryLayoff__c jsonToTemporaryLayoff( KafkaPermitteringHandler_Model p, Map<String, Account> accountMap, Map<String, Contact> contactMap ) {
+
+		String orgNo = onlyOneSubsidiary( p ) ? p.bedrift[0].bedriftNr : p.bedriftsnummer;
 
 		TemporaryLayoff__c tl = new TemporaryLayoff__c();
-		if ( accountMap.containsKey( p.bedriftsnummer ) ) { tl.Account__c = accountMap.get( p.bedriftsnummer ).Id; }
+		if ( accountMap.containsKey( orgNo ) ) { tl.Account__c = accountMap.get( orgNo ).Id; }
 		if ( contactMap.containsKey( p.kontaktEpost.toLowerCase() ) ) { tl.Contact__c = contactMap.get( p.kontaktEpost.toLowerCase() ).Id; }
 		if ( Date.today().year() == 2020 ) { tl.JsonPayload__c = p.jsonPayload; }
 

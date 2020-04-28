@@ -220,6 +220,31 @@ private without sharing class KafkaPermitteringHandlerTest {
 		System.assertEquals( 'tore.toråsen@example.com', layoffs[0].Contact__r.InvalidEmail__c, 'Email should be empty because it contained invalid characters' );
 		System.assertEquals( null, layoffs[0].ContactEmail__c, 'ContactEmail should be null as it is not valid' );
 		System.assertEquals( con.Id, layoffs[0].Contact__c, 'Contact should be existing contact' );
+	}
+
+	@IsTest
+	public static void testHandleMessages_NotExistingContact() {
+
+		Account acc = new Account( Name = 'Test Employer 1', INT_OrganizationNumber__c = '77777777' );
+		insert acc;
+
+		KafkaMessage__c msg = new KafkaMessage__c();
+		msg.CRM_Topic__c = 'aapen-permittering-arbeidsgiver';
+		msg.CRM_Key__c = 'd60775ed-249f-49e6-bd15-ff790b56cc07';
+		msg.CRM_Value__c = 'ewogICJpZCI6ICI1ZjYwMjdiZi0wNjA0LTRhY2YtODE2OC0wYzE2MTFmMzNjMGQiLAogICJiZWRyaWZ0c251bW1lciI6IDc3Nzc3Nzc3LAogICJzZW5kdElublRpZHNwdW5rdCI6ICIyMDIwLTAzLTE4VDEwOjE5OjMwLjM4MFoiLAogICJ0eXBlIjogIk1BU1NFT1BQU0lHRUxTRSIsCiAgImtvbnRha3ROYXZuIjogIlRvcmUgVG9yw6VzZW4iLAogICJrb250YWt0VGxmIjogIjY2Nzc4ODk5IiwKICAia29udGFrdEVwb3N0IjogInRvcmUudG9yYXNlbkBleGFtcGxlLmNvbSIsCiAgInZhcnNsZXRBbnNhdHREYXRvIjogIjIwMjAtMDMtMTQiLAogICJ2YXJzbGV0TmF2RGF0byI6ICIyMDIwLTAzLTE0IiwKICAic3RhcnREYXRvIjogIjIwMjAtMDMtMTYiLAogICJzbHV0dERhdG8iOiAiMjAyMC0wOS0yMCIsCiAgImZyaXRla3N0IjogIkxvcmVtIGlwc3VtLCBkb3JlbSBkaW1zdW0iLAogICJhbnRhbGxCZXJvcnRlIjogMTIzCn0=';
+
+		List<Contact> contacts = [SELECT Id FROM Contact];
+		System.assertEquals( 0, contacts.size(), 'No contacts added' );
+
+		KafkaPermitteringHandler perm = new KafkaPermitteringHandler();
+		Test.startTest();
+		perm.processMessages( new List<KafkaMessage__c> { msg } );
+		Test.stopTest();
+
+		contacts = [SELECT Id, AccountId FROM Contact];
+		System.assertEquals( 1, contacts.size(), 'contact added' );
+		System.assertEquals( acc.Id, contacts[0].AccountId, 'existing account used as owner' );
+
 
 	}
 
