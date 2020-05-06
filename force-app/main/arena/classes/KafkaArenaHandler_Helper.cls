@@ -5,7 +5,7 @@ public inherited sharing class KafkaArenaHandler_Helper {
 		for ( KafkaMessage__c msg : messages ) {
 			try {
 				msg.CRM_IsProcessed__c = true;
-				String decodedValue = EncodingUtil.base64Decode( msg.CRM_Value__c ).toString();
+				String decodedValue = KafkaMessageUtils.base64ULSafeDecode( msg.CRM_Value__c ).toString();
 				KafkaArenaHandler_Model arenaModel = KafkaArenaHandler_Model.parse( decodedValue );
 				arenaModels.add( arenaModel );
 			} catch ( Exception e ) {
