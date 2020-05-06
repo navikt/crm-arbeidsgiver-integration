@@ -57,7 +57,7 @@ private without sharing class KafkaArenaHandler_HelperTest {
 		List<KafkaArenaHandler_Model> models = KafkaArenaHandler_Helper.convertKafkaToArenaModel( new List<KafkaMessage__c> { msg1 } );
 
 		Test.StartTest();
-		Set<String> results = KafkaArenaHandler_Helper.getOrgNumbers( models );
+		List<String> results = KafkaArenaHandler_Helper.getOrgNumbers( models );
 		Test.StopTest();
 
 		System.assertEquals( 1, results.size(), 'Only one org number as only one kafka message' );
@@ -95,7 +95,7 @@ private without sharing class KafkaArenaHandler_HelperTest {
 
 		List<KafkaArenaHandler_Model> models = KafkaArenaHandler_Helper.convertKafkaToArenaModel( new List<KafkaMessage__c> { msg1 } );
 		Map<String, User> userMap = SharedIntegrationFunctions.fetchUsersByTitle( new Set<String> { 'GL1812', 'JEI1812' } );
-		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new Set<String> { '973113631' } );
+		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new List<String> { '973113631' } );
 
 
 		Test.StartTest();

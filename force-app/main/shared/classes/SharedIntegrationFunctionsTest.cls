@@ -19,7 +19,7 @@ private without sharing class SharedIntegrationFunctionsTest {
 		insert con;
 
 		Test.StartTest();
-		Map<String, Account> result = SharedIntegrationFunctions.fetchAccounts( new Set<String> { acc.INT_OrganizationNumber__c, acc2.INT_OrganizationNumber__c } );
+		Map<String, Account> result = SharedIntegrationFunctions.fetchAccounts( new List<String> { acc.INT_OrganizationNumber__c, acc2.INT_OrganizationNumber__c } );
 		Test.StopTest();
 
 		System.assertEquals( acc.Id, result.get( acc.INT_OrganizationNumber__c ).Id, 'Should be same account' );
@@ -44,7 +44,7 @@ private without sharing class SharedIntegrationFunctionsTest {
 		wrapper.companyNumber = '99999999';
 		wrapperList.add( wrapper );
 
-		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new Set<String> { wrapper.companyNumber } );
+		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new List<String> { wrapper.companyNumber } );
 
 		Test.StartTest();
 		Map<String, Contact> result = SharedIntegrationFunctions.fetchOrCreateContact( wrapperList, accountMap );
@@ -77,7 +77,7 @@ private without sharing class SharedIntegrationFunctionsTest {
 		wrapper.companyNumber = '677777';
 		wrapperList.add( wrapper );
 
-		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new Set<String> { wrapper.companyNumber } );
+		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new List<String> { wrapper.companyNumber } );
 
 		List<Contact> contacts = [SELECT Id FROM Contact];
 		System.assertEquals( 1, contacts.size(), 'Before, only 1 contact' );
@@ -145,7 +145,7 @@ private without sharing class SharedIntegrationFunctionsTest {
 		wrapper6.companyNumber = '99999999';
 		wrapperList.add( wrapper6 );
 
-		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new Set<String> { wrapper.companyNumber } );
+		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new List<String> { wrapper.companyNumber } );
 
 		List<Contact> contacts = [SELECT Id FROM Contact];
 		System.assertEquals( 0, contacts.size(), 'Before, only 1 contact' );
@@ -181,7 +181,7 @@ private without sharing class SharedIntegrationFunctionsTest {
 		wrapper.companyNumber = '99999999';
 		wrapperList.add( wrapper );
 
-		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new Set<String> { wrapper.companyNumber } );
+		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new List<String> { wrapper.companyNumber } );
 
 		List<Contact> contacts = [SELECT Id FROM Contact];
 		System.assertEquals( 1, contacts.size(), 'Before, only 1 contact' );
@@ -220,7 +220,7 @@ private without sharing class SharedIntegrationFunctionsTest {
 		wrapper.companyNumber = '99999999';
 		wrapperList.add( wrapper );
 
-		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new Set<String> { wrapper.companyNumber } );
+		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new List<String> { wrapper.companyNumber } );
 
 		Test.StartTest();
 		Map<String, Contact> result = SharedIntegrationFunctions.fetchOrCreateContact( wrapperList, accountMap );
@@ -253,7 +253,7 @@ private without sharing class SharedIntegrationFunctionsTest {
 		wrapper.companyNumber = '77777777';
 		wrapperList.add( wrapper );
 
-		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new Set<String> { wrapper.companyNumber } );
+		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new List<String> { wrapper.companyNumber } );
 
 		Test.StartTest();
 		Map<String, Contact> result = SharedIntegrationFunctions.fetchOrCreateContact( wrapperList, accountMap );
@@ -299,7 +299,7 @@ private without sharing class SharedIntegrationFunctionsTest {
 		wrapperList.add( wrapper2 );
 
 
-		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new Set<String> { wrapper.companyNumber, wrapper2.companyNumber } );
+		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new List<String> { wrapper.companyNumber, wrapper2.companyNumber } );
 
 		Test.StartTest();
 		Map<String, Contact> result = SharedIntegrationFunctions.fetchOrCreateContact( wrapperList, accountMap );
@@ -351,7 +351,7 @@ private without sharing class SharedIntegrationFunctionsTest {
 		wrapperList.add( wrapper2 );
 
 
-		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new Set<String> { wrapper.companyNumber, wrapper2.companyNumber } );
+		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new List<String> { wrapper.companyNumber, wrapper2.companyNumber } );
 
 		Test.StartTest();
 		Map<String, Contact> result = SharedIntegrationFunctions.fetchOrCreateContact( wrapperList, accountMap );
@@ -381,7 +381,7 @@ private without sharing class SharedIntegrationFunctionsTest {
 		wrapper.companyNumber = '77777777';
 		wrapperList.add( wrapper );
 
-		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new Set<String> { wrapper.companyNumber } );
+		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new List<String> { wrapper.companyNumber } );
 
 		Test.StartTest();
 		Map<String, Contact> result = SharedIntegrationFunctions.fetchOrCreateContact( wrapperList, accountMap );

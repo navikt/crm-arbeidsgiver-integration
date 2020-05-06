@@ -16,8 +16,8 @@ public inherited sharing class KafkaArenaHandler_Helper {
 		return arenaModels;
 	}
 
-	public static Set<String> getOrgNumbers( List<KafkaArenaHandler_Model> models ) {
-		Set<String> orgNumbers = new Set<String>();
+	public static List<String> getOrgNumbers( List<KafkaArenaHandler_Model> models ) {
+		List<String> orgNumbers = new List<String>();
 		for ( KafkaArenaHandler_Model model : models ) {
 			orgNumbers.add( String.valueOf( model.bedriftsnr ) );
 		}

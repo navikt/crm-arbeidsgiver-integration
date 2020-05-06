@@ -1,7 +1,7 @@
 public with sharing class SharedIntegrationFunctions {
 
 
-	public static Map<String, Account> fetchAccounts( Set<String> organisationNumbers ) {
+	public static Map<String, Account> fetchAccounts( List<String> organisationNumbers ) {
 
 		List<Account> accounts = [SELECT Id, INT_OrganizationNumber__c, INT_MunicipalityNumber__c FROM Account
 
