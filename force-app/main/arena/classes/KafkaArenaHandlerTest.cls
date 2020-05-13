@@ -3,6 +3,7 @@ private without sharing class KafkaArenaHandlerTest {
 
 	@testSetup
 	private static void setup() {
+
 		User registeredUser = TAG_TestDataFactory.createStandardUser();
 		registeredUser.title = 'GL1812';
 		update registeredUser;
@@ -11,14 +12,20 @@ private without sharing class KafkaArenaHandlerTest {
 		responsibleUser.title = 'JEI1812';
 		update responsibleUser;
 
-		Account acc = new Account( Name = 'Test Employer 1', INT_OrganizationNumber__c = '973113631' );
-		insert acc;
+		PermissionSet ps = [SELECT Id FROM PermissionSet WHERE Name = 'Arena_activity' LIMIT 1];
+		insert new PermissionSetAssignment( AssigneeId = responsibleUser.id, PermissionSetId = ps.Id );
+		insert new PermissionSetAssignment( AssigneeId = registeredUser.id, PermissionSetId = ps.Id );
+
 	}
 
 	@isTest
 	private static void testHandleMessages() {
 
-		Account acc = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = '973113631' LIMIT 1][0];
+		KafkaEnhetFilter.bypassFilter = true;
+
+		Account acc = new Account( Name = 'Test Employer 1', INT_OrganizationNumber__c = '973113631' );
+		insert acc;
+
 		User registeredUser = [SELECT Id FROM User WHERE Title = 'GL1812' LIMIT 1][0];
 		User responsibleUser = [SELECT Id FROM User WHERE Title = 'JEI1812' LIMIT 1][0];
 
@@ -51,7 +58,77 @@ private without sharing class KafkaArenaHandlerTest {
 	}
 
 	@isTest
+	private static void testHandleMessages_noChanges() {
+
+		KafkaEnhetFilter.bypassFilter = true;
+
+		insert new ArenaActivity__c( KafkaId__c = 'd60gwew775ed-249f-49e6-bd15-ff790b56cc07', KafkaHash__c = 'ewogICAgImFrdGl2aXRldFN0YXR1c2tvZGUiOiAiRlVMTEYiLAogICAgImJlZHJpZnRzbnIiOiA5NzMxMTM2MzEsCiAgICAiYmVza3JpdmVsc2UiOiAiQmVkcmlmdHPDuGtvbm9tc3R1ZGlldCAyMCB2dFxuSMO4Z3Nrb2xla2FuZGlkYXRzdHVkaWV0IG1lZCByZXRuaW5nIGZvciByZWduc2thcHNmw7hyZXJlLiAyMHZ0IiwKICAgICJvcmduck1vcnNlbHNrYXAiOiA5NzEyMjg4NjUsCiAgICAic2Frc2JlaGFuZGxlciI6ICJKRUkxODEyIiwKICAgICJha3Rpdml0ZXRza29kZSI6ICJVVERZUksiLAogICAgImZyYURhdG8iOiAiMjAwMy0wMS0wMSIsCiAgICAidGlsRGF0byI6ICIyMDA0LTEyLTMxIiwKICAgICJyZWdEYXRvIjogIjIwMDMtMDMtMjUiLAogICAgInJlZ1VzZXIiOiAiR0wxODEyIiwKICAgICJha3Rpdml0ZXRzZ3J1cHBla29kZSI6ICJUTFRBSyIsCiAgICAiYWt0aXZpdGV0c3R5cGViZXNrcml2ZWxzZSI6IG51bGwsCiAgICAiYWt0aXZpdGV0c3R5cGVuYXZuIjogIlV0ZGFubmluZyIsCiAgICAiZm9ybmF2biI6ICJKb25uIEVnaWwiLAogICAgImV0dGVybmF2biI6ICJJbmRyZXZvbGwiLAogICAgIm5hdklkZW50IjogIkkxMTEzNDUiCn0=' );
+		System.assertEquals( 1, [SELECT Count() FROM ArenaActivity__c], 'Only one activity added' );
+
+		KafkaMessage__c msg1 = new KafkaMessage__c();
+		msg1.CRM_Topic__c = 'gg-arbeidsgiver-aktivitet-v1';
+		msg1.CRM_Key__c = 'd60gwew775ed-249f-49e6-bd15-ff790b56cc07';
+		msg1.CRM_Value__c = 'ewogICAgImFrdGl2aXRldFN0YXR1c2tvZGUiOiAiRlVMTEYiLAogICAgImJlZHJpZnRzbnIiOiA5NzMxMTM2MzEsCiAgICAiYmVza3JpdmVsc2UiOiAiQmVkcmlmdHPDuGtvbm9tc3R1ZGlldCAyMCB2dFxuSMO4Z3Nrb2xla2FuZGlkYXRzdHVkaWV0IG1lZCByZXRuaW5nIGZvciByZWduc2thcHNmw7hyZXJlLiAyMHZ0IiwKICAgICJvcmduck1vcnNlbHNrYXAiOiA5NzEyMjg4NjUsCiAgICAic2Frc2JlaGFuZGxlciI6ICJKRUkxODEyIiwKICAgICJha3Rpdml0ZXRza29kZSI6ICJVVERZUksiLAogICAgImZyYURhdG8iOiAiMjAwMy0wMS0wMSIsCiAgICAidGlsRGF0byI6ICIyMDA0LTEyLTMxIiwKICAgICJyZWdEYXRvIjogIjIwMDMtMDMtMjUiLAogICAgInJlZ1VzZXIiOiAiR0wxODEyIiwKICAgICJha3Rpdml0ZXRzZ3J1cHBla29kZSI6ICJUTFRBSyIsCiAgICAiYWt0aXZpdGV0c3R5cGViZXNrcml2ZWxzZSI6IG51bGwsCiAgICAiYWt0aXZpdGV0c3R5cGVuYXZuIjogIlV0ZGFubmluZyIsCiAgICAiZm9ybmF2biI6ICJKb25uIEVnaWwiLAogICAgImV0dGVybmF2biI6ICJJbmRyZXZvbGwiLAogICAgIm5hdklkZW50IjogIkkxMTEzNDUiCn0=';
+		insert msg1;
+
+		Test.StartTest();
+		Test.StopTest();
+
+		List<ArenaActivity__c> aa = [SELECT CreatedDate, LastModifiedDate, AktivitetsKode__c FROM ArenaActivity__c];
+		System.assertEquals( 1, aa.size(), 'Still only one activity added, as same uuid' );
+		System.assert ( aa[0].CreatedDate == aa[0].LastModifiedDate, 'Should have been updated' );
+	}
+
+	@isTest
+	private static void testHandleMessages_withChanges() {
+
+		KafkaEnhetFilter.bypassFilter = true;
+
+		insert new ArenaActivity__c( AktivitetsKode__c = 'UTDYRK', KafkaId__c = '0gwew775ed-249f-49e6-bd15-ff790b56cc07', KafkaHash__c = 'ewogICAgImFrdGl2aXRldFN0YXR1c2tvZGUiOiAiRlVMTEYiLAogICAgImJlZHJpZnRzbnIiOiA5NzMxMTM2MzEsCiAgICAiYmVza3JpdmVsc2UiOiAiQmVkcmlmdHPDuGtvbm9tc3R1ZGlldCAyMCB2dFxuSMO4Z3Nrb2xla2FuZGlkYXRzdHVkaWV0IG1lZCByZXRuaW5nIGZvciByZWduc2thcHNmw7hyZXJlLiAyMHZ0IiwKICAgICJvcmduck1vcnNlbHNrYXAiOiA5NzEyMjg4NjUsCiAgICAic2Frc2JlaGFuZGxlciI6ICJKRUkxODEyIiwKICAgICJha3Rpdml0ZXRza29kZSI6ICJVVERZUksiLAogICAgImZyYURhdG8iOiAiMjAwMy0wMS0wMSIsCiAgICAidGlsRGF0byI6ICIyMDA0LTEyLTMxIiwKICAgICJyZWdEYXRvIjogIjIwMDMtMDMtMjUiLAogICAgInJlZ1VzZXIiOiAiR0wxODEyIiwKICAgICJha3Rpdml0ZXRzZ3J1cHBla29kZSI6ICJUTFRBSyIsCiAgICAiYWt0aXZpdGV0c3R5cGViZXNrcml2ZWxzZSI6IG51bGwsCiAgICAiYWt0aXZpdGV0c3R5cGVuYXZuIjogIlV0ZGFubmluZyIsCiAgICAiZm9ybmF2biI6ICJKb25uIEVnaWwiLAogICAgImV0dGVybmF2biI6ICJJbmRyZXZvbGwiLAogICAgIm5hdklkZW50IjogIkkxMTEzNDUiCn0=' );
+		System.assertEquals( 1, [SELECT Count() FROM ArenaActivity__c], 'Only one activity added' );
+		System.assertEquals( 'UTDYRK', [SELECT AktivitetsKode__c FROM ArenaActivity__c LIMIT 1][0].AktivitetsKode__c, 'Field should be empty' );
+
+		KafkaMessage__c msg1 = new KafkaMessage__c();
+		msg1.CRM_Topic__c = 'gg-arbeidsgiver-aktivitet-v1';
+		msg1.CRM_Key__c = '0gwew775ed-249f-49e6-bd15-ff790b56cc07';
+		msg1.CRM_Value__c = 'ewogICAgImFrdGl2aXRldFN0YXR1c2tvZGUiOiAiRlVMTEYiLAogICAgImJlZHJpZnRzbnIiOiA5NzMxMTM2MzEsCiAgICAiYmVza3JpdmVsc2UiOiAiQmVkcmlmdHPDuGtvbm9tc3R1ZGlldCAyMCB2dFxuSMO4Z3Nrb2xla2FuZGlkYXRzdHVkaWV0IG1lZCByZXRuaW5nIGZvciByZWduc2thcHNmw7hyZXJlLiAyMHZ0IiwKICAgICJvcmduck1vcnNlbHNrYXAiOiA5NzEyMjg4NjUsCiAgICAic2Frc2JlaGFuZGxlciI6ICJKRUkxODEyIiwKICAgICJha3Rpdml0ZXRza29kZSI6ICJVVERZUksyIiwKICAgICJmcmFEYXRvIjogIjIwMDMtMDEtMDEiLAogICAgInRpbERhdG8iOiAiMjAwNC0xMi0zMSIsCiAgICAicmVnRGF0byI6ICIyMDAzLTAzLTI1IiwKICAgICJyZWdVc2VyIjogIkdMMTgxMiIsCiAgICAiYWt0aXZpdGV0c2dydXBwZWtvZGUiOiAiVExUQUsiLAogICAgImFrdGl2aXRldHN0eXBlYmVza3JpdmVsc2UiOiBudWxsLAogICAgImFrdGl2aXRldHN0eXBlbmF2biI6ICJVdGRhbm5pbmciLAogICAgImZvcm5hdm4iOiAiSm9ubiBFZ2lsIiwKICAgICJldHRlcm5hdm4iOiAiSW5kcmV2b2xsIiwKICAgICJuYXZJZGVudCI6ICJJMTExMzQ1Igp9';
+		insert msg1;
+
+		Test.StartTest();
+		Test.StopTest();
+
+		List<ArenaActivity__c> aa = [SELECT CreatedDate, LastModifiedDate, AktivitetsKode__c FROM ArenaActivity__c];
+		System.assertEquals( 1, aa.size(), 'Still only one activity added, as same uuid' );
+		System.assertEquals( 'UTDYRK2', aa[0].AktivitetsKode__c, 'Should have changed field as hash is new' );
+
+	}
+
+	@isTest
+	private static void testHandleMessages_duplicateInSameTransaction() {
+
+		KafkaEnhetFilter.bypassFilter = true;
+
+		KafkaMessage__c msg1 = new KafkaMessage__c();
+		msg1.CRM_Topic__c = 'gg-arbeidsgiver-aktivitet-v1';
+		msg1.CRM_Key__c = 'd60gwew775ed-249f-49e6-bd15-ff790b56cc07';
+		msg1.CRM_Value__c = 'ewogICAgImFrdGl2aXRldFN0YXR1c2tvZGUiOiAiRlVMTEYiLAogICAgImJlZHJpZnRzbnIiOiA5NzMxMTM2MzEsCiAgICAiYmVza3JpdmVsc2UiOiAiQmVkcmlmdHPDuGtvbm9tc3R1ZGlldCAyMCB2dFxuSMO4Z3Nrb2xla2FuZGlkYXRzdHVkaWV0IG1lZCByZXRuaW5nIGZvciByZWduc2thcHNmw7hyZXJlLiAyMHZ0IiwKICAgICJvcmduck1vcnNlbHNrYXAiOiA5NzEyMjg4NjUsCiAgICAic2Frc2JlaGFuZGxlciI6ICJKRUkxODEyIiwKICAgICJha3Rpdml0ZXRza29kZSI6ICJVVERZUksiLAogICAgImZyYURhdG8iOiAiMjAwMy0wMS0wMSIsCiAgICAidGlsRGF0byI6ICIyMDA0LTEyLTMxIiwKICAgICJyZWdEYXRvIjogIjIwMDMtMDMtMjUiLAogICAgInJlZ1VzZXIiOiAiR0wxODEyIiwKICAgICJha3Rpdml0ZXRzZ3J1cHBla29kZSI6ICJUTFRBSyIsCiAgICAiYWt0aXZpdGV0c3R5cGViZXNrcml2ZWxzZSI6IG51bGwsCiAgICAiYWt0aXZpdGV0c3R5cGVuYXZuIjogIlV0ZGFubmluZyIsCiAgICAiZm9ybmF2biI6ICJKb25uIEVnaWwiLAogICAgImV0dGVybmF2biI6ICJJbmRyZXZvbGwiLAogICAgIm5hdklkZW50IjogIkkxMTEzNDUiCn0=';
+
+		KafkaMessage__c msg2 = new KafkaMessage__c();
+		msg2.CRM_Topic__c = 'gg-arbeidsgiver-aktivitet-v1';
+		msg2.CRM_Key__c = 'd60gwew775ed-249f-49e6-bd15-ff790b56cc07';
+		msg2.CRM_Value__c = 'ewogICAgImFrdGl2aXRldFN0YXR1c2tvZGUiOiAiRlVMTEYiLAogICAgImJlZHJpZnRzbnIiOiA5NzMxMTM2MzEsCiAgICAiYmVza3JpdmVsc2UiOiAiQmVkcmlmdHPDuGtvbm9tc3R1ZGlldCAyMCB2dFxuSMO4Z3Nrb2xla2FuZGlkYXRzdHVkaWV0IG1lZCByZXRuaW5nIGZvciByZWduc2thcHNmw7hyZXJlLiAyMHZ0IiwKICAgICJvcmduck1vcnNlbHNrYXAiOiA5NzEyMjg4NjUsCiAgICAic2Frc2JlaGFuZGxlciI6ICJKRUkxODEyIiwKICAgICJha3Rpdml0ZXRza29kZSI6ICJVVERZUksiLAogICAgImZyYURhdG8iOiAiMjAwMy0wMS0wMSIsCiAgICAidGlsRGF0byI6ICIyMDA0LTEyLTMxIiwKICAgICJyZWdEYXRvIjogIjIwMDMtMDMtMjUiLAogICAgInJlZ1VzZXIiOiAiR0wxODEyIiwKICAgICJha3Rpdml0ZXRzZ3J1cHBla29kZSI6ICJUTFRBSyIsCiAgICAiYWt0aXZpdGV0c3R5cGViZXNrcml2ZWxzZSI6IG51bGwsCiAgICAiYWt0aXZpdGV0c3R5cGVuYXZuIjogIlV0ZGFubmluZyIsCiAgICAiZm9ybmF2biI6ICJKb25uIEVnaWwiLAogICAgImV0dGVybmF2biI6ICJJbmRyZXZvbGwiLAogICAgIm5hdklkZW50IjogIkkxMTEzNDUiCn0=';
+		insert new List<KafkaMessage__c> { msg1, msg2 };
+
+		Test.StartTest();
+		Test.StopTest();
+
+		System.assertEquals( 1, [SELECT Count() FROM ArenaActivity__c], 'only one activity added, both had same uuid' );
+	}
+
+	@isTest
 	private static void testHandleMessages_usersAndAccountsDontExists() {
+
+		KafkaEnhetFilter.bypassFilter = true;
 
 		KafkaMessage__c msg1 = new KafkaMessage__c();
 		msg1.CRM_Topic__c = 'gg-arbeidsgiver-aktivitet-v1';

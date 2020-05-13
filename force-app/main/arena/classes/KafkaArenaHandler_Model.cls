@@ -17,7 +17,15 @@ public with sharing class KafkaArenaHandler_Model {
 	public String etternavn { get; set; }
 	public String navIdent { get; set; }
 
-	public static KafkaArenaHandler_Model parse( String json ) {
-		return (KafkaArenaHandler_Model) System.JSON.deserialize( json, KafkaArenaHandler_Model.class );
+	public String key { get; set; }
+	public String hash { get; set; }
+
+	public static KafkaArenaHandler_Model parse( String json, String key, String hash ) {
+		KafkaArenaHandler_Model model = (KafkaArenaHandler_Model) System.JSON.deserialize( json, KafkaArenaHandler_Model.class );
+		model.key = key;
+		model.hash = hash;
+
+		return model;
+
 	}
 }

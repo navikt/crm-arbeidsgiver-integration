@@ -3,6 +3,7 @@ private without sharing class KafkaArenaHandler_HelperTest {
 
 	@testSetup
 	private static void setup() {
+
 		User registeredUser = TAG_TestDataFactory.createStandardUser();
 		registeredUser.title = 'GL1812';
 		update registeredUser;
@@ -81,6 +82,38 @@ private without sharing class KafkaArenaHandler_HelperTest {
 		System.assert (results.containsAll( new Set<String> { 'GL1812', 'JEI1812' } ), 'Results should contain both user titles (GL1812 and JEI1812)');
 	}
 
+
+	@isTest
+	private static void testGetKafkaIds() {
+
+		KafkaMessage__c msg1 = new KafkaMessage__c();
+		msg1.CRM_Topic__c = 'gg-arbeidsgiver-aktivitet-v1';
+		msg1.CRM_Key__c = 'd60gwew775ed-249f-49e6-bd15-ff790b56cc07';
+		msg1.CRM_Value__c = 'ewogICAgImFrdGl2aXRldFN0YXR1c2tvZGUiOiAiRlVMTEYiLAogICAgImJlZHJpZnRzbnIiOiA5NzMxMTM2MzEsCiAgICAiYmVza3JpdmVsc2UiOiAiQmVkcmlmdHPDuGtvbm9tc3R1ZGlldCAyMCB2dFxuSMO4Z3Nrb2xla2FuZGlkYXRzdHVkaWV0IG1lZCByZXRuaW5nIGZvciByZWduc2thcHNmw7hyZXJlLiAyMHZ0IiwKICAgICJvcmduck1vcnNlbHNrYXAiOiA5NzEyMjg4NjUsCiAgICAic2Frc2JlaGFuZGxlciI6ICJKRUkxODEyIiwKICAgICJha3Rpdml0ZXRza29kZSI6ICJVVERZUksiLAogICAgImZyYURhdG8iOiAiMjAwMy0wMS0wMSIsCiAgICAidGlsRGF0byI6ICIyMDA0LTEyLTMxIiwKICAgICJyZWdEYXRvIjogIjIwMDMtMDMtMjUiLAogICAgInJlZ1VzZXIiOiAiR0wxODEyIiwKICAgICJha3Rpdml0ZXRzZ3J1cHBla29kZSI6ICJUTFRBSyIsCiAgICAiYWt0aXZpdGV0c3R5cGViZXNrcml2ZWxzZSI6IG51bGwsCiAgICAiYWt0aXZpdGV0c3R5cGVuYXZuIjogIlV0ZGFubmluZyIsCiAgICAiZm9ybmF2biI6ICJKb25uIEVnaWwiLAogICAgImV0dGVybmF2biI6ICJJbmRyZXZvbGwiLAogICAgIm5hdklkZW50IjogIkkxMTEzNDUiCn0=';
+		List<KafkaArenaHandler_Model> models = KafkaArenaHandler_Helper.convertKafkaToArenaModel( new List<KafkaMessage__c> { msg1 } );
+
+		Test.StartTest();
+		Set<String> results = KafkaArenaHandler_Helper.getKafkaIds( models );
+		Test.StopTest();
+
+		System.assertEquals( 1, results.size(), 'One message, only one key' );
+		System.assert ( results.contains( 'd60gwew775ed-249f-49e6-bd15-ff790b56cc07' ), 'Results should only contain the one key' );
+	}
+
+	@isTest
+	private static void testGetArenaActivity() {
+
+		ArenaActivity__c aa = new ArenaActivity__c( KafkaId__c = 'd60gwew775ed-249f-49e6-bd15-ff790b56cc07', KafkaHash__c = 'ewogICAgImFrdGl2aXRldFN0YXR1c2tvZGUiOiAiRlVMTEYiLAogICAgImJlZHJpZnRzbnIiOiA5NzMxMTM2MzEsCiAgICAiYmVza3JpdmVsc2UiOiAiQmVkcmlmdHPDuGtvbm9tc3R1ZGlldCAyMCB2dFxuSMO4Z3Nrb2xla2FuZGlkYXRzdHVkaWV0IG1lZCByZXRuaW5nIGZvciByZWduc2thcHNmw7hyZXJlLiAyMHZ0IiwKICAgICJvcmduck1vcnNlbHNrYXAiOiA5NzEyMjg4NjUsCiAgICAic2Frc2JlaGFuZGxlciI6ICJKRUkxODEyIiwKICAgICJha3Rpdml0ZXRza29kZSI6ICJVVERZUksiLAogICAgImZyYURhdG8iOiAiMjAwMy0wMS0wMSIsCiAgICAidGlsRGF0byI6ICIyMDA0LTEyLTMxIiwKICAgICJyZWdEYXRvIjogIjIwMDMtMDMtMjUiLAogICAgInJlZ1VzZXIiOiAiR0wxODEyIiwKICAgICJha3Rpdml0ZXRzZ3J1cHBla29kZSI6ICJUTFRBSyIsCiAgICAiYWt0aXZpdGV0c3R5cGViZXNrcml2ZWxzZSI6IG51bGwsCiAgICAiYWt0aXZpdGV0c3R5cGVuYXZuIjogIlV0ZGFubmluZyIsCiAgICAiZm9ybmF2biI6ICJKb25uIEVnaWwiLAogICAgImV0dGVybmF2biI6ICJJbmRyZXZvbGwiLAogICAgIm5hdklkZW50IjogIkkxMTEzNDUiCn0=' );
+		insert aa;
+
+		Test.StartTest();
+		List<ArenaActivity__c> results = KafkaArenaHandler_Helper.getArenaActivity( new Set<String> { 'd60gwew775ed-249f-49e6-bd15-ff790b56cc07'} ).values();
+		Test.StopTest();
+
+		System.assertEquals( 1, results.size(), 'Only one arena activity in db' );
+		System.assertEquals( aa.Id, results[0].Id, 'Same activity id' );
+	}
+
 	@isTest
 	private static void testConvertArenaModelToSObject() {
 
@@ -99,7 +132,7 @@ private without sharing class KafkaArenaHandler_HelperTest {
 
 
 		Test.StartTest();
-		List<ArenaActivity__c> arenaActivities = KafkaArenaHandler_Helper.convertArenaModelToSObject( models, userMap, accountMap );
+		List<ArenaActivity__c> arenaActivities = KafkaArenaHandler_Helper.convertArenaModelToSObject( models, userMap, accountMap, new Map<String, ArenaActivity__c>() );
 		Test.StopTest();
 
 		System.assertEquals( 1, arenaActivities.size(), 'Only one kafka message added, only one sobject returned' );
@@ -116,6 +149,80 @@ private without sharing class KafkaArenaHandler_HelperTest {
 		System.assertEquals( 'TLTAK', arenaActivities[0].Aktivitetsgruppekode__c );
 		System.assertEquals( null, arenaActivities[0].AktivitetstypeBeskrivelse__c );
 		System.assertEquals( 'Utdanning', arenaActivities[0].Aktivitetstype__c );
+	}
+
+	@isTest
+	private static void testConvertArenaModelToSObject_updateExistingWithoutChange() {
+
+		ArenaActivity__c aa = new ArenaActivity__c( AktivitetsKode__c = 'UTDYRK', KafkaId__c = 'd60gwew775ed-249f-49e6-bd15-ff790b56cc07', KafkaHash__c = 'ewogICAgImFrdGl2aXRldFN0YXR1c2tvZGUiOiAiRlVMTEYiLAogICAgImJlZHJpZnRzbnIiOiA5NzMxMTM2MzEsCiAgICAiYmVza3JpdmVsc2UiOiAiQmVkcmlmdHPDuGtvbm9tc3R1ZGlldCAyMCB2dFxuSMO4Z3Nrb2xla2FuZGlkYXRzdHVkaWV0IG1lZCByZXRuaW5nIGZvciByZWduc2thcHNmw7hyZXJlLiAyMHZ0IiwKICAgICJvcmduck1vcnNlbHNrYXAiOiA5NzEyMjg4NjUsCiAgICAic2Frc2JlaGFuZGxlciI6ICJKRUkxODEyIiwKICAgICJha3Rpdml0ZXRza29kZSI6ICJVVERZUksiLAogICAgImZyYURhdG8iOiAiMjAwMy0wMS0wMSIsCiAgICAidGlsRGF0byI6ICIyMDA0LTEyLTMxIiwKICAgICJyZWdEYXRvIjogIjIwMDMtMDMtMjUiLAogICAgInJlZ1VzZXIiOiAiR0wxODEyIiwKICAgICJha3Rpdml0ZXRzZ3J1cHBla29kZSI6ICJUTFRBSyIsCiAgICAiYWt0aXZpdGV0c3R5cGViZXNrcml2ZWxzZSI6IG51bGwsCiAgICAiYWt0aXZpdGV0c3R5cGVuYXZuIjogIlV0ZGFubmluZyIsCiAgICAiZm9ybmF2biI6ICJKb25uIEVnaWwiLAogICAgImV0dGVybmF2biI6ICJJbmRyZXZvbGwiLAogICAgIm5hdklkZW50IjogIkkxMTEzNDUiCn0=' );
+
+		KafkaMessage__c msg1 = new KafkaMessage__c();
+		msg1.CRM_Topic__c = 'gg-arbeidsgiver-aktivitet-v1';
+		msg1.CRM_Key__c = 'd60gwew775ed-249f-49e6-bd15-ff790b56cc07';
+		msg1.CRM_Value__c = 'ewogICAgImFrdGl2aXRldFN0YXR1c2tvZGUiOiAiRlVMTEYiLAogICAgImJlZHJpZnRzbnIiOiA5NzMxMTM2MzEsCiAgICAiYmVza3JpdmVsc2UiOiAiQmVkcmlmdHPDuGtvbm9tc3R1ZGlldCAyMCB2dFxuSMO4Z3Nrb2xla2FuZGlkYXRzdHVkaWV0IG1lZCByZXRuaW5nIGZvciByZWduc2thcHNmw7hyZXJlLiAyMHZ0IiwKICAgICJvcmduck1vcnNlbHNrYXAiOiA5NzEyMjg4NjUsCiAgICAic2Frc2JlaGFuZGxlciI6ICJKRUkxODEyIiwKICAgICJha3Rpdml0ZXRza29kZSI6ICJVVERZUksiLAogICAgImZyYURhdG8iOiAiMjAwMy0wMS0wMSIsCiAgICAidGlsRGF0byI6ICIyMDA0LTEyLTMxIiwKICAgICJyZWdEYXRvIjogIjIwMDMtMDMtMjUiLAogICAgInJlZ1VzZXIiOiAiR0wxODEyIiwKICAgICJha3Rpdml0ZXRzZ3J1cHBla29kZSI6ICJUTFRBSyIsCiAgICAiYWt0aXZpdGV0c3R5cGViZXNrcml2ZWxzZSI6IG51bGwsCiAgICAiYWt0aXZpdGV0c3R5cGVuYXZuIjogIlV0ZGFubmluZyIsCiAgICAiZm9ybmF2biI6ICJKb25uIEVnaWwiLAogICAgImV0dGVybmF2biI6ICJJbmRyZXZvbGwiLAogICAgIm5hdklkZW50IjogIkkxMTEzNDUiCn0=';
+
+		List<KafkaArenaHandler_Model> models = KafkaArenaHandler_Helper.convertKafkaToArenaModel( new List<KafkaMessage__c> { msg1 } );
+		Map<String, User> userMap = SharedIntegrationFunctions.fetchUsersByTitle( new Set<String> { 'GL1812', 'JEI1812' } );
+		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new List<String> { '973113631' } );
+		Map<String, ArenaActivity__c> existingActivities = new Map<String, ArenaActivity__c>();
+		existingActivities.put( aa.KafkaId__c, aa );
+
+		Test.StartTest();
+		List<ArenaActivity__c> arenaActivities = KafkaArenaHandler_Helper.convertArenaModelToSObject( models, userMap, accountMap, existingActivities );
+		Test.StopTest();
+
+		System.assertEquals( 0, arenaActivities.size(), '0 records, as the hash has NOT changed' );
+	}
+
+	@isTest
+	private static void testConvertArenaModelToSObject_updateExistingWithChange() {
+
+		ArenaActivity__c aa = new ArenaActivity__c( AktivitetsKode__c = 'UTDYRK', KafkaId__c = 'd60gwew775ed-249f-49e6-bd15-ff790b56cc07', KafkaHash__c = 'ewogICAgImFrdGl2aXRldFN0YXR1c2tvZGUiOiAiRlVMTEYiLAogICAgImJlZHJpZnRzbnIiOiA5NzMxMTM2MzEsCiAgICAiYmVza3JpdmVsc2UiOiAiQmVkcmlmdHPDuGtvbm9tc3R1ZGlldCAyMCB2dFxuSMO4Z3Nrb2xla2FuZGlkYXRzdHVkaWV0IG1lZCByZXRuaW5nIGZvciByZWduc2thcHNmw7hyZXJlLiAyMHZ0IiwKICAgICJvcmduck1vcnNlbHNrYXAiOiA5NzEyMjg4NjUsCiAgICAic2Frc2JlaGFuZGxlciI6ICJKRUkxODEyIiwKICAgICJha3Rpdml0ZXRza29kZSI6ICJVVERZUksiLAogICAgImZyYURhdG8iOiAiMjAwMy0wMS0wMSIsCiAgICAidGlsRGF0byI6ICIyMDA0LTEyLTMxIiwKICAgICJyZWdEYXRvIjogIjIwMDMtMDMtMjUiLAogICAgInJlZ1VzZXIiOiAiR0wxODEyIiwKICAgICJha3Rpdml0ZXRzZ3J1cHBla29kZSI6ICJUTFRBSyIsCiAgICAiYWt0aXZpdGV0c3R5cGViZXNrcml2ZWxzZSI6IG51bGwsCiAgICAiYWt0aXZpdGV0c3R5cGVuYXZuIjogIlV0ZGFubmluZyIsCiAgICAiZm9ybmF2biI6ICJKb25uIEVnaWwiLAogICAgImV0dGVybmF2biI6ICJJbmRyZXZvbGwiLAogICAgIm5hdklkZW50IjogIkkxMTEzNDUiCn0=' );
+
+		KafkaMessage__c msg1 = new KafkaMessage__c();
+		msg1.CRM_Topic__c = 'gg-arbeidsgiver-aktivitet-v1';
+		msg1.CRM_Key__c = 'd60gwew775ed-249f-49e6-bd15-ff790b56cc07';
+		msg1.CRM_Value__c = 'ewogICAgImFrdGl2aXRldFN0YXR1c2tvZGUiOiAiRlVMTEYiLAogICAgImJlZHJpZnRzbnIiOiA5NzMxMTM2MzEsCiAgICAiYmVza3JpdmVsc2UiOiAiQmVkcmlmdHPDuGtvbm9tc3R1ZGlldCAyMCB2dFxuSMO4Z3Nrb2xla2FuZGlkYXRzdHVkaWV0IG1lZCByZXRuaW5nIGZvciByZWduc2thcHNmw7hyZXJlLiAyMHZ0IiwKICAgICJvcmduck1vcnNlbHNrYXAiOiA5NzEyMjg4NjUsCiAgICAic2Frc2JlaGFuZGxlciI6ICJKRUkxODEyIiwKICAgICJha3Rpdml0ZXRza29kZSI6ICJVVERZUksyIiwKICAgICJmcmFEYXRvIjogIjIwMDMtMDEtMDEiLAogICAgInRpbERhdG8iOiAiMjAwNC0xMi0zMSIsCiAgICAicmVnRGF0byI6ICIyMDAzLTAzLTI1IiwKICAgICJyZWdVc2VyIjogIkdMMTgxMiIsCiAgICAiYWt0aXZpdGV0c2dydXBwZWtvZGUiOiAiVExUQUsiLAogICAgImFrdGl2aXRldHN0eXBlYmVza3JpdmVsc2UiOiBudWxsLAogICAgImFrdGl2aXRldHN0eXBlbmF2biI6ICJVdGRhbm5pbmciLAogICAgImZvcm5hdm4iOiAiSm9ubiBFZ2lsIiwKICAgICJldHRlcm5hdm4iOiAiSW5kcmV2b2xsIiwKICAgICJuYXZJZGVudCI6ICJJMTExMzQ1Igp9';
+
+		List<KafkaArenaHandler_Model> models = KafkaArenaHandler_Helper.convertKafkaToArenaModel( new List<KafkaMessage__c> { msg1 } );
+		Map<String, User> userMap = SharedIntegrationFunctions.fetchUsersByTitle( new Set<String> { 'GL1812', 'JEI1812' } );
+		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new List<String> { '973113631' } );
+		Map<String, ArenaActivity__c> existingActivities = new Map<String, ArenaActivity__c>();
+		existingActivities.put( aa.KafkaId__c, aa );
+
+		Test.StartTest();
+		List<ArenaActivity__c> arenaActivities = KafkaArenaHandler_Helper.convertArenaModelToSObject( models, userMap, accountMap, existingActivities );
+		Test.StopTest();
+
+		System.assertEquals( 1, arenaActivities.size(), 'Still one activity, as the hash has changed' );
+	}
+
+	@isTest
+	private static void testRemoveDuplicates() {
+
+		KafkaMessage__c msg1 = new KafkaMessage__c();
+		msg1.CRM_Topic__c = 'gg-arbeidsgiver-aktivitet-v1';
+		msg1.CRM_Key__c = 'd60gwew775ed-249f-49e6-bd15-ff790b56cc07';
+		msg1.CRM_Value__c = 'ewogICAgImFrdGl2aXRldFN0YXR1c2tvZGUiOiAiRlVMTEYiLAogICAgImJlZHJpZnRzbnIiOiA5NzMxMTM2MzEsCiAgICAiYmVza3JpdmVsc2UiOiAiQmVkcmlmdHPDuGtvbm9tc3R1ZGlldCAyMCB2dFxuSMO4Z3Nrb2xla2FuZGlkYXRzdHVkaWV0IG1lZCByZXRuaW5nIGZvciByZWduc2thcHNmw7hyZXJlLiAyMHZ0IiwKICAgICJvcmduck1vcnNlbHNrYXAiOiA5NzEyMjg4NjUsCiAgICAic2Frc2JlaGFuZGxlciI6ICJKRUkxODEyIiwKICAgICJha3Rpdml0ZXRza29kZSI6ICJVVERZUksyIiwKICAgICJmcmFEYXRvIjogIjIwMDMtMDEtMDEiLAogICAgInRpbERhdG8iOiAiMjAwNC0xMi0zMSIsCiAgICAicmVnRGF0byI6ICIyMDAzLTAzLTI1IiwKICAgICJyZWdVc2VyIjogIkdMMTgxMiIsCiAgICAiYWt0aXZpdGV0c2dydXBwZWtvZGUiOiAiVExUQUsiLAogICAgImFrdGl2aXRldHN0eXBlYmVza3JpdmVsc2UiOiBudWxsLAogICAgImFrdGl2aXRldHN0eXBlbmF2biI6ICJVdGRhbm5pbmciLAogICAgImZvcm5hdm4iOiAiSm9ubiBFZ2lsIiwKICAgICJldHRlcm5hdm4iOiAiSW5kcmV2b2xsIiwKICAgICJuYXZJZGVudCI6ICJJMTExMzQ1Igp9';
+
+		KafkaMessage__c msg2 = new KafkaMessage__c();
+		msg2.CRM_Topic__c = 'gg-arbeidsgiver-aktivitet-v1';
+		msg2.CRM_Key__c = 'd60gwew775ed-249f-49e6-bd15-ff790b56cc07';
+		msg2.CRM_Value__c = 'ewogICAgImFrdGl2aXRldFN0YXR1c2tvZGUiOiAiRlVMTEYiLAogICAgImJlZHJpZnRzbnIiOiA5NzMxMTM2MzEsCiAgICAiYmVza3JpdmVsc2UiOiAiQmVkcmlmdHPDuGtvbm9tc3R1ZGlldCAyMCB2dFxuSMO4Z3Nrb2xla2FuZGlkYXRzdHVkaWV0IG1lZCByZXRuaW5nIGZvciByZWduc2thcHNmw7hyZXJlLiAyMHZ0IiwKICAgICJvcmduck1vcnNlbHNrYXAiOiA5NzEyMjg4NjUsCiAgICAic2Frc2JlaGFuZGxlciI6ICJKRUkxODEyIiwKICAgICJha3Rpdml0ZXRza29kZSI6ICJVVERZUksiLAogICAgImZyYURhdG8iOiAiMjAwMy0wMS0wMSIsCiAgICAidGlsRGF0byI6ICIyMDA0LTEyLTMxIiwKICAgICJyZWdEYXRvIjogIjIwMDMtMDMtMjUiLAogICAgInJlZ1VzZXIiOiAiR0wxODEyIiwKICAgICJha3Rpdml0ZXRzZ3J1cHBla29kZSI6ICJUTFRBSyIsCiAgICAiYWt0aXZpdGV0c3R5cGViZXNrcml2ZWxzZSI6IG51bGwsCiAgICAiYWt0aXZpdGV0c3R5cGVuYXZuIjogIlV0ZGFubmluZyIsCiAgICAiZm9ybmF2biI6ICJKb25uIEVnaWwiLAogICAgImV0dGVybmF2biI6ICJJbmRyZXZvbGwiLAogICAgIm5hdklkZW50IjogIkkxMTEzNDUiCn0=';
+
+		List<KafkaArenaHandler_Model> models = KafkaArenaHandler_Helper.convertKafkaToArenaModel( new List<KafkaMessage__c> { msg1, msg2 } );
+		Map<String, User> userMap = SharedIntegrationFunctions.fetchUsersByTitle( new Set<String> { 'GL1812', 'JEI1812' } );
+		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new List<String> { '973113631' } );
+		List<ArenaActivity__c> arenaActivities = KafkaArenaHandler_Helper.convertArenaModelToSObject( models, userMap, accountMap, new Map<String, ArenaActivity__c>() );
+
+		System.assertEquals( 2, arenaActivities.size(), 'Two duplicates were added' );
+
+		Test.StartTest();
+		arenaActivities = KafkaArenaHandler_Helper.removeDuplicates( arenaActivities );
+		Test.StopTest();
+
+		System.assertEquals( 1, arenaActivities.size(), 'Should only have one record after removing duplicate' );
+		System.assertEquals( 'UTDYRK', arenaActivities[0].AktivitetsKode__c, 'Activity code should be from the last msg' );
 	}
 
 	@isTest

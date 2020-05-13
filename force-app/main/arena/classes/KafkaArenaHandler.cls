@@ -4,11 +4,17 @@ public inherited sharing class KafkaArenaHandler implements IKafkaMessageConsume
 
 		List<KafkaArenaHandler_Model> arenaModels = KafkaArenaHandler_Helper.convertKafkaToArenaModel( messages );
 		List<String> orgNumbers =                   KafkaArenaHandler_Helper.getOrgNumbers( arenaModels );
-		Set<String> userTitles =                    KafkaArenaHandler_Helper.getUserTitles( arenaModels );
 		Map<String, Account> accountMap =           SharedIntegrationFunctions.fetchAccounts( orgNumbers );
-		Map<String, User> userMap =                 SharedIntegrationFunctions.fetchUsersByTitle( userTitles );
-		List<ArenaActivity__c> arenaActivities =    KafkaArenaHandler_Helper.convertArenaModelToSObject( arenaModels, userMap, accountMap );
 
-		insert arenaActivities;
+		Set<String> userTitles =                    KafkaArenaHandler_Helper.getUserTitles( arenaModels );
+		Map<String, User> userMap =                 SharedIntegrationFunctions.fetchUsersByTitle( userTitles );
+
+		Set<String> kafkaIds =                      KafkaArenaHandler_Helper.getKafkaIds( arenaModels );
+		Map<String, ArenaActivity__c>               existingActivities = KafkaArenaHandler_Helper.getArenaActivity( kafkaIds );
+
+		List<ArenaActivity__c> arenaActivities =    KafkaArenaHandler_Helper.convertArenaModelToSObject( arenaModels, userMap, accountMap, existingActivities );
+		arenaActivities =                           KafkaArenaHandler_Helper.removeDuplicates( arenaActivities );
+
+		upsert arenaActivities ArenaActivity__c.KafkaId__c;
 	}
 }
