@@ -119,7 +119,7 @@ public with sharing class SharedIntegrationFunctions_Helper {
 			if ( !contactMap.containsKey( cw.email.toLowerCase() ) ) {
 
 				Id accountId = accountMap.containsKey( cw.companyNumber ) ? accountMap.get( cw.companyNumber ).Id : null;
-				Contact con = new Contact( FirstName = cw.firstName, LastName = cw.lastName, MobilePhone = cw.phone, AccountId = accountId, TAG_Informed__c = true );
+				Contact con = new Contact( FirstName = cw.firstName, LastName = cw.lastName, MobilePhone = cw.phone, AccountId = accountId, Source__c = 'Integrasjon' );
 
 				// if cw.email is a valid email, add the email
 				if ( SharedIntegrationFunctions_Helper.checkIfValidEmail( cw.email ) ) {
