@@ -12,6 +12,6 @@
 	</values>
 	<values>
 		<field>Topic__c</field>
-		<value xsi:type="xsd:string">aapen-permittering-arbeidsgiver</value>
+		<value xsi:type="xsd:string">privat-arbeidsgiver-aktivitet-crm</value>
 	</values>
 </CustomMetadata>
