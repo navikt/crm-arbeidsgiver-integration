@@ -12,7 +12,7 @@ private without sharing class KafkaArenaHandlerTest {
 		responsibleUser.title = 'JEI1812';
 		update responsibleUser;
 
-		PermissionSet ps = [SELECT Id FROM PermissionSet WHERE Name = 'Arena_activity' LIMIT 1];
+		PermissionSet ps = [SELECT Id FROM PermissionSet WHERE Name = 'Arbeidsgiver_arenaActivity' LIMIT 1];
 		insert new PermissionSetAssignment( AssigneeId = responsibleUser.id, PermissionSetId = ps.Id );
 		insert new PermissionSetAssignment( AssigneeId = registeredUser.id, PermissionSetId = ps.Id );
 
