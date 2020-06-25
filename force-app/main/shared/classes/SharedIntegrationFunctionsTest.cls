@@ -393,7 +393,7 @@ private without sharing class SharedIntegrationFunctionsTest {
 	@isTest
 	private static void testfetchUsersByTitle() {
 
-		User u = TAG_TestDataFactory.createStandardUser();
+		User u = TAG_TestDataFactory.createStandardUser( 'Last UNIQUE NAME' );
 		u.title = 'testTitle';
 		update u;
 

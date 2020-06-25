@@ -4,11 +4,11 @@ private without sharing class KafkaArenaHandler_HelperTest {
 	@testSetup
 	private static void setup() {
 
-		User registeredUser = TAG_TestDataFactory.createStandardUser();
+		User registeredUser = TAG_TestDataFactory.createStandardUser( 'Last UNIQUE NAME' );
 		registeredUser.title = 'GL1812';
 		update registeredUser;
 
-		User responsibleUser = TAG_TestDataFactory.createStandardUser();
+		User responsibleUser = TAG_TestDataFactory.createStandardUser( 'Last UNIQUE NAME' );
 		responsibleUser.title = 'JEI1812';
 		update responsibleUser;
 

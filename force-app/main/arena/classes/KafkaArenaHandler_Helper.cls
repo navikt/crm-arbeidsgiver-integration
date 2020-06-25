@@ -12,6 +12,7 @@ public inherited sharing class KafkaArenaHandler_Helper {
 				msg.CRM_Error__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
 			}
 		}
+		// TODO fix
 
 		return arenaModels;
 	}
