@@ -52,9 +52,9 @@ global with sharing class KontaktSkjemaHandler {
 			INT_MunicipalityNumber__c = rw.municipalityCode,
 			InquiryCategory__c = getType( rw.type ),
 			RecordTypeId = getRecordType( rw.type ),
-			InclusionStage__c = 'Ny henvendelse' );
-
-		if ( Date.today().year() == 2020 ) { co.JsonPayload__c = rw.jsonPayload; }
+			InclusionStage__c = 'Ny henvendelse',
+			JsonPayload__c = rw.jsonPayload
+			);
 
 		if ( isIA( rw.type ) ) {
 			co.INT_RegionNumber__c = rw.regionCode;
