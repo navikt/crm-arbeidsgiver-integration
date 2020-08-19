@@ -38,7 +38,7 @@ private without sharing class KafkaArenaHandlerTest {
 		Test.StartTest();
 		Test.StopTest();
 
-		List<ArenaActivity__c> arenaActivities = [SELECT Id, Account__c, Account__r.INT_OrganizationNumber__c, Aktivitetsgruppekode__c, AktivitetsKode__c, AktivitetStatuskode__c, Aktivitetstype__c, AktivitetstypeBeskrivelse__c, DateFrom__c, DateRegistered__c, DateTo__c, Description__c, RegisteredBy__c, OwnerId FROM ArenaActivity__c];
+		List<ArenaActivity__c> arenaActivities = [SELECT Id, Account__c, Account__r.INT_OrganizationNumber__c, Aktivitetsgruppekode__c, AktivitetsKode__c, AktivitetStatuskode__c, Aktivitetstype__c, AktivitetstypeBeskrivelse__c, DateFrom__c, DateRegistered__c, DateTo__c, Description__c, RegisteredBy__c, CaseWorker__c FROM ArenaActivity__c];
 
 		System.assertEquals( 1, arenaActivities.size(), 'Only one activity added' );
 
@@ -51,7 +51,7 @@ private without sharing class KafkaArenaHandlerTest {
 		System.assertEquals( Date.newInstance( 2004, 12, 31 ), arenaActivities[0].DateTo__c );
 		System.assertEquals( Date.newInstance( 2003, 03, 25 ), arenaActivities[0].DateRegistered__c );
 		System.assertEquals( registeredUser.Id, arenaActivities[0].RegisteredBy__c );
-		System.assertEquals( responsibleUser.Id, arenaActivities[0].OwnerId );
+		System.assertEquals( responsibleUser.Id, arenaActivities[0].CaseWorker__c );
 		System.assertEquals( 'TLTAK', arenaActivities[0].Aktivitetsgruppekode__c );
 		System.assertEquals( null, arenaActivities[0].AktivitetstypeBeskrivelse__c );
 		System.assertEquals( 'Utdanning', arenaActivities[0].Aktivitetstype__c );

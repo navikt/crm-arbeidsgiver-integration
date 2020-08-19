@@ -87,7 +87,7 @@ public inherited sharing class KafkaArenaHandler_Helper {
 
 				aa.RegisteredBy__c = userMap.containsKey( model.regUser ) ? userMap.get( model.regUser ).Id : null;
 				aa.Account__c = accountMap.containsKey( String.valueOf( model.bedriftsnr ) ) ? accountMap.get( String.valueOf( model.bedriftsnr ) ).Id : null;
-				if ( userMap.containsKey( model.saksbehandler ) ) { aa.OwnerId = userMap.get( model.saksbehandler ).Id; }
+				if ( userMap.containsKey( model.saksbehandler ) ) { aa.CaseWorker__c = userMap.get( model.saksbehandler ).Id; }
 
 				arenaActivities.add( aa );
 			}
