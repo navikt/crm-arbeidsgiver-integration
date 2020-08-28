@@ -82,7 +82,9 @@ public inherited sharing class KafkaArenaHandler_Helper {
 					DateTo__c = stringToDate( model.tilDato ),
 					KafkaId__c = model.key,
 					KafkaHash__c = model.hash,
-					JsonPayload__c = model.jsonPayload
+					JsonPayload__c = model.jsonPayload,
+					RegisteredByNavIdent__c = model.regUser,
+					CaseWorkerNavIdent__c = model.saksbehandler
 					);
 
 				aa.RegisteredBy__c = userMap.containsKey( model.regUser ) ? userMap.get( model.regUser ).Id : null;
