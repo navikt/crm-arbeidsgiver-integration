@@ -145,7 +145,9 @@ private without sharing class KafkaArenaHandler_HelperTest {
 		System.assertEquals( Date.newInstance( 2004, 12, 31 ), arenaActivities[0].DateTo__c );
 		System.assertEquals( Date.newInstance( 2003, 03, 25 ), arenaActivities[0].DateRegistered__c );
 		System.assertEquals( registeredUser.Id, arenaActivities[0].RegisteredBy__c );
+		System.assertEquals( 'GL1812', arenaActivities[0].RegisteredByNavIdent__c );
 		System.assertEquals( responsibleUser.Id, arenaActivities[0].CaseWorker__c );
+		System.assertEquals( 'JEI1812', arenaActivities[0].CaseWorkerNavIdent__c );
 		System.assertEquals( 'TLTAK', arenaActivities[0].Aktivitetsgruppekode__c );
 		System.assertEquals( null, arenaActivities[0].AktivitetstypeBeskrivelse__c );
 		System.assertEquals( 'Utdanning', arenaActivities[0].Aktivitetstype__c );
