@@ -51,7 +51,8 @@ global with sharing class KontaktSkjemaHandler {
 			TAG_OrganizationNameFromForm__c = rw.organisationName,
 			INT_MunicipalityNumber__c = rw.municipalityCode,
 			InquiryCategory__c = getType( rw.type ),
-			RecordTypeId = getRecordType( rw.type ),
+			RecordTypeId = inclusionRecordType,
+			// RecordTypeId = getRecordType( rw.type ),
 			InclusionStage__c = 'Ny henvendelse',
 			JsonPayload__c = rw.jsonPayload
 			);

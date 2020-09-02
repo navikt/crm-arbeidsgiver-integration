@@ -4,8 +4,6 @@ private without sharing class KontaktSkjemaHandlerTest {
 	@isTest
 	private static void doPost_agder() {
 
-		Id inclusionRecordType = Schema.SObjectType.CustomOpportunity__c.getRecordTypeInfosByDeveloperName().get( 'Inclusion' ).getRecordTypeId();
-		Id IARecordType = Schema.SObjectType.CustomOpportunity__c.getRecordTypeInfosByDeveloperName().get( 'Inclusive_Employment' ).getRecordTypeId();
 
 		insert new Account( name = 'test', INT_OrganizationNumber__c = '960507878' );
 
@@ -34,8 +32,6 @@ private without sharing class KontaktSkjemaHandlerTest {
 	@isTest
 	private static void doPost_viken() {
 
-		Id inclusionRecordType = Schema.SObjectType.CustomOpportunity__c.getRecordTypeInfosByDeveloperName().get( 'Inclusion' ).getRecordTypeId();
-		Id IARecordType = Schema.SObjectType.CustomOpportunity__c.getRecordTypeInfosByDeveloperName().get( 'Inclusive_Employment' ).getRecordTypeId();
 
 		insert new Account( name = 'test', INT_OrganizationNumber__c = '960507878' );
 
@@ -64,8 +60,6 @@ private without sharing class KontaktSkjemaHandlerTest {
 	@isTest
 	private static void doPost_arbeidstrening() {
 
-		Id inclusionRecordType = Schema.SObjectType.CustomOpportunity__c.getRecordTypeInfosByDeveloperName().get( 'Inclusion' ).getRecordTypeId();
-		Id IARecordType = Schema.SObjectType.CustomOpportunity__c.getRecordTypeInfosByDeveloperName().get( 'Inclusive_Employment' ).getRecordTypeId();
 
 		insert new Account( name = 'test', INT_OrganizationNumber__c = '960507878' );
 
@@ -97,14 +91,11 @@ private without sharing class KontaktSkjemaHandlerTest {
 		System.assertEquals ( 'test@nav.no', CustomOpportunities[0].Contact__r.Email, '"Contact__r.Email" should be "test@nav.no"' );
 		System.assertEquals ( '90080900', CustomOpportunities[0].Contact__r.MobilePhone, '"Contact__r.MobilePhone" should be "90080900"' );
 		System.assertEquals ( '960507878', CustomOpportunities[0].Account__r.INT_OrganizationNumber__c, '"Account__r.INT_OrganizationNumber__c" should be "960507878"' );
-		//System.assertEquals ( inclusionRecordType, CustomOpportunities[0].RecordTypeId, '"Account__r.INT_Ident__c" should be "960507878"' );
 	}
 
 	@isTest
 	private static void doPost_forebyggeSykefravaer() {
 
-		Id inclusionRecordType = Schema.SObjectType.CustomOpportunity__c.getRecordTypeInfosByDeveloperName().get( 'Inclusion' ).getRecordTypeId();
-		Id IARecordType = Schema.SObjectType.CustomOpportunity__c.getRecordTypeInfosByDeveloperName().get( 'Inclusive_Employment' ).getRecordTypeId();
 
 		insert new Account( name = 'test', INT_OrganizationNumber__c = '960507878' );
 
@@ -136,14 +127,11 @@ private without sharing class KontaktSkjemaHandlerTest {
 		System.assertEquals ( 'test@nav.no', CustomOpportunities[0].Contact__r.Email, '"Contact__r.Email" should be "test@nav.no"' );
 		System.assertEquals ( '90080900', CustomOpportunities[0].Contact__r.MobilePhone, '"Contact__r.MobilePhone" should be "90080900"' );
 		System.assertEquals ( '960507878', CustomOpportunities[0].Account__r.INT_OrganizationNumber__c, '"Account__r.INT_OrganizationNumber__c" should be "960507878"' );
-		//System.assertEquals ( IARecordType, CustomOpportunities[0].RecordTypeId, '"Account__r.INT_Ident__c" should be "960507878"' );
 	}
 
 	@isTest
 	private static void doPost_forebyggeSykefravaer_invalidEmail() {
 
-		Id inclusionRecordType = Schema.SObjectType.CustomOpportunity__c.getRecordTypeInfosByDeveloperName().get( 'Inclusion' ).getRecordTypeId();
-		Id IARecordType = Schema.SObjectType.CustomOpportunity__c.getRecordTypeInfosByDeveloperName().get( 'Inclusive_Employment' ).getRecordTypeId();
 
 		insert new Account( name = 'test', INT_OrganizationNumber__c = '960507878' );
 
@@ -173,8 +161,6 @@ private without sharing class KontaktSkjemaHandlerTest {
 	@isTest
 	private static void doPost_rekruttering() {
 
-		Id inclusionRecordType = Schema.SObjectType.CustomOpportunity__c.getRecordTypeInfosByDeveloperName().get( 'Inclusion' ).getRecordTypeId();
-		Id IARecordType = Schema.SObjectType.CustomOpportunity__c.getRecordTypeInfosByDeveloperName().get( 'Inclusive_Employment' ).getRecordTypeId();
 
 		insert new Account( name = 'test', INT_OrganizationNumber__c = '960507878' );
 
@@ -206,14 +192,11 @@ private without sharing class KontaktSkjemaHandlerTest {
 		System.assertEquals ( 'test@nav.no', CustomOpportunities[0].Contact__r.Email, '"Contact__r.Email" should be "test@nav.no"' );
 		System.assertEquals ( '90080900', CustomOpportunities[0].Contact__r.MobilePhone, '"Contact__r.MobilePhone" should be "90080900"' );
 		System.assertEquals ( '960507878', CustomOpportunities[0].Account__r.INT_OrganizationNumber__c, '"Account__r.INT_OrganizationNumber__c" should be "960507878"' );
-		//System.assertEquals ( inclusionRecordType, CustomOpportunities[0].RecordTypeId, '"Account__r.INT_Ident__c" should be "960507878"' );
 	}
 
 	@isTest
 	private static void doPost_rekrutteringMedTilrettelegging() {
 
-		Id inclusionRecordType = Schema.SObjectType.CustomOpportunity__c.getRecordTypeInfosByDeveloperName().get( 'Inclusion' ).getRecordTypeId();
-		Id IARecordType = Schema.SObjectType.CustomOpportunity__c.getRecordTypeInfosByDeveloperName().get( 'Inclusive_Employment' ).getRecordTypeId();
 
 		insert new Account( name = 'test', INT_OrganizationNumber__c = '960507878' );
 
@@ -245,7 +228,6 @@ private without sharing class KontaktSkjemaHandlerTest {
 		System.assertEquals ( 'test@nav.no', CustomOpportunities[0].Contact__r.Email, '"Contact__r.Email" should be "test@nav.no"' );
 		System.assertEquals ( '90080900', CustomOpportunities[0].Contact__r.MobilePhone, '"Contact__r.MobilePhone" should be "90080900"' );
 		System.assertEquals ( '960507878', CustomOpportunities[0].Account__r.INT_OrganizationNumber__c, '"Account__r.INT_OrganizationNumber__c" should be "960507878"' );
-		//System.assertEquals ( inclusionRecordType, CustomOpportunities[0].RecordTypeId, '"Account__r.INT_Ident__c" should be "960507878"' );
 	}
 
 	@isTest
@@ -280,8 +262,6 @@ private without sharing class KontaktSkjemaHandlerTest {
 	@isTest // ! tests the Opportunity process to make sure contacts receive an account after adding an account manually to the opty (happens if a user does not input org number in the web form)
 	private static void other_addingAccountAfterReuqestReceived() {
 
-		Id inclusionRecordType = Schema.SObjectType.CustomOpportunity__c.getRecordTypeInfosByDeveloperName().get( 'Inclusion' ).getRecordTypeId();
-		Id IARecordType = Schema.SObjectType.CustomOpportunity__c.getRecordTypeInfosByDeveloperName().get( 'Inclusive_Employment' ).getRecordTypeId();
 
 		Account acc = new Account( name = 'test', INT_OrganizationNumber__c = '960507878' );
 		insert acc;
@@ -342,8 +322,6 @@ private without sharing class KontaktSkjemaHandlerTest {
 	@isTest
 	private static void other_noOrgNumber() {
 
-		Id inclusionRecordType = Schema.SObjectType.CustomOpportunity__c.getRecordTypeInfosByDeveloperName().get( 'Inclusion' ).getRecordTypeId();
-		Id IARecordType = Schema.SObjectType.CustomOpportunity__c.getRecordTypeInfosByDeveloperName().get( 'Inclusive_Employment' ).getRecordTypeId();
 
 		insert new Account( name = 'test', INT_OrganizationNumber__c = '960507878' );
 
@@ -376,14 +354,11 @@ private without sharing class KontaktSkjemaHandlerTest {
 		System.assertEquals ( '90080900', CustomOpportunities[0].Contact__r.MobilePhone, '"Contact__r.MobilePhone" should be "90080900"' );
 		System.assertEquals ( null, CustomOpportunities[0].Account__c, 'Account is null as no org number was added to the request' );
 		System.assertEquals ( null, CustomOpportunities[0].Contact__r.AccountId, 'Account is null as no org number was added to the request' );
-		//System.assertEquals ( IARecordType, CustomOpportunities[0].RecordTypeId, '"Account__r.INT_Ident__c" should be "960507878"' );
 	}
 
 	@isTest
 	private static void other_notAPilotMunicipality() {
 
-		Id inclusionRecordType = Schema.SObjectType.CustomOpportunity__c.getRecordTypeInfosByDeveloperName().get( 'Inclusion' ).getRecordTypeId();
-		Id IARecordType = Schema.SObjectType.CustomOpportunity__c.getRecordTypeInfosByDeveloperName().get( 'Inclusive_Employment' ).getRecordTypeId();
 
 		insert new Account( name = 'test', INT_OrganizationNumber__c = '960507878' );
 
