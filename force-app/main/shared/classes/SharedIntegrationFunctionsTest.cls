@@ -145,6 +145,14 @@ private without sharing class SharedIntegrationFunctionsTest {
 		wrapper6.companyNumber = '99999999';
 		wrapperList.add( wrapper6 );
 
+		SharedIntegrationFunctions_Helper.ContactWrapper wrapper7 = new SharedIntegrationFunctions_Helper.ContactWrapper();
+		wrapper7.firstName = 'test';
+		wrapper7.lastName = 'etternavn';
+		wrapper7.phone = '90080900';
+		wrapper7.email = 'test@domain..com';
+		wrapper7.companyNumber = '99999999';
+		wrapperList.add( wrapper7 );
+
 		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new List<String> { wrapper.companyNumber } );
 
 		List<Contact> contacts = [SELECT Id FROM Contact];
@@ -155,7 +163,7 @@ private without sharing class SharedIntegrationFunctionsTest {
 		Test.StopTest();
 
 		contacts = [SELECT Id, InvalidEmail__c, Email FROM Contact];
-		System.assertEquals( 6, contacts.size(), 'After, 6 contacts despite invalid email' );
+		System.assertEquals( 7, contacts.size(), 'After, 7 contacts despite invalid email' );
 
 		for ( Contact c : contacts ) {
 			System.assertEquals( null, c.Email, 'Email should be null, as the emailed added is invalid' );
