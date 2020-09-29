@@ -4,13 +4,13 @@ public inherited sharing class KafkaPermitteringHandler implements IKafkaMessage
 
 		List<KafkaPermitteringHandler_Model> permitteringer = KafkaPermitteringHandler_Helper.convertKafkaToPermittering( messages );
 		List<String> organisationNumbers = KafkaPermitteringHandler_Helper.getOrgNumbersFromPermittering( permitteringer );
-		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( organisationNumbers );
+		Map<String, Account> accountMap = SharedFunctions.fetchAccounts( organisationNumbers );
 
 		// creates a list of each user / contact
-		List<SharedIntegrationFunctions_Helper.ContactWrapper> wrapperList = KafkaPermitteringHandler_Helper.convertPermitteringToContactWrapper( permitteringer );
+		List<SharedFunctions_ContactModel> wrapperList = KafkaPermitteringHandler_Helper.convertPermitteringToContactWrapper( permitteringer );
 
 		// will create non-existing contacts and fetch those already existing + map existing contacts to new accounts if represnting another unit
-		Map<String, Contact> contactMap = SharedIntegrationFunctions.fetchOrCreateContact( wrapperList, accountMap );
+		Map<String, Contact> contactMap = SharedFunctions.fetchOrCreateContact( wrapperList, accountMap );
 
 		// create SObject version of layoff
 		List<TemporaryLayoff__c> layoffs = KafkaPermitteringHandler_Helper.convertPermitteringToLayoff( permitteringer, accountMap, contactMap );

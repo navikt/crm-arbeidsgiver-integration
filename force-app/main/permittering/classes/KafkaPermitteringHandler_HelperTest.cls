@@ -55,7 +55,7 @@ private without sharing class KafkaPermitteringHandler_HelperTest {
 		List<KafkaPermitteringHandler_Model> permitteringer = new List<KafkaPermitteringHandler_Model>  { KafkaPermitteringHandler_Model.parse( testJson ) };
 
 		Test.StartTest();
-		List<SharedIntegrationFunctions_Helper.ContactWrapper> result = KafkaPermitteringHandler_Helper.convertPermitteringToContactWrapper( permitteringer );
+		List<SharedFunctions_ContactModel> result = KafkaPermitteringHandler_Helper.convertPermitteringToContactWrapper( permitteringer );
 		Test.StopTest();
 
 		System.assertEquals( 1, result.size(), 'Only one contact' );
@@ -80,10 +80,10 @@ private without sharing class KafkaPermitteringHandler_HelperTest {
 		List<KafkaPermitteringHandler_Model> permitteringer = new List<KafkaPermitteringHandler_Model>  { KafkaPermitteringHandler_Model.parse( testJson ) };
 
 		List<String> organisationNumbers = KafkaPermitteringHandler_Helper.getOrgNumbersFromPermittering( permitteringer );
-		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( organisationNumbers );
+		Map<String, Account> accountMap = SharedFunctions.fetchAccounts( organisationNumbers );
 
-		List<SharedIntegrationFunctions_Helper.ContactWrapper> wrapperList = KafkaPermitteringHandler_Helper.convertPermitteringToContactWrapper( permitteringer );
-		Map<String, Contact> contactMap = SharedIntegrationFunctions.fetchOrCreateContact( wrapperList, accountMap );
+		List<SharedFunctions_ContactModel> wrapperList = KafkaPermitteringHandler_Helper.convertPermitteringToContactWrapper( permitteringer );
+		Map<String, Contact> contactMap = SharedFunctions.fetchOrCreateContact( wrapperList, accountMap );
 
 		Test.StartTest();
 		List<TemporaryLayoff__c> result = KafkaPermitteringHandler_Helper.convertPermitteringToLayoff( permitteringer, accountMap, contactMap );
@@ -114,10 +114,10 @@ private without sharing class KafkaPermitteringHandler_HelperTest {
 		List<KafkaPermitteringHandler_Model> permitteringer = new List<KafkaPermitteringHandler_Model>  { KafkaPermitteringHandler_Model.parse( testJson ) };
 
 		List<String> organisationNumbers = KafkaPermitteringHandler_Helper.getOrgNumbersFromPermittering( permitteringer );
-		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( organisationNumbers );
+		Map<String, Account> accountMap = SharedFunctions.fetchAccounts( organisationNumbers );
 
-		List<SharedIntegrationFunctions_Helper.ContactWrapper> wrapperList = KafkaPermitteringHandler_Helper.convertPermitteringToContactWrapper( permitteringer );
-		Map<String, Contact> contactMap = SharedIntegrationFunctions.fetchOrCreateContact( wrapperList, accountMap );
+		List<SharedFunctions_ContactModel> wrapperList = KafkaPermitteringHandler_Helper.convertPermitteringToContactWrapper( permitteringer );
+		Map<String, Contact> contactMap = SharedFunctions.fetchOrCreateContact( wrapperList, accountMap );
 
 		Test.StartTest();
 		List<TemporaryLayoff__c> result = KafkaPermitteringHandler_Helper.convertPermitteringToLayoff( permitteringer, accountMap, contactMap );
