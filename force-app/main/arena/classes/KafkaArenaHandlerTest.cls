@@ -36,6 +36,7 @@ private without sharing class KafkaArenaHandlerTest {
 		insert msg1;
 
 		Test.StartTest();
+		AsyncRequestSchedulable.enqueueAsyncJobs();
 		Test.StopTest();
 
 		List<ArenaActivity__c> arenaActivities = [SELECT Id, Account__c, Account__r.INT_OrganizationNumber__c, Aktivitetsgruppekode__c, AktivitetsKode__c, AktivitetStatuskode__c, Aktivitetstype__c, AktivitetstypeBeskrivelse__c, DateFrom__c, DateRegistered__c, DateTo__c, Description__c, RegisteredBy__c, CaseWorker__c FROM ArenaActivity__c];
@@ -72,6 +73,7 @@ private without sharing class KafkaArenaHandlerTest {
 		insert msg1;
 
 		Test.StartTest();
+		AsyncRequestSchedulable.enqueueAsyncJobs();
 		Test.StopTest();
 
 		List<ArenaActivity__c> aa = [SELECT CreatedDate, LastModifiedDate, AktivitetsKode__c FROM ArenaActivity__c];
@@ -95,6 +97,7 @@ private without sharing class KafkaArenaHandlerTest {
 		insert msg1;
 
 		Test.StartTest();
+		AsyncRequestSchedulable.enqueueAsyncJobs();
 		Test.StopTest();
 
 		List<ArenaActivity__c> aa = [SELECT CreatedDate, LastModifiedDate, AktivitetsKode__c FROM ArenaActivity__c];
@@ -119,7 +122,9 @@ private without sharing class KafkaArenaHandlerTest {
 		msg2.CRM_Value__c = 'ewogICAgImFrdGl2aXRldFN0YXR1c2tvZGUiOiAiRlVMTEYiLAogICAgImJlZHJpZnRzbnIiOiA5NzMxMTM2MzEsCiAgICAiYmVza3JpdmVsc2UiOiAiQmVkcmlmdHPDuGtvbm9tc3R1ZGlldCAyMCB2dFxuSMO4Z3Nrb2xla2FuZGlkYXRzdHVkaWV0IG1lZCByZXRuaW5nIGZvciByZWduc2thcHNmw7hyZXJlLiAyMHZ0IiwKICAgICJvcmduck1vcnNlbHNrYXAiOiA5NzEyMjg4NjUsCiAgICAic2Frc2JlaGFuZGxlciI6ICJKRUkxODEyIiwKICAgICJha3Rpdml0ZXRza29kZSI6ICJVVERZUksiLAogICAgImZyYURhdG8iOiAiMjAwMy0wMS0wMSIsCiAgICAidGlsRGF0byI6ICIyMDA0LTEyLTMxIiwKICAgICJyZWdEYXRvIjogIjIwMDMtMDMtMjUiLAogICAgInJlZ1VzZXIiOiAiR0wxODEyIiwKICAgICJha3Rpdml0ZXRzZ3J1cHBla29kZSI6ICJUTFRBSyIsCiAgICAiYWt0aXZpdGV0c3R5cGViZXNrcml2ZWxzZSI6IG51bGwsCiAgICAiYWt0aXZpdGV0c3R5cGVuYXZuIjogIlV0ZGFubmluZyIsCiAgICAiZm9ybmF2biI6ICJKb25uIEVnaWwiLAogICAgImV0dGVybmF2biI6ICJJbmRyZXZvbGwiLAogICAgIm5hdklkZW50IjogIkkxMTEzNDUiCn0=';
 		insert new List<KafkaMessage__c> { msg1, msg2 };
 
+
 		Test.StartTest();
+		AsyncRequestSchedulable.enqueueAsyncJobs();
 		Test.StopTest();
 
 		System.assertEquals( 1, [SELECT Count() FROM ArenaActivity__c], 'only one activity added, both had same uuid' );
@@ -137,6 +142,7 @@ private without sharing class KafkaArenaHandlerTest {
 		insert msg1;
 
 		Test.StartTest();
+		AsyncRequestSchedulable.enqueueAsyncJobs();
 		Test.StopTest();
 
 		List<ArenaActivity__c> arenaActivities = [SELECT Id, Account__c, RegisteredBy__c, OwnerId FROM ArenaActivity__c];
