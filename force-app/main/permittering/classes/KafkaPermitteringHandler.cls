@@ -1,4 +1,4 @@
-public inherited sharing class KafkaPermitteringHandler implements IKafkaMessageConsumer {
+public without sharing class KafkaPermitteringHandler implements IKafkaMessageConsumer {
 
 	public void processMessages( List<KafkaMessage__c> messages ) {
 

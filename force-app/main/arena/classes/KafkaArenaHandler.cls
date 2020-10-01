@@ -1,4 +1,4 @@
-public inherited sharing class KafkaArenaHandler implements IKafkaMessageConsumer {
+public without sharing class KafkaArenaHandler implements IKafkaMessageConsumer {
 
 	public void processMessages( List<KafkaMessage__c> messages ) {
 
