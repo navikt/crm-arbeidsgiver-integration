@@ -31,17 +31,18 @@ global with sharing class KontaktSkjemaHandler {
 			return null;
 		}
 
-		SharedIntegrationFunctions_Helper.ContactWrapper wrapper = new SharedIntegrationFunctions_Helper.ContactWrapper();
+		SharedFunctions_ContactModel wrapper = new SharedFunctions_ContactModel();
 		wrapper.firstName = rw.firstName;
 		wrapper.lastName = rw.lastName;
 		wrapper.phone = rw.phoneNo;
 		wrapper.email = rw.email;
+		wrapper.source = 'Kontaktskjema';
 		wrapper.companyNumber = rw.organisationNumber;
-		List<SharedIntegrationFunctions_Helper.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions_Helper.ContactWrapper> { wrapper };
+		List<SharedFunctions_ContactModel> wrapperList = new List<SharedFunctions_ContactModel> { wrapper };
 
-		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new List<String> { rw.organisationNumber } );
+		Map<String, Account> accountMap = SharedFunctions.fetchAccounts( new List<String> { rw.organisationNumber } );
 		Id accountId = accountMap.containsKey( rw.organisationNumber ) ? accountMap.get( rw.organisationNumber ).Id : null;
-		Map<String, Contact> contactMap = SharedIntegrationFunctions.fetchOrCreateContact( wrapperList, accountMap );
+		Map<String, Contact> contactMap = SharedFunctions.fetchOrCreateContact( wrapperList, accountMap );
 		Id contactId = contactMap.containsKey( rw.email ) ? contactMap.get( rw.email ).Id : null;
 
 		CustomOpportunity__c co = new CustomOpportunity__c(

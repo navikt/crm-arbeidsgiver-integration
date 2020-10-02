@@ -115,6 +115,7 @@ private without sharing class KafkaPermitteringHandlerTest {
 		System.assertEquals( 0, result.size(), 'No messages added' );
 
 		Test.startTest();
+		AsyncRequestSchedulable.enqueueAsyncJobs();
 		Test.stopTest();
 
 		result = [SELECT Id FROM TemporaryLayoff__c];
@@ -157,6 +158,7 @@ private without sharing class KafkaPermitteringHandlerTest {
 		insert new List<KafkaMessage__c> { msg1, msg2 };
 
 		Test.startTest();
+		AsyncRequestSchedulable.enqueueAsyncJobs();
 		Test.stopTest();
 
 		List<TemporaryLayoff__c> result = [SELECT Id FROM TemporaryLayoff__c];

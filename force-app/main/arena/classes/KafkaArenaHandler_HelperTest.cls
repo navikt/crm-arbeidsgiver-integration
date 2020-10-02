@@ -128,7 +128,7 @@ private without sharing class KafkaArenaHandler_HelperTest {
 
 		List<KafkaArenaHandler_Model> models = KafkaArenaHandler_Helper.convertKafkaToArenaModel( new List<KafkaMessage__c> { msg1 } );
 		Map<String, User> userMap = SharedIntegrationFunctions.fetchUsersByTitle( new Set<String> { 'GL1812', 'JEI1812' } );
-		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new List<String> { '973113631' } );
+		Map<String, Account> accountMap = SharedFunctions.fetchAccounts( new List<String> { '973113631' } );
 
 
 		Test.StartTest();
@@ -165,7 +165,7 @@ private without sharing class KafkaArenaHandler_HelperTest {
 
 		List<KafkaArenaHandler_Model> models = KafkaArenaHandler_Helper.convertKafkaToArenaModel( new List<KafkaMessage__c> { msg1 } );
 		Map<String, User> userMap = SharedIntegrationFunctions.fetchUsersByTitle( new Set<String> { 'GL1812', 'JEI1812' } );
-		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new List<String> { '973113631' } );
+		Map<String, Account> accountMap = SharedFunctions.fetchAccounts( new List<String> { '973113631' } );
 		Map<String, ArenaActivity__c> existingActivities = new Map<String, ArenaActivity__c>();
 		existingActivities.put( aa.KafkaId__c, aa );
 
@@ -188,7 +188,7 @@ private without sharing class KafkaArenaHandler_HelperTest {
 
 		List<KafkaArenaHandler_Model> models = KafkaArenaHandler_Helper.convertKafkaToArenaModel( new List<KafkaMessage__c> { msg1 } );
 		Map<String, User> userMap = SharedIntegrationFunctions.fetchUsersByTitle( new Set<String> { 'GL1812', 'JEI1812' } );
-		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new List<String> { '973113631' } );
+		Map<String, Account> accountMap = SharedFunctions.fetchAccounts( new List<String> { '973113631' } );
 		Map<String, ArenaActivity__c> existingActivities = new Map<String, ArenaActivity__c>();
 		existingActivities.put( aa.KafkaId__c, aa );
 
@@ -214,7 +214,7 @@ private without sharing class KafkaArenaHandler_HelperTest {
 
 		List<KafkaArenaHandler_Model> models = KafkaArenaHandler_Helper.convertKafkaToArenaModel( new List<KafkaMessage__c> { msg1, msg2 } );
 		Map<String, User> userMap = SharedIntegrationFunctions.fetchUsersByTitle( new Set<String> { 'GL1812', 'JEI1812' } );
-		Map<String, Account> accountMap = SharedIntegrationFunctions.fetchAccounts( new List<String> { '973113631' } );
+		Map<String, Account> accountMap = SharedFunctions.fetchAccounts( new List<String> { '973113631' } );
 		List<ArenaActivity__c> arenaActivities = KafkaArenaHandler_Helper.convertArenaModelToSObject( models, userMap, accountMap, new Map<String, ArenaActivity__c>() );
 
 		System.assertEquals( 2, arenaActivities.size(), 'Two duplicates were added' );

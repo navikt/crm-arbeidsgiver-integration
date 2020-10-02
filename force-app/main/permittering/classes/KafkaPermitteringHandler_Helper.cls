@@ -4,12 +4,12 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
 		List<KafkaPermitteringHandler_Model> permitteringer = new List<KafkaPermitteringHandler_Model>();
 		for ( KafkaMessage__c msg : messages ) {
 			try {
-				msg.CRM_IsProcessed__c = true;
+				msg.CRM_Status__c = 'Processed';
 				String decodedValue = KafkaMessageUtils.base64ULSafeDecode( msg.CRM_Value__c ).toString();
 				KafkaPermitteringHandler_Model p = KafkaPermitteringHandler_Model.parse( decodedValue );
 				permitteringer.add( p );
 			} catch ( Exception e ) {
-				msg.CRM_Error__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
+				msg.CRM_ErrorMessage__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
 			}
 		}
 
@@ -25,18 +25,19 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
 		return organisationNumbers;
 	}
 
-	public static List<SharedIntegrationFunctions_Helper.ContactWrapper> convertPermitteringToContactWrapper( List<KafkaPermitteringHandler_Model> permitteringer ) {
-		List<SharedIntegrationFunctions_Helper.ContactWrapper> wrapperList = new List<SharedIntegrationFunctions_Helper.ContactWrapper>();
+	public static List<SharedFunctions_ContactModel> convertPermitteringToContactWrapper( List<KafkaPermitteringHandler_Model> permitteringer ) {
+		List<SharedFunctions_ContactModel> wrapperList = new List<SharedFunctions_ContactModel>();
 
 		for ( KafkaPermitteringHandler_Model p : permitteringer ) {
 			List<String> name = p.kontaktNavn.split( ' ' );
 			String lastName = name[name.size() - 1];
 			String firstName = p.kontaktNavn.removeEnd( ' ' + lastName );
-			SharedIntegrationFunctions_Helper.ContactWrapper wrapper = new SharedIntegrationFunctions_Helper.ContactWrapper();
+			SharedFunctions_ContactModel wrapper = new SharedFunctions_ContactModel();
 			wrapper.firstName = firstName;
 			wrapper.lastName = lastName;
 			wrapper.phone = p.kontaktTlf;
 			wrapper.email = p.kontaktEpost;
+			wrapper.source = 'Permittering';
 			wrapper.companyNumber = p.bedriftsnummer;
 			wrapperList.add( wrapper );
 		}
@@ -63,7 +64,7 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
 		tl.KafkaId__c = p.id;
 		tl.NumberOfEmployees__c = p.antallBerorte;
 		tl.Type__c = p.type;
-		tl.ContactEmail__c = SharedIntegrationFunctions_Helper.checkIfValidEmail( p.kontaktEpost ) ? p.kontaktEpost : null;
+		tl.ContactEmail__c = SharedFunctions_FetchOrCreateContact.checkIfValidEmail( p.kontaktEpost ) ? p.kontaktEpost : null;
 		tl.StartDate__c = p.startDato;
 		tl.EndDate__c = p.sluttDato;
 		tl.OtherComments__c = p.fritekst;

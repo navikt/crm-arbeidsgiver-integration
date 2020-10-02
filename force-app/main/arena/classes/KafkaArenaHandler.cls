@@ -1,10 +1,10 @@
-public inherited sharing class KafkaArenaHandler implements IKafkaMessageConsumer {
+public without sharing class KafkaArenaHandler implements IKafkaMessageConsumer {
 
 	public void processMessages( List<KafkaMessage__c> messages ) {
 
 		List<KafkaArenaHandler_Model> arenaModels = KafkaArenaHandler_Helper.convertKafkaToArenaModel( messages );
 		List<String> orgNumbers =                   KafkaArenaHandler_Helper.getOrgNumbers( arenaModels );
-		Map<String, Account> accountMap =           SharedIntegrationFunctions.fetchAccounts( orgNumbers );
+		Map<String, Account> accountMap =           SharedFunctions.fetchAccounts( orgNumbers );
 
 		Set<String> userTitles =                    KafkaArenaHandler_Helper.getUserTitles( arenaModels );
 		Map<String, User> userMap =                 SharedIntegrationFunctions.fetchUsersByTitle( userTitles );
