@@ -2,7 +2,7 @@
 private without sharing class KontaktSkjemaHandlerTest {
 
 	@isTest
-	private static void doPost_agder() {
+	private static void doPost_municipalityAgder() {
 
 
 		insert new Account( name = 'test', INT_OrganizationNumber__c = '960507878' );
@@ -30,7 +30,7 @@ private without sharing class KontaktSkjemaHandlerTest {
 	}
 
 	@isTest
-	private static void doPost_viken() {
+	private static void doPost_municipalityViken() {
 
 
 		insert new Account( name = 'test', INT_OrganizationNumber__c = '960507878' );
@@ -54,7 +54,88 @@ private without sharing class KontaktSkjemaHandlerTest {
 		CustomOpportunities = [SELECT Id, InquiryCategory__c, RecordTypeId, INT_RegionNumber__c, INT_MunicipalityNumber__c, TAG_OrganizationNameFromForm__c, Contact__r.FirstName, Contact__r.LastName, Contact__r.Email, Contact__r.MobilePhone, Account__r.INT_OrganizationNumber__c FROM CustomOpportunity__c];
 		System.assertEquals( 1, CustomOpportunities.size(), 'Size should be one after insert' );
 
-		System.assertNotEquals ( null, result, 'Returned value should not be null, as Agder is not in the pilot' );
+		System.assertNotEquals ( null, result, 'Returned value should NOT be null, as Agder is not in the pilot' );
+	}
+
+	@isTest
+	private static void doPost_regionInnlandet() {
+
+		insert new Account( name = 'test', INT_OrganizationNumber__c = '960507878' );
+
+		List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
+		System.assertEquals( 0, CustomOpportunities.size(), 'Size should be zero before' );
+
+		RestRequest req = new RestRequest();
+		RestResponse res = new RestResponse();
+
+		req.requestURI = '/services/apexrest/ContactForm';
+		req.httpMethod = 'POST';
+		req.requestBody = Blob.valueof( '{ "type":"ARBEIDSTRENING","municipalityCode":"3428","organisationName":"Finstadtunet","organisationNumber":"960507878","firstName":"TestNavn","lastName":"TestEtternavn","email":"test@nav.no","phoneNo":"90080900","RegionCode":"0400" }' );
+		RestContext.request = req;
+		RestContext.response = res;
+
+		Test.startTest();
+		String result = KontaktSkjemaHandler.doPost();
+		Test.stopTest();
+
+		CustomOpportunities = [SELECT Id, InquiryCategory__c, RecordTypeId, INT_RegionNumber__c, INT_MunicipalityNumber__c, TAG_OrganizationNameFromForm__c, Contact__r.FirstName, Contact__r.LastName, Contact__r.Email, Contact__r.MobilePhone, Account__r.INT_OrganizationNumber__c FROM CustomOpportunity__c];
+		System.assertEquals( 1, CustomOpportunities.size(), 'Size should be one after insert' );
+
+		System.assertNotEquals ( null, result, 'Returned value should NOT be null, as Agder is not in the pilot' );
+	}
+
+	@isTest
+	private static void doPost_regionNordland() {
+
+		insert new Account( name = 'test', INT_OrganizationNumber__c = '960507878' );
+
+		List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
+		System.assertEquals( 0, CustomOpportunities.size(), 'Size should be zero before' );
+
+		RestRequest req = new RestRequest();
+		RestResponse res = new RestResponse();
+
+		req.requestURI = '/services/apexrest/ContactForm';
+		req.httpMethod = 'POST';
+		req.requestBody = Blob.valueof( '{ "type":"ARBEIDSTRENING","municipalityCode":"1820","organisationName":"Finstadtunet","organisationNumber":"960507878","firstName":"TestNavn","lastName":"TestEtternavn","email":"test@nav.no","phoneNo":"90080900","RegionCode":"1800" }' );
+		RestContext.request = req;
+		RestContext.response = res;
+
+		Test.startTest();
+		String result = KontaktSkjemaHandler.doPost();
+		Test.stopTest();
+
+		CustomOpportunities = [SELECT Id, InquiryCategory__c, RecordTypeId, INT_RegionNumber__c, INT_MunicipalityNumber__c, TAG_OrganizationNameFromForm__c, Contact__r.FirstName, Contact__r.LastName, Contact__r.Email, Contact__r.MobilePhone, Account__r.INT_OrganizationNumber__c FROM CustomOpportunity__c];
+		System.assertEquals( 1, CustomOpportunities.size(), 'Size should be one after insert' );
+
+		System.assertNotEquals ( null, result, 'Returned value should NOT be null, as Agder is not in the pilot' );
+	}
+
+	@isTest
+	private static void doPost_regionRogaland() {
+
+		insert new Account( name = 'test', INT_OrganizationNumber__c = '960507878' );
+
+		List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
+		System.assertEquals( 0, CustomOpportunities.size(), 'Size should be zero before' );
+
+		RestRequest req = new RestRequest();
+		RestResponse res = new RestResponse();
+
+		req.requestURI = '/services/apexrest/ContactForm';
+		req.httpMethod = 'POST';
+		req.requestBody = Blob.valueof( '{ "type":"ARBEIDSTRENING","municipalityCode":"1114","organisationName":"Finstadtunet","organisationNumber":"960507878","firstName":"TestNavn","lastName":"TestEtternavn","email":"test@nav.no","phoneNo":"90080900","RegionCode":"1100" }' );
+		RestContext.request = req;
+		RestContext.response = res;
+
+		Test.startTest();
+		String result = KontaktSkjemaHandler.doPost();
+		Test.stopTest();
+
+		CustomOpportunities = [SELECT Id, InquiryCategory__c, RecordTypeId, INT_RegionNumber__c, INT_MunicipalityNumber__c, TAG_OrganizationNameFromForm__c, Contact__r.FirstName, Contact__r.LastName, Contact__r.Email, Contact__r.MobilePhone, Account__r.INT_OrganizationNumber__c FROM CustomOpportunity__c];
+		System.assertEquals( 0, CustomOpportunities.size(), 'Size should still be zero because rogaland shouldnt be added' );
+
+		System.assertEquals ( null, result, 'Returned value SHOULD BE null, as Agder is not in the pilot' );
 	}
 
 	@isTest
