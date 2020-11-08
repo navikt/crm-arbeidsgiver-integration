@@ -2,7 +2,7 @@
 global with sharing class KontaktSkjemaHandler {
 
 	private static List<String> PILOT_MUNICIPALITIES = new List<String> { '3001', '3002', '3003', '3004', '3011', '3012', '3013', '3014', '3015', '3016', '3017', '3018', '3019', '3020', '3021', '3022', '3023', '3026', '3027', '3028', '3029', '3030', '3031', '3032', '3033', '3034', '3035', '3036', '3037', '4201', '4202', '4203', '4204', '4205', '4206', '4207', '4211', '4212', '4213', '4214', '4215', '4216', '4217', '4218', '4219', '4220', '4221', '4222', '4223', '4224', '4225', '4226', '4227', '4228' };
-	private static List<String> PILOT_REGION = new List<String> { '1800', '0400' };
+	private static List<String> PILOT_REGION = new List<String> { '1800', '0400', '0500', '3400' };
 
 	public static Id inclusionRecordType = Schema.SObjectType.CustomOpportunity__c.getRecordTypeInfosByDeveloperName().get( 'Inclusion' ).getRecordTypeId();
 	public static Id IARecordType = Schema.SObjectType.CustomOpportunity__c.getRecordTypeInfosByDeveloperName().get( 'Inclusive_Employment' ).getRecordTypeId();
