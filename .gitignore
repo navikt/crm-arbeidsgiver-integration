@@ -5,6 +5,9 @@
 # profiles
 **/profiles/*
 
+# lwc config
+**/jsconfig.json
+
 # NOTE!! USE **/ before
 !**/unpackagable/profiles/* 
 # NOTE!! USE **/ before
