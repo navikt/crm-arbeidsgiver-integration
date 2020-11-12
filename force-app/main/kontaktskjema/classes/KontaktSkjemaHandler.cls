@@ -44,7 +44,7 @@ global with sharing class KontaktSkjemaHandler {
 		Map<String, Account> accountMap = SharedFunctions.fetchAccounts( new List<String> { rw.organisationNumber } );
 		Id accountId = accountMap.containsKey( rw.organisationNumber ) ? accountMap.get( rw.organisationNumber ).Id : null;
 		Map<String, Contact> contactMap = SharedFunctions.fetchOrCreateContact( wrapperList, accountMap );
-		Id contactId = contactMap.containsKey( rw.email ) ? contactMap.get( rw.email ).Id : null;
+		Id contactId = contactMap.containsKey( rw.email.toLowerCase() ) ? contactMap.get( rw.email.toLowerCase() ).Id : null;
 
 		CustomOpportunity__c co = new CustomOpportunity__c(
 			Account__c = accountId,
