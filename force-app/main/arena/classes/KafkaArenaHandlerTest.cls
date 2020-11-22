@@ -1,23 +1,22 @@
 @IsTest
 private without sharing class KafkaArenaHandlerTest {
 
-	@testSetup
-	private static void setup() {
+	// @testSetup
+	// private static void setup() {
 
-		User registeredUser = TAG_TestDataFactory.createStandardUser( 'Last UNIQUE NAME' );
-		registeredUser.title = 'GL1812';
-		update registeredUser;
+	// 	User registeredUser = TAG_TestDataFactory.createStandardUser( 'Last UNIQUE NAME' );
+	// 	registeredUser.title = 'GL1812';
+	// 	update registeredUser;
 
-		User responsibleUser = TAG_TestDataFactory.createStandardUser( 'Last UNIQUE NAME' );
-		responsibleUser.title = 'JEI1812';
-		update responsibleUser;
+	// 	User responsibleUser = TAG_TestDataFactory.createStandardUser( 'Last UNIQUE NAME' );
+	// 	responsibleUser.title = 'JEI1812';
+	// 	update responsibleUser;
 
-		PermissionSet ps = [SELECT Id FROM PermissionSet WHERE Name = 'Arbeidsgiver_arenaActivity' LIMIT 1];
-		insert new PermissionSetAssignment( AssigneeId = responsibleUser.id, PermissionSetId = ps.Id );
-		insert new PermissionSetAssignment( AssigneeId = registeredUser.id, PermissionSetId = ps.Id );
+	// 	PermissionSet ps = [SELECT Id FROM PermissionSet WHERE Name = 'Arbeidsgiver_arenaActivity' LIMIT 1];
+	// 	insert new PermissionSetAssignment( AssigneeId = responsibleUser.id, PermissionSetId = ps.Id );
+	// 	insert new PermissionSetAssignment( AssigneeId = registeredUser.id, PermissionSetId = ps.Id );
 
-	}
-
+	// }
 	@isTest
 	private static void testHandleMessages() {
 
@@ -26,8 +25,8 @@ private without sharing class KafkaArenaHandlerTest {
 		Account acc = new Account( Name = 'Test Employer 1', INT_OrganizationNumber__c = '973113631' );
 		insert acc;
 
-		User registeredUser = [SELECT Id FROM User WHERE Title = 'GL1812' LIMIT 1][0];
-		User responsibleUser = [SELECT Id FROM User WHERE Title = 'JEI1812' LIMIT 1][0];
+		// User registeredUser = [SELECT Id FROM User WHERE Title = 'GL1812' LIMIT 1][0];
+		// User responsibleUser = [SELECT Id FROM User WHERE Title = 'JEI1812' LIMIT 1][0];
 
 		KafkaMessage__c msg1 = new KafkaMessage__c();
 		msg1.CRM_Topic__c = 'privat-arbeidsgiver-aktivitet-crm';
@@ -39,7 +38,7 @@ private without sharing class KafkaArenaHandlerTest {
 		AsyncRequestSchedulable.enqueueAsyncJobs();
 		Test.StopTest();
 
-		List<ArenaActivity__c> arenaActivities = [SELECT Id, Account__c, Account__r.INT_OrganizationNumber__c, Aktivitetsgruppekode__c, AktivitetsKode__c, AktivitetStatuskode__c, Aktivitetstype__c, AktivitetstypeBeskrivelse__c, DateFrom__c, DateRegistered__c, DateTo__c, Description__c, RegisteredBy__c, CaseWorker__c FROM ArenaActivity__c];
+		List<ArenaActivity__c> arenaActivities = [SELECT Id, Account__c, Account__r.INT_OrganizationNumber__c, Aktivitetsgruppekode__c, AktivitetsKode__c, AktivitetStatuskode__c, Aktivitetstype__c, AktivitetstypeBeskrivelse__c, DateFrom__c, DateRegistered__c, DateTo__c, Description__c/*, RegisteredBy__c, CaseWorker__c*/ FROM ArenaActivity__c];
 
 		System.assertEquals( 1, arenaActivities.size(), 'Only one activity added' );
 
@@ -51,11 +50,12 @@ private without sharing class KafkaArenaHandlerTest {
 		System.assertEquals( Date.newInstance( 2003, 01, 01 ), arenaActivities[0].DateFrom__c );
 		System.assertEquals( Date.newInstance( 2004, 12, 31 ), arenaActivities[0].DateTo__c );
 		System.assertEquals( Date.newInstance( 2003, 03, 25 ), arenaActivities[0].DateRegistered__c );
-		System.assertEquals( registeredUser.Id, arenaActivities[0].RegisteredBy__c );
-		System.assertEquals( responsibleUser.Id, arenaActivities[0].CaseWorker__c );
+		// System.assertEquals( registeredUser.Id, arenaActivities[0].RegisteredBy__c );
+		// System.assertEquals( responsibleUser.Id, arenaActivities[0].CaseWorker__c );
 		System.assertEquals( 'TLTAK', arenaActivities[0].Aktivitetsgruppekode__c );
 		System.assertEquals( null, arenaActivities[0].AktivitetstypeBeskrivelse__c );
 		System.assertEquals( 'Utdanning', arenaActivities[0].Aktivitetstype__c );
+		System.assertEquals( 'Jonn Egil Indrevoll', arenaActivities[0].CaseWorkerName__c );
 	}
 
 	@isTest
@@ -145,11 +145,11 @@ private without sharing class KafkaArenaHandlerTest {
 		AsyncRequestSchedulable.enqueueAsyncJobs();
 		Test.StopTest();
 
-		List<ArenaActivity__c> arenaActivities = [SELECT Id, Account__c, RegisteredBy__c, OwnerId FROM ArenaActivity__c];
+		List<ArenaActivity__c> arenaActivities = [SELECT Id, Account__c, /*RegisteredBy__c, */OwnerId FROM ArenaActivity__c];
 
 		System.assertEquals( 1, arenaActivities.size(), 'Only one activity added' );
 		System.assertEquals( null, arenaActivities[0].Account__c );
-		System.assertEquals( null, arenaActivities[0].RegisteredBy__c );
+		// System.assertEquals( null, arenaActivities[0].RegisteredBy__c );
 		System.assertEquals( System.UserInfo.getUserId(), arenaActivities[0].OwnerId );
 	}
 }
