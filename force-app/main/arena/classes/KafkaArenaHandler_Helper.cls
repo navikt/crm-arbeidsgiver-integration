@@ -26,16 +26,6 @@ public inherited sharing class KafkaArenaHandler_Helper {
 		return orgNumbers;
 	}
 
-	// public static Set<String> getUserTitles( List<KafkaArenaHandler_Model> models ) {
-	// 	Set<String> userTitles = new Set<String>();
-	// 	for ( KafkaArenaHandler_Model model : models ) {
-	// 		userTitles.add( model.regUser );
-	// 		userTitles.add( model.saksbehandler );
-	// 	}
-
-	// 	return userTitles;
-	// }
-
 	public static Set<String> getKafkaIds( List<KafkaArenaHandler_Model> models ) {
 		Set<String> kafkaIds = new Set<String>();
 		for ( KafkaArenaHandler_Model model : models ) {
@@ -55,7 +45,7 @@ public inherited sharing class KafkaArenaHandler_Helper {
 		return aaMap;
 	}
 
-	public static List<ArenaActivity__c> convertArenaModelToSObject( List<KafkaArenaHandler_Model> models, /*Map<String, User> userMap,*/ Map<String, Account> accountMap, Map<String, ArenaActivity__c> existingActivities ) {
+	public static List<ArenaActivity__c> convertArenaModelToSObject( List<KafkaArenaHandler_Model> models, Map<String, Account> accountMap, Map<String, ArenaActivity__c> existingActivities ) {
 
 		List<ArenaActivity__c> arenaActivities = new List<ArenaActivity__c>();
 
@@ -88,9 +78,7 @@ public inherited sharing class KafkaArenaHandler_Helper {
 					CaseWorkerName__c = model.fornavn + ' ' + model.etternavn
 					);
 
-				//aa.RegisteredBy__c = userMap.containsKey( model.regUser ) ? userMap.get( model.regUser ).Id : null;
 				aa.Account__c = accountMap.containsKey( String.valueOf( model.bedriftsnr ) ) ? accountMap.get( String.valueOf( model.bedriftsnr ) ).Id : null;
-				//if ( userMap.containsKey( model.saksbehandler ) ) { aa.CaseWorker__c = userMap.get( model.saksbehandler ).Id; }
 
 				arenaActivities.add( aa );
 			}

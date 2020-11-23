@@ -6,13 +6,10 @@ public without sharing class KafkaArenaHandler implements IKafkaMessageConsumer 
 		List<String> orgNumbers =                   KafkaArenaHandler_Helper.getOrgNumbers( arenaModels );
 		Map<String, Account> accountMap =           SharedFunctions.fetchAccounts( orgNumbers );
 
-		// Set<String> userTitles =                    KafkaArenaHandler_Helper.getUserTitles( arenaModels );
-		// Map<String, User> userMap =                 SharedIntegrationFunctions.fetchUsersByTitle( userTitles ); 
-
 		Set<String> kafkaIds =                      KafkaArenaHandler_Helper.getKafkaIds( arenaModels );
 		Map<String, ArenaActivity__c>               existingActivities = KafkaArenaHandler_Helper.getArenaActivity( kafkaIds );
 
-		List<ArenaActivity__c> arenaActivities =    KafkaArenaHandler_Helper.convertArenaModelToSObject( arenaModels, /*userMap,*/ accountMap, existingActivities );
+		List<ArenaActivity__c> arenaActivities =    KafkaArenaHandler_Helper.convertArenaModelToSObject( arenaModels, accountMap, existingActivities );
 		arenaActivities =                           KafkaArenaHandler_Helper.removeDuplicates( arenaActivities );
 
 		upsert arenaActivities ArenaActivity__c.KafkaId__c;
