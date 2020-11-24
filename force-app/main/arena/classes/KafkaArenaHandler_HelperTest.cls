@@ -4,14 +4,6 @@ private without sharing class KafkaArenaHandler_HelperTest {
 	@testSetup
 	private static void setup() {
 
-		User registeredUser = TAG_TestDataFactory.createStandardUser( 'Last UNIQUE NAME' );
-		registeredUser.title = 'GL1812';
-		update registeredUser;
-
-		User responsibleUser = TAG_TestDataFactory.createStandardUser( 'Last UNIQUE NAME' );
-		responsibleUser.title = 'JEI1812';
-		update responsibleUser;
-
 		Account acc = new Account( Name = 'Test Employer 1', INT_OrganizationNumber__c = '973113631' );
 		insert acc;
 	}
@@ -65,24 +57,7 @@ private without sharing class KafkaArenaHandler_HelperTest {
 		System.assert ( results.contains( '973113631' ) );
 	}
 
-	@isTest
-	private static void testGetUserTitles() {
-
-		KafkaMessage__c msg1 = new KafkaMessage__c();
-		msg1.CRM_Topic__c = 'privat-arbeidsgiver-aktivitet-crm';
-		msg1.CRM_Key__c = 'd60gwew775ed-249f-49e6-bd15-ff790b56cc07';
-		msg1.CRM_Value__c = 'ewogICAgImFrdGl2aXRldFN0YXR1c2tvZGUiOiAiRlVMTEYiLAogICAgImJlZHJpZnRzbnIiOiA5NzMxMTM2MzEsCiAgICAiYmVza3JpdmVsc2UiOiAiQmVkcmlmdHPDuGtvbm9tc3R1ZGlldCAyMCB2dFxuSMO4Z3Nrb2xla2FuZGlkYXRzdHVkaWV0IG1lZCByZXRuaW5nIGZvciByZWduc2thcHNmw7hyZXJlLiAyMHZ0IiwKICAgICJvcmduck1vcnNlbHNrYXAiOiA5NzEyMjg4NjUsCiAgICAic2Frc2JlaGFuZGxlciI6ICJKRUkxODEyIiwKICAgICJha3Rpdml0ZXRza29kZSI6ICJVVERZUksiLAogICAgImZyYURhdG8iOiAiMjAwMy0wMS0wMSIsCiAgICAidGlsRGF0byI6ICIyMDA0LTEyLTMxIiwKICAgICJyZWdEYXRvIjogIjIwMDMtMDMtMjUiLAogICAgInJlZ1VzZXIiOiAiR0wxODEyIiwKICAgICJha3Rpdml0ZXRzZ3J1cHBla29kZSI6ICJUTFRBSyIsCiAgICAiYWt0aXZpdGV0c3R5cGViZXNrcml2ZWxzZSI6IG51bGwsCiAgICAiYWt0aXZpdGV0c3R5cGVuYXZuIjogIlV0ZGFubmluZyIsCiAgICAiZm9ybmF2biI6ICJKb25uIEVnaWwiLAogICAgImV0dGVybmF2biI6ICJJbmRyZXZvbGwiLAogICAgIm5hdklkZW50IjogIkkxMTEzNDUiCn0=';
-		List<KafkaArenaHandler_Model> models = KafkaArenaHandler_Helper.convertKafkaToArenaModel( new List<KafkaMessage__c> { msg1 } );
-
-		Test.StartTest();
-		Set<String> results = KafkaArenaHandler_Helper.getUserTitles( models );
-		Test.StopTest();
-
-		System.assertEquals( 2, results.size(), 'Two user titles as one is responsible and one is the creator' );
-		System.assert (results.containsAll( new Set<String> { 'GL1812', 'JEI1812' } ), 'Results should contain both user titles (GL1812 and JEI1812)');
-	}
-
-
+	
 	@isTest
 	private static void testGetKafkaIds() {
 
@@ -118,8 +93,6 @@ private without sharing class KafkaArenaHandler_HelperTest {
 	private static void testConvertArenaModelToSObject() {
 
 		Account acc = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = '973113631' LIMIT 1][0];
-		User registeredUser = [SELECT Id FROM User WHERE Title = 'GL1812' LIMIT 1][0];
-		User responsibleUser = [SELECT Id FROM User WHERE Title = 'JEI1812' LIMIT 1][0];
 
 		KafkaMessage__c msg1 = new KafkaMessage__c();
 		msg1.CRM_Topic__c = 'privat-arbeidsgiver-aktivitet-crm';
@@ -127,12 +100,11 @@ private without sharing class KafkaArenaHandler_HelperTest {
 		msg1.CRM_Value__c = 'ewogICAgImFrdGl2aXRldFN0YXR1c2tvZGUiOiAiRlVMTEYiLAogICAgImJlZHJpZnRzbnIiOiA5NzMxMTM2MzEsCiAgICAiYmVza3JpdmVsc2UiOiAiQmVkcmlmdHPDuGtvbm9tc3R1ZGlldCAyMCB2dFxuSMO4Z3Nrb2xla2FuZGlkYXRzdHVkaWV0IG1lZCByZXRuaW5nIGZvciByZWduc2thcHNmw7hyZXJlLiAyMHZ0IiwKICAgICJvcmduck1vcnNlbHNrYXAiOiA5NzEyMjg4NjUsCiAgICAic2Frc2JlaGFuZGxlciI6ICJKRUkxODEyIiwKICAgICJha3Rpdml0ZXRza29kZSI6ICJVVERZUksiLAogICAgImZyYURhdG8iOiAiMjAwMy0wMS0wMSIsCiAgICAidGlsRGF0byI6ICIyMDA0LTEyLTMxIiwKICAgICJyZWdEYXRvIjogIjIwMDMtMDMtMjUiLAogICAgInJlZ1VzZXIiOiAiR0wxODEyIiwKICAgICJha3Rpdml0ZXRzZ3J1cHBla29kZSI6ICJUTFRBSyIsCiAgICAiYWt0aXZpdGV0c3R5cGViZXNrcml2ZWxzZSI6IG51bGwsCiAgICAiYWt0aXZpdGV0c3R5cGVuYXZuIjogIlV0ZGFubmluZyIsCiAgICAiZm9ybmF2biI6ICJKb25uIEVnaWwiLAogICAgImV0dGVybmF2biI6ICJJbmRyZXZvbGwiLAogICAgIm5hdklkZW50IjogIkkxMTEzNDUiCn0=';
 
 		List<KafkaArenaHandler_Model> models = KafkaArenaHandler_Helper.convertKafkaToArenaModel( new List<KafkaMessage__c> { msg1 } );
-		Map<String, User> userMap = SharedIntegrationFunctions.fetchUsersByTitle( new Set<String> { 'GL1812', 'JEI1812' } );
 		Map<String, Account> accountMap = SharedFunctions.fetchAccounts( new List<String> { '973113631' } );
 
 
 		Test.StartTest();
-		List<ArenaActivity__c> arenaActivities = KafkaArenaHandler_Helper.convertArenaModelToSObject( models, userMap, accountMap, new Map<String, ArenaActivity__c>() );
+		List<ArenaActivity__c> arenaActivities = KafkaArenaHandler_Helper.convertArenaModelToSObject( models, accountMap, new Map<String, ArenaActivity__c>() );
 		Test.StopTest();
 
 		System.assertEquals( 1, arenaActivities.size(), 'Only one kafka message added, only one sobject returned' );
@@ -144,13 +116,12 @@ private without sharing class KafkaArenaHandler_HelperTest {
 		System.assertEquals( Date.newInstance( 2003, 01, 01 ), arenaActivities[0].DateFrom__c );
 		System.assertEquals( Date.newInstance( 2004, 12, 31 ), arenaActivities[0].DateTo__c );
 		System.assertEquals( Date.newInstance( 2003, 03, 25 ), arenaActivities[0].DateRegistered__c );
-		System.assertEquals( registeredUser.Id, arenaActivities[0].RegisteredBy__c );
 		System.assertEquals( 'GL1812', arenaActivities[0].RegisteredByNavIdent__c );
-		System.assertEquals( responsibleUser.Id, arenaActivities[0].CaseWorker__c );
 		System.assertEquals( 'JEI1812', arenaActivities[0].CaseWorkerNavIdent__c );
 		System.assertEquals( 'TLTAK', arenaActivities[0].Aktivitetsgruppekode__c );
 		System.assertEquals( null, arenaActivities[0].AktivitetstypeBeskrivelse__c );
 		System.assertEquals( 'Utdanning', arenaActivities[0].Aktivitetstype__c );
+		System.assertEquals( 'Jonn Egil Indrevoll', arenaActivities[0].CaseWorkerName__c );
 	}
 
 	@isTest
@@ -164,13 +135,12 @@ private without sharing class KafkaArenaHandler_HelperTest {
 		msg1.CRM_Value__c = 'ewogICAgImFrdGl2aXRldFN0YXR1c2tvZGUiOiAiRlVMTEYiLAogICAgImJlZHJpZnRzbnIiOiA5NzMxMTM2MzEsCiAgICAiYmVza3JpdmVsc2UiOiAiQmVkcmlmdHPDuGtvbm9tc3R1ZGlldCAyMCB2dFxuSMO4Z3Nrb2xla2FuZGlkYXRzdHVkaWV0IG1lZCByZXRuaW5nIGZvciByZWduc2thcHNmw7hyZXJlLiAyMHZ0IiwKICAgICJvcmduck1vcnNlbHNrYXAiOiA5NzEyMjg4NjUsCiAgICAic2Frc2JlaGFuZGxlciI6ICJKRUkxODEyIiwKICAgICJha3Rpdml0ZXRza29kZSI6ICJVVERZUksiLAogICAgImZyYURhdG8iOiAiMjAwMy0wMS0wMSIsCiAgICAidGlsRGF0byI6ICIyMDA0LTEyLTMxIiwKICAgICJyZWdEYXRvIjogIjIwMDMtMDMtMjUiLAogICAgInJlZ1VzZXIiOiAiR0wxODEyIiwKICAgICJha3Rpdml0ZXRzZ3J1cHBla29kZSI6ICJUTFRBSyIsCiAgICAiYWt0aXZpdGV0c3R5cGViZXNrcml2ZWxzZSI6IG51bGwsCiAgICAiYWt0aXZpdGV0c3R5cGVuYXZuIjogIlV0ZGFubmluZyIsCiAgICAiZm9ybmF2biI6ICJKb25uIEVnaWwiLAogICAgImV0dGVybmF2biI6ICJJbmRyZXZvbGwiLAogICAgIm5hdklkZW50IjogIkkxMTEzNDUiCn0=';
 
 		List<KafkaArenaHandler_Model> models = KafkaArenaHandler_Helper.convertKafkaToArenaModel( new List<KafkaMessage__c> { msg1 } );
-		Map<String, User> userMap = SharedIntegrationFunctions.fetchUsersByTitle( new Set<String> { 'GL1812', 'JEI1812' } );
 		Map<String, Account> accountMap = SharedFunctions.fetchAccounts( new List<String> { '973113631' } );
 		Map<String, ArenaActivity__c> existingActivities = new Map<String, ArenaActivity__c>();
 		existingActivities.put( aa.KafkaId__c, aa );
 
 		Test.StartTest();
-		List<ArenaActivity__c> arenaActivities = KafkaArenaHandler_Helper.convertArenaModelToSObject( models, userMap, accountMap, existingActivities );
+		List<ArenaActivity__c> arenaActivities = KafkaArenaHandler_Helper.convertArenaModelToSObject( models, accountMap, existingActivities );
 		Test.StopTest();
 
 		System.assertEquals( 0, arenaActivities.size(), '0 records, as the hash has NOT changed' );
@@ -187,13 +157,12 @@ private without sharing class KafkaArenaHandler_HelperTest {
 		msg1.CRM_Value__c = 'ewogICAgImFrdGl2aXRldFN0YXR1c2tvZGUiOiAiRlVMTEYiLAogICAgImJlZHJpZnRzbnIiOiA5NzMxMTM2MzEsCiAgICAiYmVza3JpdmVsc2UiOiAiQmVkcmlmdHPDuGtvbm9tc3R1ZGlldCAyMCB2dFxuSMO4Z3Nrb2xla2FuZGlkYXRzdHVkaWV0IG1lZCByZXRuaW5nIGZvciByZWduc2thcHNmw7hyZXJlLiAyMHZ0IiwKICAgICJvcmduck1vcnNlbHNrYXAiOiA5NzEyMjg4NjUsCiAgICAic2Frc2JlaGFuZGxlciI6ICJKRUkxODEyIiwKICAgICJha3Rpdml0ZXRza29kZSI6ICJVVERZUksyIiwKICAgICJmcmFEYXRvIjogIjIwMDMtMDEtMDEiLAogICAgInRpbERhdG8iOiAiMjAwNC0xMi0zMSIsCiAgICAicmVnRGF0byI6ICIyMDAzLTAzLTI1IiwKICAgICJyZWdVc2VyIjogIkdMMTgxMiIsCiAgICAiYWt0aXZpdGV0c2dydXBwZWtvZGUiOiAiVExUQUsiLAogICAgImFrdGl2aXRldHN0eXBlYmVza3JpdmVsc2UiOiBudWxsLAogICAgImFrdGl2aXRldHN0eXBlbmF2biI6ICJVdGRhbm5pbmciLAogICAgImZvcm5hdm4iOiAiSm9ubiBFZ2lsIiwKICAgICJldHRlcm5hdm4iOiAiSW5kcmV2b2xsIiwKICAgICJuYXZJZGVudCI6ICJJMTExMzQ1Igp9';
 
 		List<KafkaArenaHandler_Model> models = KafkaArenaHandler_Helper.convertKafkaToArenaModel( new List<KafkaMessage__c> { msg1 } );
-		Map<String, User> userMap = SharedIntegrationFunctions.fetchUsersByTitle( new Set<String> { 'GL1812', 'JEI1812' } );
 		Map<String, Account> accountMap = SharedFunctions.fetchAccounts( new List<String> { '973113631' } );
 		Map<String, ArenaActivity__c> existingActivities = new Map<String, ArenaActivity__c>();
 		existingActivities.put( aa.KafkaId__c, aa );
 
 		Test.StartTest();
-		List<ArenaActivity__c> arenaActivities = KafkaArenaHandler_Helper.convertArenaModelToSObject( models, userMap, accountMap, existingActivities );
+		List<ArenaActivity__c> arenaActivities = KafkaArenaHandler_Helper.convertArenaModelToSObject( models, accountMap, existingActivities );
 		Test.StopTest();
 
 		System.assertEquals( 1, arenaActivities.size(), 'Still one activity, as the hash has changed' );
@@ -213,9 +182,8 @@ private without sharing class KafkaArenaHandler_HelperTest {
 		msg2.CRM_Value__c = 'ewogICAgImFrdGl2aXRldFN0YXR1c2tvZGUiOiAiRlVMTEYiLAogICAgImJlZHJpZnRzbnIiOiA5NzMxMTM2MzEsCiAgICAiYmVza3JpdmVsc2UiOiAiQmVkcmlmdHPDuGtvbm9tc3R1ZGlldCAyMCB2dFxuSMO4Z3Nrb2xla2FuZGlkYXRzdHVkaWV0IG1lZCByZXRuaW5nIGZvciByZWduc2thcHNmw7hyZXJlLiAyMHZ0IiwKICAgICJvcmduck1vcnNlbHNrYXAiOiA5NzEyMjg4NjUsCiAgICAic2Frc2JlaGFuZGxlciI6ICJKRUkxODEyIiwKICAgICJha3Rpdml0ZXRza29kZSI6ICJVVERZUksiLAogICAgImZyYURhdG8iOiAiMjAwMy0wMS0wMSIsCiAgICAidGlsRGF0byI6ICIyMDA0LTEyLTMxIiwKICAgICJyZWdEYXRvIjogIjIwMDMtMDMtMjUiLAogICAgInJlZ1VzZXIiOiAiR0wxODEyIiwKICAgICJha3Rpdml0ZXRzZ3J1cHBla29kZSI6ICJUTFRBSyIsCiAgICAiYWt0aXZpdGV0c3R5cGViZXNrcml2ZWxzZSI6IG51bGwsCiAgICAiYWt0aXZpdGV0c3R5cGVuYXZuIjogIlV0ZGFubmluZyIsCiAgICAiZm9ybmF2biI6ICJKb25uIEVnaWwiLAogICAgImV0dGVybmF2biI6ICJJbmRyZXZvbGwiLAogICAgIm5hdklkZW50IjogIkkxMTEzNDUiCn0=';
 
 		List<KafkaArenaHandler_Model> models = KafkaArenaHandler_Helper.convertKafkaToArenaModel( new List<KafkaMessage__c> { msg1, msg2 } );
-		Map<String, User> userMap = SharedIntegrationFunctions.fetchUsersByTitle( new Set<String> { 'GL1812', 'JEI1812' } );
 		Map<String, Account> accountMap = SharedFunctions.fetchAccounts( new List<String> { '973113631' } );
-		List<ArenaActivity__c> arenaActivities = KafkaArenaHandler_Helper.convertArenaModelToSObject( models, userMap, accountMap, new Map<String, ArenaActivity__c>() );
+		List<ArenaActivity__c> arenaActivities = KafkaArenaHandler_Helper.convertArenaModelToSObject( models, accountMap, new Map<String, ArenaActivity__c>() );
 
 		System.assertEquals( 2, arenaActivities.size(), 'Two duplicates were added' );
 
