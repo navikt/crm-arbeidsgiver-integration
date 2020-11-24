@@ -10,10 +10,6 @@
 		<enabled>false</enabled>
 	</classAccesses>
 	<classAccesses>
-		<apexClass>TAG_ActivityTimelineControllerTest</apexClass>
-		<enabled>false</enabled>
-	</classAccesses>
-	<classAccesses>
 		<apexClass>TAG_ActivityTimelineModel</apexClass>
 		<enabled>false</enabled>
 	</classAccesses>
@@ -271,9 +267,6 @@
 	</layoutAssignments>
 	<layoutAssignments>
 		<layout>Event-TAG Event Layout</layout>
-	</layoutAssignments>
-	<layoutAssignments>
-		<layout>TAG_ActivityTimelineParent__mdt-Activity Timeline Layout</layout>
 	</layoutAssignments>
 	<layoutAssignments>
 		<layout>TAG_ActivityTimelineChild__mdt-Activity Timeline Layout</layout>
