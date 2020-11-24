@@ -13,7 +13,9 @@ public with sharing class ArenaMassUpdateService_Batch implements Database.Batch
 
 	public void execute( Database.BatchableContext BC, List<ArenaActivity__c> scope ) {
 		for(ArenaActivity__c aa:scope){
+            if(aa.JsonPayload__c==null) continue;
 			KafkaArenaHandler_Model arenaModel = KafkaArenaHandler_Model.parse( aa.JsonPayload__c, null, null );
+            if(arenaModel==null) continue;
 			aa.RegisteredByNavIdent__c = arenaModel.RegUser;
 			aa.CaseWorkerNavIdent__c=arenaModel.Saksbehandler;
 			if(arenaModel.Fornavn!=null){
