@@ -74,9 +74,12 @@ public inherited sharing class KafkaArenaHandler_Helper {
 					KafkaHash__c = model.hash,
 					JsonPayload__c = model.jsonPayload,
 					RegisteredByNavIdent__c = model.regUser,
-					CaseWorkerNavIdent__c = model.saksbehandler,
-					CaseWorkerName__c = model.fornavn + ' ' + model.etternavn
+					CaseWorkerNavIdent__c = model.saksbehandler
 					);
+
+				if (model.etternavn != null)  {
+					aa.CaseWorkerName__c = model.fornavn + ' ' + model.etternavn;
+				}
 
 				aa.Account__c = accountMap.containsKey( String.valueOf( model.bedriftsnr ) ) ? accountMap.get( String.valueOf( model.bedriftsnr ) ).Id : null;
 
