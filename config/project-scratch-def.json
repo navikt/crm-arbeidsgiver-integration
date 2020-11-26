@@ -15,7 +15,8 @@
 		"ServiceCloud",
 		"LiveAgent",
 		"LightningServiceConsole",
-		"ContactsToMultipleAccounts"
+		"ContactsToMultipleAccounts",
+		"Fieldservice:1"
 	],
 	"country": "NO",
 	"language": "en_US",
