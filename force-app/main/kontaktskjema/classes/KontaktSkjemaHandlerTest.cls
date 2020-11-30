@@ -112,7 +112,7 @@ private without sharing class KontaktSkjemaHandlerTest {
 	}
 
 	@isTest
-	private static void doPost_regionRogaland() {
+	private static void doPost_regionMoreOgRomsdal() {
 
 		insert new Account( name = 'test', INT_OrganizationNumber__c = '960507878' );
 
@@ -124,7 +124,7 @@ private without sharing class KontaktSkjemaHandlerTest {
 
 		req.requestURI = '/services/apexrest/ContactForm';
 		req.httpMethod = 'POST';
-		req.requestBody = Blob.valueof( '{ "type":"ARBEIDSTRENING","municipalityCode":"1114","organisationName":"Finstadtunet","organisationNumber":"960507878","firstName":"TestNavn","lastName":"TestEtternavn","email":"test@nav.no","phoneNo":"90080900","RegionCode":"1100" }' );
+		req.requestBody = Blob.valueof( '{ "type":"ARBEIDSTRENING","municipalityCode":"1525","organisationName":"Finstadtunet","organisationNumber":"960507878","firstName":"TestNavn","lastName":"TestEtternavn","email":"test@nav.no","phoneNo":"90080900","RegionCode":"1500" }' );
 		RestContext.request = req;
 		RestContext.response = res;
 
@@ -135,7 +135,7 @@ private without sharing class KontaktSkjemaHandlerTest {
 		CustomOpportunities = [SELECT Id, InquiryCategory__c, RecordTypeId, INT_RegionNumber__c, INT_MunicipalityNumber__c, TAG_OrganizationNameFromForm__c, Contact__r.FirstName, Contact__r.LastName, Contact__r.Email, Contact__r.MobilePhone, Account__r.INT_OrganizationNumber__c FROM CustomOpportunity__c];
 		System.assertEquals( 0, CustomOpportunities.size(), 'Size should still be zero because rogaland shouldnt be added' );
 
-		System.assertEquals ( null, result, 'Returned value SHOULD BE null, as Agder is not in the pilot' );
+		System.assertEquals ( null, result, 'Returned value SHOULD BE null, as Møre og Romsdal is not in the pilot' );
 	}
 
 	@isTest
@@ -481,7 +481,7 @@ private without sharing class KontaktSkjemaHandlerTest {
 
 		req.requestURI = '/services/apexrest/ContactForm';
 		req.httpMethod = 'POST';
-		req.requestBody = Blob.valueof( '{ "type":"REKRUTTERING_MED_TILRETTELEGGING","municipalityCode":"1111","organisationName":"Finstadtunet","organisationNumber":"960507878","firstName":"TestNavn","lastName":"TestEtternavn","email":"test@nav.no","phoneNo":"90080900","RegionCode":"0200" }' );
+		req.requestBody = Blob.valueof( '{ "type":"REKRUTTERING_MED_TILRETTELEGGING","municipalityCode":"1566","organisationName":"Finstadtunet","organisationNumber":"960507878","firstName":"TestNavn","lastName":"TestEtternavn","email":"test@nav.no","phoneNo":"90080900","RegionCode":"1500" }' );
 		RestContext.request = req;
 		RestContext.response = res;
 
