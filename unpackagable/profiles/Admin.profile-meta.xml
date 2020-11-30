@@ -10,26 +10,6 @@
 		<enabled>true</enabled>
 	</classAccesses>
 	<classAccesses>
-		<apexClass>TAG_ActivityTimelineHelper</apexClass>
-		<enabled>true</enabled>
-	</classAccesses>
-	<classAccesses>
-		<apexClass>TAG_ActivityTimelineHelperTest</apexClass>
-		<enabled>true</enabled>
-	</classAccesses>
-	<classAccesses>
-		<apexClass>TAG_ActivityTimelineModel</apexClass>
-		<enabled>true</enabled>
-	</classAccesses>
-	<classAccesses>
-		<apexClass>TAG_ActivityTimelineModelList</apexClass>
-		<enabled>true</enabled>
-	</classAccesses>
-	<classAccesses>
-		<apexClass>TAG_ActivityTimelineModelTest</apexClass>
-		<enabled>true</enabled>
-	</classAccesses>
-	<classAccesses>
 		<apexClass>TAG_TestDataFactory</apexClass>
 		<enabled>true</enabled>
 	</classAccesses>

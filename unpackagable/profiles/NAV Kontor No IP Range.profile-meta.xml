@@ -6,30 +6,6 @@
 		<visible>false</visible>
 	</applicationVisibilities>
 	<classAccesses>
-		<apexClass>TAG_ActivityTimelineController</apexClass>
-		<enabled>false</enabled>
-	</classAccesses>
-	<classAccesses>
-		<apexClass>TAG_ActivityTimelineHelper</apexClass>
-		<enabled>false</enabled>
-	</classAccesses>
-	<classAccesses>
-		<apexClass>TAG_ActivityTimelineHelperTest</apexClass>
-		<enabled>false</enabled>
-	</classAccesses>
-	<classAccesses>
-		<apexClass>TAG_ActivityTimelineModel</apexClass>
-		<enabled>false</enabled>
-	</classAccesses>
-	<classAccesses>
-		<apexClass>TAG_ActivityTimelineModelList</apexClass>
-		<enabled>false</enabled>
-	</classAccesses>
-	<classAccesses>
-		<apexClass>TAG_ActivityTimelineModelTest</apexClass>
-		<enabled>false</enabled>
-	</classAccesses>
-	<classAccesses>
 		<apexClass>TAG_TestDataFactory</apexClass>
 		<enabled>false</enabled>
 	</classAccesses>
@@ -315,9 +291,6 @@
 	</layoutAssignments>
 	<layoutAssignments>
 		<layout>Event-TAG Event Layout</layout>
-	</layoutAssignments>
-	<layoutAssignments>
-		<layout>TAG_ActivityTimelineChild__mdt-Activity Timeline Layout</layout>
 	</layoutAssignments>
 	<layoutAssignments>
 		<layout>Task-TAG Task Layout</layout>
