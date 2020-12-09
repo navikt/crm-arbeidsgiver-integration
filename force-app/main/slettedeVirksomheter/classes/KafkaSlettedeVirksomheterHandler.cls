@@ -1,23 +1,26 @@
 public without sharing class KafkaSlettedeVirksomheterHandler implements IKafkaMessageConsumer {
 	public void processMessages( List<KafkaMessage__c> messages ) {
-		String orgNr;
-
-		for ( KafkaMessage__c msg : messages ) {
-			try {
-				msg.CRM_Status__c = 'Processed';
-				orgNr = msg.CRM_Value__c;
-			} catch ( Exception e ) {
-				msg.CRM_ErrorMessage__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
-			}
-		}
-		accountsToUpdate( orgNr );
+		convertKafka( messages );
 	}
 
-	public void accountsToUpdate( String orgNr ) {
-		List<Account> acts = [SELECT Id, INT_OrganizationNumber__c, IsDeleted__c FROM Account WHERE INT_OrganizationNumber__c =: orgNr];
+	public void accountsToUpdate( Set<String> orgNrs ) {
+		List<Account> acts = [SELECT Id, INT_OrganizationNumber__c, TAG_IsDeleted__c FROM Account WHERE INT_OrganizationNumber__c IN: orgNrs AND TAG_IsDeleted__c = false];
 		for ( Account act : acts ) {
-			act.IsDeleted__c = true;
+			act.TAG_IsDeleted__c = true;
+			act.TAG_DeletedDate__c = Date.today();
 		}
+
 		update acts;
+	}
+
+	public void convertKafka( List<KafkaMessage__c> messages ) {
+		Set<String> orgNrs = new Set<String>();
+
+		for ( KafkaMessage__c msg : messages ) {
+			msg.CRM_Status__c = 'Processed';
+			orgNrs.add( msg.CRM_Key__c );
+		}
+		accountsToUpdate( orgNrs );
+
 	}
 }
