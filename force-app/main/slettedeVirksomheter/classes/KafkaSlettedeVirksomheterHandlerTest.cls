@@ -27,6 +27,8 @@ private without sharing class KafkaSlettedeVirksomheterHandlerTest {
 		msg2.CRM_Value__c = '77777777';
 		messages.add( msg2 );
 
+		insert messages;
+
 		Test.startTest();
 		AsyncRequestSchedulable.enqueueAsyncJobs();
 		Test.stopTest();
