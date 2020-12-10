@@ -25,10 +25,8 @@ private without sharing class KafkaSlettedeVirksomheterHandlerTest {
 		msg2.CRM_Value__c = '77777777';
 		messages.add( msg2 );
 
-		KafkaSlettedeVirksomheterHandler del = new KafkaSlettedeVirksomheterHandler();
-
 		Test.startTest();
-		del.processMessages( messages );
+		AsyncRequestSchedulable.enqueueAsyncJobs();
 		Test.stopTest();
 
 		accts = [SELECT Id, TAG_DeletedDate__c FROM Account WHERE TAG_IsDeleted__c = true];
