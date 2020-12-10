@@ -1,7 +1,18 @@
 public without sharing class KafkaSlettedeVirksomheterHandler implements IKafkaMessageConsumer {
 	public void processMessages( List<KafkaMessage__c> messages ) {
-		Set<Id> orgNrs = convertKafka( messages );
-		accountsToUpdate(orgNrs);
+		Set<String> orgNrs = convertKafka( messages );
+		accountsToUpdate( orgNrs );
+	}
+
+	public Set<String> convertKafka( List<KafkaMessage__c> messages ) {
+		Set<String> orgNrs = new Set<String>();
+
+		for ( KafkaMessage__c msg : messages ) {
+			msg.CRM_Status__c = 'Processed';
+			orgNrs.add( msg.CRM_Key__c );
+		}
+
+		return orgNrs;
 	}
 
 	public void accountsToUpdate( Set<String> orgNrs ) {
@@ -12,16 +23,5 @@ public without sharing class KafkaSlettedeVirksomheterHandler implements IKafkaM
 		}
 
 		update acts;
-	}
-
-	public void convertKafka( List<KafkaMessage__c> messages ) {
-		Set<String> orgNrs = new Set<String>();
-
-		for ( KafkaMessage__c msg : messages ) {
-			msg.CRM_Status__c = 'Processed';
-			orgNrs.add( msg.CRM_Key__c );
-		}
-		accountsToUpdate( orgNrs );
-
 	}
 }
