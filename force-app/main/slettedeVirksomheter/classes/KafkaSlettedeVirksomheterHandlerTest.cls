@@ -3,6 +3,8 @@ private without sharing class KafkaSlettedeVirksomheterHandlerTest {
 	@IsTest
 	public static void testNewKafkaMessages() {
 
+KafkaEnhetFilter.bypassFilter = true;
+
 		Account acc = new Account( Name = 'Test Employer 1', INT_OrganizationNumber__c = '99999999' );
 		insert acc;
 
