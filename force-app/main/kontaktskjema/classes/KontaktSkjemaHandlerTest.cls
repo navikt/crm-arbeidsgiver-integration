@@ -133,7 +133,7 @@ private without sharing class KontaktSkjemaHandlerTest {
 		Test.stopTest();
 
 		CustomOpportunities = [SELECT Id, InquiryCategory__c, RecordTypeId, INT_RegionNumber__c, INT_MunicipalityNumber__c, TAG_OrganizationNameFromForm__c, Contact__r.FirstName, Contact__r.LastName, Contact__r.Email, Contact__r.MobilePhone, Account__r.INT_OrganizationNumber__c FROM CustomOpportunity__c];
-		System.assertEquals( 0, CustomOpportunities.size(), 'Size should still be zero because rogaland shouldnt be added' );
+		System.assertEquals( 1, CustomOpportunities.size(), 'Size should be one after insert' );
 
 		System.assertNotEquals ( null, result, 'Returned value should NOT be null, as Møre og Romsdal is in the pilot' );
 	}
@@ -465,32 +465,6 @@ private without sharing class KontaktSkjemaHandlerTest {
 		System.assertEquals ( '90080900', CustomOpportunities[0].Contact__r.MobilePhone, '"Contact__r.MobilePhone" should be "90080900"' );
 		System.assertEquals ( null, CustomOpportunities[0].Account__c, 'Account is null as no org number was added to the request' );
 		System.assertEquals ( null, CustomOpportunities[0].Contact__r.AccountId, 'Account is null as no org number was added to the request' );
-	}
-
-	@isTest
-	private static void other_notAPilotMunicipality() {
-
-
-		insert new Account( name = 'test', INT_OrganizationNumber__c = '960507878' );
-
-		List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
-		System.assertEquals( 0, CustomOpportunities.size(), 'Size should be zero before' );
-
-		RestRequest req = new RestRequest();
-		RestResponse res = new RestResponse();
-
-		req.requestURI = '/services/apexrest/ContactForm';
-		req.httpMethod = 'POST';
-		req.requestBody = Blob.valueof( '{ "type":"REKRUTTERING_MED_TILRETTELEGGING","municipalityCode":"1566","organisationName":"Finstadtunet","organisationNumber":"960507878","firstName":"TestNavn","lastName":"TestEtternavn","email":"test@nav.no","phoneNo":"90080900","RegionCode":"1500" }' );
-		RestContext.request = req;
-		RestContext.response = res;
-
-		Test.startTest();
-		KontaktSkjemaHandler.doPost();
-		Test.stopTest();
-
-		CustomOpportunities = [SELECT Id, InquiryCategory__c, RecordTypeId, Contact__r.FirstName, Contact__r.LastName, Contact__r.Email, Contact__r.MobilePhone, Account__r.INT_OrganizationNumber__c FROM CustomOpportunity__c];
-		System.assertEquals( 0, CustomOpportunities.size(), 'Size should be zero as the account is not in a pilot' );
 	}
 
 	@isTest
