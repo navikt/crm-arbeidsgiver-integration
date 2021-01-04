@@ -2,8 +2,6 @@
 global with sharing class KontaktSkjemaHandler {
 
 
-	private static List<String> REGION_NOT_IN_PILOT = new List<String> { '1500' };
-
 	public static Id inclusionRecordType = Schema.SObjectType.CustomOpportunity__c.getRecordTypeInfosByDeveloperName().get( 'Inclusion' ).getRecordTypeId();
 	public static Id IARecordType = Schema.SObjectType.CustomOpportunity__c.getRecordTypeInfosByDeveloperName().get( 'Inclusive_Employment' ).getRecordTypeId();
 
@@ -27,10 +25,6 @@ global with sharing class KontaktSkjemaHandler {
 		String requestString = RestContext.request.requestBody.toString();
 		RequestWrapper rw = (RequestWrapper) JSON.deserialize( requestString, RequestWrapper.class );
 		rw.jsonPayload = requestString;
-
-		if ( REGION_NOT_IN_PILOT.contains( rw.regionCode ) ) {
-			return null;
-		}
 
 		SharedFunctions_ContactModel wrapper = new SharedFunctions_ContactModel();
 		wrapper.firstName = rw.firstName;

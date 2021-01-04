@@ -108,7 +108,7 @@ private without sharing class KontaktSkjemaHandlerTest {
 		CustomOpportunities = [SELECT Id, InquiryCategory__c, RecordTypeId, INT_RegionNumber__c, INT_MunicipalityNumber__c, TAG_OrganizationNameFromForm__c, Contact__r.FirstName, Contact__r.LastName, Contact__r.Email, Contact__r.MobilePhone, Account__r.INT_OrganizationNumber__c FROM CustomOpportunity__c];
 		System.assertEquals( 1, CustomOpportunities.size(), 'Size should be one after insert' );
 
-		System.assertNotEquals ( null, result, 'Returned value should NOT be null, as Agder is not in the pilot' );
+		System.assertNotEquals ( null, result, 'Returned value should NOT be null, as Nordland is in the pilot' );
 	}
 
 	@isTest
@@ -135,7 +135,7 @@ private without sharing class KontaktSkjemaHandlerTest {
 		CustomOpportunities = [SELECT Id, InquiryCategory__c, RecordTypeId, INT_RegionNumber__c, INT_MunicipalityNumber__c, TAG_OrganizationNameFromForm__c, Contact__r.FirstName, Contact__r.LastName, Contact__r.Email, Contact__r.MobilePhone, Account__r.INT_OrganizationNumber__c FROM CustomOpportunity__c];
 		System.assertEquals( 0, CustomOpportunities.size(), 'Size should still be zero because rogaland shouldnt be added' );
 
-		System.assertEquals ( null, result, 'Returned value SHOULD BE null, as Møre og Romsdal is not in the pilot' );
+		System.assertNotEquals ( null, result, 'Returned value should NOT be null, as Møre og Romsdal is in the pilot' );
 	}
 
 	@isTest
