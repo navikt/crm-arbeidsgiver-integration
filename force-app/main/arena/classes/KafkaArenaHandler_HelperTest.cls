@@ -206,4 +206,14 @@ private without sharing class KafkaArenaHandler_HelperTest {
 		System.assertEquals( 1, res.month() );
 		System.assertEquals( 1, res.day() );
 	}
+
+	@isTest
+	private static void testStringToDateFormat() {
+
+		Test.StartTest();
+		Date res = KafkaArenaHandler_Helper.stringToDate( 'Wed Dec 15 00:00:00 GMT 202' );
+		Test.StopTest();
+
+		System.assertEquals( null, res );
+	}
 }
