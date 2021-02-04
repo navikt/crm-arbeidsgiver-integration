@@ -113,16 +113,9 @@ public inherited sharing class KafkaArenaHandler_Helper {
 	public static Date stringToDate( String dateString ) {
 		try {
 
-			if ( dateString.containsIgnoreCase('GMT') ) {
-				
-				return null;
-			}
+		return Date.valueOf( dateString.replace( 'T', ' ' ) );
 
-			else {
-				return Date.valueOf( dateString.replace( 'T', ' ' ) );
-			}
-
-		} catch ( Exception e ) {
+		} catch ( TypeException e ) {
 			return null;
 		}
 	}
