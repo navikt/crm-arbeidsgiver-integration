@@ -216,4 +216,36 @@ private without sharing class KafkaArenaHandler_HelperTest {
 
 		System.assertEquals( null, res );
 	}
+
+	@isTest
+	private static void testConvertKafkaToArenaModel_withInvalidDateFormat() {
+
+		KafkaMessage__c msg1 = new KafkaMessage__c();
+		msg1.CRM_Topic__c = 'privat-arbeidsgiver-aktivitet-crm';
+		msg1.CRM_Key__c = 'd60gwew775ed-249f-49e6-bd15-ff790b56cc07';
+		msg1.CRM_Value__c = 'ewogICAgImFrdGl2aXRldFN0YXR1c2tvZGUiOiAiRlVMTEYiLAogICAgImJlZHJpZnRzbnIiOiA5NzMxMTM2MzEsCiAgICAiYmVza3JpdmVsc2UiOiAiQmVkcmlmdHPDuGtvbm9tc3R1ZGlldCAyMCB2dFxuSMO4Z3Nrb2xla2FuZGlkYXRzdHVkaWV0IG1lZCByZXRuaW5nIGZvciByZWduc2thcHNmw7hyZXJlLiAyMHZ0IiwKICAgICJvcmduck1vcnNlbHNrYXAiOiA5NzEyMjg4NjUsCiAgICAic2Frc2JlaGFuZGxlciI6ICJKRUkxODEyIiwKICAgICJha3Rpdml0ZXRza29kZSI6ICJVVERZUksiLAogICAgImZyYURhdG8iOiAiV2VkIERlYyAxNSAwMDowMDowMCBHTVQgMjAyIiwKICAgICJ0aWxEYXRvIjogIjIwMDQtMTItMzEiLAogICAgInJlZ0RhdG8iOiAiMjAwMy0wMy0yNSIsCiAgICAicmVnVXNlciI6ICJHTDE4MTIiLAogICAgImFrdGl2aXRldHNncnVwcGVrb2RlIjogIlRMVEFLIiwKICAgICJha3Rpdml0ZXRzdHlwZWJlc2tyaXZlbHNlIjogbnVsbCwKICAgICJha3Rpdml0ZXRzdHlwZW5hdm4iOiAiVXRkYW5uaW5nIiwKICAgICJmb3JuYXZuIjogIkpvbm4gRWdpbCIsCiAgICAiZXR0ZXJuYXZuIjogIkluZHJldm9sbCIsCiAgICAibmF2SWRlbnQiOiAiSTExMTM0NSIKfQ==';
+
+		Test.StartTest();
+		List<KafkaArenaHandler_Model> models = KafkaArenaHandler_Helper.convertKafkaToArenaModel( new List<KafkaMessage__c> { msg1 } );
+		Test.StopTest();
+
+		System.assertEquals( 1, models.size(), 'Only one kafka message added, only one model returned' );
+
+		System.assertEquals( 'FULLF', models[0].aktivitetStatuskode );
+		System.assertEquals( 973113631, models[0].bedriftsnr );
+		System.assertEquals( 'Bedriftsøkonomstudiet 20 vt\nHøgskolekandidatstudiet med retning for regnskapsførere. 20vt', models[0].beskrivelse );
+		System.assertEquals( 971228865, models[0].orgnrMorselskap );
+		System.assertEquals( 'JEI1812', models[0].saksbehandler );
+		System.assertEquals( 'UTDYRK', models[0].aktivitetskode );
+		System.assertEquals( 'Wed Dec 15 00:00:00 GMT 202', models[0].fraDato );
+		System.assertEquals( '2004-12-31', models[0].tilDato );
+		System.assertEquals( '2003-03-25', models[0].regDato );
+		System.assertEquals( 'GL1812', models[0].regUser );
+		System.assertEquals( 'TLTAK', models[0].aktivitetsgruppekode );
+		System.assertEquals( null, models[0].aktivitetstypebeskrivelse );
+		System.assertEquals( 'Utdanning', models[0].aktivitetstypenavn );
+		System.assertEquals( 'Jonn Egil', models[0].fornavn );
+		System.assertEquals( 'Indrevoll', models[0].etternavn );
+		System.assertEquals( 'I111345', models[0].navIdent );
+	}
 }
