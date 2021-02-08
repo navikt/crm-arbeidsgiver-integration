@@ -77,7 +77,7 @@ public inherited sharing class KafkaArenaHandler_Helper {
 					CaseWorkerNavIdent__c = model.saksbehandler
 					);
 
-				if (model.etternavn != null)  {
+				if ( model.etternavn != null )  {
 					aa.CaseWorkerName__c = model.fornavn + ' ' + model.etternavn;
 				}
 
@@ -111,9 +111,10 @@ public inherited sharing class KafkaArenaHandler_Helper {
 	}
 
 	public static Date stringToDate( String dateString ) {
+		if ( stringToDate == null ) return null;
 		try {
 
-		return Date.valueOf( dateString.replace( 'T', ' ' ) );
+			return Date.valueOf( dateString.replace( 'T', ' ' ) );
 
 		} catch ( TypeException e ) {
 			return null;
