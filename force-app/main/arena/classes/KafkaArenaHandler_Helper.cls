@@ -111,7 +111,7 @@ public inherited sharing class KafkaArenaHandler_Helper {
 	}
 
 	public static Date stringToDate( String dateString ) {
-		if ( stringToDate == null ) return null;
+		if ( dateString  == null ) return null;
 		try {
 
 			return Date.valueOf( dateString.replace( 'T', ' ' ) );
