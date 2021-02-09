@@ -114,7 +114,13 @@ public inherited sharing class KafkaArenaHandler_Helper {
 		if ( dateString  == null ) return null;
 		try {
 
-			return Date.valueOf( dateString.replace( 'T', ' ' ) );
+			Date d = Date.valueOf( dateString.replace( 'T', ' ' ) );
+
+			if ( d.year() < 1700 ) {
+				return null;
+			}
+
+			return d;
 
 		} catch ( TypeException e ) {
 			return null;
