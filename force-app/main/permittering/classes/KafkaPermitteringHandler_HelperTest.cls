@@ -1,173 +1,285 @@
 @isTest
 private without sharing class KafkaPermitteringHandler_HelperTest {
+    @isTest
+    private static void testGetOrgNumbersFromPermittering() {
+        String testJson = KafkaPermitteringHandler_ModelTest.json;
+        List<KafkaPermitteringHandler_Model> permitteringer = new List<KafkaPermitteringHandler_Model>{
+            KafkaPermitteringHandler_Model.parse(testJson)
+        };
 
-	@isTest
-	private static void testGetOrgNumbersFromPermittering() {
+        Test.StartTest();
+        List<String> orgNumbers = KafkaPermitteringHandler_Helper.getOrgNumbersFromPermittering(
+            permitteringer
+        );
+        Test.StopTest();
 
-		String testJson = KafkaPermitteringHandler_ModelTest.json;
-		List<KafkaPermitteringHandler_Model> permitteringer = new List<KafkaPermitteringHandler_Model>  { KafkaPermitteringHandler_Model.parse( testJson ) };
+        System.assertEquals(1, orgNumbers.size(), 'Only one json sent in');
+        System.assertEquals(
+            '920845908',
+            orgNumbers[0],
+            'Only one json sent in'
+        );
+    }
 
-		Test.StartTest();
-		List<String> orgNumbers = KafkaPermitteringHandler_Helper.getOrgNumbersFromPermittering( permitteringer );
-		Test.StopTest();
+    @isTest
+    private static void testConvertKafkaToPermittering() {
+        String testJson = KafkaPermitteringHandler_ModelTest.json;
+        List<KafkaPermitteringHandler_Model> expected = new List<KafkaPermitteringHandler_Model>{
+            KafkaPermitteringHandler_Model.parse(testJson)
+        };
 
-		System.assertEquals( 1, orgNumbers.size(), 'Only one json sent in' );
-		System.assertEquals( '920845908', orgNumbers[0], 'Only one json sent in' );
-	}
+        KafkaMessage__c msg1 = new KafkaMessage__c();
+        msg1.CRM_Value__c = 'ewogICJpZCIgOiAiMmQ3MjdjZWItZjNmMS00MTY1LWExNDYtMmEyNjY1ZDY0NDQxIiwKICAiYmVkcmlmdHNudW1tZXIiIDogIjkyMDg0NTkwOCIsCiAgInNlbmR0SW5uVGlkc3B1bmt0IiA6ICIyMDIwLTA0LTE5VDE2OjAyOjIyLjAzMzQyMFoiLAogICJ0eXBlIiA6ICJQRVJNSVRURVJJTkdfVVRFTl9Mw5hOTiIsCiAgImtvbnRha3ROYXZuIiA6ICJ0ZXN0IG5hdiIsCiAgImtvbnRha3RUbGYiIDogIjgwMDgwOTAwIiwKICAia29udGFrdEVwb3N0IiA6ICJ2ZXJ2ZXJ2ckB0ZXN0LmNvbSIsCiAgInZhcnNsZXRBbnNhdHREYXRvIiA6ICIyMDIwLTA0LTE5IiwKICAidmFyc2xldE5hdkRhdG8iIDogIjIwMjAtMDQtMTkiLAogICJzdGFydERhdG8iIDogIjIwMjAtMDMtMTQiLAogICJzbHV0dERhdG8iIDogIjIwMjAtMDQtMjYiLAogICJmcml0ZWtzdCIgOiAiXG4jIyMgw4Vyc2FrXG5Db3JvbmEtdmlydXNcbiMjIyBZcmtlclxuS2FmZW1lZGFyYmVpZGVyLCBEYWdsaWcgbGVkZXJcbiMjIyBBbm5ldFxuSGFyIHRpZGxpZ2VyZSBzZW5kdCBpbm4gcGVybWl0dGVyaW5nc3ZhcnNlbCBmcmEgZGFnIDEgKDE0LiBtYXJzIDIwMjApLiBEZXR0ZSBlciB2YXJzZWwgb20gZm9ybGVuZ2luZyBmcmVtIHRpbCAyNywgYXByaWwgMjAyMC4gIiwKICAiYW50YWxsQmVyb3J0ZSIgOiAyLAogICLDpXJzYWtza29kZSIgOiAiQU5EUkVfw4VSU0FLRVIiLAogICLDpXJzYWtzdGVrc3QiIDogIkNvcm9uYS12aXJ1cyIsCiAgInlya2Vza2F0ZWdvcmllciIgOiBbIHsKICAgICJrb25zZXB0SWQiIDogNzAwMjksCiAgICAic3R5cmswOCIgOiAiNTI0NiIsCiAgICAibGFiZWwiIDogIkthZmVtZWRhcmJlaWRlciIKICB9LCB7CiAgICAia29uc2VwdElkIiA6IDMxMzgwOCwKICAgICJzdHlyazA4IiA6ICIxMTIwIiwKICAgICJsYWJlbCIgOiAiRGFnbGlnIGxlZGVyIgogIH0gXSwKICAiYmVkcmlmdCI6IFsKICAgIHsKICAgICAgImJlZHJpZnROciI6ICIxMjM0NTY3OCIsCiAgICAgICJiZWRyaWZ0TmF2biI6ICJ0ZXN0IiwKICAgICAgImFudGFsbEJlcm9ydGUiOiAxMgogICAgfSwKICAgIHsKICAgICAgImJlZHJpZnROciI6ICI4NzY1NDMyMSIsCiAgICAgICJiZWRyaWZ0TmF2biI6ICJ0ZXN0MiIsCiAgICAgICJhbnRhbGxCZXJvcnRlIjogMTI0CiAgICB9CiAgXQp9';
 
-	@isTest
-	private static void testConvertKafkaToPermittering() {
+        Test.StartTest();
+        List<KafkaPermitteringHandler_Model> actual = KafkaPermitteringHandler_Helper.convertKafkaToPermittering(
+            new List<KafkaMessage__c>{ msg1 }
+        );
+        Test.StopTest();
 
-		String testJson = KafkaPermitteringHandler_ModelTest.json;
-		List<KafkaPermitteringHandler_Model> expected = new List<KafkaPermitteringHandler_Model>  { KafkaPermitteringHandler_Model.parse( testJson ) };
+        expected[0].jsonPayload = null;
+        actual[0].jsonPayload = null;
 
-		KafkaMessage__c msg1 = new KafkaMessage__c();
-		msg1.CRM_Value__c = 'ewogICJpZCIgOiAiMmQ3MjdjZWItZjNmMS00MTY1LWExNDYtMmEyNjY1ZDY0NDQxIiwKICAiYmVkcmlmdHNudW1tZXIiIDogIjkyMDg0NTkwOCIsCiAgInNlbmR0SW5uVGlkc3B1bmt0IiA6ICIyMDIwLTA0LTE5VDE2OjAyOjIyLjAzMzQyMFoiLAogICJ0eXBlIiA6ICJQRVJNSVRURVJJTkdfVVRFTl9Mw5hOTiIsCiAgImtvbnRha3ROYXZuIiA6ICJ0ZXN0IG5hdiIsCiAgImtvbnRha3RUbGYiIDogIjgwMDgwOTAwIiwKICAia29udGFrdEVwb3N0IiA6ICJ2ZXJ2ZXJ2ckB0ZXN0LmNvbSIsCiAgInZhcnNsZXRBbnNhdHREYXRvIiA6ICIyMDIwLTA0LTE5IiwKICAidmFyc2xldE5hdkRhdG8iIDogIjIwMjAtMDQtMTkiLAogICJzdGFydERhdG8iIDogIjIwMjAtMDMtMTQiLAogICJzbHV0dERhdG8iIDogIjIwMjAtMDQtMjYiLAogICJmcml0ZWtzdCIgOiAiXG4jIyMgw4Vyc2FrXG5Db3JvbmEtdmlydXNcbiMjIyBZcmtlclxuS2FmZW1lZGFyYmVpZGVyLCBEYWdsaWcgbGVkZXJcbiMjIyBBbm5ldFxuSGFyIHRpZGxpZ2VyZSBzZW5kdCBpbm4gcGVybWl0dGVyaW5nc3ZhcnNlbCBmcmEgZGFnIDEgKDE0LiBtYXJzIDIwMjApLiBEZXR0ZSBlciB2YXJzZWwgb20gZm9ybGVuZ2luZyBmcmVtIHRpbCAyNywgYXByaWwgMjAyMC4gIiwKICAiYW50YWxsQmVyb3J0ZSIgOiAyLAogICLDpXJzYWtza29kZSIgOiAiQU5EUkVfw4VSU0FLRVIiLAogICLDpXJzYWtzdGVrc3QiIDogIkNvcm9uYS12aXJ1cyIsCiAgInlya2Vza2F0ZWdvcmllciIgOiBbIHsKICAgICJrb25zZXB0SWQiIDogNzAwMjksCiAgICAic3R5cmswOCIgOiAiNTI0NiIsCiAgICAibGFiZWwiIDogIkthZmVtZWRhcmJlaWRlciIKICB9LCB7CiAgICAia29uc2VwdElkIiA6IDMxMzgwOCwKICAgICJzdHlyazA4IiA6ICIxMTIwIiwKICAgICJsYWJlbCIgOiAiRGFnbGlnIGxlZGVyIgogIH0gXSwKICAiYmVkcmlmdCI6IFsKICAgIHsKICAgICAgImJlZHJpZnROciI6ICIxMjM0NTY3OCIsCiAgICAgICJiZWRyaWZ0TmF2biI6ICJ0ZXN0IiwKICAgICAgImFudGFsbEJlcm9ydGUiOiAxMgogICAgfSwKICAgIHsKICAgICAgImJlZHJpZnROciI6ICI4NzY1NDMyMSIsCiAgICAgICJiZWRyaWZ0TmF2biI6ICJ0ZXN0MiIsCiAgICAgICJhbnRhbGxCZXJvcnRlIjogMTI0CiAgICB9CiAgXQp9';
+        System.assertEquals(expected[0].id, actual[0].id);
+        System.assertEquals(
+            expected[0].bedriftsnummer,
+            actual[0].bedriftsnummer
+        );
+        System.assertEquals(
+            expected[0].sendtInnTidspunkt,
+            actual[0].sendtInnTidspunkt
+        );
+        System.assertEquals(expected[0].type, actual[0].type);
+        System.assertEquals(expected[0].kontaktNavn, actual[0].kontaktNavn);
+        System.assertEquals(expected[0].kontaktTlf, actual[0].kontaktTlf);
+        System.assertEquals(expected[0].kontaktEpost, actual[0].kontaktEpost);
+        System.assertEquals(
+            expected[0].varsletAnsattDato,
+            actual[0].varsletAnsattDato
+        );
+        System.assertEquals(
+            expected[0].varsletNavDato,
+            actual[0].varsletNavDato
+        );
+        System.assertEquals(expected[0].startDato, actual[0].startDato);
+        System.assertEquals(expected[0].sluttDato, actual[0].sluttDato);
+        System.assertEquals(expected[0].fritekst, actual[0].fritekst);
+        System.assertEquals(expected[0].antallBerorte, actual[0].antallBerorte);
+        System.assertEquals(expected[0].arsakskode, actual[0].arsakskode);
+        System.assertEquals(expected[0].arsakstekst, actual[0].arsakstekst);
+    }
 
-		Test.StartTest();
-		List<KafkaPermitteringHandler_Model> actual = KafkaPermitteringHandler_Helper.convertKafkaToPermittering( new List<KafkaMessage__c> { msg1 } );
-		Test.StopTest();
+    @isTest
+    private static void testConvertPermitteringToContactWrapper() {
+        String testJson = KafkaPermitteringHandler_ModelTest.json;
+        List<KafkaPermitteringHandler_Model> permitteringer = new List<KafkaPermitteringHandler_Model>{
+            KafkaPermitteringHandler_Model.parse(testJson)
+        };
 
-		expected[0].jsonPayload = null;
-		actual[0].jsonPayload = null;
+        Test.StartTest();
+        List<SharedFunctions_ContactModel> result = KafkaPermitteringHandler_Helper.convertPermitteringToContactWrapper(
+            permitteringer
+        );
+        Test.StopTest();
 
-		System.assertEquals( expected[0].id, actual[0].id );
-		System.assertEquals( expected[0].bedriftsnummer, actual[0].bedriftsnummer );
-		System.assertEquals( expected[0].sendtInnTidspunkt, actual[0].sendtInnTidspunkt );
-		System.assertEquals( expected[0].type, actual[0].type );
-		System.assertEquals( expected[0].kontaktNavn, actual[0].kontaktNavn );
-		System.assertEquals( expected[0].kontaktTlf, actual[0].kontaktTlf );
-		System.assertEquals( expected[0].kontaktEpost, actual[0].kontaktEpost );
-		System.assertEquals( expected[0].varsletAnsattDato, actual[0].varsletAnsattDato );
-		System.assertEquals( expected[0].varsletNavDato, actual[0].varsletNavDato );
-		System.assertEquals( expected[0].startDato, actual[0].startDato );
-		System.assertEquals( expected[0].sluttDato, actual[0].sluttDato );
-		System.assertEquals( expected[0].fritekst, actual[0].fritekst );
-		System.assertEquals( expected[0].antallBerorte, actual[0].antallBerorte );
-		System.assertEquals( expected[0].arsakskode, actual[0].arsakskode );
-		System.assertEquals( expected[0].arsakstekst, actual[0].arsakstekst );
-	}
+        System.assertEquals(1, result.size(), 'Only one contact');
+        System.assertEquals(
+            'test',
+            result[0].firstName,
+            'firstName should be set from testJson'
+        );
+        System.assertEquals(
+            'nav',
+            result[0].lastName,
+            'lastName should be set from testJson'
+        );
+        System.assertEquals(
+            '920845908',
+            result[0].companyNumber,
+            'companyNumber should be set from testJson'
+        );
+        System.assertEquals(
+            '80080900',
+            result[0].phone,
+            'phone should be set from testJson'
+        );
+        System.assertEquals(
+            'ververvr@test.com',
+            result[0].email,
+            'email should be set from testJson'
+        );
+    }
 
-	@isTest
-	private static void testConvertPermitteringToContactWrapper() {
+    @isTest
+    private static void testConvertPermitteringToLayoff() {
+        Account acc = new Account(
+            Name = 'Test Employer 1',
+            INT_OrganizationNumber__c = '920845908'
+        );
+        insert acc;
 
-		String testJson = KafkaPermitteringHandler_ModelTest.json;
-		List<KafkaPermitteringHandler_Model> permitteringer = new List<KafkaPermitteringHandler_Model>  { KafkaPermitteringHandler_Model.parse( testJson ) };
+        Contact con = new Contact(
+            TAG_Informed__c = true,
+            LastName = 'test',
+            FirstName = 'test',
+            Email = 'ververvr@test.com',
+            AccountId = acc.Id
+        );
+        insert con;
 
-		Test.StartTest();
-		List<SharedFunctions_ContactModel> result = KafkaPermitteringHandler_Helper.convertPermitteringToContactWrapper( permitteringer );
-		Test.StopTest();
+        String testJson = KafkaPermitteringHandler_ModelTest.json;
+        List<KafkaPermitteringHandler_Model> permitteringer = new List<KafkaPermitteringHandler_Model>{
+            KafkaPermitteringHandler_Model.parse(testJson)
+        };
 
-		System.assertEquals( 1, result.size(), 'Only one contact' );
-		System.assertEquals( 'test', result[0].firstName, 'firstName should be set from testJson' );
-		System.assertEquals( 'nav', result[0].lastName, 'lastName should be set from testJson' );
-		System.assertEquals( '920845908', result[0].companyNumber, 'companyNumber should be set from testJson' );
-		System.assertEquals( '80080900', result[0].phone, 'phone should be set from testJson' );
-		System.assertEquals( 'ververvr@test.com', result[0].email, 'email should be set from testJson' );
-	}
+        List<String> organisationNumbers = KafkaPermitteringHandler_Helper.getOrgNumbersFromPermittering(
+            permitteringer
+        );
+        Map<String, Account> accountMap = SharedFunctions.fetchAccounts(
+            organisationNumbers
+        );
 
+        List<SharedFunctions_ContactModel> wrapperList = KafkaPermitteringHandler_Helper.convertPermitteringToContactWrapper(
+            permitteringer
+        );
+        Map<String, Contact> contactMap = SharedFunctions.fetchOrCreateContact(
+            wrapperList,
+            accountMap
+        );
 
-	@isTest
-	private static void testConvertPermitteringToLayoff() {
+        Test.StartTest();
+        List<TemporaryLayoff__c> result = KafkaPermitteringHandler_Helper.convertPermitteringToLayoff(
+            permitteringer,
+            accountMap,
+            contactMap
+        );
+        Test.StopTest();
 
-		Account acc = new Account( Name = 'Test Employer 1', INT_OrganizationNumber__c = '920845908' );
-		insert acc;
+        System.assertEquals(1, result.size(), 'Only one permittering');
+        System.assertEquals(Con.Id, result[0].Contact__c);
+        System.assertEquals(
+            acc.Id,
+            result[0].Account__c,
+            'Should have used the existing account'
+        );
 
-		Contact con = new Contact( TAG_Informed__c = true, LastName = 'test', FirstName = 'test', Email = 'ververvr@test.com', AccountId = acc.Id );
-		insert con;
+        System.assertEquals(2, result[0].NumberOfEmployees__c);
+        System.assertEquals('PERMITTERING_UTEN_LØNN', result[0].Type__c);
+        System.assertEquals('ververvr@test.com', result[0].ContactEmail__c);
+        System.assertEquals(
+            Date.newInstance(2020, 3, 14),
+            result[0].StartDate__c
+        );
+        System.assertEquals(
+            Date.newInstance(2020, 4, 26),
+            result[0].EndDate__c
+        );
+        System.assertEquals('ANDRE_ÅRSAKER', result[0].Reason__c);
+        System.assertEquals('Corona-virus', result[0].ReasonOther__c);
+        System.assert(
+            result[0].Profession__c.split(';').contains('Daglig leder')
+        );
+        System.assert(
+            result[0].Profession__c.split(';').contains('Kafemedarbeider')
+        );
+        System.assertEquals(
+            'Har tidligere sendt inn permitteringsvarsel fra dag 1 (14. mars 2020). Dette er varsel om forlenging frem til 27, april 2020. ',
+            result[0].OtherField__c
+        );
+    }
 
-		String testJson = KafkaPermitteringHandler_ModelTest.json;
-		List<KafkaPermitteringHandler_Model> permitteringer = new List<KafkaPermitteringHandler_Model>  { KafkaPermitteringHandler_Model.parse( testJson ) };
+    @isTest
+    private static void testConvertPermitteringToLayoff_EmptyAnnet() {
+        String b64String = 'ewogICJpZCIgOiAiYTIwMzY4MGQtZDUyYS00Y2EwLTk2ODctMzUzMzE3YmJlYmIzIiwKICAiYmVkcmlmdHNudW1tZXIiIDogIjkxMDgyNTUxOCIsCiAgInNlbmR0SW5uVGlkc3B1bmt0IiA6ICIyMDIwLTA0LTIxVDEwOjM3OjU1Ljk2NjU4OFoiLAogICJ0eXBlIiA6ICJQRVJNSVRURVJJTkdfVVRFTl9Mw5hOTiIsCiAgImtvbnRha3ROYXZuIiA6ICJiZW5kaWsgdGVzdCBmb3Igam9obiAyIiwKICAia29udGFrdFRsZiIgOiAiMTIzNDU2NzgiLAogICJrb250YWt0RXBvc3QiIDogImJlbm55QGJhem9va2EuY29tIiwKICAidmFyc2xldEFuc2F0dERhdG8iIDogIjIwMjAtMDQtMjEiLAogICJ2YXJzbGV0TmF2RGF0byIgOiAiMjAyMC0wNC0yMSIsCiAgInN0YXJ0RGF0byIgOiAiMjAyMC0wNC0xMyIsCiAgImZyaXRla3N0IiA6ICJcbiMjIyDDhXJzYWtcbkJyYW5uXG4jIyMgWXJrZXJcbktva2sgKHNraXApXG4jIyMgQW5uZXRcbiIsCiAgImFudGFsbEJlcm9ydGUiIDogMTMzOCwKICAiw6Vyc2Frc2tvZGUiIDogIkJSQU5OIiwKICAieXJrZXNrYXRlZ29yaWVyIiA6IFsgewogICAgImtvbnNlcHRJZCIgOiAyMTg0NCwKICAgICJzdHlyazA4IiA6ICI1MTIwIiwKICAgICJsYWJlbCIgOiAiS29rayAoc2tpcCkiCiAgfSBdCn0';
+        String testJson = KafkaMessageUtils.base64ULSafeDecode(b64String)
+            .toString();
 
-		List<String> organisationNumbers = KafkaPermitteringHandler_Helper.getOrgNumbersFromPermittering( permitteringer );
-		Map<String, Account> accountMap = SharedFunctions.fetchAccounts( organisationNumbers );
+        List<KafkaPermitteringHandler_Model> permitteringer = new List<KafkaPermitteringHandler_Model>{
+            KafkaPermitteringHandler_Model.parse(testJson)
+        };
 
-		List<SharedFunctions_ContactModel> wrapperList = KafkaPermitteringHandler_Helper.convertPermitteringToContactWrapper( permitteringer );
-		Map<String, Contact> contactMap = SharedFunctions.fetchOrCreateContact( wrapperList, accountMap );
+        List<String> organisationNumbers = KafkaPermitteringHandler_Helper.getOrgNumbersFromPermittering(
+            permitteringer
+        );
+        Map<String, Account> accountMap = SharedFunctions.fetchAccounts(
+            organisationNumbers
+        );
 
-		Test.StartTest();
-		List<TemporaryLayoff__c> result = KafkaPermitteringHandler_Helper.convertPermitteringToLayoff( permitteringer, accountMap, contactMap );
-		Test.StopTest();
+        List<SharedFunctions_ContactModel> wrapperList = KafkaPermitteringHandler_Helper.convertPermitteringToContactWrapper(
+            permitteringer
+        );
+        Map<String, Contact> contactMap = SharedFunctions.fetchOrCreateContact(
+            wrapperList,
+            accountMap
+        );
 
-		System.assertEquals( 1, result.size(), 'Only one permittering' );
-		System.assertEquals( Con.Id, result[0].Contact__c );
-		System.assertEquals( acc.Id, result[0].Account__c, 'Should have used the existing account' );
+        Test.StartTest();
+        List<TemporaryLayoff__c> result = KafkaPermitteringHandler_Helper.convertPermitteringToLayoff(
+            permitteringer,
+            accountMap,
+            contactMap
+        );
+        Test.StopTest();
 
-		System.assertEquals( 2, result[0].NumberOfEmployees__c );
-		System.assertEquals( 'PERMITTERING_UTEN_LØNN', result[0].Type__c );
-		System.assertEquals( 'ververvr@test.com', result[0].ContactEmail__c );
-		System.assertEquals( Date.newInstance( 2020, 03, 14 ), result[0].StartDate__c );
-		System.assertEquals( Date.newInstance( 2020, 04, 26 ), result[0].EndDate__c );
-		System.assertEquals( 'ANDRE_ÅRSAKER', result[0].Reason__c );
-		System.assertEquals( 'Corona-virus', result[0].ReasonOther__c );
-		System.assert ( result[0].Profession__c.split( ';' ).contains( 'Daglig leder' ) );
-		System.assert ( result[0].Profession__c.split( ';' ).contains( 'Kafemedarbeider' ) );
-		System.assertEquals( 'Har tidligere sendt inn permitteringsvarsel fra dag 1 (14. mars 2020). Dette er varsel om forlenging frem til 27, april 2020. ', result[0].OtherField__c );
-	}
+        System.assertEquals(1, result.size(), 'Only one permittering');
 
-	@isTest
-	private static void testConvertPermitteringToLayoff_EmptyAnnet() {
+        System.assertEquals(1338, result[0].NumberOfEmployees__c);
+        System.assertEquals(null, result[0].OtherField__c);
+    }
 
-		String b64String = 'ewogICJpZCIgOiAiYTIwMzY4MGQtZDUyYS00Y2EwLTk2ODctMzUzMzE3YmJlYmIzIiwKICAiYmVkcmlmdHNudW1tZXIiIDogIjkxMDgyNTUxOCIsCiAgInNlbmR0SW5uVGlkc3B1bmt0IiA6ICIyMDIwLTA0LTIxVDEwOjM3OjU1Ljk2NjU4OFoiLAogICJ0eXBlIiA6ICJQRVJNSVRURVJJTkdfVVRFTl9Mw5hOTiIsCiAgImtvbnRha3ROYXZuIiA6ICJiZW5kaWsgdGVzdCBmb3Igam9obiAyIiwKICAia29udGFrdFRsZiIgOiAiMTIzNDU2NzgiLAogICJrb250YWt0RXBvc3QiIDogImJlbm55QGJhem9va2EuY29tIiwKICAidmFyc2xldEFuc2F0dERhdG8iIDogIjIwMjAtMDQtMjEiLAogICJ2YXJzbGV0TmF2RGF0byIgOiAiMjAyMC0wNC0yMSIsCiAgInN0YXJ0RGF0byIgOiAiMjAyMC0wNC0xMyIsCiAgImZyaXRla3N0IiA6ICJcbiMjIyDDhXJzYWtcbkJyYW5uXG4jIyMgWXJrZXJcbktva2sgKHNraXApXG4jIyMgQW5uZXRcbiIsCiAgImFudGFsbEJlcm9ydGUiIDogMTMzOCwKICAiw6Vyc2Frc2tvZGUiIDogIkJSQU5OIiwKICAieXJrZXNrYXRlZ29yaWVyIiA6IFsgewogICAgImtvbnNlcHRJZCIgOiAyMTg0NCwKICAgICJzdHlyazA4IiA6ICI1MTIwIiwKICAgICJsYWJlbCIgOiAiS29rayAoc2tpcCkiCiAgfSBdCn0';
-		String testJson = KafkaMessageUtils.base64ULSafeDecode( b64String ).toString();
+    @isTest
+    private static void testRemoveExistingTempLayoffs() {
+        TemporaryLayoff__c tl = new TemporaryLayoff__c(KafkaId__c = 'test');
+        insert tl;
+        TemporaryLayoff__c tl2 = new TemporaryLayoff__c(KafkaId__c = 'test');
 
-		List<KafkaPermitteringHandler_Model> permitteringer = new List<KafkaPermitteringHandler_Model>  { KafkaPermitteringHandler_Model.parse( testJson ) };
+        Test.StartTest();
+        List<TemporaryLayoff__c> layoffs = KafkaPermitteringHandler_Helper.removeExistingTempLayoffs(
+            new List<TemporaryLayoff__c>{ tl2 }
+        );
+        Test.StopTest();
 
-		List<String> organisationNumbers = KafkaPermitteringHandler_Helper.getOrgNumbersFromPermittering( permitteringer );
-		Map<String, Account> accountMap = SharedFunctions.fetchAccounts( organisationNumbers );
+        System.assertEquals(
+            0,
+            layoffs.size(),
+            'Same KafkaId, thus, it shouldn\'t be added'
+        );
+    }
 
-		List<SharedFunctions_ContactModel> wrapperList = KafkaPermitteringHandler_Helper.convertPermitteringToContactWrapper( permitteringer );
-		Map<String, Contact> contactMap = SharedFunctions.fetchOrCreateContact( wrapperList, accountMap );
+    @isTest
+    private static void testRemoveExistingTempLayoffs_shouldNotRemove() {
+        TemporaryLayoff__c tl = new TemporaryLayoff__c(KafkaId__c = 'test');
+        insert tl;
+        TemporaryLayoff__c tl2 = new TemporaryLayoff__c(KafkaId__c = 'test2');
 
-		Test.StartTest();
-		List<TemporaryLayoff__c> result = KafkaPermitteringHandler_Helper.convertPermitteringToLayoff( permitteringer, accountMap, contactMap );
-		Test.StopTest();
+        Test.StartTest();
+        List<TemporaryLayoff__c> layoffs = KafkaPermitteringHandler_Helper.removeExistingTempLayoffs(
+            new List<TemporaryLayoff__c>{ tl2 }
+        );
+        Test.StopTest();
 
-		System.assertEquals( 1, result.size(), 'Only one permittering' );
+        System.assertEquals(
+            1,
+            layoffs.size(),
+            'Different KafkaId, thus, it should be added'
+        );
+    }
 
-		System.assertEquals( 1338, result[0].NumberOfEmployees__c );
-		System.assertEquals( null, result[0].OtherField__c );
-	}
+    @isTest
+    private static void testRemoveDuplicateTempLayoffsInList() {
+        TemporaryLayoff__c tl1 = new TemporaryLayoff__c(KafkaId__c = 'test');
+        TemporaryLayoff__c tl2 = new TemporaryLayoff__c(KafkaId__c = 'test');
 
-	@isTest
-	private static void testRemoveExistingTempLayoffs() {
+        Test.StartTest();
+        List<TemporaryLayoff__c> layoffs = KafkaPermitteringHandler_Helper.removeDuplicateTempLayoffsInList(
+            new List<TemporaryLayoff__c>{ tl1, tl2 }
+        );
+        Test.StopTest();
 
-		TemporaryLayoff__c tl = new TemporaryLayoff__c( KafkaId__c = 'test' );
-		insert tl;
-		TemporaryLayoff__c tl2 = new TemporaryLayoff__c( KafkaId__c = 'test' );
-
-		Test.StartTest();
-		List<TemporaryLayoff__c> layoffs = KafkaPermitteringHandler_Helper.removeExistingTempLayoffs( new List<TemporaryLayoff__c> { tl2 } );
-		Test.StopTest();
-
-		System.assertEquals( 0, layoffs.size(), 'Same KafkaId, thus, it shouldn\'t be added' );
-	}
-
-	@isTest
-	private static void testRemoveExistingTempLayoffs_shouldNotRemove() {
-
-		TemporaryLayoff__c tl = new TemporaryLayoff__c( KafkaId__c = 'test' );
-		insert tl;
-		TemporaryLayoff__c tl2 = new TemporaryLayoff__c( KafkaId__c = 'test2' );
-
-		Test.StartTest();
-		List<TemporaryLayoff__c> layoffs = KafkaPermitteringHandler_Helper.removeExistingTempLayoffs( new List<TemporaryLayoff__c> { tl2 } );
-		Test.StopTest();
-
-		System.assertEquals( 1, layoffs.size(), 'Different KafkaId, thus, it should be added' );
-	}
-
-	@isTest
-	private static void testRemoveDuplicateTempLayoffsInList() {
-
-		TemporaryLayoff__c tl1 = new TemporaryLayoff__c( KafkaId__c = 'test' );
-		TemporaryLayoff__c tl2 = new TemporaryLayoff__c( KafkaId__c = 'test' );
-
-		Test.StartTest();
-		List<TemporaryLayoff__c> layoffs = KafkaPermitteringHandler_Helper.removeDuplicateTempLayoffsInList( new List<TemporaryLayoff__c> { tl1, tl2 } );
-		Test.StopTest();
-
-		System.assertEquals( 1, layoffs.size(), 'Same KafkaId on both, thus, only one should be added' );
-	}
-
+        System.assertEquals(
+            1,
+            layoffs.size(),
+            'Same KafkaId on both, thus, only one should be added'
+        );
+    }
 }

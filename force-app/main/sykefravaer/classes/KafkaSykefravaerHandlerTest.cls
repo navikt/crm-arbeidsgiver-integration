@@ -1,6 +1,5 @@
 @IsTest
 public class KafkaSykefravaerHandlerTest {
-
     @IsTest
     public static void testHandleMessages() {
         // Arrange
@@ -51,11 +50,23 @@ public class KafkaSykefravaerHandlerTest {
 
         // Assert
         // Verify that two accounts have been updated with the correct PotentialManDays, and that the last Account has not been updated
-        a1 = [SELECT Id, INT_PotentialMandays__c FROM Account WHERE Id = :a1.Id];
+        a1 = [
+            SELECT Id, INT_PotentialMandays__c
+            FROM Account
+            WHERE Id = :a1.Id
+        ];
         System.assertEquals(99, a1.INT_PotentialMandays__c);
-        a2 = [SELECT Id, INT_PotentialMandays__c FROM Account WHERE Id = :a2.Id];
+        a2 = [
+            SELECT Id, INT_PotentialMandays__c
+            FROM Account
+            WHERE Id = :a2.Id
+        ];
         System.assertEquals(10, a2.INT_PotentialMandays__c);
-        a3 = [SELECT Id, INT_PotentialMandays__c FROM Account WHERE Id = :a3.Id];
+        a3 = [
+            SELECT Id, INT_PotentialMandays__c
+            FROM Account
+            WHERE Id = :a3.Id
+        ];
         System.assertEquals(null, a3.INT_PotentialMandays__c);
     }
 }
