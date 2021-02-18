@@ -40,9 +40,7 @@ public inherited sharing class KafkaArenaHandler_Filter implements IKafkaMessage
     // 	return filteredMessages;
     // }
 
-    private List<KafkaMessage__c> filterByTotalRecordCount(
-        List<KafkaMessage__c> messages
-    ) {
+    private List<KafkaMessage__c> filterByTotalRecordCount(List<KafkaMessage__c> messages) {
         if (messages.size() == 0)
             return messages;
 

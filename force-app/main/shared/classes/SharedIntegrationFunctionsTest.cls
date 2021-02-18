@@ -7,16 +7,10 @@ private without sharing class SharedIntegrationFunctionsTest {
         update u;
 
         Test.StartTest();
-        Map<String, User> userMap = SharedIntegrationFunctions.fetchUsersByTitle(
-            new Set<String>{ 'testTitle' }
-        );
+        Map<String, User> userMap = SharedIntegrationFunctions.fetchUsersByTitle(new Set<String>{ 'testTitle' });
         Test.StopTest();
 
         System.assertEquals(1, userMap.size(), 'Only one user added');
-        System.assertEquals(
-            u.Id,
-            userMap.get('testTitle').Id,
-            'Same user as created'
-        );
+        System.assertEquals(u.Id, userMap.get('testTitle').Id, 'Same user as created');
     }
 }

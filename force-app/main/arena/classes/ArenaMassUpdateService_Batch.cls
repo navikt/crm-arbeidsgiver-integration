@@ -10,23 +10,13 @@ public with sharing class ArenaMassUpdateService_Batch implements Database.Batch
         return Database.getQueryLocator(this.query);
     }
 
-    public void execute(
-        Database.BatchableContext BC,
-        List<ArenaActivity__c> scope
-    ) {
+    public void execute(Database.BatchableContext BC, List<ArenaActivity__c> scope) {
         for (ArenaActivity__c aa : scope) {
-            KafkaArenaHandler_Model arenaModel = KafkaArenaHandler_Model.parse(
-                aa.JsonPayload__c,
-                null,
-                null
-            );
+            KafkaArenaHandler_Model arenaModel = KafkaArenaHandler_Model.parse(aa.JsonPayload__c, null, null);
             aa.RegisteredByNavIdent__c = arenaModel.RegUser;
             aa.CaseWorkerNavIdent__c = arenaModel.Saksbehandler;
             if (arenaModel.Fornavn != null) {
-                aa.CaseWorkerName__c =
-                    arenaModel.Fornavn +
-                    ' ' +
-                    arenaModel.Etternavn;
+                aa.CaseWorkerName__c = arenaModel.Fornavn + ' ' + arenaModel.Etternavn;
             }
         }
         update scope;

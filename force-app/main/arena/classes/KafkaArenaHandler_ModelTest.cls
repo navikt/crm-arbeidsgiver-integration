@@ -20,11 +20,7 @@ public class KafkaArenaHandler_ModelTest {
         '    \"navIdent\": \"I111345\"' +
         '}';
     private static testMethod void testParse() {
-        KafkaArenaHandler_Model obj = KafkaArenaHandler_Model.parse(
-            json,
-            null,
-            null
-        );
+        KafkaArenaHandler_Model obj = KafkaArenaHandler_Model.parse(json, null, null);
         System.assert(obj != null);
     }
 }

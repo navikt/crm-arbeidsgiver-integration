@@ -6,9 +6,7 @@ public without sharing class KafkaPermitteringHandler implements IKafkaMessageCo
         List<String> organisationNumbers = KafkaPermitteringHandler_Helper.getOrgNumbersFromPermittering(
             permitteringer
         );
-        Map<String, Account> accountMap = SharedFunctions.fetchAccounts(
-            organisationNumbers
-        );
+        Map<String, Account> accountMap = SharedFunctions.fetchAccounts(organisationNumbers);
 
         // creates a list of each user / contact
         List<SharedFunctions_ContactModel> wrapperList = KafkaPermitteringHandler_Helper.convertPermitteringToContactWrapper(
@@ -16,10 +14,7 @@ public without sharing class KafkaPermitteringHandler implements IKafkaMessageCo
         );
 
         // will create non-existing contacts and fetch those already existing + map existing contacts to new accounts if represnting another unit
-        Map<String, Contact> contactMap = SharedFunctions.fetchOrCreateContact(
-            wrapperList,
-            accountMap
-        );
+        Map<String, Contact> contactMap = SharedFunctions.fetchOrCreateContact(wrapperList, accountMap);
 
         // create SObject version of layoff
         List<TemporaryLayoff__c> layoffs = KafkaPermitteringHandler_Helper.convertPermitteringToLayoff(
@@ -28,12 +23,8 @@ public without sharing class KafkaPermitteringHandler implements IKafkaMessageCo
             contactMap
         );
 
-        layoffs = KafkaPermitteringHandler_Helper.removeExistingTempLayoffs(
-            layoffs
-        );
-        layoffs = KafkaPermitteringHandler_Helper.removeDuplicateTempLayoffsInList(
-            layoffs
-        );
+        layoffs = KafkaPermitteringHandler_Helper.removeExistingTempLayoffs(layoffs);
+        layoffs = KafkaPermitteringHandler_Helper.removeDuplicateTempLayoffsInList(layoffs);
 
         insert layoffs;
     }
