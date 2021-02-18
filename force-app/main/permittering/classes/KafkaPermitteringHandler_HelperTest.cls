@@ -8,17 +8,11 @@ private without sharing class KafkaPermitteringHandler_HelperTest {
         };
 
         Test.StartTest();
-        List<String> orgNumbers = KafkaPermitteringHandler_Helper.getOrgNumbersFromPermittering(
-            permitteringer
-        );
+        List<String> orgNumbers = KafkaPermitteringHandler_Helper.getOrgNumbersFromPermittering(permitteringer);
         Test.StopTest();
 
         System.assertEquals(1, orgNumbers.size(), 'Only one json sent in');
-        System.assertEquals(
-            '920845908',
-            orgNumbers[0],
-            'Only one json sent in'
-        );
+        System.assertEquals('920845908', orgNumbers[0], 'Only one json sent in');
     }
 
     @isTest
@@ -41,26 +35,14 @@ private without sharing class KafkaPermitteringHandler_HelperTest {
         actual[0].jsonPayload = null;
 
         System.assertEquals(expected[0].id, actual[0].id);
-        System.assertEquals(
-            expected[0].bedriftsnummer,
-            actual[0].bedriftsnummer
-        );
-        System.assertEquals(
-            expected[0].sendtInnTidspunkt,
-            actual[0].sendtInnTidspunkt
-        );
+        System.assertEquals(expected[0].bedriftsnummer, actual[0].bedriftsnummer);
+        System.assertEquals(expected[0].sendtInnTidspunkt, actual[0].sendtInnTidspunkt);
         System.assertEquals(expected[0].type, actual[0].type);
         System.assertEquals(expected[0].kontaktNavn, actual[0].kontaktNavn);
         System.assertEquals(expected[0].kontaktTlf, actual[0].kontaktTlf);
         System.assertEquals(expected[0].kontaktEpost, actual[0].kontaktEpost);
-        System.assertEquals(
-            expected[0].varsletAnsattDato,
-            actual[0].varsletAnsattDato
-        );
-        System.assertEquals(
-            expected[0].varsletNavDato,
-            actual[0].varsletNavDato
-        );
+        System.assertEquals(expected[0].varsletAnsattDato, actual[0].varsletAnsattDato);
+        System.assertEquals(expected[0].varsletNavDato, actual[0].varsletNavDato);
         System.assertEquals(expected[0].startDato, actual[0].startDato);
         System.assertEquals(expected[0].sluttDato, actual[0].sluttDato);
         System.assertEquals(expected[0].fritekst, actual[0].fritekst);
@@ -83,39 +65,16 @@ private without sharing class KafkaPermitteringHandler_HelperTest {
         Test.StopTest();
 
         System.assertEquals(1, result.size(), 'Only one contact');
-        System.assertEquals(
-            'test',
-            result[0].firstName,
-            'firstName should be set from testJson'
-        );
-        System.assertEquals(
-            'nav',
-            result[0].lastName,
-            'lastName should be set from testJson'
-        );
-        System.assertEquals(
-            '920845908',
-            result[0].companyNumber,
-            'companyNumber should be set from testJson'
-        );
-        System.assertEquals(
-            '80080900',
-            result[0].phone,
-            'phone should be set from testJson'
-        );
-        System.assertEquals(
-            'ververvr@test.com',
-            result[0].email,
-            'email should be set from testJson'
-        );
+        System.assertEquals('test', result[0].firstName, 'firstName should be set from testJson');
+        System.assertEquals('nav', result[0].lastName, 'lastName should be set from testJson');
+        System.assertEquals('920845908', result[0].companyNumber, 'companyNumber should be set from testJson');
+        System.assertEquals('80080900', result[0].phone, 'phone should be set from testJson');
+        System.assertEquals('ververvr@test.com', result[0].email, 'email should be set from testJson');
     }
 
     @isTest
     private static void testConvertPermitteringToLayoff() {
-        Account acc = new Account(
-            Name = 'Test Employer 1',
-            INT_OrganizationNumber__c = '920845908'
-        );
+        Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '920845908');
         insert acc;
 
         Contact con = new Contact(
@@ -135,17 +94,12 @@ private without sharing class KafkaPermitteringHandler_HelperTest {
         List<String> organisationNumbers = KafkaPermitteringHandler_Helper.getOrgNumbersFromPermittering(
             permitteringer
         );
-        Map<String, Account> accountMap = SharedFunctions.fetchAccounts(
-            organisationNumbers
-        );
+        Map<String, Account> accountMap = SharedFunctions.fetchAccounts(organisationNumbers);
 
         List<SharedFunctions_ContactModel> wrapperList = KafkaPermitteringHandler_Helper.convertPermitteringToContactWrapper(
             permitteringer
         );
-        Map<String, Contact> contactMap = SharedFunctions.fetchOrCreateContact(
-            wrapperList,
-            accountMap
-        );
+        Map<String, Contact> contactMap = SharedFunctions.fetchOrCreateContact(wrapperList, accountMap);
 
         Test.StartTest();
         List<TemporaryLayoff__c> result = KafkaPermitteringHandler_Helper.convertPermitteringToLayoff(
@@ -157,31 +111,17 @@ private without sharing class KafkaPermitteringHandler_HelperTest {
 
         System.assertEquals(1, result.size(), 'Only one permittering');
         System.assertEquals(Con.Id, result[0].Contact__c);
-        System.assertEquals(
-            acc.Id,
-            result[0].Account__c,
-            'Should have used the existing account'
-        );
+        System.assertEquals(acc.Id, result[0].Account__c, 'Should have used the existing account');
 
         System.assertEquals(2, result[0].NumberOfEmployees__c);
         System.assertEquals('PERMITTERING_UTEN_LØNN', result[0].Type__c);
         System.assertEquals('ververvr@test.com', result[0].ContactEmail__c);
-        System.assertEquals(
-            Date.newInstance(2020, 3, 14),
-            result[0].StartDate__c
-        );
-        System.assertEquals(
-            Date.newInstance(2020, 4, 26),
-            result[0].EndDate__c
-        );
+        System.assertEquals(Date.newInstance(2020, 3, 14), result[0].StartDate__c);
+        System.assertEquals(Date.newInstance(2020, 4, 26), result[0].EndDate__c);
         System.assertEquals('ANDRE_ÅRSAKER', result[0].Reason__c);
         System.assertEquals('Corona-virus', result[0].ReasonOther__c);
-        System.assert(
-            result[0].Profession__c.split(';').contains('Daglig leder')
-        );
-        System.assert(
-            result[0].Profession__c.split(';').contains('Kafemedarbeider')
-        );
+        System.assert(result[0].Profession__c.split(';').contains('Daglig leder'));
+        System.assert(result[0].Profession__c.split(';').contains('Kafemedarbeider'));
         System.assertEquals(
             'Har tidligere sendt inn permitteringsvarsel fra dag 1 (14. mars 2020). Dette er varsel om forlenging frem til 27, april 2020. ',
             result[0].OtherField__c
@@ -191,8 +131,7 @@ private without sharing class KafkaPermitteringHandler_HelperTest {
     @isTest
     private static void testConvertPermitteringToLayoff_EmptyAnnet() {
         String b64String = 'ewogICJpZCIgOiAiYTIwMzY4MGQtZDUyYS00Y2EwLTk2ODctMzUzMzE3YmJlYmIzIiwKICAiYmVkcmlmdHNudW1tZXIiIDogIjkxMDgyNTUxOCIsCiAgInNlbmR0SW5uVGlkc3B1bmt0IiA6ICIyMDIwLTA0LTIxVDEwOjM3OjU1Ljk2NjU4OFoiLAogICJ0eXBlIiA6ICJQRVJNSVRURVJJTkdfVVRFTl9Mw5hOTiIsCiAgImtvbnRha3ROYXZuIiA6ICJiZW5kaWsgdGVzdCBmb3Igam9obiAyIiwKICAia29udGFrdFRsZiIgOiAiMTIzNDU2NzgiLAogICJrb250YWt0RXBvc3QiIDogImJlbm55QGJhem9va2EuY29tIiwKICAidmFyc2xldEFuc2F0dERhdG8iIDogIjIwMjAtMDQtMjEiLAogICJ2YXJzbGV0TmF2RGF0byIgOiAiMjAyMC0wNC0yMSIsCiAgInN0YXJ0RGF0byIgOiAiMjAyMC0wNC0xMyIsCiAgImZyaXRla3N0IiA6ICJcbiMjIyDDhXJzYWtcbkJyYW5uXG4jIyMgWXJrZXJcbktva2sgKHNraXApXG4jIyMgQW5uZXRcbiIsCiAgImFudGFsbEJlcm9ydGUiIDogMTMzOCwKICAiw6Vyc2Frc2tvZGUiIDogIkJSQU5OIiwKICAieXJrZXNrYXRlZ29yaWVyIiA6IFsgewogICAgImtvbnNlcHRJZCIgOiAyMTg0NCwKICAgICJzdHlyazA4IiA6ICI1MTIwIiwKICAgICJsYWJlbCIgOiAiS29rayAoc2tpcCkiCiAgfSBdCn0';
-        String testJson = KafkaMessageUtils.base64ULSafeDecode(b64String)
-            .toString();
+        String testJson = KafkaMessageUtils.base64ULSafeDecode(b64String).toString();
 
         List<KafkaPermitteringHandler_Model> permitteringer = new List<KafkaPermitteringHandler_Model>{
             KafkaPermitteringHandler_Model.parse(testJson)
@@ -201,17 +140,12 @@ private without sharing class KafkaPermitteringHandler_HelperTest {
         List<String> organisationNumbers = KafkaPermitteringHandler_Helper.getOrgNumbersFromPermittering(
             permitteringer
         );
-        Map<String, Account> accountMap = SharedFunctions.fetchAccounts(
-            organisationNumbers
-        );
+        Map<String, Account> accountMap = SharedFunctions.fetchAccounts(organisationNumbers);
 
         List<SharedFunctions_ContactModel> wrapperList = KafkaPermitteringHandler_Helper.convertPermitteringToContactWrapper(
             permitteringer
         );
-        Map<String, Contact> contactMap = SharedFunctions.fetchOrCreateContact(
-            wrapperList,
-            accountMap
-        );
+        Map<String, Contact> contactMap = SharedFunctions.fetchOrCreateContact(wrapperList, accountMap);
 
         Test.StartTest();
         List<TemporaryLayoff__c> result = KafkaPermitteringHandler_Helper.convertPermitteringToLayoff(
@@ -239,11 +173,7 @@ private without sharing class KafkaPermitteringHandler_HelperTest {
         );
         Test.StopTest();
 
-        System.assertEquals(
-            0,
-            layoffs.size(),
-            'Same KafkaId, thus, it shouldn\'t be added'
-        );
+        System.assertEquals(0, layoffs.size(), 'Same KafkaId, thus, it shouldn\'t be added');
     }
 
     @isTest
@@ -258,11 +188,7 @@ private without sharing class KafkaPermitteringHandler_HelperTest {
         );
         Test.StopTest();
 
-        System.assertEquals(
-            1,
-            layoffs.size(),
-            'Different KafkaId, thus, it should be added'
-        );
+        System.assertEquals(1, layoffs.size(), 'Different KafkaId, thus, it should be added');
     }
 
     @isTest
@@ -276,10 +202,6 @@ private without sharing class KafkaPermitteringHandler_HelperTest {
         );
         Test.StopTest();
 
-        System.assertEquals(
-            1,
-            layoffs.size(),
-            'Same KafkaId on both, thus, only one should be added'
-        );
+        System.assertEquals(1, layoffs.size(), 'Same KafkaId on both, thus, only one should be added');
     }
 }

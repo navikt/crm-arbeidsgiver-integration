@@ -1,34 +1,21 @@
 public inherited sharing class KafkaPermitteringHandler_Helper {
-    public static List<KafkaPermitteringHandler_Model> convertKafkaToPermittering(
-        List<KafkaMessage__c> messages
-    ) {
+    public static List<KafkaPermitteringHandler_Model> convertKafkaToPermittering(List<KafkaMessage__c> messages) {
         List<KafkaPermitteringHandler_Model> permitteringer = new List<KafkaPermitteringHandler_Model>();
         for (KafkaMessage__c msg : messages) {
             try {
                 msg.CRM_Status__c = 'Processed';
-                String decodedValue = KafkaMessageUtils.base64ULSafeDecode(
-                        msg.CRM_Value__c
-                    )
-                    .toString();
-                KafkaPermitteringHandler_Model p = KafkaPermitteringHandler_Model.parse(
-                    decodedValue
-                );
+                String decodedValue = KafkaMessageUtils.base64ULSafeDecode(msg.CRM_Value__c).toString();
+                KafkaPermitteringHandler_Model p = KafkaPermitteringHandler_Model.parse(decodedValue);
                 permitteringer.add(p);
             } catch (Exception e) {
-                msg.CRM_ErrorMessage__c =
-                    e.getMessage() +
-                    ' (' +
-                    e.getLineNumber() +
-                    ')';
+                msg.CRM_ErrorMessage__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
             }
         }
 
         return permitteringer;
     }
 
-    public static List<String> getOrgNumbersFromPermittering(
-        List<KafkaPermitteringHandler_Model> permitteringer
-    ) {
+    public static List<String> getOrgNumbersFromPermittering(List<KafkaPermitteringHandler_Model> permitteringer) {
         List<String> organisationNumbers = new List<String>();
         for (KafkaPermitteringHandler_Model p : permitteringer) {
             organisationNumbers.add(p.bedriftsnummer);
@@ -89,9 +76,7 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
         tl.KafkaId__c = p.id;
         tl.NumberOfEmployees__c = p.antallBerorte;
         tl.Type__c = p.type;
-        tl.ContactEmail__c = SharedFunctions_FetchOrCreateContact.checkIfValidEmail(
-                p.kontaktEpost
-            )
+        tl.ContactEmail__c = SharedFunctions_FetchOrCreateContact.checkIfValidEmail(p.kontaktEpost)
             ? p.kontaktEpost
             : null;
         tl.StartDate__c = p.startDato;
@@ -100,9 +85,7 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
 
         List<String> professions = new List<String>();
         if (p.yrkeskategorier != null) {
-            for (
-                KafkaPermitteringHandler_Model.Yrkeskategorier profession : p.yrkeskategorier
-            ) {
+            for (KafkaPermitteringHandler_Model.Yrkeskategorier profession : p.yrkeskategorier) {
                 professions.add(profession.label);
             }
         }
@@ -121,9 +104,7 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
         return tl;
     }
 
-    public static List<TemporaryLayoff__c> removeExistingTempLayoffs(
-        List<TemporaryLayoff__c> layoffs
-    ) {
+    public static List<TemporaryLayoff__c> removeExistingTempLayoffs(List<TemporaryLayoff__c> layoffs) {
         Set<String> uuids = new Set<String>();
 
         for (TemporaryLayoff__c layoff : layoffs) {
@@ -131,11 +112,7 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
         }
 
         Set<String> existingLayoffUuids = new Set<String>();
-        for (TemporaryLayoff__c layoff : [
-            SELECT Id, KafkaId__c
-            FROM TemporaryLayoff__c
-            WHERE KafkaId__c IN :uuids
-        ]) {
+        for (TemporaryLayoff__c layoff : [SELECT Id, KafkaId__c FROM TemporaryLayoff__c WHERE KafkaId__c IN :uuids]) {
             existingLayoffUuids.add(layoff.KafkaId__c);
         }
 
@@ -149,9 +126,7 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
         return filteredLayoffs;
     }
 
-    public static List<TemporaryLayoff__c> removeDuplicateTempLayoffsInList(
-        List<TemporaryLayoff__c> layoffs
-    ) {
+    public static List<TemporaryLayoff__c> removeDuplicateTempLayoffsInList(List<TemporaryLayoff__c> layoffs) {
         Map<String, TemporaryLayoff__c> layoffMap = new Map<String, TemporaryLayoff__c>();
         for (TemporaryLayoff__c layoff : layoffs) {
             if (!layoffMap.containsKey(layoff.KafkaId__c)) {

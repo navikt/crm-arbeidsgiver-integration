@@ -2,16 +2,10 @@
 private without sharing class KafkaPermitteringHandlerTest {
     @IsTest
     public static void testHandleMessages() {
-        Account acc = new Account(
-            Name = 'Test Employer 1',
-            INT_OrganizationNumber__c = '99999999'
-        );
+        Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '99999999');
         insert acc;
 
-        Account acc2 = new Account(
-            Name = 'Test Employer 2',
-            INT_OrganizationNumber__c = '77777777'
-        );
+        Account acc2 = new Account(Name = 'Test Employer 2', INT_OrganizationNumber__c = '77777777');
         insert acc2;
 
         Contact con = new Contact(
@@ -46,10 +40,7 @@ private without sharing class KafkaPermitteringHandlerTest {
         perm.processMessages(messages);
         Test.stopTest();
 
-        layoffs = [
-            SELECT Id, Contact__c, Contact__r.AccountId, Account__c
-            FROM TemporaryLayoff__c
-        ];
+        layoffs = [SELECT Id, Contact__c, Contact__r.AccountId, Account__c FROM TemporaryLayoff__c];
         System.assertEquals(2, layoffs.size(), 'two layoffs');
 
         layoffs = [
@@ -58,16 +49,8 @@ private without sharing class KafkaPermitteringHandlerTest {
             WHERE Account__c = :acc.Id
         ];
         System.assertEquals(1, layoffs.size(), 'just one message from query');
-        System.assertEquals(
-            con.Id,
-            layoffs[0].Contact__c,
-            'Should have used the existing contact'
-        );
-        System.assertEquals(
-            acc.Id,
-            layoffs[0].Account__c,
-            'Should have used the existing account'
-        );
+        System.assertEquals(con.Id, layoffs[0].Contact__c, 'Should have used the existing contact');
+        System.assertEquals(acc.Id, layoffs[0].Account__c, 'Should have used the existing account');
 
         layoffs = [
             SELECT Id, Contact__c, Contact__r.AccountId, Account__c
@@ -75,16 +58,8 @@ private without sharing class KafkaPermitteringHandlerTest {
             WHERE Account__c = :acc2.Id
         ];
         System.assertEquals(1, layoffs.size(), 'just one message from query');
-        System.assertNotEquals(
-            con.Id,
-            layoffs[0].Contact__c,
-            'Should NOT have used the existing contact'
-        );
-        System.assertEquals(
-            acc2.Id,
-            layoffs[0].Account__c,
-            'Should have used the existing second account'
-        );
+        System.assertNotEquals(con.Id, layoffs[0].Contact__c, 'Should NOT have used the existing contact');
+        System.assertEquals(acc2.Id, layoffs[0].Account__c, 'Should have used the existing second account');
         System.assertEquals(
             acc2.Id,
             layoffs[0].Contact__r.AccountId,
@@ -94,10 +69,7 @@ private without sharing class KafkaPermitteringHandlerTest {
 
     @IsTest
     public static void testHandleMessages_separateProfessionAndReason() {
-        Account acc = new Account(
-            Name = 'Test Employer 1',
-            INT_OrganizationNumber__c = '99999999'
-        );
+        Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '99999999');
         insert acc;
 
         Contact con = new Contact(
@@ -143,36 +115,17 @@ private without sharing class KafkaPermitteringHandlerTest {
             FROM TemporaryLayoff__c
         ];
         System.assertEquals(1, result.size(), 'one layoffs');
-        System.assertEquals(
-            con.Id,
-            result[0].Contact__c,
-            'Should have used the existing contact'
-        );
-        System.assertEquals(
-            acc.Id,
-            result[0].Account__c,
-            'Should have used the existing account'
-        );
+        System.assertEquals(con.Id, result[0].Contact__c, 'Should have used the existing contact');
+        System.assertEquals(acc.Id, result[0].Account__c, 'Should have used the existing account');
 
         System.assertEquals(2, result[0].NumberOfEmployees__c);
         System.assertEquals('PERMITTERING_UTEN_LØNN', result[0].Type__c);
-        System.assertEquals(
-            'tore.toresen@example.com',
-            result[0].ContactEmail__c
-        );
-        System.assertEquals(
-            Date.newInstance(2020, 3, 14),
-            result[0].StartDate__c
-        );
-        System.assertEquals(
-            Date.newInstance(2020, 4, 26),
-            result[0].EndDate__c
-        );
+        System.assertEquals('tore.toresen@example.com', result[0].ContactEmail__c);
+        System.assertEquals(Date.newInstance(2020, 3, 14), result[0].StartDate__c);
+        System.assertEquals(Date.newInstance(2020, 4, 26), result[0].EndDate__c);
         System.assertEquals('MANGEL_PÅ_ARBEID', result[0].Reason__c);
         System.assertEquals(null, result[0].ReasonOther__c);
-        System.assert(
-            result[0].Profession__c.split(';').contains('Daglig leder')
-        );
+        System.assert(result[0].Profession__c.split(';').contains('Daglig leder'));
         System.assert(result[0].Profession__c.split(';').contains('Konsulent'));
         System.assert(result[0].Profession__c.split(';').contains('Selger'));
         System.assertEquals(null, result[0].OtherField__c);
@@ -180,10 +133,7 @@ private without sharing class KafkaPermitteringHandlerTest {
 
     @IsTest
     public static void testHandleMessages_insertDuplicate() {
-        Account acc = new Account(
-            Name = 'Test Employer 1',
-            INT_OrganizationNumber__c = '99999999'
-        );
+        Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '99999999');
         insert acc;
 
         Contact con = new Contact(
@@ -228,10 +178,7 @@ private without sharing class KafkaPermitteringHandlerTest {
 
     @IsTest
     public static void testHandleMessages_insertDuplicateInSameTransaction() {
-        Account acc = new Account(
-            Name = 'Test Employer 1',
-            INT_OrganizationNumber__c = '99999999'
-        );
+        Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '99999999');
         insert acc;
 
         Contact con = new Contact(
@@ -265,10 +212,7 @@ private without sharing class KafkaPermitteringHandlerTest {
 
     @IsTest
     public static void testHandleMessages_invalidEmail() {
-        Account acc = new Account(
-            Name = 'Test Employer 1',
-            INT_OrganizationNumber__c = '99999999'
-        );
+        Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '99999999');
         insert acc;
 
         KafkaMessage__c msg = new KafkaMessage__c();
@@ -285,21 +229,14 @@ private without sharing class KafkaPermitteringHandlerTest {
         perm.processMessages(new List<KafkaMessage__c>{ msg });
         Test.stopTest();
 
-        layoffs = [
-            SELECT ContactEmail__c, Contact__r.Email, Contact__r.InvalidEmail__c
-            FROM TemporaryLayoff__c
-        ];
+        layoffs = [SELECT ContactEmail__c, Contact__r.Email, Contact__r.InvalidEmail__c FROM TemporaryLayoff__c];
         System.assertEquals(1, layoffs.size(), 'one layoffs');
         System.assertEquals(
             null,
             layoffs[0].Contact__r.Email,
             'Email should be empty because it contained invalid characters'
         );
-        System.assertEquals(
-            null,
-            layoffs[0].ContactEmail__c,
-            'ContactEmail should be null as it is not valid'
-        );
+        System.assertEquals(null, layoffs[0].ContactEmail__c, 'ContactEmail should be null as it is not valid');
         System.assertEquals(
             'tore.toråsen@example.com',
             layoffs[0].Contact__r.InvalidEmail__c,
@@ -309,10 +246,7 @@ private without sharing class KafkaPermitteringHandlerTest {
 
     @IsTest
     public static void testHandleMessages_invalidEmail_ExistingContact() {
-        Account acc = new Account(
-            Name = 'Test Employer 1',
-            INT_OrganizationNumber__c = '99999999'
-        );
+        Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '99999999');
         insert acc;
 
         Contact con = new Contact(
@@ -337,11 +271,7 @@ private without sharing class KafkaPermitteringHandlerTest {
         Test.stopTest();
 
         layoffs = [
-            SELECT
-                ContactEmail__c,
-                Contact__c,
-                Contact__r.Email,
-                Contact__r.InvalidEmail__c
+            SELECT ContactEmail__c, Contact__c, Contact__r.Email, Contact__r.InvalidEmail__c
             FROM TemporaryLayoff__c
         ];
         System.assertEquals(1, layoffs.size(), 'one layoffs');
@@ -355,24 +285,13 @@ private without sharing class KafkaPermitteringHandlerTest {
             layoffs[0].Contact__r.InvalidEmail__c,
             'Email should be empty because it contained invalid characters'
         );
-        System.assertEquals(
-            null,
-            layoffs[0].ContactEmail__c,
-            'ContactEmail should be null as it is not valid'
-        );
-        System.assertEquals(
-            con.Id,
-            layoffs[0].Contact__c,
-            'Contact should be existing contact'
-        );
+        System.assertEquals(null, layoffs[0].ContactEmail__c, 'ContactEmail should be null as it is not valid');
+        System.assertEquals(con.Id, layoffs[0].Contact__c, 'Contact should be existing contact');
     }
 
     @IsTest
     public static void testHandleMessages_upperCaseEmail() {
-        Account acc = new Account(
-            Name = 'Test Employer',
-            INT_OrganizationNumber__c = '77777777'
-        );
+        Account acc = new Account(Name = 'Test Employer', INT_OrganizationNumber__c = '77777777');
         insert acc;
 
         Contact con = new Contact(
@@ -399,24 +318,12 @@ private without sharing class KafkaPermitteringHandlerTest {
         Test.stopTest();
 
         contacts = [SELECT Id FROM Contact];
-        System.assertEquals(
-            1,
-            contacts.size(),
-            'Still only one contact created'
-        );
+        System.assertEquals(1, contacts.size(), 'Still only one contact created');
 
         List<TemporaryLayoff__c> layoffs = [
-            SELECT
-                ContactEmail__c,
-                Contact__c,
-                Contact__r.Email,
-                Contact__r.InvalidEmail__c
+            SELECT ContactEmail__c, Contact__c, Contact__r.Email, Contact__r.InvalidEmail__c
             FROM TemporaryLayoff__c
         ];
-        System.assertEquals(
-            con.Id,
-            layoffs[0].Contact__c,
-            'Contact should be existing contact'
-        );
+        System.assertEquals(con.Id, layoffs[0].Contact__c, 'Contact should be existing contact');
     }
 }

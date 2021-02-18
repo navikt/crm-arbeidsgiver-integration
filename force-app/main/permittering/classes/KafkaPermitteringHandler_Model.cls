@@ -61,8 +61,7 @@ public class KafkaPermitteringHandler_Model {
                     } else {
                         System.debug(
                             LoggingLevel.WARN,
-                            'KafkaPermitteringHandler_Model consuming unrecognized property: ' +
-                            text
+                            'KafkaPermitteringHandler_Model consuming unrecognized property: ' + text
                         );
                         consumeObject(parser);
                     }
@@ -88,11 +87,7 @@ public class KafkaPermitteringHandler_Model {
                         } else if (text == 'label') {
                             label = parser.getText();
                         } else {
-                            System.debug(
-                                LoggingLevel.WARN,
-                                'Yrkeskategorier consuming unrecognized property: ' +
-                                text
-                            );
+                            System.debug(LoggingLevel.WARN, 'Yrkeskategorier consuming unrecognized property: ' + text);
                             consumeObject(parser);
                         }
                     }
@@ -118,11 +113,7 @@ public class KafkaPermitteringHandler_Model {
                         } else if (text == 'antallBerorte') {
                             antallBerorte = parser.getIntegerValue();
                         } else {
-                            System.debug(
-                                LoggingLevel.WARN,
-                                'Bedrift consuming unrecognized property: ' +
-                                text
-                            );
+                            System.debug(LoggingLevel.WARN, 'Bedrift consuming unrecognized property: ' + text);
                             consumeObject(parser);
                         }
                     }
@@ -134,9 +125,7 @@ public class KafkaPermitteringHandler_Model {
     public static KafkaPermitteringHandler_Model parse(String json) {
         System.JSONParser parser = System.JSON.createParser(json);
 
-        KafkaPermitteringHandler_Model p = new KafkaPermitteringHandler_Model(
-            parser
-        );
+        KafkaPermitteringHandler_Model p = new KafkaPermitteringHandler_Model(parser);
         p.jsonPayload = json;
 
         return p;
@@ -146,23 +135,15 @@ public class KafkaPermitteringHandler_Model {
         Integer depth = 0;
         do {
             System.JSONToken curr = parser.getCurrentToken();
-            if (
-                curr == System.JSONToken.START_OBJECT ||
-                curr == System.JSONToken.START_ARRAY
-            ) {
+            if (curr == System.JSONToken.START_OBJECT || curr == System.JSONToken.START_ARRAY) {
                 depth++;
-            } else if (
-                curr == System.JSONToken.END_OBJECT ||
-                curr == System.JSONToken.END_ARRAY
-            ) {
+            } else if (curr == System.JSONToken.END_OBJECT || curr == System.JSONToken.END_ARRAY) {
                 depth--;
             }
         } while (depth > 0 && parser.nextToken() != null);
     }
 
-    private static List<Yrkeskategorier> arrayOfYrkeskategorier(
-        System.JSONParser p
-    ) {
+    private static List<Yrkeskategorier> arrayOfYrkeskategorier(System.JSONParser p) {
         List<Yrkeskategorier> res = new List<Yrkeskategorier>();
         if (p.getCurrentToken() == null) {
             p.nextToken();

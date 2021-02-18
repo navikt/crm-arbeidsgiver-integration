@@ -4,21 +4,14 @@ public inherited sharing class KafkaSykefravaerHandler implements IKafkaMessageC
         for (KafkaMessage__c msg : messages) {
             try {
                 msg.CRM_Status__c = 'Processed';
-                String decodedValue = KafkaMessageUtils.base64ULSafeDecode(
-                        msg.CRM_Value__c
-                    )
-                    .toString();
+                String decodedValue = KafkaMessageUtils.base64ULSafeDecode(msg.CRM_Value__c).toString();
                 PotensieltDagsverk pd = (PotensieltDagsverk) JSON.deserialize(
                     decodedValue,
                     KafkaSykefravaerHandler.PotensieltDagsverk.class
                 );
                 pdByOrgNumber.put(pd.orgnr, pd);
             } catch (Exception e) {
-                msg.CRM_ErrorMessage__c =
-                    e.getMessage() +
-                    ' (' +
-                    e.getLineNumber() +
-                    ')';
+                msg.CRM_ErrorMessage__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
             }
         }
 
@@ -35,10 +28,7 @@ public inherited sharing class KafkaSykefravaerHandler implements IKafkaMessageC
         for (String orgNr : pdByOrgNumber.keySet()) {
             Account acc = accountByOrgNumber.get(orgNr);
             Integer pd = pdByOrgNumber.get(orgNr).potensielleDagsverk;
-            if (
-                accountByOrgNumber.containsKey(orgNr) &&
-                acc.INT_PotentialMandays__c != pd
-            ) {
+            if (accountByOrgNumber.containsKey(orgNr) && acc.INT_PotentialMandays__c != pd) {
                 acc.INT_PotentialMandays__c = pd;
                 accountsToUpdate.add(acc);
             }

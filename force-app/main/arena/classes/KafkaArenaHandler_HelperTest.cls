@@ -2,10 +2,7 @@
 private without sharing class KafkaArenaHandler_HelperTest {
     @testSetup
     private static void setup() {
-        Account acc = new Account(
-            Name = 'Test Employer 1',
-            INT_OrganizationNumber__c = '973113631'
-        );
+        Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '973113631');
         insert acc;
     }
 
@@ -22,11 +19,7 @@ private without sharing class KafkaArenaHandler_HelperTest {
         );
         Test.StopTest();
 
-        System.assertEquals(
-            1,
-            models.size(),
-            'Only one kafka message added, only one model returned'
-        );
+        System.assertEquals(1, models.size(), 'Only one kafka message added, only one model returned');
 
         System.assertEquals('FULLF', models[0].aktivitetStatuskode);
         System.assertEquals(973113631, models[0].bedriftsnr);
@@ -63,11 +56,7 @@ private without sharing class KafkaArenaHandler_HelperTest {
         List<String> results = KafkaArenaHandler_Helper.getOrgNumbers(models);
         Test.StopTest();
 
-        System.assertEquals(
-            1,
-            results.size(),
-            'Only one org number as only one kafka message'
-        );
+        System.assertEquals(1, results.size(), 'Only one org number as only one kafka message');
         System.assert(results.contains('973113631'));
     }
 
@@ -113,12 +102,7 @@ private without sharing class KafkaArenaHandler_HelperTest {
 
     @isTest
     private static void testConvertArenaModelToSObject() {
-        Account acc = [
-            SELECT Id
-            FROM Account
-            WHERE INT_OrganizationNumber__c = '973113631'
-            LIMIT 1
-        ][0];
+        Account acc = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = '973113631' LIMIT 1][0];
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
         msg1.CRM_Topic__c = 'privat-arbeidsgiver-aktivitet-crm';
@@ -128,9 +112,7 @@ private without sharing class KafkaArenaHandler_HelperTest {
         List<KafkaArenaHandler_Model> models = KafkaArenaHandler_Helper.convertKafkaToArenaModel(
             new List<KafkaMessage__c>{ msg1 }
         );
-        Map<String, Account> accountMap = SharedFunctions.fetchAccounts(
-            new List<String>{ '973113631' }
-        );
+        Map<String, Account> accountMap = SharedFunctions.fetchAccounts(new List<String>{ '973113631' });
 
         Test.StartTest();
         List<ArenaActivity__c> arenaActivities = KafkaArenaHandler_Helper.convertArenaModelToSObject(
@@ -140,11 +122,7 @@ private without sharing class KafkaArenaHandler_HelperTest {
         );
         Test.StopTest();
 
-        System.assertEquals(
-            1,
-            arenaActivities.size(),
-            'Only one kafka message added, only one sobject returned'
-        );
+        System.assertEquals(1, arenaActivities.size(), 'Only one kafka message added, only one sobject returned');
 
         System.assertEquals('FULLF', arenaActivities[0].AktivitetStatuskode__c);
         System.assertEquals(acc.Id, arenaActivities[0].Account__c);
@@ -153,39 +131,15 @@ private without sharing class KafkaArenaHandler_HelperTest {
             arenaActivities[0].Description__c
         );
         System.assertEquals('UTDYRK', arenaActivities[0].AktivitetsKode__c);
-        System.assertEquals(
-            Date.newInstance(2003, 1, 1),
-            arenaActivities[0].DateFrom__c
-        );
-        System.assertEquals(
-            Date.newInstance(2004, 12, 31),
-            arenaActivities[0].DateTo__c
-        );
-        System.assertEquals(
-            Date.newInstance(2003, 3, 25),
-            arenaActivities[0].DateRegistered__c
-        );
-        System.assertEquals(
-            'GL1812',
-            arenaActivities[0].RegisteredByNavIdent__c
-        );
-        System.assertEquals(
-            'JEI1812',
-            arenaActivities[0].CaseWorkerNavIdent__c
-        );
-        System.assertEquals(
-            'TLTAK',
-            arenaActivities[0].Aktivitetsgruppekode__c
-        );
-        System.assertEquals(
-            null,
-            arenaActivities[0].AktivitetstypeBeskrivelse__c
-        );
+        System.assertEquals(Date.newInstance(2003, 1, 1), arenaActivities[0].DateFrom__c);
+        System.assertEquals(Date.newInstance(2004, 12, 31), arenaActivities[0].DateTo__c);
+        System.assertEquals(Date.newInstance(2003, 3, 25), arenaActivities[0].DateRegistered__c);
+        System.assertEquals('GL1812', arenaActivities[0].RegisteredByNavIdent__c);
+        System.assertEquals('JEI1812', arenaActivities[0].CaseWorkerNavIdent__c);
+        System.assertEquals('TLTAK', arenaActivities[0].Aktivitetsgruppekode__c);
+        System.assertEquals(null, arenaActivities[0].AktivitetstypeBeskrivelse__c);
         System.assertEquals('Utdanning', arenaActivities[0].Aktivitetstype__c);
-        System.assertEquals(
-            'Jonn Egil Indrevoll',
-            arenaActivities[0].CaseWorkerName__c
-        );
+        System.assertEquals('Jonn Egil Indrevoll', arenaActivities[0].CaseWorkerName__c);
     }
 
     @isTest
@@ -204,9 +158,7 @@ private without sharing class KafkaArenaHandler_HelperTest {
         List<KafkaArenaHandler_Model> models = KafkaArenaHandler_Helper.convertKafkaToArenaModel(
             new List<KafkaMessage__c>{ msg1 }
         );
-        Map<String, Account> accountMap = SharedFunctions.fetchAccounts(
-            new List<String>{ '973113631' }
-        );
+        Map<String, Account> accountMap = SharedFunctions.fetchAccounts(new List<String>{ '973113631' });
         Map<String, ArenaActivity__c> existingActivities = new Map<String, ArenaActivity__c>();
         existingActivities.put(aa.KafkaId__c, aa);
 
@@ -218,11 +170,7 @@ private without sharing class KafkaArenaHandler_HelperTest {
         );
         Test.StopTest();
 
-        System.assertEquals(
-            0,
-            arenaActivities.size(),
-            '0 records, as the hash has NOT changed'
-        );
+        System.assertEquals(0, arenaActivities.size(), '0 records, as the hash has NOT changed');
     }
 
     @isTest
@@ -241,9 +189,7 @@ private without sharing class KafkaArenaHandler_HelperTest {
         List<KafkaArenaHandler_Model> models = KafkaArenaHandler_Helper.convertKafkaToArenaModel(
             new List<KafkaMessage__c>{ msg1 }
         );
-        Map<String, Account> accountMap = SharedFunctions.fetchAccounts(
-            new List<String>{ '973113631' }
-        );
+        Map<String, Account> accountMap = SharedFunctions.fetchAccounts(new List<String>{ '973113631' });
         Map<String, ArenaActivity__c> existingActivities = new Map<String, ArenaActivity__c>();
         existingActivities.put(aa.KafkaId__c, aa);
 
@@ -255,11 +201,7 @@ private without sharing class KafkaArenaHandler_HelperTest {
         );
         Test.StopTest();
 
-        System.assertEquals(
-            1,
-            arenaActivities.size(),
-            'Still one activity, as the hash has changed'
-        );
+        System.assertEquals(1, arenaActivities.size(), 'Still one activity, as the hash has changed');
     }
 
     @isTest
@@ -277,32 +219,20 @@ private without sharing class KafkaArenaHandler_HelperTest {
         List<KafkaArenaHandler_Model> models = KafkaArenaHandler_Helper.convertKafkaToArenaModel(
             new List<KafkaMessage__c>{ msg1, msg2 }
         );
-        Map<String, Account> accountMap = SharedFunctions.fetchAccounts(
-            new List<String>{ '973113631' }
-        );
+        Map<String, Account> accountMap = SharedFunctions.fetchAccounts(new List<String>{ '973113631' });
         List<ArenaActivity__c> arenaActivities = KafkaArenaHandler_Helper.convertArenaModelToSObject(
             models,
             accountMap,
             new Map<String, ArenaActivity__c>()
         );
 
-        System.assertEquals(
-            2,
-            arenaActivities.size(),
-            'Two duplicates were added'
-        );
+        System.assertEquals(2, arenaActivities.size(), 'Two duplicates were added');
 
         Test.StartTest();
-        arenaActivities = KafkaArenaHandler_Helper.removeDuplicates(
-            arenaActivities
-        );
+        arenaActivities = KafkaArenaHandler_Helper.removeDuplicates(arenaActivities);
         Test.StopTest();
 
-        System.assertEquals(
-            1,
-            arenaActivities.size(),
-            'Should only have one record after removing duplicate'
-        );
+        System.assertEquals(1, arenaActivities.size(), 'Should only have one record after removing duplicate');
         System.assertEquals(
             'UTDYRK',
             arenaActivities[0].AktivitetsKode__c,
@@ -324,9 +254,7 @@ private without sharing class KafkaArenaHandler_HelperTest {
     @isTest
     private static void testStringToDate_format() {
         Test.StartTest();
-        Date res = KafkaArenaHandler_Helper.stringToDate(
-            'Wed Dec 15 00:00:00 GMT 202'
-        );
+        Date res = KafkaArenaHandler_Helper.stringToDate('Wed Dec 15 00:00:00 GMT 202');
         Test.StopTest();
 
         System.assertEquals(null, res);
