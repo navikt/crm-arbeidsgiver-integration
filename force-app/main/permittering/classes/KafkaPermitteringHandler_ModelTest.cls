@@ -41,9 +41,7 @@ public class KafkaPermitteringHandler_ModelTest {
         '  ]' +
         '}';
     static testMethod void testParse() {
-        KafkaPermitteringHandler_Model r = KafkaPermitteringHandler_Model.parse(
-            json
-        );
+        KafkaPermitteringHandler_Model r = KafkaPermitteringHandler_Model.parse(json);
         System.assert(r != null);
         System.assertEquals(r.arsakskode, 'ANDRE_ÅRSAKER');
 
@@ -54,16 +52,12 @@ public class KafkaPermitteringHandler_ModelTest {
         System.assert(objKafkaPermitteringHandler_Model != null);
         System.assert(objKafkaPermitteringHandler_Model.id == null);
         System.assert(objKafkaPermitteringHandler_Model.bedriftsnummer == null);
-        System.assert(
-            objKafkaPermitteringHandler_Model.sendtInnTidspunkt == null
-        );
+        System.assert(objKafkaPermitteringHandler_Model.sendtInnTidspunkt == null);
         System.assert(objKafkaPermitteringHandler_Model.type == null);
         System.assert(objKafkaPermitteringHandler_Model.kontaktNavn == null);
         System.assert(objKafkaPermitteringHandler_Model.kontaktTlf == null);
         System.assert(objKafkaPermitteringHandler_Model.kontaktEpost == null);
-        System.assert(
-            objKafkaPermitteringHandler_Model.varsletAnsattDato == null
-        );
+        System.assert(objKafkaPermitteringHandler_Model.varsletAnsattDato == null);
         System.assert(objKafkaPermitteringHandler_Model.varsletNavDato == null);
         System.assert(objKafkaPermitteringHandler_Model.startDato == null);
         System.assert(objKafkaPermitteringHandler_Model.sluttDato == null);
@@ -71,9 +65,7 @@ public class KafkaPermitteringHandler_ModelTest {
         System.assert(objKafkaPermitteringHandler_Model.antallBerorte == null);
         System.assert(objKafkaPermitteringHandler_Model.arsakskode == null);
         System.assert(objKafkaPermitteringHandler_Model.arsakstekst == null);
-        System.assert(
-            objKafkaPermitteringHandler_Model.yrkeskategorier == null
-        );
+        System.assert(objKafkaPermitteringHandler_Model.yrkeskategorier == null);
         System.assert(objKafkaPermitteringHandler_Model.bedrift == null);
 
         json = '{\"TestAMissingObject\": { \"TestAMissingArray\": [ { \"TestAMissingProperty\": \"Some Value\" } ] } }';

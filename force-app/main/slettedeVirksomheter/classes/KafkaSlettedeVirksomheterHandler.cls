@@ -19,9 +19,7 @@ public without sharing class KafkaSlettedeVirksomheterHandler implements IKafkaM
         List<Account> acts = [
             SELECT Id
             FROM Account
-            WHERE
-                INT_OrganizationNumber__c IN :orgNrs
-                AND TAG_IsDeleted__c = FALSE
+            WHERE INT_OrganizationNumber__c IN :orgNrs AND TAG_IsDeleted__c = FALSE
         ];
         for (Account act : acts) {
             act.TAG_IsDeleted__c = true;

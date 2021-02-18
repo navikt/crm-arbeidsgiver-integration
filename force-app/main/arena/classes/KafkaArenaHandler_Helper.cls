@@ -1,15 +1,10 @@
 public inherited sharing class KafkaArenaHandler_Helper {
-    public static List<KafkaArenaHandler_Model> convertKafkaToArenaModel(
-        List<KafkaMessage__c> messages
-    ) {
+    public static List<KafkaArenaHandler_Model> convertKafkaToArenaModel(List<KafkaMessage__c> messages) {
         List<KafkaArenaHandler_Model> arenaModels = new List<KafkaArenaHandler_Model>();
         for (KafkaMessage__c msg : messages) {
             try {
                 msg.CRM_Status__c = 'Processed';
-                String decodedValue = KafkaMessageUtils.base64ULSafeDecode(
-                        msg.CRM_Value__c
-                    )
-                    .toString();
+                String decodedValue = KafkaMessageUtils.base64ULSafeDecode(msg.CRM_Value__c).toString();
                 KafkaArenaHandler_Model arenaModel = KafkaArenaHandler_Model.parse(
                     decodedValue,
                     msg.CRM_Key__c,
@@ -17,11 +12,7 @@ public inherited sharing class KafkaArenaHandler_Helper {
                 );
                 arenaModels.add(arenaModel);
             } catch (Exception e) {
-                msg.CRM_ErrorMessage__c =
-                    e.getMessage() +
-                    ' (' +
-                    e.getLineNumber() +
-                    ')';
+                msg.CRM_ErrorMessage__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
             }
         }
         // TODO fix
@@ -29,9 +20,7 @@ public inherited sharing class KafkaArenaHandler_Helper {
         return arenaModels;
     }
 
-    public static List<String> getOrgNumbers(
-        List<KafkaArenaHandler_Model> models
-    ) {
+    public static List<String> getOrgNumbers(List<KafkaArenaHandler_Model> models) {
         List<String> orgNumbers = new List<String>();
         for (KafkaArenaHandler_Model model : models) {
             orgNumbers.add(String.valueOf(model.bedriftsnr));
@@ -40,9 +29,7 @@ public inherited sharing class KafkaArenaHandler_Helper {
         return orgNumbers;
     }
 
-    public static Set<String> getKafkaIds(
-        List<KafkaArenaHandler_Model> models
-    ) {
+    public static Set<String> getKafkaIds(List<KafkaArenaHandler_Model> models) {
         Set<String> kafkaIds = new Set<String>();
         for (KafkaArenaHandler_Model model : models) {
             kafkaIds.add(model.key);
@@ -51,9 +38,7 @@ public inherited sharing class KafkaArenaHandler_Helper {
         return kafkaIds;
     }
 
-    public static Map<String, ArenaActivity__c> getArenaActivity(
-        Set<String> kafkaIds
-    ) {
+    public static Map<String, ArenaActivity__c> getArenaActivity(Set<String> kafkaIds) {
         Map<String, ArenaActivity__c> aaMap = new Map<String, ArenaActivity__c>();
         List<ArenaActivity__c> arenaActivities = [
             SELECT KafkaHash__c, KafkaId__c
@@ -79,9 +64,7 @@ public inherited sharing class KafkaArenaHandler_Helper {
 
             if (existingActivities.containsKey(model.key)) {
                 // should update existing record because the hash is different
-                shouldCreateOrUpdate =
-                    existingActivities.get(model.key).KafkaHash__c !=
-                    model.hash;
+                shouldCreateOrUpdate = existingActivities.get(model.key).KafkaHash__c != model.hash;
             }
 
             if (shouldCreateOrUpdate) {
@@ -103,15 +86,10 @@ public inherited sharing class KafkaArenaHandler_Helper {
                 );
 
                 if (model.etternavn != null) {
-                    aa.CaseWorkerName__c =
-                        model.fornavn +
-                        ' ' +
-                        model.etternavn;
+                    aa.CaseWorkerName__c = model.fornavn + ' ' + model.etternavn;
                 }
 
-                aa.Account__c = accountMap.containsKey(
-                        String.valueOf(model.bedriftsnr)
-                    )
+                aa.Account__c = accountMap.containsKey(String.valueOf(model.bedriftsnr))
                     ? accountMap.get(String.valueOf(model.bedriftsnr)).Id
                     : null;
 
@@ -122,9 +100,7 @@ public inherited sharing class KafkaArenaHandler_Helper {
         return arenaActivities;
     }
 
-    public static List<ArenaActivity__c> removeDuplicates(
-        List<ArenaActivity__c> arenaActivities
-    ) {
+    public static List<ArenaActivity__c> removeDuplicates(List<ArenaActivity__c> arenaActivities) {
         Map<String, ArenaActivity__c> arenaMap = new Map<String, ArenaActivity__c>();
 
         for (ArenaActivity__c aa : arenaActivities) {
