@@ -4,10 +4,7 @@ private without sharing class KafkaArenaHandlerTest {
     private static void testHandleMessages() {
         KafkaEnhetFilter.bypassFilter = true;
 
-        Account acc = new Account(
-            Name = 'Test Employer 1',
-            INT_OrganizationNumber__c = '973113631'
-        );
+        Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '973113631');
         insert acc;
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
@@ -38,48 +35,23 @@ private without sharing class KafkaArenaHandlerTest {
             FROM ArenaActivity__c
         ];
 
-        System.assertEquals(
-            1,
-            arenaActivities.size(),
-            'Only one activity added'
-        );
+        System.assertEquals(1, arenaActivities.size(), 'Only one activity added');
 
         System.assertEquals('FULLF', arenaActivities[0].AktivitetStatuskode__c);
         System.assertEquals(acc.Id, arenaActivities[0].Account__c);
-        System.assertEquals(
-            '973113631',
-            arenaActivities[0].Account__r.INT_OrganizationNumber__c
-        );
+        System.assertEquals('973113631', arenaActivities[0].Account__r.INT_OrganizationNumber__c);
         System.assertEquals(
             'Bedriftsøkonomstudiet 20 vt\nHøgskolekandidatstudiet med retning for regnskapsførere. 20vt',
             arenaActivities[0].Description__c
         );
         System.assertEquals('UTDYRK', arenaActivities[0].AktivitetsKode__c);
-        System.assertEquals(
-            Date.newInstance(2003, 1, 1),
-            arenaActivities[0].DateFrom__c
-        );
-        System.assertEquals(
-            Date.newInstance(2004, 12, 31),
-            arenaActivities[0].DateTo__c
-        );
-        System.assertEquals(
-            Date.newInstance(2003, 3, 25),
-            arenaActivities[0].DateRegistered__c
-        );
-        System.assertEquals(
-            'TLTAK',
-            arenaActivities[0].Aktivitetsgruppekode__c
-        );
-        System.assertEquals(
-            null,
-            arenaActivities[0].AktivitetstypeBeskrivelse__c
-        );
+        System.assertEquals(Date.newInstance(2003, 1, 1), arenaActivities[0].DateFrom__c);
+        System.assertEquals(Date.newInstance(2004, 12, 31), arenaActivities[0].DateTo__c);
+        System.assertEquals(Date.newInstance(2003, 3, 25), arenaActivities[0].DateRegistered__c);
+        System.assertEquals('TLTAK', arenaActivities[0].Aktivitetsgruppekode__c);
+        System.assertEquals(null, arenaActivities[0].AktivitetstypeBeskrivelse__c);
         System.assertEquals('Utdanning', arenaActivities[0].Aktivitetstype__c);
-        System.assertEquals(
-            'Jonn Egil Indrevoll',
-            arenaActivities[0].CaseWorkerName__c
-        );
+        System.assertEquals('Jonn Egil Indrevoll', arenaActivities[0].CaseWorkerName__c);
     }
 
     @isTest
@@ -90,11 +62,7 @@ private without sharing class KafkaArenaHandlerTest {
             KafkaId__c = 'd60gwew775ed-249f-49e6-bd15-ff790b56cc07',
             KafkaHash__c = 'ewogICAgImFrdGl2aXRldFN0YXR1c2tvZGUiOiAiRlVMTEYiLAogICAgImJlZHJpZnRzbnIiOiA5NzMxMTM2MzEsCiAgICAiYmVza3JpdmVsc2UiOiAiQmVkcmlmdHPDuGtvbm9tc3R1ZGlldCAyMCB2dFxuSMO4Z3Nrb2xla2FuZGlkYXRzdHVkaWV0IG1lZCByZXRuaW5nIGZvciByZWduc2thcHNmw7hyZXJlLiAyMHZ0IiwKICAgICJvcmduck1vcnNlbHNrYXAiOiA5NzEyMjg4NjUsCiAgICAic2Frc2JlaGFuZGxlciI6ICJKRUkxODEyIiwKICAgICJha3Rpdml0ZXRza29kZSI6ICJVVERZUksiLAogICAgImZyYURhdG8iOiAiMjAwMy0wMS0wMSIsCiAgICAidGlsRGF0byI6ICIyMDA0LTEyLTMxIiwKICAgICJyZWdEYXRvIjogIjIwMDMtMDMtMjUiLAogICAgInJlZ1VzZXIiOiAiR0wxODEyIiwKICAgICJha3Rpdml0ZXRzZ3J1cHBla29kZSI6ICJUTFRBSyIsCiAgICAiYWt0aXZpdGV0c3R5cGViZXNrcml2ZWxzZSI6IG51bGwsCiAgICAiYWt0aXZpdGV0c3R5cGVuYXZuIjogIlV0ZGFubmluZyIsCiAgICAiZm9ybmF2biI6ICJKb25uIEVnaWwiLAogICAgImV0dGVybmF2biI6ICJJbmRyZXZvbGwiLAogICAgIm5hdklkZW50IjogIkkxMTEzNDUiCn0='
         );
-        System.assertEquals(
-            1,
-            [SELECT COUNT() FROM ArenaActivity__c],
-            'Only one activity added'
-        );
+        System.assertEquals(1, [SELECT COUNT() FROM ArenaActivity__c], 'Only one activity added');
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
         msg1.CRM_Topic__c = 'privat-arbeidsgiver-aktivitet-crm';
@@ -106,19 +74,9 @@ private without sharing class KafkaArenaHandlerTest {
         AsyncRequestSchedulable.enqueueAsyncJobs();
         Test.StopTest();
 
-        List<ArenaActivity__c> aa = [
-            SELECT CreatedDate, LastModifiedDate, AktivitetsKode__c
-            FROM ArenaActivity__c
-        ];
-        System.assertEquals(
-            1,
-            aa.size(),
-            'Still only one activity added, as same uuid'
-        );
-        System.assert(
-            aa[0].CreatedDate == aa[0].LastModifiedDate,
-            'Should have been updated'
-        );
+        List<ArenaActivity__c> aa = [SELECT CreatedDate, LastModifiedDate, AktivitetsKode__c FROM ArenaActivity__c];
+        System.assertEquals(1, aa.size(), 'Still only one activity added, as same uuid');
+        System.assert(aa[0].CreatedDate == aa[0].LastModifiedDate, 'Should have been updated');
     }
 
     @isTest
@@ -130,11 +88,7 @@ private without sharing class KafkaArenaHandlerTest {
             KafkaId__c = '0gwew775ed-249f-49e6-bd15-ff790b56cc07',
             KafkaHash__c = 'ewogICAgImFrdGl2aXRldFN0YXR1c2tvZGUiOiAiRlVMTEYiLAogICAgImJlZHJpZnRzbnIiOiA5NzMxMTM2MzEsCiAgICAiYmVza3JpdmVsc2UiOiAiQmVkcmlmdHPDuGtvbm9tc3R1ZGlldCAyMCB2dFxuSMO4Z3Nrb2xla2FuZGlkYXRzdHVkaWV0IG1lZCByZXRuaW5nIGZvciByZWduc2thcHNmw7hyZXJlLiAyMHZ0IiwKICAgICJvcmduck1vcnNlbHNrYXAiOiA5NzEyMjg4NjUsCiAgICAic2Frc2JlaGFuZGxlciI6ICJKRUkxODEyIiwKICAgICJha3Rpdml0ZXRza29kZSI6ICJVVERZUksiLAogICAgImZyYURhdG8iOiAiMjAwMy0wMS0wMSIsCiAgICAidGlsRGF0byI6ICIyMDA0LTEyLTMxIiwKICAgICJyZWdEYXRvIjogIjIwMDMtMDMtMjUiLAogICAgInJlZ1VzZXIiOiAiR0wxODEyIiwKICAgICJha3Rpdml0ZXRzZ3J1cHBla29kZSI6ICJUTFRBSyIsCiAgICAiYWt0aXZpdGV0c3R5cGViZXNrcml2ZWxzZSI6IG51bGwsCiAgICAiYWt0aXZpdGV0c3R5cGVuYXZuIjogIlV0ZGFubmluZyIsCiAgICAiZm9ybmF2biI6ICJKb25uIEVnaWwiLAogICAgImV0dGVybmF2biI6ICJJbmRyZXZvbGwiLAogICAgIm5hdklkZW50IjogIkkxMTEzNDUiCn0='
         );
-        System.assertEquals(
-            1,
-            [SELECT COUNT() FROM ArenaActivity__c],
-            'Only one activity added'
-        );
+        System.assertEquals(1, [SELECT COUNT() FROM ArenaActivity__c], 'Only one activity added');
         System.assertEquals(
             'UTDYRK',
             [SELECT AktivitetsKode__c FROM ArenaActivity__c LIMIT 1][0]
@@ -152,20 +106,9 @@ private without sharing class KafkaArenaHandlerTest {
         AsyncRequestSchedulable.enqueueAsyncJobs();
         Test.StopTest();
 
-        List<ArenaActivity__c> aa = [
-            SELECT CreatedDate, LastModifiedDate, AktivitetsKode__c
-            FROM ArenaActivity__c
-        ];
-        System.assertEquals(
-            1,
-            aa.size(),
-            'Still only one activity added, as same uuid'
-        );
-        System.assertEquals(
-            'UTDYRK2',
-            aa[0].AktivitetsKode__c,
-            'Should have changed field as hash is new'
-        );
+        List<ArenaActivity__c> aa = [SELECT CreatedDate, LastModifiedDate, AktivitetsKode__c FROM ArenaActivity__c];
+        System.assertEquals(1, aa.size(), 'Still only one activity added, as same uuid');
+        System.assertEquals('UTDYRK2', aa[0].AktivitetsKode__c, 'Should have changed field as hash is new');
     }
 
     @isTest
@@ -187,11 +130,7 @@ private without sharing class KafkaArenaHandlerTest {
         AsyncRequestSchedulable.enqueueAsyncJobs();
         Test.StopTest();
 
-        System.assertEquals(
-            1,
-            [SELECT COUNT() FROM ArenaActivity__c],
-            'only one activity added, both had same uuid'
-        );
+        System.assertEquals(1, [SELECT COUNT() FROM ArenaActivity__c], 'only one activity added, both had same uuid');
     }
 
     @isTest
@@ -208,20 +147,10 @@ private without sharing class KafkaArenaHandlerTest {
         AsyncRequestSchedulable.enqueueAsyncJobs();
         Test.StopTest();
 
-        List<ArenaActivity__c> arenaActivities = [
-            SELECT Id, Account__c, OwnerId
-            FROM ArenaActivity__c
-        ];
+        List<ArenaActivity__c> arenaActivities = [SELECT Id, Account__c, OwnerId FROM ArenaActivity__c];
 
-        System.assertEquals(
-            1,
-            arenaActivities.size(),
-            'Only one activity added'
-        );
+        System.assertEquals(1, arenaActivities.size(), 'Only one activity added');
         System.assertEquals(null, arenaActivities[0].Account__c);
-        System.assertEquals(
-            System.UserInfo.getUserId(),
-            arenaActivities[0].OwnerId
-        );
+        System.assertEquals(System.UserInfo.getUserId(), arenaActivities[0].OwnerId);
     }
 }

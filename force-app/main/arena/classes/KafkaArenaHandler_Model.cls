@@ -20,11 +20,7 @@ public with sharing class KafkaArenaHandler_Model {
     public String hash { get; set; }
     public String jsonPayload { get; set; }
 
-    public static KafkaArenaHandler_Model parse(
-        String json,
-        String key,
-        String hash
-    ) {
+    public static KafkaArenaHandler_Model parse(String json, String key, String hash) {
         KafkaArenaHandler_Model model = (KafkaArenaHandler_Model) System.JSON.deserialize(
             json,
             KafkaArenaHandler_Model.class

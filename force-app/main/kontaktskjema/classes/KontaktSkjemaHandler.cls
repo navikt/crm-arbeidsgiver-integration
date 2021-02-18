@@ -23,10 +23,7 @@ global with sharing class KontaktSkjemaHandler {
     @HttpPost
     global static String doPost() {
         String requestString = RestContext.request.requestBody.toString();
-        RequestWrapper rw = (RequestWrapper) JSON.deserialize(
-            requestString,
-            RequestWrapper.class
-        );
+        RequestWrapper rw = (RequestWrapper) JSON.deserialize(requestString, RequestWrapper.class);
         rw.jsonPayload = requestString;
 
         SharedFunctions_ContactModel wrapper = new SharedFunctions_ContactModel();
@@ -36,20 +33,11 @@ global with sharing class KontaktSkjemaHandler {
         wrapper.email = rw.email;
         wrapper.source = 'Kontaktskjema';
         wrapper.companyNumber = rw.organisationNumber;
-        List<SharedFunctions_ContactModel> wrapperList = new List<SharedFunctions_ContactModel>{
-            wrapper
-        };
+        List<SharedFunctions_ContactModel> wrapperList = new List<SharedFunctions_ContactModel>{ wrapper };
 
-        Map<String, Account> accountMap = SharedFunctions.fetchAccounts(
-            new List<String>{ rw.organisationNumber }
-        );
-        Id accountId = accountMap.containsKey(rw.organisationNumber)
-            ? accountMap.get(rw.organisationNumber).Id
-            : null;
-        Map<String, Contact> contactMap = SharedFunctions.fetchOrCreateContact(
-            wrapperList,
-            accountMap
-        );
+        Map<String, Account> accountMap = SharedFunctions.fetchAccounts(new List<String>{ rw.organisationNumber });
+        Id accountId = accountMap.containsKey(rw.organisationNumber) ? accountMap.get(rw.organisationNumber).Id : null;
+        Map<String, Contact> contactMap = SharedFunctions.fetchOrCreateContact(wrapperList, accountMap);
         Id contactId = contactMap.containsKey(rw.email.toLowerCase())
             ? contactMap.get(rw.email.toLowerCase()).Id
             : null;
@@ -72,8 +60,7 @@ global with sharing class KontaktSkjemaHandler {
         }
         insert co;
 
-        return [SELECT Name FROM CustomOpportunity__c WHERE Id = :co.Id LIMIT 1]
-        .Name;
+        return [SELECT Name FROM CustomOpportunity__c WHERE Id = :co.Id LIMIT 1].Name;
     }
 
     public static Id getRecordType(String val) {

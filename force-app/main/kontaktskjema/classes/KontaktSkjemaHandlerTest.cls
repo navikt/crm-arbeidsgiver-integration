@@ -2,20 +2,10 @@
 private without sharing class KontaktSkjemaHandlerTest {
     @isTest
     private static void doPost_municipalityAgder() {
-        insert new Account(
-            name = 'test',
-            INT_OrganizationNumber__c = '960507878'
-        );
+        insert new Account(name = 'test', INT_OrganizationNumber__c = '960507878');
 
-        List<CustomOpportunity__c> CustomOpportunities = [
-            SELECT Id
-            FROM CustomOpportunity__c
-        ];
-        System.assertEquals(
-            0,
-            CustomOpportunities.size(),
-            'Size should be zero before'
-        );
+        List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
+        System.assertEquals(0, CustomOpportunities.size(), 'Size should be zero before');
 
         RestRequest req = new RestRequest();
         RestResponse res = new RestResponse();
@@ -47,35 +37,17 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(
-            1,
-            CustomOpportunities.size(),
-            'Size should be one after insert'
-        );
+        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
 
-        System.assertNotEquals(
-            null,
-            result,
-            'Returned value should not be null, as Agder is not in the pilot'
-        );
+        System.assertNotEquals(null, result, 'Returned value should not be null, as Agder is not in the pilot');
     }
 
     @isTest
     private static void doPost_municipalityViken() {
-        insert new Account(
-            name = 'test',
-            INT_OrganizationNumber__c = '960507878'
-        );
+        insert new Account(name = 'test', INT_OrganizationNumber__c = '960507878');
 
-        List<CustomOpportunity__c> CustomOpportunities = [
-            SELECT Id
-            FROM CustomOpportunity__c
-        ];
-        System.assertEquals(
-            0,
-            CustomOpportunities.size(),
-            'Size should be zero before'
-        );
+        List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
+        System.assertEquals(0, CustomOpportunities.size(), 'Size should be zero before');
 
         RestRequest req = new RestRequest();
         RestResponse res = new RestResponse();
@@ -107,35 +79,17 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(
-            1,
-            CustomOpportunities.size(),
-            'Size should be one after insert'
-        );
+        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
 
-        System.assertNotEquals(
-            null,
-            result,
-            'Returned value should NOT be null, as Agder is not in the pilot'
-        );
+        System.assertNotEquals(null, result, 'Returned value should NOT be null, as Agder is not in the pilot');
     }
 
     @isTest
     private static void doPost_regionInnlandet() {
-        insert new Account(
-            name = 'test',
-            INT_OrganizationNumber__c = '960507878'
-        );
+        insert new Account(name = 'test', INT_OrganizationNumber__c = '960507878');
 
-        List<CustomOpportunity__c> CustomOpportunities = [
-            SELECT Id
-            FROM CustomOpportunity__c
-        ];
-        System.assertEquals(
-            0,
-            CustomOpportunities.size(),
-            'Size should be zero before'
-        );
+        List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
+        System.assertEquals(0, CustomOpportunities.size(), 'Size should be zero before');
 
         RestRequest req = new RestRequest();
         RestResponse res = new RestResponse();
@@ -167,35 +121,17 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(
-            1,
-            CustomOpportunities.size(),
-            'Size should be one after insert'
-        );
+        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
 
-        System.assertNotEquals(
-            null,
-            result,
-            'Returned value should NOT be null, as Agder is not in the pilot'
-        );
+        System.assertNotEquals(null, result, 'Returned value should NOT be null, as Agder is not in the pilot');
     }
 
     @isTest
     private static void doPost_regionNordland() {
-        insert new Account(
-            name = 'test',
-            INT_OrganizationNumber__c = '960507878'
-        );
+        insert new Account(name = 'test', INT_OrganizationNumber__c = '960507878');
 
-        List<CustomOpportunity__c> CustomOpportunities = [
-            SELECT Id
-            FROM CustomOpportunity__c
-        ];
-        System.assertEquals(
-            0,
-            CustomOpportunities.size(),
-            'Size should be zero before'
-        );
+        List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
+        System.assertEquals(0, CustomOpportunities.size(), 'Size should be zero before');
 
         RestRequest req = new RestRequest();
         RestResponse res = new RestResponse();
@@ -227,35 +163,17 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(
-            1,
-            CustomOpportunities.size(),
-            'Size should be one after insert'
-        );
+        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
 
-        System.assertNotEquals(
-            null,
-            result,
-            'Returned value should NOT be null, as Nordland is in the pilot'
-        );
+        System.assertNotEquals(null, result, 'Returned value should NOT be null, as Nordland is in the pilot');
     }
 
     @isTest
     private static void doPost_regionMoreOgRomsdal() {
-        insert new Account(
-            name = 'test',
-            INT_OrganizationNumber__c = '960507878'
-        );
+        insert new Account(name = 'test', INT_OrganizationNumber__c = '960507878');
 
-        List<CustomOpportunity__c> CustomOpportunities = [
-            SELECT Id
-            FROM CustomOpportunity__c
-        ];
-        System.assertEquals(
-            0,
-            CustomOpportunities.size(),
-            'Size should be zero before'
-        );
+        List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
+        System.assertEquals(0, CustomOpportunities.size(), 'Size should be zero before');
 
         RestRequest req = new RestRequest();
         RestResponse res = new RestResponse();
@@ -287,35 +205,17 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(
-            1,
-            CustomOpportunities.size(),
-            'Size should be one after insert'
-        );
+        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
 
-        System.assertNotEquals(
-            null,
-            result,
-            'Returned value should NOT be null, as Møre og Romsdal is in the pilot'
-        );
+        System.assertNotEquals(null, result, 'Returned value should NOT be null, as Møre og Romsdal is in the pilot');
     }
 
     @isTest
     private static void doPost_arbeidstrening() {
-        insert new Account(
-            name = 'test',
-            INT_OrganizationNumber__c = '960507878'
-        );
+        insert new Account(name = 'test', INT_OrganizationNumber__c = '960507878');
 
-        List<CustomOpportunity__c> CustomOpportunities = [
-            SELECT Id
-            FROM CustomOpportunity__c
-        ];
-        System.assertEquals(
-            0,
-            CustomOpportunities.size(),
-            'Size should be zero before'
-        );
+        List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
+        System.assertEquals(0, CustomOpportunities.size(), 'Size should be zero before');
 
         RestRequest req = new RestRequest();
         RestResponse res = new RestResponse();
@@ -347,11 +247,7 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(
-            1,
-            CustomOpportunities.size(),
-            'Size should be one after insert'
-        );
+        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
 
         System.assertEquals(
             'Arbeidstrening',
@@ -402,20 +298,10 @@ private without sharing class KontaktSkjemaHandlerTest {
 
     @isTest
     private static void doPost_forebyggeSykefravaer() {
-        insert new Account(
-            name = 'test',
-            INT_OrganizationNumber__c = '960507878'
-        );
+        insert new Account(name = 'test', INT_OrganizationNumber__c = '960507878');
 
-        List<CustomOpportunity__c> CustomOpportunities = [
-            SELECT Id
-            FROM CustomOpportunity__c
-        ];
-        System.assertEquals(
-            0,
-            CustomOpportunities.size(),
-            'Size should be zero before'
-        );
+        List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
+        System.assertEquals(0, CustomOpportunities.size(), 'Size should be zero before');
 
         RestRequest req = new RestRequest();
         RestResponse res = new RestResponse();
@@ -447,11 +333,7 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(
-            1,
-            CustomOpportunities.size(),
-            'Size should be one after insert'
-        );
+        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
 
         System.assertEquals(
             'Forebygge sykefravær',
@@ -502,20 +384,10 @@ private without sharing class KontaktSkjemaHandlerTest {
 
     @isTest
     private static void doPost_upperCaseEmail() {
-        insert new Account(
-            name = 'test',
-            INT_OrganizationNumber__c = '960507878'
-        );
+        insert new Account(name = 'test', INT_OrganizationNumber__c = '960507878');
 
-        List<CustomOpportunity__c> CustomOpportunities = [
-            SELECT Id
-            FROM CustomOpportunity__c
-        ];
-        System.assertEquals(
-            0,
-            CustomOpportunities.size(),
-            'Size should be zero before'
-        );
+        List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
+        System.assertEquals(0, CustomOpportunities.size(), 'Size should be zero before');
 
         RestRequest req = new RestRequest();
         RestResponse res = new RestResponse();
@@ -547,11 +419,7 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(
-            1,
-            CustomOpportunities.size(),
-            'Size should be one after insert'
-        );
+        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
 
         System.assertEquals(
             'TestNavn',
@@ -572,20 +440,10 @@ private without sharing class KontaktSkjemaHandlerTest {
 
     @isTest
     private static void doPost_forebyggeSykefravaer_invalidEmail() {
-        insert new Account(
-            name = 'test',
-            INT_OrganizationNumber__c = '960507878'
-        );
+        insert new Account(name = 'test', INT_OrganizationNumber__c = '960507878');
 
-        List<CustomOpportunity__c> CustomOpportunities = [
-            SELECT Id
-            FROM CustomOpportunity__c
-        ];
-        System.assertEquals(
-            0,
-            CustomOpportunities.size(),
-            'Size should be zero before'
-        );
+        List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
+        System.assertEquals(0, CustomOpportunities.size(), 'Size should be zero before');
 
         RestRequest req = new RestRequest();
         RestResponse res = new RestResponse();
@@ -618,11 +476,7 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(
-            1,
-            CustomOpportunities.size(),
-            'Size should be one after insert'
-        );
+        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
 
         System.assertEquals(
             null,
@@ -638,20 +492,10 @@ private without sharing class KontaktSkjemaHandlerTest {
 
     @isTest
     private static void doPost_rekruttering() {
-        insert new Account(
-            name = 'test',
-            INT_OrganizationNumber__c = '960507878'
-        );
+        insert new Account(name = 'test', INT_OrganizationNumber__c = '960507878');
 
-        List<CustomOpportunity__c> CustomOpportunities = [
-            SELECT Id
-            FROM CustomOpportunity__c
-        ];
-        System.assertEquals(
-            0,
-            CustomOpportunities.size(),
-            'Size should be zero before'
-        );
+        List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
+        System.assertEquals(0, CustomOpportunities.size(), 'Size should be zero before');
 
         RestRequest req = new RestRequest();
         RestResponse res = new RestResponse();
@@ -683,11 +527,7 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(
-            1,
-            CustomOpportunities.size(),
-            'Size should be one after insert'
-        );
+        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
 
         System.assertEquals(
             'Rekruttering',
@@ -738,20 +578,10 @@ private without sharing class KontaktSkjemaHandlerTest {
 
     @isTest
     private static void doPost_rekrutteringMedTilrettelegging() {
-        insert new Account(
-            name = 'test',
-            INT_OrganizationNumber__c = '960507878'
-        );
+        insert new Account(name = 'test', INT_OrganizationNumber__c = '960507878');
 
-        List<CustomOpportunity__c> CustomOpportunities = [
-            SELECT Id
-            FROM CustomOpportunity__c
-        ];
-        System.assertEquals(
-            0,
-            CustomOpportunities.size(),
-            'Size should be zero before'
-        );
+        List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
+        System.assertEquals(0, CustomOpportunities.size(), 'Size should be zero before');
 
         RestRequest req = new RestRequest();
         RestResponse res = new RestResponse();
@@ -783,11 +613,7 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(
-            1,
-            CustomOpportunities.size(),
-            'Size should be one after insert'
-        );
+        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
 
         System.assertEquals(
             'Rekruttering med tilrettelegging',
@@ -838,26 +664,12 @@ private without sharing class KontaktSkjemaHandlerTest {
 
     @isTest
     private static void other_contactAlreadyExists() {
-        insert new Account(
-            name = 'test',
-            INT_OrganizationNumber__c = '960507878'
-        );
-        Contact con = new Contact(
-            TAG_Informed__c = true,
-            lastName = 'TestEtternavn',
-            Email = 'test@nav.no'
-        );
+        insert new Account(name = 'test', INT_OrganizationNumber__c = '960507878');
+        Contact con = new Contact(TAG_Informed__c = true, lastName = 'TestEtternavn', Email = 'test@nav.no');
         insert con;
 
-        List<CustomOpportunity__c> CustomOpportunities = [
-            SELECT Id
-            FROM CustomOpportunity__c
-        ];
-        System.assertEquals(
-            0,
-            CustomOpportunities.size(),
-            'Size should be zero before'
-        );
+        List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
+        System.assertEquals(0, CustomOpportunities.size(), 'Size should be zero before');
 
         RestRequest req = new RestRequest();
         RestResponse res = new RestResponse();
@@ -886,36 +698,18 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(
-            1,
-            CustomOpportunities.size(),
-            'Size should be one after insert'
-        );
+        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
 
-        System.assertEquals(
-            con.Id,
-            CustomOpportunities[0].Contact__c,
-            'Should find the existing contact'
-        );
+        System.assertEquals(con.Id, CustomOpportunities[0].Contact__c, 'Should find the existing contact');
     }
 
     @isTest // ! tests the Opportunity process to make sure contacts receive an account after adding an account manually to the opty (happens if a user does not input org number in the web form)
     private static void other_addingAccountAfterReuqestReceived() {
-        Account acc = new Account(
-            name = 'test',
-            INT_OrganizationNumber__c = '960507878'
-        );
+        Account acc = new Account(name = 'test', INT_OrganizationNumber__c = '960507878');
         insert acc;
 
-        List<CustomOpportunity__c> customOpportunities = [
-            SELECT Id
-            FROM CustomOpportunity__c
-        ];
-        System.assertEquals(
-            0,
-            customOpportunities.size(),
-            'Size should be zero before'
-        );
+        List<CustomOpportunity__c> customOpportunities = [SELECT Id FROM CustomOpportunity__c];
+        System.assertEquals(0, customOpportunities.size(), 'Size should be zero before');
 
         RestRequest req = new RestRequest();
         RestResponse res = new RestResponse();
@@ -985,15 +779,8 @@ private without sharing class KontaktSkjemaHandlerTest {
 
     @isTest
     private static void other_noAccount() {
-        List<CustomOpportunity__c> CustomOpportunities = [
-            SELECT Id
-            FROM CustomOpportunity__c
-        ];
-        System.assertEquals(
-            0,
-            CustomOpportunities.size(),
-            'Size should be zero before'
-        );
+        List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
+        System.assertEquals(0, CustomOpportunities.size(), 'Size should be zero before');
 
         RestRequest req = new RestRequest();
         RestResponse res = new RestResponse();
@@ -1022,11 +809,7 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(
-            1,
-            CustomOpportunities.size(),
-            'Size should be one after insert'
-        );
+        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
 
         System.assertEquals(
             null,
@@ -1037,20 +820,10 @@ private without sharing class KontaktSkjemaHandlerTest {
 
     @isTest
     private static void other_noOrgNumber() {
-        insert new Account(
-            name = 'test',
-            INT_OrganizationNumber__c = '960507878'
-        );
+        insert new Account(name = 'test', INT_OrganizationNumber__c = '960507878');
 
-        List<CustomOpportunity__c> CustomOpportunities = [
-            SELECT Id
-            FROM CustomOpportunity__c
-        ];
-        System.assertEquals(
-            0,
-            CustomOpportunities.size(),
-            'Size should be zero before'
-        );
+        List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
+        System.assertEquals(0, CustomOpportunities.size(), 'Size should be zero before');
 
         RestRequest req = new RestRequest();
         RestResponse res = new RestResponse();
@@ -1083,11 +856,7 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(
-            1,
-            CustomOpportunities.size(),
-            'Size should be one after insert'
-        );
+        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
 
         System.assertEquals(
             'Forebygge sykefravær',
@@ -1143,15 +912,8 @@ private without sharing class KontaktSkjemaHandlerTest {
 
     @isTest
     private static void other_nullType() {
-        List<CustomOpportunity__c> CustomOpportunities = [
-            SELECT Id
-            FROM CustomOpportunity__c
-        ];
-        System.assertEquals(
-            0,
-            CustomOpportunities.size(),
-            'Size should be zero before'
-        );
+        List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
+        System.assertEquals(0, CustomOpportunities.size(), 'Size should be zero before');
 
         RestRequest req = new RestRequest();
         RestResponse res = new RestResponse();
@@ -1180,16 +942,8 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(
-            1,
-            CustomOpportunities.size(),
-            'Size should be one after insert'
-        );
+        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
 
-        System.assertEquals(
-            null,
-            CustomOpportunities[0].InquiryCategory__c,
-            'Should find the existing contact'
-        );
+        System.assertEquals(null, CustomOpportunities[0].InquiryCategory__c, 'Should find the existing contact');
     }
 }
