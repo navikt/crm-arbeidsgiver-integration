@@ -27,9 +27,18 @@ global with sharing class KontaktSkjemaHandler {
         RequestWrapper rw = (RequestWrapper) JSON.deserialize(requestString, RequestWrapper.class);
         rw.jsonPayload = requestString;
 
+        String lastNameSplitted;
+        String firstNameSplitted;
+        
+        if(rw.name != null) {
+            List<String> fullName = rw.name.split(' ');
+            lastNameSplitted = fullName[fullName.size() - 1];
+            firstNameSplitted = rw.name.removeEnd(' ' + lastNameSplitted);
+        }
+
         SharedFunctions_ContactModel wrapper = new SharedFunctions_ContactModel();
-        wrapper.firstName = ( rw.name != null ) ? rw.name.substringBefore( ' ' ) : rw.firstName;
-        wrapper.lastName = ( rw.name != null ) ? rw.name.substringAfter( ' ' ) : rw.lastName;
+        wrapper.firstName = ( rw.name != null ) ? firstNameSplitted : rw.firstName;
+        wrapper.lastName = ( rw.name != null ) ? lastNameSplitted : rw.lastName;
         wrapper.phone = rw.phoneNo;
         wrapper.email = rw.email;
         wrapper.source = 'Kontaktskjema';

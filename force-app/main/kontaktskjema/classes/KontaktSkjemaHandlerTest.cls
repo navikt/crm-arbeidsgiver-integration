@@ -422,12 +422,12 @@ private without sharing class KontaktSkjemaHandlerTest {
         System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
 
         System.assertEquals(
-            'TestNavn',
+            'TestNavn Test',
             CustomOpportunities[0].Contact__r.FirstName,
             '"Contact__r.FirstName" should be "TestNavn"'
         );
         System.assertEquals(
-            'Test Etternavn',
+            'Etternavn',
             CustomOpportunities[0].Contact__r.LastName,
             '"Contact__r.LastName" should be "Test Etternavn"'
         );
