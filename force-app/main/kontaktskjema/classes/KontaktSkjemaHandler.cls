@@ -13,6 +13,7 @@ global with sharing class KontaktSkjemaHandler {
         String regionCode;
         String organisationName;
         String organisationNumber;
+        String name;
         String firstName;
         String lastName;
         String email;
@@ -27,8 +28,19 @@ global with sharing class KontaktSkjemaHandler {
         rw.jsonPayload = requestString;
 
         SharedFunctions_ContactModel wrapper = new SharedFunctions_ContactModel();
-        wrapper.firstName = rw.firstName;
-        wrapper.lastName = rw.lastName;
+        
+        if(rw.name != null) {
+            List<String> fullName = rw.name.split(' ');
+            String lastNameSplitted = fullName[fullName.size() - 1];
+            String firstNameSplitted = rw.name.removeEnd(' ' + lastNameSplitted);
+            wrapper.firstName = firstNameSplitted;
+            wrapper.lastName = lastNameSplitted;
+
+        } else {
+            wrapper.firstName = rw.firstName;
+            wrapper.lastName = rw.lastName;
+        }
+        
         wrapper.phone = rw.phoneNo;
         wrapper.email = rw.email;
         wrapper.source = 'Kontaktskjema';

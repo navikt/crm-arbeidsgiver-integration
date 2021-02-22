@@ -381,6 +381,57 @@ private without sharing class KontaktSkjemaHandlerTest {
             '"Account__r.INT_OrganizationNumber__c" should be "960507878"'
         );
     }
+    //
+    @isTest
+    private static void doPost_contactName() {
+        insert new Account(name = 'test', INT_OrganizationNumber__c = '960507878');
+
+        List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
+        System.assertEquals(0, CustomOpportunities.size(), 'Size should be zero before');
+
+        RestRequest req = new RestRequest();
+        RestResponse res = new RestResponse();
+
+        req.requestURI = '/services/apexrest/ContactForm';
+        req.httpMethod = 'POST';
+        req.requestBody = Blob.valueof(
+            '{ "type":"FOREBYGGE_SYKEFRAVÆR","municipalityCode":"3033","organisationName":"Finstadtunet","organisationNumber":"960507878","name":"TestNavn Test Etternavn","email":"Test@nav.no","phoneNo":"90080900","RegionCode":"0200" }'
+        );
+        RestContext.request = req;
+        RestContext.response = res;
+
+        Test.startTest();
+        KontaktSkjemaHandler.doPost();
+        Test.stopTest();
+
+        CustomOpportunities = [
+            SELECT
+                Id,
+                InquiryCategory__c,
+                RecordTypeId,
+                INT_RegionNumber__c,
+                INT_MunicipalityNumber__c,
+                TAG_OrganizationNameFromForm__c,
+                Contact__r.FirstName,
+                Contact__r.LastName,
+                Contact__r.Email,
+                Contact__r.MobilePhone,
+                Account__r.INT_OrganizationNumber__c
+            FROM CustomOpportunity__c
+        ];
+        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
+
+        System.assertEquals(
+            'TestNavn Test',
+            CustomOpportunities[0].Contact__r.FirstName,
+            '"Contact__r.FirstName" should be "TestNavn"'
+        );
+        System.assertEquals(
+            'Etternavn',
+            CustomOpportunities[0].Contact__r.LastName,
+            '"Contact__r.LastName" should be "Test Etternavn"'
+        );
+    }
 
     @isTest
     private static void doPost_upperCaseEmail() {
