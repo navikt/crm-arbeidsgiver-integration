@@ -70,7 +70,21 @@ global with sharing class KontaktSkjemaHandler {
         if (isIA(rw.type)) {
             co.INT_RegionNumber__c = rw.regionCode;
         }
+
         insert co;
+
+        //if ( co.Contact__r.Email != '') {
+       if ( rw.email != '') {
+            EmailQueue__c email = new EmailQueue__c();
+            email.TemplateName__c = 'kontaktskjemaReceipt';
+            email.TargetObjectId__c = co.Contact__c;
+            email.WhatId__c = co.Id;
+            email.Status__c = 'Instant';
+            email.SaveAsActivity__c = true;
+    
+            insert email;
+
+        }
 
         return [SELECT Name FROM CustomOpportunity__c WHERE Id = :co.Id LIMIT 1].Name;
     }

@@ -997,4 +997,96 @@ private without sharing class KontaktSkjemaHandlerTest {
 
         System.assertEquals(null, CustomOpportunities[0].InquiryCategory__c, 'Should find the existing contact');
     }
+
+    @testSetup
+    private static void setup() {
+
+        TAG_TestDataFactory.assignPermissionSet('test@nav.apextest', 'KontaktskjemaIntBruker');
+    }
+    
+    @isTest
+    private static void emailSend() {
+        System.runAs(getTestUser()) {
+
+            insert new Account(name = 'test', INT_OrganizationNumber__c = '960507878');
+
+            List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
+            System.assertEquals(0, CustomOpportunities.size(), 'Size should be zero before');
+
+            List<EmailMessage> emailsBefore = [SELECT Id FROM EmailMessage];
+            System.assertEquals(0, emailsBefore.size(), 'Should be no Emails before insert');
+
+            RestRequest req = new RestRequest();
+            RestResponse res = new RestResponse();
+
+            req.requestURI = '/services/apexrest/ContactForm';
+            req.httpMethod = 'POST';
+            req.requestBody = Blob.valueof(
+                '{ "type":"ARBEIDSTRENING","municipalityCode":"3033","organisationName":"Finstadtunet","organisationNumber":"960507878","firstName":"TestNavn","lastName":"TestEtternavn","email":"test@nav.no","phoneNo":"90080900","RegionCode":"0200" }'
+            );
+            RestContext.request = req;
+            RestContext.response = res;
+
+            Test.startTest();
+            KontaktSkjemaHandler.doPost();
+            Test.stopTest();
+
+            CustomOpportunities = [
+                SELECT Id FROM CustomOpportunity__c
+            ];
+            System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
+
+            List<EmailMessage> emailsAfter = [SELECT Id FROM EmailMessage];
+            System.assertEquals(1, emailsAfter.size(), 'Should be one Email sent');
+
+            EmailMessage em = [SELECT Id, ToAddress FROM EmailMessage];
+            System.assertEquals('test@nav.no', em.ToAddress, 'ToAddress should be test@nav.no');
+            
+        }
+    }
+
+    @isTest
+    private static void emailNotSendNoEmail() {
+        System.runAs(getTestUser()) {
+
+            insert new Account(name = 'test', INT_OrganizationNumber__c = '960507878');
+
+            List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
+            System.assertEquals(0, CustomOpportunities.size(), 'Size should be zero before');
+
+            List<EmailMessage> emailsBefore = [SELECT Id FROM EmailMessage];
+            System.assertEquals(0, emailsBefore.size(), 'Should be no Emails before insert');
+
+            RestRequest req = new RestRequest();
+            RestResponse res = new RestResponse();
+
+            req.requestURI = '/services/apexrest/ContactForm';
+            req.httpMethod = 'POST';
+            req.requestBody = Blob.valueof(
+                '{ "type":"ARBEIDSTRENING","municipalityCode":"3033","organisationName":"Finstadtunet","organisationNumber":"960507878","firstName":"TestNavn","lastName":"TestEtternavn","email":"","phoneNo":"90080900","RegionCode":"0200" }'
+            );
+            RestContext.request = req;
+            RestContext.response = res;
+
+            Test.startTest();
+            KontaktSkjemaHandler.doPost();
+            Test.stopTest();
+
+            CustomOpportunities = [
+                SELECT Id FROM CustomOpportunity__c
+            ];
+            System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
+
+            List<EmailQueue__c> emailsQueue = [SELECT Id FROM EmailQueue__c];
+            System.assertEquals(0, emailsQueue.size(), 'Should be no queue because missing Email Address');
+            
+            List<EmailMessage> emailsAfter = [SELECT Id FROM EmailMessage];
+            System.assertEquals(0, emailsAfter.size(), 'Should be no email sent because missing Email Address');
+            
+        }
+    }
+
+    private static User getTestUser() {
+        return [SELECT Id FROM User WHERE UserName = 'test@nav.apextest'];
+    }
 }
