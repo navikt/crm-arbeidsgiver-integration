@@ -1002,7 +1002,28 @@ private without sharing class KontaktSkjemaHandlerTest {
     private static void setup() {
 
         TAG_TestDataFactory.assignPermissionSet('test@nav.apextest', 'KontaktskjemaIntBruker');
-    }
+
+        EmailTemplate et1 = new EmailTemplate(
+            DeveloperName = 'kontaktskjemaSykefravaerReceipt',
+            Name = 'kontaktskjemaSykefravaerReceipt',
+            IsActive = true,
+            FolderId = UserInfo.getOrganizationId(),
+            UiType = 'sfx',
+            TemplateType = 'custom',
+            Subject = 'Temp Test',
+            HtmlValue = '<html><head></head><body><p>Hei {{{Recipient.Name}}}! NAV har mottatt meldingen din om:{{{CustomOpportunity__c.InquiryCategory__c}}}.</p></body></html>');
+    
+        EmailTemplate et2 = new EmailTemplate(
+            DeveloperName = 'kontaktskjemaRekrutteringReceipt',
+            Name = 'kontaktskjemaRekrutteringReceipt',
+            IsActive = true,
+            FolderId = UserInfo.getOrganizationId(),
+            UiType = 'sfx',
+            TemplateType = 'custom',
+            Subject = 'Temp Test',
+            HtmlValue = '<html><head></head><body><p>Hei {{{Recipient.Name}}}! NAV har mottatt meldingen din om:{{{CustomOpportunity__c.InquiryCategory__c}}}.</p></body></html>');
+        
+        }
     
     @isTest
     private static void emailSendSykefravaer() {
