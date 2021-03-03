@@ -2,7 +2,7 @@
 <EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
     <available>true</available>
     <encodingKey>UTF-8</encodingKey>
-    <name>kontaktskjemaRekruteringReceipt</name>
+    <name>kontaktskjemaRekrutteringReceipt</name>
     <style>none</style>
     <subject>Din melding er mottatt</subject>
     <type>custom</type>
