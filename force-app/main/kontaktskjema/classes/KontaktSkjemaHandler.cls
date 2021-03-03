@@ -22,7 +22,7 @@ global with sharing class KontaktSkjemaHandler {
     }
 
     public static RequestWrapper deserializeData( RestRequest request ) {
-        String requestString = RestContext.request.requestBody.toString();
+        String requestString = request.requestBody.toString();
         RequestWrapper rw = (RequestWrapper) JSON.deserialize(requestString, RequestWrapper.class);
         rw.jsonPayload = requestString;
 
