@@ -21,11 +21,18 @@ global with sharing class KontaktSkjemaHandler {
         String jsonPayload;
     }
 
-    @HttpPost
-    global static String doPost() {
+    public static RequestWrapper deserializeData( RestRequest request ) {
         String requestString = RestContext.request.requestBody.toString();
         RequestWrapper rw = (RequestWrapper) JSON.deserialize(requestString, RequestWrapper.class);
         rw.jsonPayload = requestString;
+
+        return rw;
+    }
+
+    @HttpPost
+    global static String doPost() {
+
+        RequestWrapper rw = deserializeData(RestContext.request);
 
         SharedFunctions_ContactModel wrapper = new SharedFunctions_ContactModel();
         
@@ -113,27 +120,16 @@ global with sharing class KontaktSkjemaHandler {
         CustomOpportunity__c co ) 
         {
         if ( rw.email != '') {
-            if ( co.InquiryCategory__c == 'Forebygge sykefravær' ) {
-                EmailQueue__c email = new EmailQueue__c();
-                email.TemplateName__c = 'kontaktskjemaSykefravaerReceipt';
-                email.TargetObjectId__c = co.Contact__c;
-                email.WhatId__c = co.Id;
-                email.Status__c = 'Instant';
-                email.SaveAsActivity__c = true;
 
-                insert email;
-            }
-
-            else {
-                EmailQueue__c email = new EmailQueue__c();
-                email.TemplateName__c = 'kontaktskjemaRekrutteringReceipt';
-                email.TargetObjectId__c = co.Contact__c;
-                email.WhatId__c = co.Id;
-                email.Status__c = 'Instant';
-                email.SaveAsActivity__c = true;
-
-                insert email;
-            }
+            String templateName = co.InquiryCategory__c == 'Forebygge sykefravær' ? 'kontaktskjemaSykefravaerReceipt' : 'kontaktskjemaRekrutteringReceipt';
+            EmailQueue__c email = new EmailQueue__c();
+            email.TemplateName__c = templateName;
+            email.TargetObjectId__c = co.Contact__c;
+            email.WhatId__c = co.Id;
+            email.Status__c = 'Instant';
+            email.SaveAsActivity__c = true;
+            
+            insert email;
         }
     }
 

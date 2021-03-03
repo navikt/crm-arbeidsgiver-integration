@@ -1034,8 +1034,8 @@ private without sharing class KontaktSkjemaHandlerTest {
             List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
             System.assertEquals(0, CustomOpportunities.size(), 'Size should be zero before');
 
-            List<EmailMessage> emailsBefore = [SELECT Id FROM EmailMessage];
-            System.assertEquals(0, emailsBefore.size(), 'Should be no Emails before insert');
+            List<EmailQueue__c> emailsQueueBefore = [SELECT Id FROM EmailQueue__c];
+            System.assertEquals(0, emailsQueueBefore.size(), 'Should be no queue before sendEmail');
 
             RestRequest req = new RestRequest();
             RestResponse res = new RestResponse();
@@ -1057,14 +1057,13 @@ private without sharing class KontaktSkjemaHandlerTest {
             ];
             System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
 
-            List<EmailMessage> emailsAfter = [SELECT Id FROM EmailMessage];
-            System.assertEquals(1, emailsAfter.size(), 'Should be one Email sent');
+            List<EmailQueue__c> emailsQueueAfter = [SELECT Id FROM EmailQueue__c];
+            System.assertEquals(1, emailsQueueAfter.size(), 'Should be one queue after insert');
 
-            EmailMessage em = [SELECT Id, ToAddress, EmailTemplateId FROM EmailMessage];
-            System.assertEquals('test@nav.no', em.ToAddress, 'ToAddress should be test@nav.no');
+            EmailQueue__c eq = [SELECT Id, TemplateId__c FROM EmailQueue__c];
+            EmailTemplate et = [SELECT Id, DeveloperName FROM EmailTemplate WHERE Id = :eq.TemplateId__c];
+            System.assertEquals('kontaktskjemaSykefravaerReceipt', et.DeveloperName, 'It should be sykafravær template for Forebygge Sykefravær type'); 
 
-            EmailTemplate et = [SELECT Id, DeveloperName FROM EmailTemplate WHERE Id = :em.EmailTemplateId];
-            System.assertEquals('kontaktskjemaSykefravaerReceipt', et.DeveloperName, 'It should be sykafravær template for Forebygge Sykefravær type');            
         }
     }
 
@@ -1077,8 +1076,8 @@ private without sharing class KontaktSkjemaHandlerTest {
             List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
             System.assertEquals(0, CustomOpportunities.size(), 'Size should be zero before');
 
-            List<EmailMessage> emailsBefore = [SELECT Id FROM EmailMessage];
-            System.assertEquals(0, emailsBefore.size(), 'Should be no Emails before insert');
+            List<EmailQueue__c> emailsQueueBefore = [SELECT Id FROM EmailQueue__c];
+            System.assertEquals(0, emailsQueueBefore.size(), 'Should be no queue before sendEmail');
 
             RestRequest req = new RestRequest();
             RestResponse res = new RestResponse();
@@ -1100,13 +1099,11 @@ private without sharing class KontaktSkjemaHandlerTest {
             ];
             System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
 
-            List<EmailMessage> emailsAfter = [SELECT Id FROM EmailMessage];
-            System.assertEquals(1, emailsAfter.size(), 'Should be one Email sent');
+            List<EmailQueue__c> emailsQueueAfter = [SELECT Id FROM EmailQueue__c];
+            System.assertEquals(1, emailsQueueAfter.size(), 'Should be one queue after insert');
 
-            EmailMessage em = [SELECT Id, ToAddress, EmailTemplateId FROM EmailMessage];
-            System.assertEquals('test@nav.no', em.ToAddress, 'ToAddress should be test@nav.no');
-
-            EmailTemplate et = [SELECT Id, DeveloperName FROM EmailTemplate WHERE Id = :em.EmailTemplateId];
+            EmailQueue__c eq = [SELECT Id, TemplateId__c FROM EmailQueue__c];
+            EmailTemplate et = [SELECT Id, DeveloperName FROM EmailTemplate WHERE Id = :eq.TemplateId__c];
             System.assertEquals('kontaktskjemaRekrutteringReceipt', et.DeveloperName, 'It should be rekruttering template for Rekruttering type');            
         }
     }
@@ -1145,9 +1142,6 @@ private without sharing class KontaktSkjemaHandlerTest {
 
             List<EmailQueue__c> emailsQueue = [SELECT Id FROM EmailQueue__c];
             System.assertEquals(0, emailsQueue.size(), 'Should be no queue because missing Email Address');
-            
-            List<EmailMessage> emailsAfter = [SELECT Id FROM EmailMessage];
-            System.assertEquals(0, emailsAfter.size(), 'Should be no email sent because missing Email Address');
             
         }
     }
