@@ -1005,7 +1005,7 @@ private without sharing class KontaktSkjemaHandlerTest {
     }
     
     @isTest
-    private static void emailSend() {
+    private static void emailSendSykefravaer() {
         System.runAs(getTestUser()) {
 
             insert new Account(name = 'test', INT_OrganizationNumber__c = '960507878');
@@ -1022,7 +1022,7 @@ private without sharing class KontaktSkjemaHandlerTest {
             req.requestURI = '/services/apexrest/ContactForm';
             req.httpMethod = 'POST';
             req.requestBody = Blob.valueof(
-                '{ "type":"ARBEIDSTRENING","municipalityCode":"3033","organisationName":"Finstadtunet","organisationNumber":"960507878","firstName":"TestNavn","lastName":"TestEtternavn","email":"test@nav.no","phoneNo":"90080900","RegionCode":"0200" }'
+                '{ "type":"FOREBYGGE_SYKEFRAVÆR","municipalityCode":"3033","organisationName":"Finstadtunet","organisationNumber":"960507878","firstName":"TestNavn","lastName":"TestEtternavn","email":"test@nav.no","phoneNo":"90080900","RegionCode":"0200" }'
             );
             RestContext.request = req;
             RestContext.response = res;
@@ -1039,9 +1039,54 @@ private without sharing class KontaktSkjemaHandlerTest {
             List<EmailMessage> emailsAfter = [SELECT Id FROM EmailMessage];
             System.assertEquals(1, emailsAfter.size(), 'Should be one Email sent');
 
-            EmailMessage em = [SELECT Id, ToAddress FROM EmailMessage];
+            EmailMessage em = [SELECT Id, ToAddress, EmailTemplateId FROM EmailMessage];
             System.assertEquals('test@nav.no', em.ToAddress, 'ToAddress should be test@nav.no');
-            
+
+            EmailTemplate et = [SELECT Id, DeveloperName FROM EmailTemplate WHERE Id = :em.EmailTemplateId];
+            System.assertEquals('kontaktskjemaSykefravaerReceipt', et.DeveloperName, 'It should be sykafravær template for Forebygge Sykefravær type');            
+        }
+    }
+
+    @isTest
+    private static void emailSendRekruttering() {
+        System.runAs(getTestUser()) {
+
+            insert new Account(name = 'test', INT_OrganizationNumber__c = '960507878');
+
+            List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
+            System.assertEquals(0, CustomOpportunities.size(), 'Size should be zero before');
+
+            List<EmailMessage> emailsBefore = [SELECT Id FROM EmailMessage];
+            System.assertEquals(0, emailsBefore.size(), 'Should be no Emails before insert');
+
+            RestRequest req = new RestRequest();
+            RestResponse res = new RestResponse();
+
+            req.requestURI = '/services/apexrest/ContactForm';
+            req.httpMethod = 'POST';
+            req.requestBody = Blob.valueof(
+                '{ "type":"REKRUTTERING","municipalityCode":"3033","organisationName":"Finstadtunet","organisationNumber":"960507878","firstName":"TestNavn","lastName":"TestEtternavn","email":"test@nav.no","phoneNo":"90080900","RegionCode":"0200" }'
+            );
+            RestContext.request = req;
+            RestContext.response = res;
+
+            Test.startTest();
+            KontaktSkjemaHandler.doPost();
+            Test.stopTest();
+
+            CustomOpportunities = [
+                SELECT Id FROM CustomOpportunity__c
+            ];
+            System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
+
+            List<EmailMessage> emailsAfter = [SELECT Id FROM EmailMessage];
+            System.assertEquals(1, emailsAfter.size(), 'Should be one Email sent');
+
+            EmailMessage em = [SELECT Id, ToAddress, EmailTemplateId FROM EmailMessage];
+            System.assertEquals('test@nav.no', em.ToAddress, 'ToAddress should be test@nav.no');
+
+            EmailTemplate et = [SELECT Id, DeveloperName FROM EmailTemplate WHERE Id = :em.EmailTemplateId];
+            System.assertEquals('kontaktskjemaRekrutteringReceipt', et.DeveloperName, 'It should be rekruttering template for Rekruttering type');            
         }
     }
 
@@ -1063,7 +1108,7 @@ private without sharing class KontaktSkjemaHandlerTest {
             req.requestURI = '/services/apexrest/ContactForm';
             req.httpMethod = 'POST';
             req.requestBody = Blob.valueof(
-                '{ "type":"ARBEIDSTRENING","municipalityCode":"3033","organisationName":"Finstadtunet","organisationNumber":"960507878","firstName":"TestNavn","lastName":"TestEtternavn","email":"","phoneNo":"90080900","RegionCode":"0200" }'
+                '{ "type":"REKRUTTERING","municipalityCode":"3033","organisationName":"Finstadtunet","organisationNumber":"960507878","firstName":"TestNavn","lastName":"TestEtternavn","email":"","phoneNo":"90080900","RegionCode":"0200" }'
             );
             RestContext.request = req;
             RestContext.response = res;

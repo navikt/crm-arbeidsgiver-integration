@@ -47,13 +47,45 @@ global with sharing class KontaktSkjemaHandler {
         wrapper.companyNumber = rw.organisationNumber;
         List<SharedFunctions_ContactModel> wrapperList = new List<SharedFunctions_ContactModel>{ wrapper };
 
-        Map<String, Account> accountMap = SharedFunctions.fetchAccounts(new List<String>{ rw.organisationNumber });
-        Id accountId = accountMap.containsKey(rw.organisationNumber) ? accountMap.get(rw.organisationNumber).Id : null;
+        Id accountId = getAccount( rw.organisationNumber );
+        Id contactId = getContact( new List<String>{ rw.organisationNumber }, wrapperList, rw.email);
+
+        CustomOpportunity__c co = createOpportunity(accountId, contactId, rw);
+
+        sendEmailReceipt( rw, co );
+
+        return [SELECT Name FROM CustomOpportunity__c WHERE Id = :co.Id LIMIT 1].Name;
+    }
+
+    public static Id getAccount(
+        String organisationNumber
+        ) {
+        Map<String, Account> accountMap = SharedFunctions.fetchAccounts( new List<String>{ organisationNumber } );
+        Id accountId = accountMap.containsKey( organisationNumber ) ? accountMap.get( organisationNumber ).Id : null;
+
+        return accountId;
+        
+    }
+
+    public static Id getContact(
+        List<String> orgNo,
+        List<SharedFunctions_ContactModel> wrapperList,
+        String email
+    ) {
+        Map<String, Account> accountMap = SharedFunctions.fetchAccounts( orgNo );
         Map<String, Contact> contactMap = SharedFunctions.fetchOrCreateContact(wrapperList, accountMap);
-        Id contactId = contactMap.containsKey(rw.email.toLowerCase())
-            ? contactMap.get(rw.email.toLowerCase()).Id
+        Id contactId = contactMap.containsKey(email.toLowerCase())
+            ? contactMap.get(email.toLowerCase()).Id
             : null;
 
+        return contactId;
+    }
+
+    public static CustomOpportunity__c createOpportunity(
+        Id accountId,
+        Id contactId,
+        RequestWrapper rw ) 
+    {
         CustomOpportunity__c co = new CustomOpportunity__c(
             Account__c = accountId,
             Contact__c = contactId,
@@ -73,20 +105,36 @@ global with sharing class KontaktSkjemaHandler {
 
         insert co;
 
-        //if ( co.Contact__r.Email != '') {
-       if ( rw.email != '') {
-            EmailQueue__c email = new EmailQueue__c();
-            email.TemplateName__c = 'kontaktskjemaReceipt';
-            email.TargetObjectId__c = co.Contact__c;
-            email.WhatId__c = co.Id;
-            email.Status__c = 'Instant';
-            email.SaveAsActivity__c = true;
-    
-            insert email;
+        return co;
+    }
 
+    public static void sendEmailReceipt( 
+        RequestWrapper rw,
+        CustomOpportunity__c co ) 
+        {
+        if ( rw.email != '') {
+            if ( co.InquiryCategory__c == 'Forebygge sykefravær' ) {
+                EmailQueue__c email = new EmailQueue__c();
+                email.TemplateName__c = 'kontaktskjemaSykefravaerReceipt';
+                email.TargetObjectId__c = co.Contact__c;
+                email.WhatId__c = co.Id;
+                email.Status__c = 'Instant';
+                email.SaveAsActivity__c = true;
+
+                insert email;
+            }
+
+            else {
+                EmailQueue__c email = new EmailQueue__c();
+                email.TemplateName__c = 'kontaktskjemaRekrutteringReceipt';
+                email.TargetObjectId__c = co.Contact__c;
+                email.WhatId__c = co.Id;
+                email.Status__c = 'Instant';
+                email.SaveAsActivity__c = true;
+
+                insert email;
+            }
         }
-
-        return [SELECT Name FROM CustomOpportunity__c WHERE Id = :co.Id LIMIT 1].Name;
     }
 
     public static Id getRecordType(String val) {
