@@ -1060,9 +1060,8 @@ private without sharing class KontaktSkjemaHandlerTest {
             List<EmailQueue__c> emailsQueueAfter = [SELECT Id FROM EmailQueue__c];
             System.assertEquals(1, emailsQueueAfter.size(), 'Should be one queue after insert');
 
-            EmailQueue__c eq = [SELECT Id, TemplateId__c FROM EmailQueue__c];
-            EmailTemplate et = [SELECT Id, DeveloperName FROM EmailTemplate WHERE Id = :eq.TemplateId__c];
-            System.assertEquals('kontaktskjemaSykefravaerReceipt', et.DeveloperName, 'It should be sykafravær template for Forebygge Sykefravær type'); 
+            EmailQueue__c eq = [SELECT Id, TemplateId__c, TemplateName__c FROM EmailQueue__c LIMIT 1];
+            System.assertEquals('kontaktskjemaSykefravaerReceipt', eq.TemplateName__c, 'It should be sykafravær template for Forebygge Sykefravær type'); 
 
         }
     }
@@ -1102,9 +1101,8 @@ private without sharing class KontaktSkjemaHandlerTest {
             List<EmailQueue__c> emailsQueueAfter = [SELECT Id FROM EmailQueue__c];
             System.assertEquals(1, emailsQueueAfter.size(), 'Should be one queue after insert');
 
-            EmailQueue__c eq = [SELECT Id, TemplateId__c FROM EmailQueue__c];
-            EmailTemplate et = [SELECT Id, DeveloperName FROM EmailTemplate WHERE Id = :eq.TemplateId__c];
-            System.assertEquals('kontaktskjemaRekrutteringReceipt', et.DeveloperName, 'It should be rekruttering template for Rekruttering type');            
+            EmailQueue__c eq = [SELECT Id, TemplateId__c, TemplateName__c FROM EmailQueue__c LIMIT 1];
+            System.assertEquals('kontaktskjemaRekrutteringReceipt', eq.TemplateName__c, 'It should be rekruttering template for Rekruttering type');            
         }
     }
 
