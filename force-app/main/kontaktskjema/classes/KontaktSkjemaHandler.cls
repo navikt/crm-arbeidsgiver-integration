@@ -34,6 +34,29 @@ global with sharing class KontaktSkjemaHandler {
 
         RequestWrapper rw = deserializeData(RestContext.request);
 
+        Id accountId = getAccount( rw.organisationNumber );
+        Id contactId = getContact( rw );
+
+        CustomOpportunity__c co = createOpportunity( accountId, contactId, rw );
+
+        sendEmailReceipt( rw, co );
+
+        return [SELECT Name FROM CustomOpportunity__c WHERE Id = :co.Id LIMIT 1].Name;
+    }
+
+    public static Id getAccount(
+        String organisationNumber
+        ) {
+        Map<String, Account> accountMap = SharedFunctions.fetchAccounts( new List<String>{ organisationNumber } );
+        Id accountId = accountMap.containsKey( organisationNumber ) ? accountMap.get( organisationNumber ).Id : null;
+
+        return accountId;
+        
+    }
+
+    public static Id getContact(
+        RequestWrapper rw
+    ) {
         SharedFunctions_ContactModel wrapper = new SharedFunctions_ContactModel();
         
         if(rw.name != null) {
@@ -54,35 +77,12 @@ global with sharing class KontaktSkjemaHandler {
         wrapper.companyNumber = rw.organisationNumber;
         List<SharedFunctions_ContactModel> wrapperList = new List<SharedFunctions_ContactModel>{ wrapper };
 
-        Id accountId = getAccount( rw.organisationNumber );
-        Id contactId = getContact( new List<String>{ rw.organisationNumber }, wrapperList, rw.email);
+        List<String> orgNo = new List<String>{ rw.organisationNumber };
 
-        CustomOpportunity__c co = createOpportunity(accountId, contactId, rw);
-
-        sendEmailReceipt( rw, co );
-
-        return [SELECT Name FROM CustomOpportunity__c WHERE Id = :co.Id LIMIT 1].Name;
-    }
-
-    public static Id getAccount(
-        String organisationNumber
-        ) {
-        Map<String, Account> accountMap = SharedFunctions.fetchAccounts( new List<String>{ organisationNumber } );
-        Id accountId = accountMap.containsKey( organisationNumber ) ? accountMap.get( organisationNumber ).Id : null;
-
-        return accountId;
-        
-    }
-
-    public static Id getContact(
-        List<String> orgNo,
-        List<SharedFunctions_ContactModel> wrapperList,
-        String email
-    ) {
         Map<String, Account> accountMap = SharedFunctions.fetchAccounts( orgNo );
         Map<String, Contact> contactMap = SharedFunctions.fetchOrCreateContact(wrapperList, accountMap);
-        Id contactId = contactMap.containsKey(email.toLowerCase())
-            ? contactMap.get(email.toLowerCase()).Id
+        Id contactId = contactMap.containsKey(rw.email.toLowerCase())
+            ? contactMap.get(rw.email.toLowerCase()).Id
             : null;
 
         return contactId;
