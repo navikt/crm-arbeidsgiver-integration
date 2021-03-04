@@ -21,12 +21,42 @@ global with sharing class KontaktSkjemaHandler {
         String jsonPayload;
     }
 
-    @HttpPost
-    global static String doPost() {
-        String requestString = RestContext.request.requestBody.toString();
+    public static RequestWrapper deserializeData( RestRequest request ) {
+        String requestString = request.requestBody.toString();
         RequestWrapper rw = (RequestWrapper) JSON.deserialize(requestString, RequestWrapper.class);
         rw.jsonPayload = requestString;
 
+        return rw;
+    }
+
+    @HttpPost
+    global static String doPost() {
+
+        RequestWrapper rw = deserializeData(RestContext.request);
+
+        Id accountId = getAccount( rw.organisationNumber );
+        Id contactId = getContact( rw );
+
+        CustomOpportunity__c co = createOpportunity( accountId, contactId, rw );
+
+        sendEmailReceipt( rw, co );
+
+        return [SELECT Name FROM CustomOpportunity__c WHERE Id = :co.Id LIMIT 1].Name;
+    }
+
+    public static Id getAccount(
+        String organisationNumber
+        ) {
+        Map<String, Account> accountMap = SharedFunctions.fetchAccounts( new List<String>{ organisationNumber } );
+        Id accountId = accountMap.containsKey( organisationNumber ) ? accountMap.get( organisationNumber ).Id : null;
+
+        return accountId;
+        
+    }
+
+    public static Id getContact(
+        RequestWrapper rw
+    ) {
         SharedFunctions_ContactModel wrapper = new SharedFunctions_ContactModel();
         
         if(rw.name != null) {
@@ -47,13 +77,22 @@ global with sharing class KontaktSkjemaHandler {
         wrapper.companyNumber = rw.organisationNumber;
         List<SharedFunctions_ContactModel> wrapperList = new List<SharedFunctions_ContactModel>{ wrapper };
 
-        Map<String, Account> accountMap = SharedFunctions.fetchAccounts(new List<String>{ rw.organisationNumber });
-        Id accountId = accountMap.containsKey(rw.organisationNumber) ? accountMap.get(rw.organisationNumber).Id : null;
+        List<String> orgNo = new List<String>{ rw.organisationNumber };
+
+        Map<String, Account> accountMap = SharedFunctions.fetchAccounts( orgNo );
         Map<String, Contact> contactMap = SharedFunctions.fetchOrCreateContact(wrapperList, accountMap);
         Id contactId = contactMap.containsKey(rw.email.toLowerCase())
             ? contactMap.get(rw.email.toLowerCase()).Id
             : null;
 
+        return contactId;
+    }
+
+    public static CustomOpportunity__c createOpportunity(
+        Id accountId,
+        Id contactId,
+        RequestWrapper rw ) 
+    {
         CustomOpportunity__c co = new CustomOpportunity__c(
             Account__c = accountId,
             Contact__c = contactId,
@@ -70,9 +109,28 @@ global with sharing class KontaktSkjemaHandler {
         if (isIA(rw.type)) {
             co.INT_RegionNumber__c = rw.regionCode;
         }
+
         insert co;
 
-        return [SELECT Name FROM CustomOpportunity__c WHERE Id = :co.Id LIMIT 1].Name;
+        return co;
+    }
+
+    public static void sendEmailReceipt( 
+        RequestWrapper rw,
+        CustomOpportunity__c co ) 
+        {
+        if ( rw.email != '') {
+
+            String templateName = co.InquiryCategory__c == 'Forebygge sykefravær' ? 'kontaktskjemaSykefravaerReceipt' : 'kontaktskjemaRekrutteringReceipt';
+            EmailQueue__c email = new EmailQueue__c();
+            email.TemplateName__c = templateName;
+            email.TargetObjectId__c = co.Contact__c;
+            email.WhatId__c = co.Id;
+            email.Status__c = 'Instant';
+            email.SaveAsActivity__c = true;
+            
+            insert email;
+        }
     }
 
     public static Id getRecordType(String val) {
