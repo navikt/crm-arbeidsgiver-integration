@@ -268,4 +268,13 @@ private without sharing class KafkaArenaHandler_HelperTest {
 
         System.assertEquals(null, res);
     }
+
+    @isTest
+    private static void testStringToDate_tooYoung() {
+        Test.StartTest();
+        Date res = KafkaArenaHandler_Helper.stringToDate('9999-12-15');
+        Test.StopTest();
+
+        System.assertEquals(Date.newInstance(4000, 12, 15), res);
+    }
 }

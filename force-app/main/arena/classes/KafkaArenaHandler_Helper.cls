@@ -128,6 +128,15 @@ public inherited sharing class KafkaArenaHandler_Helper {
                 return null;
             }
 
+            if (d.year() > 4000) {
+                Integer day = d.day();
+                Integer month = d.month();
+                Integer year = 4000;
+                Date newDate = date.newInstance(year, month, day);
+
+                return newDate;
+            }
+
             return d;
         } catch (TypeException e) {
             return null;
