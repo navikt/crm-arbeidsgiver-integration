@@ -124,19 +124,9 @@ public inherited sharing class KafkaArenaHandler_Helper {
         try {
             Date d = Date.valueOf(dateString.replace('T', ' '));
 
-            if (d.year() < 1700) {
+            if (d.year() < 1700 || d.year() > 4000) {
                 return null;
             }
-
-            if (d.year() > 4000) {
-                Integer day = d.day();
-                Integer month = d.month();
-                Integer year = 4000;
-                Date newDate = date.newInstance(year, month, day);
-
-                return newDate;
-            }
-
             return d;
         } catch (TypeException e) {
             return null;
