@@ -1000,7 +1000,6 @@ private without sharing class KontaktSkjemaHandlerTest {
 
     @testSetup
     private static void setup() {
-
         TAG_TestDataFactory.assignPermissionSet('test@nav.apextest', 'KontaktskjemaIntBruker');
 
         EmailTemplate et1 = new EmailTemplate(
@@ -1011,8 +1010,9 @@ private without sharing class KontaktSkjemaHandlerTest {
             UiType = 'sfx',
             TemplateType = 'custom',
             Subject = 'Temp Test',
-            HtmlValue = '<html><head></head><body><p>Hei {{{Recipient.Name}}}! NAV har mottatt meldingen din om:{{{CustomOpportunity__c.InquiryCategory__c}}}.</p></body></html>');
-    
+            HtmlValue = '<html><head></head><body><p>Hei {{{Recipient.Name}}}! NAV har mottatt meldingen din om:{{{CustomOpportunity__c.InquiryCategory__c}}}.</p></body></html>'
+        );
+
         EmailTemplate et2 = new EmailTemplate(
             DeveloperName = 'kontaktskjemaRekrutteringReceipt',
             Name = 'kontaktskjemaRekrutteringReceipt',
@@ -1021,14 +1021,13 @@ private without sharing class KontaktSkjemaHandlerTest {
             UiType = 'sfx',
             TemplateType = 'custom',
             Subject = 'Temp Test',
-            HtmlValue = '<html><head></head><body><p>Hei {{{Recipient.Name}}}! NAV har mottatt meldingen din om:{{{CustomOpportunity__c.InquiryCategory__c}}}.</p></body></html>');
-        
-        }
-    
+            HtmlValue = '<html><head></head><body><p>Hei {{{Recipient.Name}}}! NAV har mottatt meldingen din om:{{{CustomOpportunity__c.InquiryCategory__c}}}.</p></body></html>'
+        );
+    }
+
     @isTest
     private static void emailSendSykefravaer() {
         System.runAs(getTestUser()) {
-
             insert new Account(name = 'test', INT_OrganizationNumber__c = '960507878');
 
             List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
@@ -1052,24 +1051,24 @@ private without sharing class KontaktSkjemaHandlerTest {
             KontaktSkjemaHandler.doPost();
             Test.stopTest();
 
-            CustomOpportunities = [
-                SELECT Id FROM CustomOpportunity__c
-            ];
+            CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
             System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
 
             List<EmailQueue__c> emailsQueueAfter = [SELECT Id FROM EmailQueue__c];
             System.assertEquals(1, emailsQueueAfter.size(), 'Should be one queue after insert');
 
             EmailQueue__c eq = [SELECT Id, TemplateId__c, TemplateName__c FROM EmailQueue__c LIMIT 1];
-            System.assertEquals('kontaktskjemaSykefravaerReceipt', eq.TemplateName__c, 'It should be sykafravær template for Forebygge Sykefravær type'); 
-
+            System.assertEquals(
+                'kontaktskjemaSykefravaerReceipt',
+                eq.TemplateName__c,
+                'It should be sykafravær template for Forebygge Sykefravær type'
+            );
         }
     }
 
     @isTest
     private static void emailSendRekruttering() {
         System.runAs(getTestUser()) {
-
             insert new Account(name = 'test', INT_OrganizationNumber__c = '960507878');
 
             List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
@@ -1093,23 +1092,24 @@ private without sharing class KontaktSkjemaHandlerTest {
             KontaktSkjemaHandler.doPost();
             Test.stopTest();
 
-            CustomOpportunities = [
-                SELECT Id FROM CustomOpportunity__c
-            ];
+            CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
             System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
 
             List<EmailQueue__c> emailsQueueAfter = [SELECT Id FROM EmailQueue__c];
             System.assertEquals(1, emailsQueueAfter.size(), 'Should be one queue after insert');
 
             EmailQueue__c eq = [SELECT Id, TemplateId__c, TemplateName__c FROM EmailQueue__c LIMIT 1];
-            System.assertEquals('kontaktskjemaRekrutteringReceipt', eq.TemplateName__c, 'It should be rekruttering template for Rekruttering type');            
+            System.assertEquals(
+                'kontaktskjemaRekrutteringReceipt',
+                eq.TemplateName__c,
+                'It should be rekruttering template for Rekruttering type'
+            );
         }
     }
 
     @isTest
     private static void emailNotSendNoEmail() {
         System.runAs(getTestUser()) {
-
             insert new Account(name = 'test', INT_OrganizationNumber__c = '960507878');
 
             List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
@@ -1133,14 +1133,11 @@ private without sharing class KontaktSkjemaHandlerTest {
             KontaktSkjemaHandler.doPost();
             Test.stopTest();
 
-            CustomOpportunities = [
-                SELECT Id FROM CustomOpportunity__c
-            ];
+            CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
             System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
 
             List<EmailQueue__c> emailsQueue = [SELECT Id FROM EmailQueue__c];
             System.assertEquals(0, emailsQueue.size(), 'Should be no queue because missing Email Address');
-            
         }
     }
 

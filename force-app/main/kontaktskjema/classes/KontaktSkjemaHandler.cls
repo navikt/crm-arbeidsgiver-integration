@@ -21,7 +21,7 @@ global with sharing class KontaktSkjemaHandler {
         String jsonPayload;
     }
 
-    public static RequestWrapper deserializeData( RestRequest request ) {
+    public static RequestWrapper deserializeData(RestRequest request) {
         String requestString = request.requestBody.toString();
         RequestWrapper rw = (RequestWrapper) JSON.deserialize(requestString, RequestWrapper.class);
         rw.jsonPayload = requestString;
@@ -31,46 +31,39 @@ global with sharing class KontaktSkjemaHandler {
 
     @HttpPost
     global static String doPost() {
-
         RequestWrapper rw = deserializeData(RestContext.request);
 
-        Id accountId = getAccount( rw.organisationNumber );
-        Id contactId = getContact( rw );
+        Id accountId = getAccount(rw.organisationNumber);
+        Id contactId = getContact(rw);
 
-        CustomOpportunity__c co = createOpportunity( accountId, contactId, rw );
+        CustomOpportunity__c co = createOpportunity(accountId, contactId, rw);
 
-        sendEmailReceipt( rw, co );
+        sendEmailReceipt(rw, co);
 
         return [SELECT Name FROM CustomOpportunity__c WHERE Id = :co.Id LIMIT 1].Name;
     }
 
-    public static Id getAccount(
-        String organisationNumber
-        ) {
-        Map<String, Account> accountMap = SharedFunctions.fetchAccounts( new List<String>{ organisationNumber } );
-        Id accountId = accountMap.containsKey( organisationNumber ) ? accountMap.get( organisationNumber ).Id : null;
+    public static Id getAccount(String organisationNumber) {
+        Map<String, Account> accountMap = SharedFunctions.fetchAccounts(new List<String>{ organisationNumber });
+        Id accountId = accountMap.containsKey(organisationNumber) ? accountMap.get(organisationNumber).Id : null;
 
         return accountId;
-        
     }
 
-    public static Id getContact(
-        RequestWrapper rw
-    ) {
+    public static Id getContact(RequestWrapper rw) {
         SharedFunctions_ContactModel wrapper = new SharedFunctions_ContactModel();
-        
-        if(rw.name != null) {
+
+        if (rw.name != null) {
             List<String> fullName = rw.name.split(' ');
             String lastNameSplitted = fullName[fullName.size() - 1];
             String firstNameSplitted = rw.name.removeEnd(' ' + lastNameSplitted);
             wrapper.firstName = firstNameSplitted;
             wrapper.lastName = lastNameSplitted;
-
         } else {
             wrapper.firstName = rw.firstName;
             wrapper.lastName = rw.lastName;
         }
-        
+
         wrapper.phone = rw.phoneNo;
         wrapper.email = rw.email;
         wrapper.source = 'Kontaktskjema';
@@ -79,7 +72,7 @@ global with sharing class KontaktSkjemaHandler {
 
         List<String> orgNo = new List<String>{ rw.organisationNumber };
 
-        Map<String, Account> accountMap = SharedFunctions.fetchAccounts( orgNo );
+        Map<String, Account> accountMap = SharedFunctions.fetchAccounts(orgNo);
         Map<String, Contact> contactMap = SharedFunctions.fetchOrCreateContact(wrapperList, accountMap);
         Id contactId = contactMap.containsKey(rw.email.toLowerCase())
             ? contactMap.get(rw.email.toLowerCase()).Id
@@ -88,11 +81,7 @@ global with sharing class KontaktSkjemaHandler {
         return contactId;
     }
 
-    public static CustomOpportunity__c createOpportunity(
-        Id accountId,
-        Id contactId,
-        RequestWrapper rw ) 
-    {
+    public static CustomOpportunity__c createOpportunity(Id accountId, Id contactId, RequestWrapper rw) {
         CustomOpportunity__c co = new CustomOpportunity__c(
             Account__c = accountId,
             Contact__c = contactId,
@@ -115,20 +104,18 @@ global with sharing class KontaktSkjemaHandler {
         return co;
     }
 
-    public static void sendEmailReceipt( 
-        RequestWrapper rw,
-        CustomOpportunity__c co ) 
-        {
-        if ( rw.email != '') {
-
-            String templateName = co.InquiryCategory__c == 'Forebygge sykefravær' ? 'kontaktskjemaSykefravaerReceipt' : 'kontaktskjemaRekrutteringReceipt';
+    public static void sendEmailReceipt(RequestWrapper rw, CustomOpportunity__c co) {
+        if (rw.email != '') {
+            String templateName = co.InquiryCategory__c == 'Forebygge sykefravær'
+                ? 'kontaktskjemaSykefravaerReceipt'
+                : 'kontaktskjemaRekrutteringReceipt';
             EmailQueue__c email = new EmailQueue__c();
             email.TemplateName__c = templateName;
             email.TargetObjectId__c = co.Contact__c;
             email.WhatId__c = co.Id;
             email.Status__c = 'Instant';
             email.SaveAsActivity__c = true;
-            
+
             insert email;
         }
     }
