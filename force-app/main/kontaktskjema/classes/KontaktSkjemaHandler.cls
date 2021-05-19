@@ -73,12 +73,31 @@ global with sharing class KontaktSkjemaHandler {
         List<String> orgNo = new List<String>{ rw.organisationNumber };
 
         Map<String, Account> accountMap = SharedFunctions.fetchAccounts(orgNo);
+
+        if (accountMap.isEmpty()){
+            accountMap = fetchDummyAccount();
+        }
+
         Map<String, Contact> contactMap = SharedFunctions.fetchOrCreateContact(wrapperList, accountMap);
         Id contactId = contactMap.containsKey(rw.email.toLowerCase())
             ? contactMap.get(rw.email.toLowerCase()).Id
             : null;
 
         return contactId;
+    }
+
+    public static Map<String, Account> fetchDummyAccount() {
+        Map<String, Account> accountMap1 = new Map<String, Account>();
+        for (Account a : [
+            SELECT Id, INT_OrganizationNumber__c, INT_MunicipalityNumber__c
+            FROM Account
+            WHERE INT_OrganizationNumber__c = '960507878'
+            LIMIT 1
+        ]) {
+            accountMap1.put(a.INT_OrganizationNumber__c, a);
+        }
+
+        return accountMap1;
     }
 
     public static CustomOpportunity__c createOpportunity(Id accountId, Id contactId, RequestWrapper rw) {
