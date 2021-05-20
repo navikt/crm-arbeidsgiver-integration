@@ -756,8 +756,11 @@ private without sharing class KontaktSkjemaHandlerTest {
 
     @isTest // ! tests the Opportunity process to make sure contacts receive an account after adding an account manually to the opty (happens if a user does not input org number in the web form)
     private static void other_addingAccountAfterReuqestReceived() {
-        Account acc = new Account(name = 'test', INT_OrganizationNumber__c = '960507878');
+        Account acc = new Account(name = 'Kontakter uten konto', INT_OrganizationNumber__c = '960507878');
         insert acc;
+
+        List<Account> dummyAccountTest = [SELECT Id FROM Account WHERE name ='Kontakter uten konto'];
+        Id y = dummyAccountTest[0].Id;
 
         List<CustomOpportunity__c> customOpportunities = [SELECT Id FROM CustomOpportunity__c];
         System.assertEquals(0, customOpportunities.size(), 'Size should be zero before');
@@ -797,9 +800,9 @@ private without sharing class KontaktSkjemaHandlerTest {
         customOpportunities[0].Account__c = acc.Id;
 
         System.assertEquals(
-            null,
+            y,
             customOpportunities[0].Contact__r.AccountId,
-            'No account on contact as no account on opty'
+            'Dummy account set on contact as no account on opty'
         );
 
         update customOpportunities;
@@ -871,7 +874,10 @@ private without sharing class KontaktSkjemaHandlerTest {
 
     @isTest
     private static void other_noOrgNumber() {
-        insert new Account(name = 'test', INT_OrganizationNumber__c = '960507878');
+        insert new Account(name = 'Kontakter uten konto', INT_OrganizationNumber__c = '960507878');
+
+        List<Account> dummyAccountTest = [SELECT Id FROM Account WHERE name ='Kontakter uten konto'];
+        Id y = dummyAccountTest[0].Id;
 
         List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
         System.assertEquals(0, CustomOpportunities.size(), 'Size should be zero before');
@@ -955,9 +961,9 @@ private without sharing class KontaktSkjemaHandlerTest {
             'Account is null as no org number was added to the request'
         );
         System.assertEquals(
-            null,
+            y,
             CustomOpportunities[0].Contact__r.AccountId,
-            'Account is null as no org number was added to the request'
+            'Dummy account set on contact as no org number was added to the request'
         );
     }
 
@@ -1185,15 +1191,15 @@ private without sharing class KontaktSkjemaHandlerTest {
         System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
 
           System.assertEquals(
-            'TestEtternavn',
-            CustomOpportunities[0].Contact__r.LastName,
+            null,
+            CustomOpportunities[0].Account__c,
             'Account is null as no org number was added to the request'
         );
 
           System.assertEquals(
             y,
             CustomOpportunities[0].Contact__r.AccountId,
-            'Account is null as no org number was added to the request'
+            'Dummy account set on contact as no org number was added to the request'
         );
     }
 
