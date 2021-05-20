@@ -38,6 +38,15 @@ global with sharing class KontaktSkjemaHandler {
 
         CustomOpportunity__c co = createOpportunity(accountId, contactId, rw);
 
+        // If no organization number is set, update contact with dummy account
+        if (rw.organisationNumber == null){
+            List<Account> dummyAccount =  [SELECT ID FROM Account WHERE Name = 'Kontakter uten konto'];
+            Id i = dummyAccount[0].id;
+            List<Contact> currentContact =[SELECT ID, accountId FROM Contact WHERE Id = :contactId];
+            currentContact[0].accountId = i;
+            update currentContact;
+        }
+
         sendEmailReceipt(rw, co);
 
         return [SELECT Name FROM CustomOpportunity__c WHERE Id = :co.Id LIMIT 1].Name;
