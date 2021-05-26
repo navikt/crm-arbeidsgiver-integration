@@ -33,8 +33,19 @@ global with sharing class KontaktSkjemaHandler {
     global static String doPost() {
         RequestWrapper rw = deserializeData(RestContext.request);
 
-        Id accountId = getAccount(rw.organisationNumber);
         Id contactId = getContact(rw);
+        Id accountId = null;
+
+            // If no organization number is set, update contact with dummy account
+            if (rw.organisationNumber == null){
+                List<Account> dummyAccount =  [SELECT ID FROM Account WHERE Name = 'Kontakter uten konto'];
+                accountId = dummyAccount.size() > 0 ? dummyAccount[0].Id : null;
+                List<Contact> currentContact =[SELECT ID, accountId FROM Contact WHERE Id = :contactId];
+                currentContact[0].accountId = accountId;
+                update currentContact;
+            } else {
+                accountId = getAccount(rw.organisationNumber);
+            }
 
         CustomOpportunity__c co = createOpportunity(accountId, contactId, rw);
 
