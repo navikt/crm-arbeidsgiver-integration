@@ -36,22 +36,33 @@ global with sharing class KontaktSkjemaHandler {
         Id contactId = getContact(rw);
         Id accountId = null;
 
-            // If no organization number is set, update contact with dummy account
-            if (rw.organisationNumber == null){
-                List<Account> dummyAccount =  [SELECT ID FROM Account WHERE Name = 'Kontakter uten konto'];
-                accountId = dummyAccount.size() > 0 ? dummyAccount[0].Id : null;
-                List<Contact> currentContact =[SELECT ID, accountId FROM Contact WHERE Id = :contactId];
-                currentContact[0].accountId = accountId;
-                update currentContact;
-            } else {
-                accountId = getAccount(rw.organisationNumber);
-            }
+        // If no organization number is set, update contact with dummy account
+        if (String.isBlank(rw.organisationNumber)) {
+            accountId = getDummyAccount();
+            updateContactWithNewAccount(contactId, accountId);                
+        } else {
+            accountId = getAccount(rw.organisationNumber);
+        }
 
         CustomOpportunity__c co = createOpportunity(accountId, contactId, rw);
 
         sendEmailReceipt(rw, co);
 
         return [SELECT Name FROM CustomOpportunity__c WHERE Id = :co.Id LIMIT 1].Name;
+    }
+
+    public static Id getDummyAccount() {
+        List<Account> dummyAccount =  [SELECT ID FROM Account WHERE Name = 'Kontakter uten konto'];
+        Id accountId = dummyAccount.size() > 0 ? dummyAccount[0].Id : null;
+
+        return accountId;
+    }
+
+    public static void updateContactWithNewAccount (Id contactId, Id accountId){
+        List<Contact> currentContact =[SELECT ID, accountId FROM Contact WHERE Id = :contactId];
+        currentContact[0].accountId = accountId;
+
+        update currentContact;
     }
 
     public static Id getAccount(String organisationNumber) {
