@@ -6,7 +6,11 @@ public with sharing class KontaktSkjemaHelper {
     public static Id fetchOrCreateContact(KontaktSkjemaModel rw) {
         SharedFunctions_ContactModel wrapper = new SharedFunctions_ContactModel();
 
-        if (rw.name != null) {
+        if (String.isEmpty(rw.email)) {
+            rw.email = '';
+        }
+
+        if (!String.isEmpty(rw.name)) {
             List<String> fullName = rw.name.split(' ');
             String lastNameSplitted = fullName[fullName.size() - 1];
             String firstNameSplitted = rw.name.removeEnd(' ' + lastNameSplitted);

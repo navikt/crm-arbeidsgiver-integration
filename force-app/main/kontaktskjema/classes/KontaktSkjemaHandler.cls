@@ -9,7 +9,7 @@ global with sharing class KontaktSkjemaHandler {
 
         // If no organization number is set, update contact with dummy account
         if (String.isBlank(rw.organisationNumber)) {
-            accountId = KontaktSkjemaHelper.getDummyAccount();
+            accountId = KontaktSkjemaHelper.getDummyAccount(); // TODO implement inside fetchOrCreateContact
             KontaktSkjemaHelper.updateContactWithNewAccount(contactId, accountId);
         } else {
             accountId = KontaktSkjemaHelper.getAccount(rw.organisationNumber);
