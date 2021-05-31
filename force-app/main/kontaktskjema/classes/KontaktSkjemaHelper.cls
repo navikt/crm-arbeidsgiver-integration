@@ -3,7 +3,7 @@ public with sharing class KontaktSkjemaHelper {
         .get('Inclusion')
         .getRecordTypeId();
 
-    public static Id getContact(KontaktSkjemaModel rw) {
+    public static Id fetchOrCreateContact(KontaktSkjemaModel rw) {
         SharedFunctions_ContactModel wrapper = new SharedFunctions_ContactModel();
 
         if (rw.name != null) {

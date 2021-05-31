@@ -4,7 +4,7 @@ global with sharing class KontaktSkjemaHandler {
     global static String doPost() {
         KontaktSkjemaModel rw = KontaktSkjemaModel.deserializeData(RestContext.request);
 
-        Id contactId = KontaktSkjemaHelper.getContact(rw);
+        Id contactId = KontaktSkjemaHelper.fetchOrCreateContact(rw);
         Id accountId = null;
 
         // If no organization number is set, update contact with dummy account
