@@ -46,7 +46,7 @@ private without sharing class KontaktSkjemaHandlerTest {
         KontaktSkjemaHandler.doPost();
         Test.stopTest();
 
-        List<CustomOpportunity__c> CustomOpportunities = [
+        List<CustomOpportunity__c> optys = [
             SELECT
                 Id,
                 InquiryCategory__c,
@@ -66,17 +66,13 @@ private without sharing class KontaktSkjemaHandlerTest {
 
         Id accId = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = '960507878' LIMIT 1].Id;
 
-        customOpportunities[0].Account__c = accId;
+        optys[0].Account__c = accId;
 
-        System.assertEquals(
-            accId,
-            customOpportunities[0].Contact__r.AccountId,
-            'Dummy account on contact as no account on opty'
-        );
+        System.assertEquals(accId, optys[0].Contact__r.AccountId, 'Dummy account on contact as no account on opty');
 
-        update customOpportunities;
+        update optys;
 
-        customOpportunities = [
+        optys = [
             SELECT
                 Id,
                 InquiryCategory__c,
@@ -95,7 +91,7 @@ private without sharing class KontaktSkjemaHandlerTest {
         ];
         System.assertEquals(
             accId,
-            customOpportunities[0].Contact__r.AccountId,
+            optys[0].Contact__r.AccountId,
             'Original account should be on contact as account added on opty'
         );
     }
@@ -111,7 +107,7 @@ private without sharing class KontaktSkjemaHandlerTest {
         KontaktSkjemaHandler.doPost();
         Test.stopTest();
 
-        List<CustomOpportunity__c> CustomOpportunities = [
+        List<CustomOpportunity__c> optys = [
             SELECT
                 Id,
                 InquiryCategory__c,
@@ -123,13 +119,9 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
 
-        System.assertEquals(
-            null,
-            CustomOpportunities[0].Account__c,
-            'Should have null, as the account doesn\'t exist from before'
-        );
+        System.assertEquals(null, optys[0].Account__c, 'Should have null, as the account doesn\'t exist from before');
     }
 
     @isTest
@@ -143,7 +135,7 @@ private without sharing class KontaktSkjemaHandlerTest {
         KontaktSkjemaHandler.doPost();
         Test.stopTest();
 
-        List<CustomOpportunity__c> CustomOpportunities = [
+        List<CustomOpportunity__c> optys = [
             SELECT
                 Id,
                 InquiryCategory__c,
@@ -162,15 +154,11 @@ private without sharing class KontaktSkjemaHandlerTest {
 
         Id dummyAccount = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = '960507872' LIMIT 1].Id;
 
-        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
-        System.assertEquals(
-            null,
-            CustomOpportunities[0].Account__c,
-            'Account is null as no org number was added to the request'
-        );
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
+        System.assertEquals(null, optys[0].Account__c, 'Account is null as no org number was added to the request');
         System.assertEquals(
             dummyAccount,
-            CustomOpportunities[0].Contact__r.AccountId,
+            optys[0].Contact__r.AccountId,
             'Dummy account set on contact as no org number was added to the request'
         );
     }
@@ -186,9 +174,9 @@ private without sharing class KontaktSkjemaHandlerTest {
         KontaktSkjemaHandler.doPost();
         Test.stopTest();
 
-        List<CustomOpportunity__c> CustomOpportunities = [SELECT Id, Account__c FROM CustomOpportunity__c];
-        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
-        System.assertEquals(null, CustomOpportunities[0].Account__c, 'Account should be null');
+        List<CustomOpportunity__c> optys = [SELECT Id, Account__c FROM CustomOpportunity__c];
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
+        System.assertEquals(null, optys[0].Account__c, 'Account should be null');
     }
 
     @isTest
@@ -204,9 +192,9 @@ private without sharing class KontaktSkjemaHandlerTest {
 
         Id accId = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = '960507878' LIMIT 1].Id;
 
-        List<CustomOpportunity__c> CustomOpportunities = [SELECT Id, Account__c FROM CustomOpportunity__c];
-        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
-        System.assertEquals(accId, CustomOpportunities[0].Account__c, 'Account should be set');
+        List<CustomOpportunity__c> optys = [SELECT Id, Account__c FROM CustomOpportunity__c];
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
+        System.assertEquals(accId, optys[0].Account__c, 'Account should be set');
     }
 
     @isTest
@@ -277,7 +265,7 @@ private without sharing class KontaktSkjemaHandlerTest {
         KontaktSkjemaHandler.doPost();
         Test.stopTest();
 
-        List<CustomOpportunity__c> CustomOpportunities = [
+        List<CustomOpportunity__c> optys = [
             SELECT
                 Id,
                 InquiryCategory__c,
@@ -289,9 +277,9 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
 
-        System.assertEquals(con.Id, CustomOpportunities[0].Contact__c, 'Should find the existing contact');
+        System.assertEquals(con.Id, optys[0].Contact__c, 'Should find the existing contact');
     }
 
     // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
@@ -309,7 +297,7 @@ private without sharing class KontaktSkjemaHandlerTest {
         String result = KontaktSkjemaHandler.doPost();
         Test.stopTest();
 
-        List<CustomOpportunity__c> CustomOpportunities = [
+        List<CustomOpportunity__c> optys = [
             SELECT
                 Id,
                 InquiryCategory__c,
@@ -324,7 +312,7 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
 
         System.assertNotEquals(null, result, 'Returned value should not be null, as Agder is not in the pilot');
     }
@@ -340,7 +328,7 @@ private without sharing class KontaktSkjemaHandlerTest {
         String result = KontaktSkjemaHandler.doPost();
         Test.stopTest();
 
-        List<CustomOpportunity__c> CustomOpportunities = [
+        List<CustomOpportunity__c> optys = [
             SELECT
                 Id,
                 InquiryCategory__c,
@@ -355,7 +343,7 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
 
         System.assertNotEquals(null, result, 'Returned value should NOT be null, as Agder is not in the pilot');
     }
@@ -371,7 +359,7 @@ private without sharing class KontaktSkjemaHandlerTest {
         String result = KontaktSkjemaHandler.doPost();
         Test.stopTest();
 
-        List<CustomOpportunity__c> CustomOpportunities = [
+        List<CustomOpportunity__c> optys = [
             SELECT
                 Id,
                 InquiryCategory__c,
@@ -386,7 +374,7 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
 
         System.assertNotEquals(null, result, 'Returned value should NOT be null, as Agder is not in the pilot');
     }
@@ -402,7 +390,7 @@ private without sharing class KontaktSkjemaHandlerTest {
         String result = KontaktSkjemaHandler.doPost();
         Test.stopTest();
 
-        List<CustomOpportunity__c> CustomOpportunities = [
+        List<CustomOpportunity__c> optys = [
             SELECT
                 Id,
                 InquiryCategory__c,
@@ -417,7 +405,7 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
 
         System.assertNotEquals(null, result, 'Returned value should NOT be null, as Nordland is in the pilot');
     }
@@ -433,7 +421,7 @@ private without sharing class KontaktSkjemaHandlerTest {
         String result = KontaktSkjemaHandler.doPost();
         Test.stopTest();
 
-        List<CustomOpportunity__c> CustomOpportunities = [
+        List<CustomOpportunity__c> optys = [
             SELECT
                 Id,
                 InquiryCategory__c,
@@ -448,7 +436,7 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
 
         System.assertNotEquals(null, result, 'Returned value should NOT be null, as Møre og Romsdal is in the pilot');
     }
@@ -464,7 +452,7 @@ private without sharing class KontaktSkjemaHandlerTest {
         KontaktSkjemaHandler.doPost();
         Test.stopTest();
 
-        List<CustomOpportunity__c> CustomOpportunities = [
+        List<CustomOpportunity__c> optys = [
             SELECT
                 Id,
                 InquiryCategory__c,
@@ -479,51 +467,31 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
 
-        System.assertEquals(
-            'Arbeidstrening',
-            CustomOpportunities[0].InquiryCategory__c,
-            '"Type" should be "Arbeidstrening"'
-        );
-        System.assertEquals(
-            'TestNavn',
-            CustomOpportunities[0].Contact__r.FirstName,
-            '"Contact__r.FirstName" should be "TestNavn"'
-        );
+        System.assertEquals('Arbeidstrening', optys[0].InquiryCategory__c, '"Type" should be "Arbeidstrening"');
+        System.assertEquals('TestNavn', optys[0].Contact__r.FirstName, '"Contact__r.FirstName" should be "TestNavn"');
         System.assertEquals(
             'TestEtternavn',
-            CustomOpportunities[0].Contact__r.LastName,
+            optys[0].Contact__r.LastName,
             '"Contact__r.LastName" should be "TestEtternavn"'
         );
-        System.assertEquals(
-            null,
-            CustomOpportunities[0].INT_RegionNumber__c,
-            'Region code should be null on non-IA optys'
-        );
-        System.assertEquals(
-            '3033',
-            CustomOpportunities[0].INT_MunicipalityNumber__c,
-            'Region code should be null on non-IA optys'
-        );
+        System.assertEquals(null, optys[0].INT_RegionNumber__c, 'Region code should be null on non-IA optys');
+        System.assertEquals('3033', optys[0].INT_MunicipalityNumber__c, 'Region code should be null on non-IA optys');
         System.assertEquals(
             'Finstadtunet',
-            CustomOpportunities[0].TAG_OrganizationNameFromForm__c,
+            optys[0].TAG_OrganizationNameFromForm__c,
             'Name of company should be set as Finstadtunet'
         );
-        System.assertEquals(
-            'test@nav.no',
-            CustomOpportunities[0].Contact__r.Email,
-            '"Contact__r.Email" should be "test@nav.no"'
-        );
+        System.assertEquals('test@nav.no', optys[0].Contact__r.Email, '"Contact__r.Email" should be "test@nav.no"');
         System.assertEquals(
             '90080900',
-            CustomOpportunities[0].Contact__r.MobilePhone,
+            optys[0].Contact__r.MobilePhone,
             '"Contact__r.MobilePhone" should be "90080900"'
         );
         System.assertEquals(
             '960507878',
-            CustomOpportunities[0].Account__r.INT_OrganizationNumber__c,
+            optys[0].Account__r.INT_OrganizationNumber__c,
             '"Account__r.INT_OrganizationNumber__c" should be "960507878"'
         );
     }
@@ -539,7 +507,7 @@ private without sharing class KontaktSkjemaHandlerTest {
         KontaktSkjemaHandler.doPost();
         Test.stopTest();
 
-        List<CustomOpportunity__c> CustomOpportunities = [
+        List<CustomOpportunity__c> optys = [
             SELECT
                 Id,
                 InquiryCategory__c,
@@ -554,51 +522,35 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
 
         System.assertEquals(
             'Forebygge sykefravær',
-            CustomOpportunities[0].InquiryCategory__c,
+            optys[0].InquiryCategory__c,
             '"Type" should be "Forebygge sykefravær"'
         );
-        System.assertEquals(
-            'TestNavn',
-            CustomOpportunities[0].Contact__r.FirstName,
-            '"Contact__r.FirstName" should be "TestNavn"'
-        );
+        System.assertEquals('TestNavn', optys[0].Contact__r.FirstName, '"Contact__r.FirstName" should be "TestNavn"');
         System.assertEquals(
             'TestEtternavn',
-            CustomOpportunities[0].Contact__r.LastName,
+            optys[0].Contact__r.LastName,
             '"Contact__r.LastName" should be "TestEtternavn"'
         );
-        System.assertEquals(
-            '0200',
-            CustomOpportunities[0].INT_RegionNumber__c,
-            'Region code should be null on non-IA optys'
-        );
-        System.assertEquals(
-            '3033',
-            CustomOpportunities[0].INT_MunicipalityNumber__c,
-            'Region code should be null on non-IA optys'
-        );
+        System.assertEquals('0200', optys[0].INT_RegionNumber__c, 'Region code should be null on non-IA optys');
+        System.assertEquals('3033', optys[0].INT_MunicipalityNumber__c, 'Region code should be null on non-IA optys');
         System.assertEquals(
             'Finstadtunet',
-            CustomOpportunities[0].TAG_OrganizationNameFromForm__c,
+            optys[0].TAG_OrganizationNameFromForm__c,
             'Name of company should be set as Finstadtunet'
         );
-        System.assertEquals(
-            'test@nav.no',
-            CustomOpportunities[0].Contact__r.Email,
-            '"Contact__r.Email" should be "test@nav.no"'
-        );
+        System.assertEquals('test@nav.no', optys[0].Contact__r.Email, '"Contact__r.Email" should be "test@nav.no"');
         System.assertEquals(
             '90080900',
-            CustomOpportunities[0].Contact__r.MobilePhone,
+            optys[0].Contact__r.MobilePhone,
             '"Contact__r.MobilePhone" should be "90080900"'
         );
         System.assertEquals(
             '960507878',
-            CustomOpportunities[0].Account__r.INT_OrganizationNumber__c,
+            optys[0].Account__r.INT_OrganizationNumber__c,
             '"Account__r.INT_OrganizationNumber__c" should be "960507878"'
         );
     }
@@ -614,7 +566,7 @@ private without sharing class KontaktSkjemaHandlerTest {
         KontaktSkjemaHandler.doPost();
         Test.stopTest();
 
-        List<CustomOpportunity__c> CustomOpportunities = [
+        List<CustomOpportunity__c> optys = [
             SELECT
                 Id,
                 InquiryCategory__c,
@@ -629,16 +581,16 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
 
         System.assertEquals(
             'TestNavn Test',
-            CustomOpportunities[0].Contact__r.FirstName,
+            optys[0].Contact__r.FirstName,
             '"Contact__r.FirstName" should be "TestNavn"'
         );
         System.assertEquals(
             'Etternavn',
-            CustomOpportunities[0].Contact__r.LastName,
+            optys[0].Contact__r.LastName,
             '"Contact__r.LastName" should be "Test Etternavn"'
         );
     }
@@ -654,7 +606,7 @@ private without sharing class KontaktSkjemaHandlerTest {
         KontaktSkjemaHandler.doPost();
         Test.stopTest();
 
-        List<CustomOpportunity__c> CustomOpportunities = [
+        List<CustomOpportunity__c> optys = [
             SELECT
                 Id,
                 InquiryCategory__c,
@@ -669,23 +621,15 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
 
-        System.assertEquals(
-            'TestNavn',
-            CustomOpportunities[0].Contact__r.FirstName,
-            '"Contact__r.FirstName" should be "TestNavn"'
-        );
+        System.assertEquals('TestNavn', optys[0].Contact__r.FirstName, '"Contact__r.FirstName" should be "TestNavn"');
         System.assertEquals(
             'TestEtternavn',
-            CustomOpportunities[0].Contact__r.LastName,
+            optys[0].Contact__r.LastName,
             '"Contact__r.LastName" should be "TestEtternavn"'
         );
-        System.assertEquals(
-            'test@nav.no',
-            CustomOpportunities[0].Contact__r.Email,
-            '"Contact__r.Email" should be "test@nav.no"'
-        );
+        System.assertEquals('test@nav.no', optys[0].Contact__r.Email, '"Contact__r.Email" should be "test@nav.no"');
     }
 
     @isTest
@@ -699,7 +643,7 @@ private without sharing class KontaktSkjemaHandlerTest {
         KontaktSkjemaHandler.doPost();
         Test.stopTest();
 
-        List<CustomOpportunity__c> CustomOpportunities = [
+        List<CustomOpportunity__c> optys = [
             SELECT
                 Id,
                 InquiryCategory__c,
@@ -715,16 +659,12 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
 
-        System.assertEquals(
-            null,
-            CustomOpportunities[0].Contact__r.Email,
-            '"Contact__r.Email" should be "test@nav.no"'
-        );
+        System.assertEquals(null, optys[0].Contact__r.Email, '"Contact__r.Email" should be "test@nav.no"');
         System.assertEquals(
             'test@@nav.no',
-            CustomOpportunities[0].Contact__r.InvalidEmail__c,
+            optys[0].Contact__r.InvalidEmail__c,
             '"Contact__r.Email" should be "test@nav.no"'
         );
     }
@@ -740,7 +680,7 @@ private without sharing class KontaktSkjemaHandlerTest {
         KontaktSkjemaHandler.doPost();
         Test.stopTest();
 
-        List<CustomOpportunity__c> CustomOpportunities = [
+        List<CustomOpportunity__c> optys = [
             SELECT
                 Id,
                 InquiryCategory__c,
@@ -755,51 +695,31 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
 
-        System.assertEquals(
-            'Rekruttering',
-            CustomOpportunities[0].InquiryCategory__c,
-            '"Type" should be "Rekruttering"'
-        );
-        System.assertEquals(
-            'TestNavn',
-            CustomOpportunities[0].Contact__r.FirstName,
-            '"Contact__r.FirstName" should be "TestNavn"'
-        );
+        System.assertEquals('Rekruttering', optys[0].InquiryCategory__c, '"Type" should be "Rekruttering"');
+        System.assertEquals('TestNavn', optys[0].Contact__r.FirstName, '"Contact__r.FirstName" should be "TestNavn"');
         System.assertEquals(
             'TestEtternavn',
-            CustomOpportunities[0].Contact__r.LastName,
+            optys[0].Contact__r.LastName,
             '"Contact__r.LastName" should be "TestEtternavn"'
         );
-        System.assertEquals(
-            null,
-            CustomOpportunities[0].INT_RegionNumber__c,
-            'Region code should be null on non-IA optys'
-        );
-        System.assertEquals(
-            '3033',
-            CustomOpportunities[0].INT_MunicipalityNumber__c,
-            'Region code should be null on non-IA optys'
-        );
+        System.assertEquals(null, optys[0].INT_RegionNumber__c, 'Region code should be null on non-IA optys');
+        System.assertEquals('3033', optys[0].INT_MunicipalityNumber__c, 'Region code should be null on non-IA optys');
         System.assertEquals(
             'Finstadtunet',
-            CustomOpportunities[0].TAG_OrganizationNameFromForm__c,
+            optys[0].TAG_OrganizationNameFromForm__c,
             'Name of company should be set as Finstadtunet'
         );
-        System.assertEquals(
-            'test@nav.no',
-            CustomOpportunities[0].Contact__r.Email,
-            '"Contact__r.Email" should be "test@nav.no"'
-        );
+        System.assertEquals('test@nav.no', optys[0].Contact__r.Email, '"Contact__r.Email" should be "test@nav.no"');
         System.assertEquals(
             '90080900',
-            CustomOpportunities[0].Contact__r.MobilePhone,
+            optys[0].Contact__r.MobilePhone,
             '"Contact__r.MobilePhone" should be "90080900"'
         );
         System.assertEquals(
             '960507878',
-            CustomOpportunities[0].Account__r.INT_OrganizationNumber__c,
+            optys[0].Account__r.INT_OrganizationNumber__c,
             '"Account__r.INT_OrganizationNumber__c" should be "960507878"'
         );
     }
@@ -815,7 +735,7 @@ private without sharing class KontaktSkjemaHandlerTest {
         KontaktSkjemaHandler.doPost();
         Test.stopTest();
 
-        List<CustomOpportunity__c> CustomOpportunities = [
+        List<CustomOpportunity__c> optys = [
             SELECT
                 Id,
                 InquiryCategory__c,
@@ -830,51 +750,35 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
 
         System.assertEquals(
             'Rekruttering med tilrettelegging',
-            CustomOpportunities[0].InquiryCategory__c,
+            optys[0].InquiryCategory__c,
             '"Type" should be "Rekruttering med tilrettelegging"'
         );
-        System.assertEquals(
-            'TestNavn',
-            CustomOpportunities[0].Contact__r.FirstName,
-            '"Contact__r.FirstName" should be "TestNavn"'
-        );
+        System.assertEquals('TestNavn', optys[0].Contact__r.FirstName, '"Contact__r.FirstName" should be "TestNavn"');
         System.assertEquals(
             'TestEtternavn',
-            CustomOpportunities[0].Contact__r.LastName,
+            optys[0].Contact__r.LastName,
             '"Contact__r.LastName" should be "TestEtternavn"'
         );
-        System.assertEquals(
-            null,
-            CustomOpportunities[0].INT_RegionNumber__c,
-            'Region code should be null on non-IA optys'
-        );
-        System.assertEquals(
-            '3033',
-            CustomOpportunities[0].INT_MunicipalityNumber__c,
-            'Region code should be null on non-IA optys'
-        );
+        System.assertEquals(null, optys[0].INT_RegionNumber__c, 'Region code should be null on non-IA optys');
+        System.assertEquals('3033', optys[0].INT_MunicipalityNumber__c, 'Region code should be null on non-IA optys');
         System.assertEquals(
             'Finstadtunet',
-            CustomOpportunities[0].TAG_OrganizationNameFromForm__c,
+            optys[0].TAG_OrganizationNameFromForm__c,
             'Name of company should be set as Finstadtunet'
         );
-        System.assertEquals(
-            'test@nav.no',
-            CustomOpportunities[0].Contact__r.Email,
-            '"Contact__r.Email" should be "test@nav.no"'
-        );
+        System.assertEquals('test@nav.no', optys[0].Contact__r.Email, '"Contact__r.Email" should be "test@nav.no"');
         System.assertEquals(
             '90080900',
-            CustomOpportunities[0].Contact__r.MobilePhone,
+            optys[0].Contact__r.MobilePhone,
             '"Contact__r.MobilePhone" should be "90080900"'
         );
         System.assertEquals(
             '960507878',
-            CustomOpportunities[0].Account__r.INT_OrganizationNumber__c,
+            optys[0].Account__r.INT_OrganizationNumber__c,
             '"Account__r.INT_OrganizationNumber__c" should be "960507878"'
         );
     }
@@ -893,13 +797,12 @@ private without sharing class KontaktSkjemaHandlerTest {
             List<EmailQueue__c> emailsQueueBefore = [SELECT Id FROM EmailQueue__c];
             System.assertEquals(0, emailsQueueBefore.size(), 'Should be no queue before sendEmail');
 
-
             Test.startTest();
             KontaktSkjemaHandler.doPost();
             Test.stopTest();
 
-            List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
-            System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
+            List<CustomOpportunity__c> optys = [SELECT Id FROM CustomOpportunity__c];
+            System.assertEquals(1, optys.size(), 'Size should be one after insert');
 
             List<EmailQueue__c> emailsQueueAfter = [SELECT Id, TemplateId__c, TemplateName__c FROM EmailQueue__c];
             System.assertEquals(1, emailsQueueAfter.size(), 'Should be one queue after insert');
@@ -924,8 +827,8 @@ private without sharing class KontaktSkjemaHandlerTest {
             KontaktSkjemaHandler.doPost();
             Test.stopTest();
 
-            List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
-            System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
+            List<CustomOpportunity__c> optys = [SELECT Id FROM CustomOpportunity__c];
+            System.assertEquals(1, optys.size(), 'Size should be one after insert');
 
             List<EmailQueue__c> emailsQueueAfter = [SELECT Id, TemplateId__c, TemplateName__c FROM EmailQueue__c];
             System.assertEquals(1, emailsQueueAfter.size(), 'Should be one queue after insert');
@@ -952,7 +855,11 @@ private without sharing class KontaktSkjemaHandlerTest {
             Test.stopTest();
 
             System.assertEquals(1, [SELECT Id FROM CustomOpportunity__c].size(), 'Size should be one after insert');
-            System.assertEquals(0, [SELECT Id FROM EmailQueue__c].size(), 'Should be no queue because missing Email Address');
+            System.assertEquals(
+                0,
+                [SELECT Id FROM EmailQueue__c].size(),
+                'Should be no queue because missing Email Address'
+            );
         }
     }
 
@@ -971,9 +878,9 @@ private without sharing class KontaktSkjemaHandlerTest {
         KontaktSkjemaHandler.doPost();
         Test.stopTest();
 
-        List<CustomOpportunity__c> CustomOpportunities = [SELECT Id, InquiryCategory__c FROM CustomOpportunity__c];
-        System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
-        System.assertEquals(null, CustomOpportunities[0].InquiryCategory__c, 'should have empty category');
+        List<CustomOpportunity__c> optys = [SELECT Id, InquiryCategory__c FROM CustomOpportunity__c];
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
+        System.assertEquals(null, optys[0].InquiryCategory__c, 'should have empty category');
     }
 
     // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
