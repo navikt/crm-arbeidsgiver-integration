@@ -36,7 +36,7 @@ private without sharing class KontaktSkjemaHandlerTest {
     // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
 
     @isTest // ! tests the Opportunity process to make sure contacts receive an account after adding an account manually to the opty (happens if a user does not input org number in the web form)
-    private static void account_addingAccountAfterReuqestReceived() {
+    private static void account_addingAccountAfterRequestReceived() {
         createTestAccounts();
         createPostRequest(
             '{ "type":"FOREBYGGE_SYKEFRAVÆR","municipalityCode":"3033","organisationName":"Finstadtunet","firstName":"TestNavn","lastName":"TestEtternavn","email":"test@nav.no","phoneNo":"90080900","RegionCode":"0200" }'
@@ -46,49 +46,20 @@ private without sharing class KontaktSkjemaHandlerTest {
         KontaktSkjemaHandler.doPost();
         Test.stopTest();
 
-        List<CustomOpportunity__c> optys = [
-            SELECT
-                Id,
-                InquiryCategory__c,
-                RecordTypeId,
-                INT_RegionNumber__c,
-                INT_MunicipalityNumber__c,
-                TAG_OrganizationNameFromForm__c,
-                Contact__r.FirstName,
-                Contact__r.LastName,
-                Contact__r.Email,
-                Contact__r.AccountId,
-                Contact__r.MobilePhone,
-                Account__r.INT_OrganizationNumber__c
-            FROM CustomOpportunity__c
-            LIMIT 1
-        ];
-
+        Id dummyAccount = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = '960507872' LIMIT 1].Id;
         Id accId = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = '960507878' LIMIT 1].Id;
 
+        List<CustomOpportunity__c> optys = [SELECT Contact__r.AccountId FROM CustomOpportunity__c LIMIT 1];
+        System.assertEquals(
+            dummyAccount,
+            optys[0].Contact__r.AccountId,
+            'Dummy account on contact as no account on opty'
+        );
+
         optys[0].Account__c = accId;
-
-        System.assertEquals(accId, optys[0].Contact__r.AccountId, 'Dummy account on contact as no account on opty');
-
         update optys;
 
-        optys = [
-            SELECT
-                Id,
-                InquiryCategory__c,
-                RecordTypeId,
-                INT_RegionNumber__c,
-                INT_MunicipalityNumber__c,
-                TAG_OrganizationNameFromForm__c,
-                Contact__r.FirstName,
-                Contact__r.LastName,
-                Contact__r.Email,
-                Contact__r.AccountId,
-                Contact__r.MobilePhone,
-                Account__r.INT_OrganizationNumber__c
-            FROM CustomOpportunity__c
-            LIMIT 1
-        ];
+        optys = [SELECT Contact__r.AccountId FROM CustomOpportunity__c LIMIT 1];
         System.assertEquals(
             accId,
             optys[0].Contact__r.AccountId,
@@ -97,8 +68,7 @@ private without sharing class KontaktSkjemaHandlerTest {
     }
 
     @isTest
-    private static void account_noAccount() {
-        createTestAccounts();
+    private static void account_accountDoesNotExist() {
         createPostRequest(
             '{ "type":"ARBEIDSTRENING","municipalityCode":"3033","organisationName":"Finstadtunet","organisationNumber":"960507871","firstName":"TestNavn","lastName":"TestEtternavn","email":"test@nav.no","phoneNo":"90080900","RegionCode":"0200" }'
         );
@@ -107,80 +77,13 @@ private without sharing class KontaktSkjemaHandlerTest {
         KontaktSkjemaHandler.doPost();
         Test.stopTest();
 
-        List<CustomOpportunity__c> optys = [
-            SELECT
-                Id,
-                InquiryCategory__c,
-                RecordTypeId,
-                Contact__r.FirstName,
-                Contact__r.LastName,
-                Contact__r.Email,
-                Contact__r.MobilePhone,
-                Account__r.INT_OrganizationNumber__c
-            FROM CustomOpportunity__c
-        ];
+        List<CustomOpportunity__c> optys = [SELECT Account__c FROM CustomOpportunity__c];
         System.assertEquals(1, optys.size(), 'Size should be one after insert');
-
         System.assertEquals(null, optys[0].Account__c, 'Should have null, as the account doesn\'t exist from before');
     }
 
     @isTest
-    private static void account_noOrgNumber() {
-        createTestAccounts();
-        createPostRequest(
-            '{ "type":"FOREBYGGE_SYKEFRAVÆR","municipalityCode":"3033","organisationName":"Finstadtunet","firstName":"TestNavn","lastName":"TestEtternavn","email":"test@nav.no","phoneNo":"90080900","RegionCode":"0200" }'
-        );
-
-        Test.startTest();
-        KontaktSkjemaHandler.doPost();
-        Test.stopTest();
-
-        List<CustomOpportunity__c> optys = [
-            SELECT
-                Id,
-                InquiryCategory__c,
-                RecordTypeId,
-                INT_RegionNumber__c,
-                INT_MunicipalityNumber__c,
-                TAG_OrganizationNameFromForm__c,
-                Contact__r.FirstName,
-                Contact__r.LastName,
-                Contact__r.AccountId,
-                Contact__r.Email,
-                Contact__r.MobilePhone,
-                Account__r.INT_OrganizationNumber__c
-            FROM CustomOpportunity__c
-        ];
-
-        Id dummyAccount = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = '960507872' LIMIT 1].Id;
-
-        System.assertEquals(1, optys.size(), 'Size should be one after insert');
-        System.assertEquals(null, optys[0].Account__c, 'Account is null as no org number was added to the request');
-        System.assertEquals(
-            dummyAccount,
-            optys[0].Contact__r.AccountId,
-            'Dummy account set on contact as no org number was added to the request'
-        );
-    }
-
-    @isTest
-    private static void account_IsEmptyWhenOrgNoMissing() {
-        createTestAccounts();
-        createPostRequest(
-            '{ "type":"REKRUTTERING","municipalityCode":"3033","organisationName":"Finstadtunet","organisationNumber":"","firstName":"TestNavn","lastName":"TestEtternavn","email":"","phoneNo":"90080900","RegionCode":"0200" }'
-        );
-
-        Test.startTest();
-        KontaktSkjemaHandler.doPost();
-        Test.stopTest();
-
-        List<CustomOpportunity__c> optys = [SELECT Id, Account__c FROM CustomOpportunity__c];
-        System.assertEquals(1, optys.size(), 'Size should be one after insert');
-        System.assertEquals(null, optys[0].Account__c, 'Account should be null');
-    }
-
-    @isTest
-    private static void account_isAddedToOpty() {
+    private static void account_accountDoesExist() {
         createTestAccounts();
         createPostRequest(
             '{ "type":"REKRUTTERING","municipalityCode":"3033","organisationName":"Finstadtunet","organisationNumber":"960507878","firstName":"TestNavn","lastName":"TestEtternavn","email":"","phoneNo":"90080900","RegionCode":"0200" }'
@@ -198,13 +101,31 @@ private without sharing class KontaktSkjemaHandlerTest {
     }
 
     @isTest
-    private static void account_setDummyAccountWhenOrgNoMissing() {
+    private static void account_noOrgNumber_nullAccountOnOpty() {
         createTestAccounts();
         createPostRequest(
             '{ "type":"REKRUTTERING","municipalityCode":"3033","organisationName":"Finstadtunet","organisationNumber":"","firstName":"TestNavn","lastName":"TestEtternavn","email":"","phoneNo":"90080900","RegionCode":"0200" }'
         );
 
-        System.assertEquals(0, [SELECT Id FROM Contact].size(), 'zero contacts before');
+        Test.startTest();
+        KontaktSkjemaHandler.doPost();
+        Test.stopTest();
+
+        List<CustomOpportunity__c> optys = [SELECT Id, Account__c FROM CustomOpportunity__c];
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
+        System.assertEquals(null, optys[0].Account__c, 'Account should be null');
+    }
+
+    // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
+    // ------------------------------------------------------------------------------------------------------------- CONTACT ---------------------------------------------------------------------------------------------------------------------- //
+    // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
+
+    @isTest
+    private static void contact_noOrgNumber_dummyAccountOnContact() {
+        createTestAccounts();
+        createPostRequest(
+            '{ "type":"FOREBYGGE_SYKEFRAVÆR","municipalityCode":"3033","organisationName":"Finstadtunet","firstName":"TestNavn","lastName":"TestEtternavn","email":"test@nav.no","phoneNo":"90080900","RegionCode":"0200" }'
+        );
 
         Test.startTest();
         KontaktSkjemaHandler.doPost();
@@ -212,13 +133,13 @@ private without sharing class KontaktSkjemaHandlerTest {
 
         Id dummyAccount = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = '960507872' LIMIT 1].Id;
 
-        List<Contact> contacts = [SELECT Id, AccountId FROM Contact];
-        System.assertEquals(1, contacts.size(), 'one contact after');
-        System.assertEquals(dummyAccount, contacts[0].AccountId, 'same contact');
+        List<CustomOpportunity__c> optys = [SELECT Account__c, Contact__r.AccountId FROM CustomOpportunity__c];
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
+        System.assertEquals(dummyAccount, optys[0].Contact__r.AccountId, 'Dummy account should be on the contact');
     }
 
     @isTest
-    private static void account_dontAddDummyAccountOnExistingContact() {
+    private static void contact_dontAddDummyAccountOnExistingContact() {
         createTestAccounts();
         Id accId = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = '960507878' LIMIT 1].Id;
         Contact con = new Contact(
@@ -248,10 +169,6 @@ private without sharing class KontaktSkjemaHandlerTest {
         );
     }
 
-    // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
-    // ------------------------------------------------------------------------------------------------------------- CONTACT ---------------------------------------------------------------------------------------------------------------------- //
-    // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
-
     @isTest
     private static void contact_contactAlreadyExists() {
         Contact con = new Contact(TAG_Informed__c = true, lastName = 'TestEtternavn', Email = 'test@nav.no');
@@ -265,20 +182,9 @@ private without sharing class KontaktSkjemaHandlerTest {
         KontaktSkjemaHandler.doPost();
         Test.stopTest();
 
-        List<CustomOpportunity__c> optys = [
-            SELECT
-                Id,
-                InquiryCategory__c,
-                RecordTypeId,
-                Contact__r.FirstName,
-                Contact__r.LastName,
-                Contact__r.Email,
-                Contact__r.MobilePhone,
-                Account__r.INT_OrganizationNumber__c
-            FROM CustomOpportunity__c
-        ];
-        System.assertEquals(1, optys.size(), 'Size should be one after insert');
+        List<CustomOpportunity__c> optys = [SELECT Contact__c FROM CustomOpportunity__c];
 
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
         System.assertEquals(con.Id, optys[0].Contact__c, 'Should find the existing contact');
     }
 
@@ -297,24 +203,10 @@ private without sharing class KontaktSkjemaHandlerTest {
         String result = KontaktSkjemaHandler.doPost();
         Test.stopTest();
 
-        List<CustomOpportunity__c> optys = [
-            SELECT
-                Id,
-                InquiryCategory__c,
-                RecordTypeId,
-                INT_RegionNumber__c,
-                INT_MunicipalityNumber__c,
-                TAG_OrganizationNameFromForm__c,
-                Contact__r.FirstName,
-                Contact__r.LastName,
-                Contact__r.Email,
-                Contact__r.MobilePhone,
-                Account__r.INT_OrganizationNumber__c
-            FROM CustomOpportunity__c
-        ];
-        System.assertEquals(1, optys.size(), 'Size should be one after insert');
+        List<CustomOpportunity__c> optys = [SELECT Id FROM CustomOpportunity__c];
 
-        System.assertNotEquals(null, result, 'Returned value should not be null, as Agder is not in the pilot');
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
+        System.assertNotEquals(null, result, 'Returned value should not be null, as Agder is in the pilot');
     }
 
     @isTest
@@ -328,23 +220,9 @@ private without sharing class KontaktSkjemaHandlerTest {
         String result = KontaktSkjemaHandler.doPost();
         Test.stopTest();
 
-        List<CustomOpportunity__c> optys = [
-            SELECT
-                Id,
-                InquiryCategory__c,
-                RecordTypeId,
-                INT_RegionNumber__c,
-                INT_MunicipalityNumber__c,
-                TAG_OrganizationNameFromForm__c,
-                Contact__r.FirstName,
-                Contact__r.LastName,
-                Contact__r.Email,
-                Contact__r.MobilePhone,
-                Account__r.INT_OrganizationNumber__c
-            FROM CustomOpportunity__c
-        ];
-        System.assertEquals(1, optys.size(), 'Size should be one after insert');
+        List<CustomOpportunity__c> optys = [SELECT Id FROM CustomOpportunity__c];
 
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
         System.assertNotEquals(null, result, 'Returned value should NOT be null, as Agder is not in the pilot');
     }
 
@@ -359,23 +237,9 @@ private without sharing class KontaktSkjemaHandlerTest {
         String result = KontaktSkjemaHandler.doPost();
         Test.stopTest();
 
-        List<CustomOpportunity__c> optys = [
-            SELECT
-                Id,
-                InquiryCategory__c,
-                RecordTypeId,
-                INT_RegionNumber__c,
-                INT_MunicipalityNumber__c,
-                TAG_OrganizationNameFromForm__c,
-                Contact__r.FirstName,
-                Contact__r.LastName,
-                Contact__r.Email,
-                Contact__r.MobilePhone,
-                Account__r.INT_OrganizationNumber__c
-            FROM CustomOpportunity__c
-        ];
-        System.assertEquals(1, optys.size(), 'Size should be one after insert');
+        List<CustomOpportunity__c> optys = [SELECT Id FROM CustomOpportunity__c];
 
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
         System.assertNotEquals(null, result, 'Returned value should NOT be null, as Agder is not in the pilot');
     }
 
@@ -390,23 +254,9 @@ private without sharing class KontaktSkjemaHandlerTest {
         String result = KontaktSkjemaHandler.doPost();
         Test.stopTest();
 
-        List<CustomOpportunity__c> optys = [
-            SELECT
-                Id,
-                InquiryCategory__c,
-                RecordTypeId,
-                INT_RegionNumber__c,
-                INT_MunicipalityNumber__c,
-                TAG_OrganizationNameFromForm__c,
-                Contact__r.FirstName,
-                Contact__r.LastName,
-                Contact__r.Email,
-                Contact__r.MobilePhone,
-                Account__r.INT_OrganizationNumber__c
-            FROM CustomOpportunity__c
-        ];
-        System.assertEquals(1, optys.size(), 'Size should be one after insert');
+        List<CustomOpportunity__c> optys = [SELECT Id FROM CustomOpportunity__c];
 
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
         System.assertNotEquals(null, result, 'Returned value should NOT be null, as Nordland is in the pilot');
     }
 
@@ -421,23 +271,9 @@ private without sharing class KontaktSkjemaHandlerTest {
         String result = KontaktSkjemaHandler.doPost();
         Test.stopTest();
 
-        List<CustomOpportunity__c> optys = [
-            SELECT
-                Id,
-                InquiryCategory__c,
-                RecordTypeId,
-                INT_RegionNumber__c,
-                INT_MunicipalityNumber__c,
-                TAG_OrganizationNameFromForm__c,
-                Contact__r.FirstName,
-                Contact__r.LastName,
-                Contact__r.Email,
-                Contact__r.MobilePhone,
-                Account__r.INT_OrganizationNumber__c
-            FROM CustomOpportunity__c
-        ];
-        System.assertEquals(1, optys.size(), 'Size should be one after insert');
+        List<CustomOpportunity__c> optys = [SELECT Id FROM CustomOpportunity__c];
 
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
         System.assertNotEquals(null, result, 'Returned value should NOT be null, as Møre og Romsdal is in the pilot');
     }
 
@@ -467,8 +303,8 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(1, optys.size(), 'Size should be one after insert');
 
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
         System.assertEquals('Arbeidstrening', optys[0].InquiryCategory__c, '"Type" should be "Arbeidstrening"');
         System.assertEquals('TestNavn', optys[0].Contact__r.FirstName, '"Contact__r.FirstName" should be "TestNavn"');
         System.assertEquals(
@@ -522,8 +358,8 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(1, optys.size(), 'Size should be one after insert');
 
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
         System.assertEquals(
             'Forebygge sykefravær',
             optys[0].InquiryCategory__c,
@@ -581,8 +417,8 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(1, optys.size(), 'Size should be one after insert');
 
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
         System.assertEquals(
             'TestNavn Test',
             optys[0].Contact__r.FirstName,
@@ -607,22 +443,11 @@ private without sharing class KontaktSkjemaHandlerTest {
         Test.stopTest();
 
         List<CustomOpportunity__c> optys = [
-            SELECT
-                Id,
-                InquiryCategory__c,
-                RecordTypeId,
-                INT_RegionNumber__c,
-                INT_MunicipalityNumber__c,
-                TAG_OrganizationNameFromForm__c,
-                Contact__r.FirstName,
-                Contact__r.LastName,
-                Contact__r.Email,
-                Contact__r.MobilePhone,
-                Account__r.INT_OrganizationNumber__c
+            SELECT Contact__r.FirstName, Contact__r.LastName, Contact__r.Email
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(1, optys.size(), 'Size should be one after insert');
 
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
         System.assertEquals('TestNavn', optys[0].Contact__r.FirstName, '"Contact__r.FirstName" should be "TestNavn"');
         System.assertEquals(
             'TestEtternavn',
@@ -644,23 +469,11 @@ private without sharing class KontaktSkjemaHandlerTest {
         Test.stopTest();
 
         List<CustomOpportunity__c> optys = [
-            SELECT
-                Id,
-                InquiryCategory__c,
-                RecordTypeId,
-                INT_RegionNumber__c,
-                INT_MunicipalityNumber__c,
-                TAG_OrganizationNameFromForm__c,
-                Contact__r.FirstName,
-                Contact__r.LastName,
-                Contact__r.Email,
-                Contact__r.InvalidEmail__c,
-                Contact__r.MobilePhone,
-                Account__r.INT_OrganizationNumber__c
+            SELECT Contact__r.Email, Contact__r.InvalidEmail__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(1, optys.size(), 'Size should be one after insert');
 
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
         System.assertEquals(null, optys[0].Contact__r.Email, '"Contact__r.Email" should be "test@nav.no"');
         System.assertEquals(
             'test@@nav.no',
@@ -695,8 +508,8 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(1, optys.size(), 'Size should be one after insert');
 
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
         System.assertEquals('Rekruttering', optys[0].InquiryCategory__c, '"Type" should be "Rekruttering"');
         System.assertEquals('TestNavn', optys[0].Contact__r.FirstName, '"Contact__r.FirstName" should be "TestNavn"');
         System.assertEquals(
@@ -750,8 +563,8 @@ private without sharing class KontaktSkjemaHandlerTest {
                 Account__r.INT_OrganizationNumber__c
             FROM CustomOpportunity__c
         ];
-        System.assertEquals(1, optys.size(), 'Size should be one after insert');
 
+        System.assertEquals(1, optys.size(), 'Size should be one after insert');
         System.assertEquals(
             'Rekruttering med tilrettelegging',
             optys[0].InquiryCategory__c,
@@ -841,7 +654,7 @@ private without sharing class KontaktSkjemaHandlerTest {
     }
 
     @isTest
-    private static void email_notSendNoEmail() {
+    private static void email_emptyEmailAddress() {
         createTestAccounts();
         System.runAs(getTestUser()) {
             System.assertEquals(0, [SELECT Id FROM EmailMessage].size(), 'Should be no Emails before insert');
