@@ -886,31 +886,26 @@ private without sharing class KontaktSkjemaHandlerTest {
     @isTest
     private static void email_sendSykefravaer() {
         createTestAccounts();
+        createPostRequest(
+            '{ "type":"FOREBYGGE_SYKEFRAVÆR","municipalityCode":"3033","organisationName":"Finstadtunet","organisationNumber":"960507878","firstName":"TestNavn","lastName":"TestEtternavn","email":"test@nav.no","phoneNo":"90080900","RegionCode":"0200" }'
+        );
         System.runAs(getTestUser()) {
-            List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
-            System.assertEquals(0, CustomOpportunities.size(), 'Size should be zero before');
-
             List<EmailQueue__c> emailsQueueBefore = [SELECT Id FROM EmailQueue__c];
             System.assertEquals(0, emailsQueueBefore.size(), 'Should be no queue before sendEmail');
 
-            createPostRequest(
-                '{ "type":"FOREBYGGE_SYKEFRAVÆR","municipalityCode":"3033","organisationName":"Finstadtunet","organisationNumber":"960507878","firstName":"TestNavn","lastName":"TestEtternavn","email":"test@nav.no","phoneNo":"90080900","RegionCode":"0200" }'
-            );
 
             Test.startTest();
             KontaktSkjemaHandler.doPost();
             Test.stopTest();
 
-            CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
+            List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
             System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
 
-            List<EmailQueue__c> emailsQueueAfter = [SELECT Id FROM EmailQueue__c];
+            List<EmailQueue__c> emailsQueueAfter = [SELECT Id, TemplateId__c, TemplateName__c FROM EmailQueue__c];
             System.assertEquals(1, emailsQueueAfter.size(), 'Should be one queue after insert');
-
-            EmailQueue__c eq = [SELECT Id, TemplateId__c, TemplateName__c FROM EmailQueue__c LIMIT 1];
             System.assertEquals(
                 'kontaktskjemaSykefravaerReceipt',
-                eq.TemplateName__c,
+                emailsQueueAfter[0].TemplateName__c,
                 'It should be sykafravær template for Forebygge Sykefravær type'
             );
         }
@@ -919,31 +914,24 @@ private without sharing class KontaktSkjemaHandlerTest {
     @isTest
     private static void email_sendRekruttering() {
         createTestAccounts();
+        createPostRequest(
+            '{ "type":"REKRUTTERING","municipalityCode":"3033","organisationName":"Finstadtunet","organisationNumber":"960507878","firstName":"TestNavn","lastName":"TestEtternavn","email":"test@nav.no","phoneNo":"90080900","RegionCode":"0200" }'
+        );
         System.runAs(getTestUser()) {
-            List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
-            System.assertEquals(0, CustomOpportunities.size(), 'Size should be zero before');
-
-            List<EmailQueue__c> emailsQueueBefore = [SELECT Id FROM EmailQueue__c];
-            System.assertEquals(0, emailsQueueBefore.size(), 'Should be no queue before sendEmail');
-
-            createPostRequest(
-                '{ "type":"REKRUTTERING","municipalityCode":"3033","organisationName":"Finstadtunet","organisationNumber":"960507878","firstName":"TestNavn","lastName":"TestEtternavn","email":"test@nav.no","phoneNo":"90080900","RegionCode":"0200" }'
-            );
+            System.assertEquals(0, [SELECT Id FROM EmailQueue__c].size(), 'Should be no queue before sendEmail');
 
             Test.startTest();
             KontaktSkjemaHandler.doPost();
             Test.stopTest();
 
-            CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
+            List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
             System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
 
-            List<EmailQueue__c> emailsQueueAfter = [SELECT Id FROM EmailQueue__c];
+            List<EmailQueue__c> emailsQueueAfter = [SELECT Id, TemplateId__c, TemplateName__c FROM EmailQueue__c];
             System.assertEquals(1, emailsQueueAfter.size(), 'Should be one queue after insert');
-
-            EmailQueue__c eq = [SELECT Id, TemplateId__c, TemplateName__c FROM EmailQueue__c LIMIT 1];
             System.assertEquals(
                 'kontaktskjemaRekrutteringReceipt',
-                eq.TemplateName__c,
+                emailsQueueAfter[0].TemplateName__c,
                 'It should be rekruttering template for Rekruttering type'
             );
         }
@@ -953,11 +941,7 @@ private without sharing class KontaktSkjemaHandlerTest {
     private static void email_notSendNoEmail() {
         createTestAccounts();
         System.runAs(getTestUser()) {
-            List<CustomOpportunity__c> CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
-            System.assertEquals(0, CustomOpportunities.size(), 'Size should be zero before');
-
-            List<EmailMessage> emailsBefore = [SELECT Id FROM EmailMessage];
-            System.assertEquals(0, emailsBefore.size(), 'Should be no Emails before insert');
+            System.assertEquals(0, [SELECT Id FROM EmailMessage].size(), 'Should be no Emails before insert');
 
             createPostRequest(
                 '{ "type":"REKRUTTERING","municipalityCode":"3033","organisationName":"Finstadtunet","organisationNumber":"960507878","firstName":"TestNavn","lastName":"TestEtternavn","email":"","phoneNo":"90080900","RegionCode":"0200" }'
@@ -967,11 +951,8 @@ private without sharing class KontaktSkjemaHandlerTest {
             KontaktSkjemaHandler.doPost();
             Test.stopTest();
 
-            CustomOpportunities = [SELECT Id FROM CustomOpportunity__c];
-            System.assertEquals(1, CustomOpportunities.size(), 'Size should be one after insert');
-
-            List<EmailQueue__c> emailsQueue = [SELECT Id FROM EmailQueue__c];
-            System.assertEquals(0, emailsQueue.size(), 'Should be no queue because missing Email Address');
+            System.assertEquals(1, [SELECT Id FROM CustomOpportunity__c].size(), 'Size should be one after insert');
+            System.assertEquals(0, [SELECT Id FROM EmailQueue__c].size(), 'Should be no queue because missing Email Address');
         }
     }
 
