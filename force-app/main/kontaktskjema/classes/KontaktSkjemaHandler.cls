@@ -5,18 +5,9 @@ global with sharing class KontaktSkjemaHandler {
         KontaktSkjemaModel rw = KontaktSkjemaModel.deserializeData(RestContext.request);
 
         Id contactId = KontaktSkjemaHelper.fetchOrCreateContact(rw);
-        Id accountId = null;
-
-        // If no organization number is set, update contact with dummy account
-        if (String.isBlank(rw.organisationNumber)) {
-            accountId = KontaktSkjemaHelper.getDummyAccount(); // TODO implement inside fetchOrCreateContact
-            KontaktSkjemaHelper.updateContactWithNewAccount(contactId, accountId);
-        } else {
-            accountId = KontaktSkjemaHelper.getAccount(rw.organisationNumber);
-        }
+        Id accountId = KontaktSkjemaHelper.getAccount(rw.organisationNumber);
 
         CustomOpportunity__c co = KontaktSkjemaHelper.createOpportunity(accountId, contactId, rw);
-
         KontaktSkjemaHelper.sendEmailReceipt(rw, co);
 
         return [SELECT Name FROM CustomOpportunity__c WHERE Id = :co.Id LIMIT 1].Name;

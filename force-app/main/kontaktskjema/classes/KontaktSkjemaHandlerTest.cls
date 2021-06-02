@@ -676,6 +676,29 @@ private without sharing class KontaktSkjemaHandlerTest {
         }
     }
 
+    @isTest
+    private static void email_invalidEmailAddress() {
+        createTestAccounts();
+        System.runAs(getTestUser()) {
+            System.assertEquals(0, [SELECT Id FROM EmailMessage].size(), 'Should be no Emails before insert');
+
+            createPostRequest(
+                '{ "type":"REKRUTTERING","municipalityCode":"3033","organisationName":"Finstadtunet","organisationNumber":"960507878","firstName":"TestNavn","lastName":"TestEtternavn","email":"test@@test.com","phoneNo":"90080900","RegionCode":"0200" }'
+            );
+
+            Test.startTest();
+            KontaktSkjemaHandler.doPost();
+            Test.stopTest();
+
+            System.assertEquals(1, [SELECT Id FROM CustomOpportunity__c].size(), 'Size should be one after insert');
+            System.assertEquals(
+                0,
+                [SELECT Id FROM EmailQueue__c].size(),
+                'Should be no queue because missing Email Address'
+            );
+        }
+    }
+
     // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
     // ------------------------------------------------------------------------------------------------------------- OTHER ------------------------------------------------------------------------------------------------------------------------ //
     // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //

@@ -5,28 +5,15 @@ public with sharing class KontaktSkjemaHelper {
 
     public static Id fetchOrCreateContact(KontaktSkjemaModel rw) {
         SharedFunctions_ContactModel wrapper = new SharedFunctions_ContactModel();
+        rw.email = rw.email == null ? '' : rw.email; // if null, make it empty to avoid bug in SharedFunctions.fetchOrCreateContact
 
-        if (String.isEmpty(rw.email)) {
-            rw.email = '';
-        }
-
-        if (!String.isEmpty(rw.name)) {
-            List<String> fullName = rw.name.split(' ');
-            String lastNameSplitted = fullName[fullName.size() - 1];
-            String firstNameSplitted = rw.name.removeEnd(' ' + lastNameSplitted);
-            wrapper.firstName = firstNameSplitted;
-            wrapper.lastName = lastNameSplitted;
-        } else {
-            wrapper.firstName = rw.firstName;
-            wrapper.lastName = rw.lastName;
-        }
-
+        setName(wrapper, rw);
         wrapper.phone = rw.phoneNo;
         wrapper.email = rw.email;
         wrapper.source = 'Kontaktskjema';
         wrapper.companyNumber = rw.organisationNumber;
-        List<SharedFunctions_ContactModel> wrapperList = new List<SharedFunctions_ContactModel>{ wrapper };
 
+        List<SharedFunctions_ContactModel> wrapperList = new List<SharedFunctions_ContactModel>{ wrapper };
         List<String> orgNo = new List<String>{ rw.organisationNumber };
 
         Map<String, Account> accountMap = SharedFunctions.fetchAccounts(orgNo);
@@ -38,18 +25,30 @@ public with sharing class KontaktSkjemaHelper {
         return contactId;
     }
 
+    public static Map<String, Account> getAccountMap(String orgNo) {
+        if (String.isEmpty(orgNo)) {
+        }
+        return null;
+    }
+
+    public static void setName(SharedFunctions_ContactModel wrapper, KontaktSkjemaModel rw) {
+        if (!String.isEmpty(rw.name)) {
+            List<String> fullName = rw.name.split(' ');
+            String lastNameSplitted = fullName[fullName.size() - 1];
+            String firstNameSplitted = rw.name.removeEnd(' ' + lastNameSplitted);
+            wrapper.firstName = firstNameSplitted;
+            wrapper.lastName = lastNameSplitted;
+        } else {
+            wrapper.firstName = rw.firstName;
+            wrapper.lastName = rw.lastName;
+        }
+    }
+
     public static Id getDummyAccount() {
         List<Account> dummyAccount = [SELECT ID FROM Account WHERE Name = 'Kontakter uten konto'];
         Id accountId = dummyAccount.size() > 0 ? dummyAccount[0].Id : null;
 
         return accountId;
-    }
-
-    public static void updateContactWithNewAccount(Id contactId, Id accountId) {
-        List<Contact> currentContact = [SELECT ID, accountId FROM Contact WHERE Id = :contactId];
-        currentContact[0].accountId = accountId;
-
-        update currentContact;
     }
 
     public static Id getAccount(String organisationNumber) {
@@ -82,7 +81,7 @@ public with sharing class KontaktSkjemaHelper {
     }
 
     public static void sendEmailReceipt(KontaktSkjemaModel rw, CustomOpportunity__c co) {
-        if (rw.email != '') {
+        if (!String.isEmpty(rw.email) && SharedFunctions_FetchOrCreateContact.checkIfValidEmail(rw.email)) {
             String templateName = co.InquiryCategory__c == 'Forebygge sykefravær'
                 ? 'kontaktskjemaSykefravaerReceipt'
                 : 'kontaktskjemaRekrutteringReceipt';

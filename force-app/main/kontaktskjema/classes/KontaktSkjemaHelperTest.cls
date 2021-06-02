@@ -7,7 +7,7 @@ private without sharing class KontaktSkjemaHelperTest {
     }
 
     @isTest
-    private static void testGetContact() {
+    private static void testFetchOrCreateContact() {
         KontaktSkjemaModel rw = new KontaktSkjemaModel();
         rw.name = 'test testerson';
         rw.phoneNo = '90080900';
@@ -24,12 +24,12 @@ private without sharing class KontaktSkjemaHelperTest {
         List<Contact> con = [SELECT Id, FirstName, LastName, AccountId FROM Contact];
         System.assertEquals(1, con.size(), 'one contact after');
         System.assertEquals('test', con[0].FirstName, 'correctly set first name');
-        System.assertEquals('testerson', con[0].LastName, 'correctly set first name');
-        System.assertEquals(accId, con[0].AccountId, 'correctly set first name');
+        System.assertEquals('testerson', con[0].LastName, 'correctly set last name');
+        System.assertEquals(accId, con[0].AccountId, 'correctly set account');
     }
 
     @isTest
-    private static void testGetContact_addDummyAccount() {
+    private static void testFetchOrCreateContact_addDummyAccount() {
         KontaktSkjemaModel rw = new KontaktSkjemaModel();
         rw.name = 'test testerson';
         rw.phoneNo = '90080900';
@@ -42,14 +42,57 @@ private without sharing class KontaktSkjemaHelperTest {
         Id contactId = KontaktSkjemaHelper.fetchOrCreateContact(rw);
         Test.StopTest();
 
-        Id dummyAccountId = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = '960507872' LIMIT 1].Id;
         List<Contact> con = [SELECT Id, AccountId FROM Contact];
         System.assertEquals(1, con.size(), 'one contact after');
+
+        Id dummyAccountId = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = '960507872' LIMIT 1].Id;
         System.assertEquals(dummyAccountId, con[0].AccountId, 'should have automatically set dummy account');
     }
 
     @isTest
-    private static void testGetContact_separateNameFieldsUsed() {
+    private static void testFetchOrCreateContact_nullOrgNo() {
+        KontaktSkjemaModel rw = new KontaktSkjemaModel();
+        rw.name = 'test testerson';
+        rw.phoneNo = '90080900';
+        rw.email = 'test.testerson@nav.no';
+        rw.organisationNumber = null;
+
+        System.assertEquals(0, [SELECT Id FROM Contact].size(), 'zero contacts before');
+
+        Test.StartTest();
+        Id contactId = KontaktSkjemaHelper.fetchOrCreateContact(rw);
+        Test.StopTest();
+
+        List<Contact> con = [SELECT Id, AccountId FROM Contact];
+        System.assertEquals(1, con.size(), 'one contact after');
+
+        Id dummyAccountId = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = '960507872' LIMIT 1].Id;
+        System.assertEquals(dummyAccountId, con[0].AccountId, 'should have automatically set dummy account');
+    }
+
+    @isTest
+    private static void testFetchOrCreateContact_emptyOrgNo() {
+        KontaktSkjemaModel rw = new KontaktSkjemaModel();
+        rw.name = 'test testerson';
+        rw.phoneNo = '90080900';
+        rw.email = 'test.testerson@nav.no';
+        rw.organisationNumber = '';
+
+        System.assertEquals(0, [SELECT Id FROM Contact].size(), 'zero contacts before');
+
+        Test.StartTest();
+        Id contactId = KontaktSkjemaHelper.fetchOrCreateContact(rw);
+        Test.StopTest();
+
+        List<Contact> con = [SELECT Id, AccountId FROM Contact];
+        System.assertEquals(1, con.size(), 'one contact after');
+
+        Id dummyAccountId = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = '960507872' LIMIT 1].Id;
+        System.assertEquals(dummyAccountId, con[0].AccountId, 'should have automatically set dummy account');
+    }
+
+    @isTest
+    private static void testFetchOrCreateContact_separateNameFieldsUsed() {
         KontaktSkjemaModel rw = new KontaktSkjemaModel();
         rw.firstName = 'test';
         rw.lastName = 'testerson';
@@ -70,7 +113,7 @@ private without sharing class KontaktSkjemaHelperTest {
     }
 
     @isTest
-    private static void testGetContact_nullEmail() {
+    private static void testFetchOrCreateContact_nullEmail() {
         KontaktSkjemaModel rw = new KontaktSkjemaModel();
         rw.name = 'test testerson';
         rw.phoneNo = '90080900';
@@ -87,7 +130,7 @@ private without sharing class KontaktSkjemaHelperTest {
     }
 
     @isTest
-    private static void testGetContact_existingContact() {
+    private static void testFetchOrCreateContact_existingContact() {
         Id accId = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = '960507878' LIMIT 1].Id;
         Contact con = new Contact(
             TAG_Informed__c = true,
@@ -113,6 +156,43 @@ private without sharing class KontaktSkjemaHelperTest {
         System.assertEquals(contacts[0].Id, contactId, 'same contact');
         System.assertEquals(con.Id, contactId, 'same contact');
         System.assertEquals(accId, contacts[0].AccountId, 'uses the real account, and not the dummy account');
+    }
+
+    @isTest
+    private static void testSetName_fullName() {
+        KontaktSkjemaModel rw = new KontaktSkjemaModel();
+        rw.name = 'test testerson';
+        rw.phoneNo = '90080900';
+        rw.email = 'test.testerson@nav.no';
+        rw.organisationNumber = '960507878';
+
+        SharedFunctions_ContactModel wrapper = new SharedFunctions_ContactModel();
+
+        Test.StartTest();
+        KontaktSkjemaHelper.setName(wrapper, rw);
+        Test.StopTest();
+
+        System.assertEquals('test', wrapper.firstName, 'firstName should have been correctly set to "test');
+        System.assertEquals('testerson', wrapper.lastName, 'lastName should have been correctly set to "testerson');
+    }
+
+    @isTest
+    private static void testSetName_separateName() {
+        KontaktSkjemaModel rw = new KontaktSkjemaModel();
+        rw.firstName = 'test';
+        rw.lastName = 'testerson';
+        rw.phoneNo = '90080900';
+        rw.email = 'test.testerson@nav.no';
+        rw.organisationNumber = '960507878';
+
+        SharedFunctions_ContactModel wrapper = new SharedFunctions_ContactModel();
+
+        Test.StartTest();
+        KontaktSkjemaHelper.setName(wrapper, rw);
+        Test.StopTest();
+
+        System.assertEquals('test', wrapper.firstName, 'firstName should have been correctly set to "test');
+        System.assertEquals('testerson', wrapper.lastName, 'lastName should have been correctly set to "testerson');
     }
 
     @isTest
@@ -144,6 +224,24 @@ private without sharing class KontaktSkjemaHelperTest {
         Test.StopTest();
 
         System.assertEquals(null, accountId, 'account does not exist, and should not be fetched');
+    }
+
+    @isTest
+    private static void testGetAccount_empty() {
+        Test.StartTest();
+        Id accountId = KontaktSkjemaHelper.getAccount('');
+        Test.StopTest();
+
+        System.assertEquals(null, accountId, 'cant find empty org number, and should not be fetched');
+    }
+
+    @isTest
+    private static void testGetAccount_null() {
+        Test.StartTest();
+        Id accountId = KontaktSkjemaHelper.getAccount(null);
+        Test.StopTest();
+
+        System.assertEquals(null, accountId, 'cant find empty org number, and should not be fetched');
     }
 
     @isTest
