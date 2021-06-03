@@ -3,7 +3,7 @@ private without sharing class KontaktSkjemaHelperTest {
     @TestSetup
     static void makeData() {
         insert new Account(name = 'test', INT_OrganizationNumber__c = '960507878');
-        insert new Account(name = 'Kontakter uten konto', INT_OrganizationNumber__c = '960507872');
+        insert new Account(name = 'Kontakter uten konto', INT_OrganizationNumber__c = 'AG_DEFAULT');
     }
 
     @isTest
@@ -45,7 +45,7 @@ private without sharing class KontaktSkjemaHelperTest {
         List<Contact> con = [SELECT Id, AccountId FROM Contact];
         System.assertEquals(1, con.size(), 'one contact after');
 
-        Id dummyAccountId = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = '960507872' LIMIT 1].Id;
+        Id dummyAccountId = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = 'AG_DEFAULT' LIMIT 1].Id;
         System.assertEquals(dummyAccountId, con[0].AccountId, 'should have automatically set dummy account');
     }
 
@@ -66,7 +66,7 @@ private without sharing class KontaktSkjemaHelperTest {
         List<Contact> con = [SELECT Id, AccountId FROM Contact];
         System.assertEquals(1, con.size(), 'one contact after');
 
-        Id dummyAccountId = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = '960507872' LIMIT 1].Id;
+        Id dummyAccountId = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = 'AG_DEFAULT' LIMIT 1].Id;
         System.assertEquals(dummyAccountId, con[0].AccountId, 'should have automatically set dummy account');
     }
 
@@ -87,7 +87,7 @@ private without sharing class KontaktSkjemaHelperTest {
         List<Contact> con = [SELECT Id, AccountId FROM Contact];
         System.assertEquals(1, con.size(), 'one contact after');
 
-        Id dummyAccountId = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = '960507872' LIMIT 1].Id;
+        Id dummyAccountId = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = 'AG_DEFAULT' LIMIT 1].Id;
         System.assertEquals(dummyAccountId, con[0].AccountId, 'should have automatically set dummy account');
     }
 
@@ -197,7 +197,7 @@ private without sharing class KontaktSkjemaHelperTest {
 
     @isTest
     private static void testGetDummyAccount() {
-        Id dummyAccount = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = '960507872' LIMIT 1].Id;
+        Id dummyAccount = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = 'AG_DEFAULT' LIMIT 1].Id;
 
         Test.StartTest();
         Id accountId = KontaktSkjemaHelper.getDummyAccount();

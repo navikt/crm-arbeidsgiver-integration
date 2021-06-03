@@ -46,7 +46,7 @@ private without sharing class KontaktSkjemaHandlerTest {
         KontaktSkjemaHandler.doPost();
         Test.stopTest();
 
-        Id dummyAccount = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = '960507872' LIMIT 1].Id;
+        Id dummyAccount = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = 'AG_DEFAULT' LIMIT 1].Id;
         Id accId = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = '960507878' LIMIT 1].Id;
 
         List<CustomOpportunity__c> optys = [SELECT Contact__r.AccountId FROM CustomOpportunity__c LIMIT 1];
@@ -131,7 +131,7 @@ private without sharing class KontaktSkjemaHandlerTest {
         KontaktSkjemaHandler.doPost();
         Test.stopTest();
 
-        Id dummyAccount = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = '960507872' LIMIT 1].Id;
+        Id dummyAccount = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = 'AG_DEFAULT' LIMIT 1].Id;
 
         List<CustomOpportunity__c> optys = [SELECT Account__c, Contact__r.AccountId FROM CustomOpportunity__c];
         System.assertEquals(1, optys.size(), 'Size should be one after insert');
@@ -151,10 +151,10 @@ private without sharing class KontaktSkjemaHandlerTest {
         insert con;
 
         createPostRequest(
-            '{ "type":"REKRUTTERING","municipalityCode":"3033","organisationName":"Finstadtunet","organisationNumber":"","firstName":"TestNavn","lastName":"TestEtternavn","email":"","phoneNo":"90080900","RegionCode":"0200" }'
+            '{ "type":"REKRUTTERING","municipalityCode":"3033","organisationName":"Finstadtunet","organisationNumber":"","firstName":"TestNavn","lastName":"TestEtternavn","email":"test.testerson@nav.no","phoneNo":"90080900","RegionCode":"0200" }'
         );
 
-        System.assertEquals(0, [SELECT Id FROM Contact].size(), 'zero contacts before');
+        System.assertEquals(1, [SELECT Id FROM Contact].size(), 'zero contacts before');
 
         Test.startTest();
         KontaktSkjemaHandler.doPost();
@@ -740,6 +740,6 @@ private without sharing class KontaktSkjemaHandlerTest {
 
     public static void createTestAccounts() {
         insert new Account(name = 'test', INT_OrganizationNumber__c = '960507878');
-        insert new Account(name = 'Kontakter uten konto', INT_OrganizationNumber__c = '960507872');
+        insert new Account(name = 'Kontakter uten konto', INT_OrganizationNumber__c = 'AG_DEFAULT');
     }
 }
