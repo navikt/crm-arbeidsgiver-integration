@@ -16,6 +16,6 @@
 	</values>
 	<values>
 		<field>Topic__c</field>
-		<value xsi:type="xsd:string">aapen-permittering-arbeidsgiver</value>
+		<value xsi:type="xsd:string">permittering-og-nedbemanning.aapen-permittering-arbeidsgiver</value>
 	</values>
 </CustomMetadata>
