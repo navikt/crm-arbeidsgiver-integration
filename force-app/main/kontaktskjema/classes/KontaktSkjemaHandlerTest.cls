@@ -193,6 +193,39 @@ private without sharing class KontaktSkjemaHandlerTest {
     // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
 
     @isTest
+    private static void doPost_testPDLuser() {
+        createTestAccounts();
+        createPostRequest(
+            '{ "type":"FOREBYGGE_SYKEFRAVÆR","municipalityCode":"3033","organisationName":"Finstadtunet","organisationNumber":"960507878","firstName":"TestNavn","lastName":"TestEtternavn","email":"test@nav.no","phoneNo":"90080900","RegionCode":"0200" }'
+        );
+
+        Id personAccountRecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName()
+            .get('PersonAccount')
+            .getRecordTypeId();
+        Account newPersonAccount = new Account();
+
+        newPersonAccount.FirstName = 'Fred';
+        newPersonAccount.LastName = 'Smith';
+        newPersonAccount.PersonEmail = 'test@nav.no';
+        newPersonAccount.RecordTypeId = personAccountRecordTypeId;
+        insert newPersonAccount;
+
+        System.assertEquals(1, [SELECT Id FROM Contact].size(), 'one PDL contact before');
+
+        Test.startTest();
+        System.runAs(getTestUser()) {
+            KontaktSkjemaHandler.doPost();
+        }
+        Test.stopTest();
+
+        System.assertEquals(2, [SELECT Id FROM Contact].size(), 'one PDL contact + one regular contact afterwards');
+    }
+
+    // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
+    // ------------------------------------------------------------------------------------------------------------- DOPOST ----------------------------------------------------------------------------------------------------------------------- //
+    // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
+
+    @isTest
     private static void doPost_municipalityAgder() {
         createTestAccounts();
         createPostRequest(
