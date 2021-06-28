@@ -4,6 +4,10 @@
         <apexClass>KontaktSkjemaHandler</apexClass>
         <enabled>true</enabled>
     </classAccesses>
+    <classAccesses>
+        <apexClass>KontaktSkjemaHelper</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
     <description>Used for the integration user for the contact form</description>
     <fieldPermissions>
         <editable>false</editable>
