@@ -22,7 +22,7 @@ public without sharing class KafkaSlettedeVirksomheterHandler implements IKafkaM
             WHERE INT_OrganizationNumber__c IN :orgNrs AND TAG_IsDeleted__c = FALSE
         ];
         for (Account act : acts) {
-            act.TAG_IsDeleted__c = true;
+            act.IsDeletedEmployer__c = true;
             act.TAG_DeletedDate__c = Date.today();
         }
 
