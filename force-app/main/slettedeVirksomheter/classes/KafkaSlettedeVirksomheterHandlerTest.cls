@@ -32,8 +32,8 @@ private without sharing class KafkaSlettedeVirksomheterHandlerTest {
         AsyncRequestSchedulable.enqueueAsyncJobs();
         Test.stopTest();
 
-        accts = [SELECT Id, TAG_DeletedDate__c FROM Account WHERE IsDeletedEmployer__c = TRUE];
+        accts = [SELECT Id, EmployerDeletedDate__c FROM Account WHERE IsDeletedEmployer__c = TRUE];
         System.assertEquals(2, accts.size(), 'two accounts deleted');
-        System.assertEquals(Date.today(), accts[0].TAG_DeletedDate__c, 'deleted date is today');
+        System.assertEquals(Date.today(), accts[0].EmployerDeletedDate__c, 'deleted date is today');
     }
 }
