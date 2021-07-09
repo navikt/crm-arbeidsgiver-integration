@@ -103,13 +103,7 @@ public with sharing class KontaktSkjemaHelper {
     public static String getType(String val) {
         switch on val {
             when 'REKRUTTERING' {
-                return 'Rekruttering';
-            }
-            when 'REKRUTTERING_MED_TILRETTELEGGING' {
-                return 'Rekruttering med tilrettelegging';
-            }
-            when 'ARBEIDSTRENING' {
-                return 'Arbeidstrening';
+                return 'Skal ansette';
             }
             when 'FOREBYGGE_SYKEFRAVÆR' {
                 return 'Forebygge sykefravær';
