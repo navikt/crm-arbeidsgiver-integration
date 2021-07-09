@@ -282,9 +282,9 @@ private without sharing class KontaktSkjemaHelperTest {
         System.assertEquals('test', optys[0].TAG_OrganizationNameFromForm__c, 'should be test');
         System.assertEquals('3033', optys[0].INT_MunicipalityNumber__c, 'INT_MunicipalityNumber__c should be 3033');
         System.assertEquals(
-            'Rekruttering med tilrettelegging',
+            'Skal ansette',
             optys[0].InquiryCategory__c,
-            'InquiryCategory__c should be Rekruttering med tilrettelegging'
+            'InquiryCategory__c should be Skal ansette'
         );
         System.assertEquals(inclusionRecordType, optys[0].RecordTypeId, 'RecordTypeId should be set');
         System.assertEquals(
@@ -356,7 +356,7 @@ private without sharing class KontaktSkjemaHelperTest {
     @isTest
     private static void testIsIA_isNotIsa() {
         Test.StartTest();
-        Boolean result = KontaktSkjemaHelper.isIA('ARBEIDSTRENING');
+        Boolean result = KontaktSkjemaHelper.isIA('REKRUTTERING');
         Test.StopTest();
 
         System.assertEquals(false, result, 'Should not be IA type, so correct result is false');
@@ -368,29 +368,7 @@ private without sharing class KontaktSkjemaHelperTest {
         String result = KontaktSkjemaHelper.getType('REKRUTTERING');
         Test.StopTest();
 
-        System.assertEquals('Rekruttering', result, 'should have returned "Rekruttering"');
-    }
-
-    @isTest
-    private static void testGetType_REKRUTTERING_MED_TILRETTELEGGING() {
-        Test.StartTest();
-        String result = KontaktSkjemaHelper.getType('REKRUTTERING_MED_TILRETTELEGGING');
-        Test.StopTest();
-
-        System.assertEquals(
-            'Rekruttering med tilrettelegging',
-            result,
-            'should have returned "Rekruttering med tilrettelegging"'
-        );
-    }
-
-    @isTest
-    private static void testGetType_ARBEIDSTRENING() {
-        Test.StartTest();
-        String result = KontaktSkjemaHelper.getType('ARBEIDSTRENING');
-        Test.StopTest();
-
-        System.assertEquals('Arbeidstrening', result, 'should have returned "Arbeidstrening"');
+        System.assertEquals('Skal ansette', result, 'should have returned "Skal ansette"');
     }
 
     @isTest
@@ -412,7 +390,7 @@ private without sharing class KontaktSkjemaHelperTest {
         rw.email = 'test.testerson@nav.no';
         rw.organisationNumber = '960507878';
         rw.organisationName = 'test';
-        rw.type = 'REKRUTTERING_MED_TILRETTELEGGING';
+        rw.type = 'REKRUTTERING';
         rw.municipalityCode = '3033';
         rw.regionCode = '0200';
 
