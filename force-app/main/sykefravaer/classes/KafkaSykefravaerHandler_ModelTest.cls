@@ -4,7 +4,7 @@ public class KafkaSykefravaerHandler_ModelTest {
     '{' +
     '  \"virksomhetSykefravær\": {' +
     '  \"orgnr\": \"12345678\",' +
-    '  \"navn\": \"HGN ELEKTRO AS\",' +
+    '  \"navn\": \"ELEKTRO TEST AS\",' +
     '  \"årstall\": 2020,' +
     '  \"kvartal\": 3,' +
     '  \"tapteDagsverk\": 256.2,' +
@@ -66,7 +66,8 @@ public class KafkaSykefravaerHandler_ModelTest {
         KafkaSykefravaerHandler_Model s = KafkaSykefravaerHandler_Model.parse(json, '2d727ceb-f3f1-4165-a146-2a2665d64441');
         System.assert(s != null);
         System.assertEquals('12345678', s.orgnr);
-        System.assertEquals('43210', s.naering.kode);
+        System.assertEquals('43210', s.naering[0].kode);
+        System.assertEquals(1, s.naering.size());
         System.assertEquals(3936620.6, s.sektor.tapteDagsverk);
         System.assertEquals(2986315, s.land.antallPersoner);
 

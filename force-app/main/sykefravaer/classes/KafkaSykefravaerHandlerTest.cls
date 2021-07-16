@@ -7,11 +7,13 @@ public class KafkaSykefravaerHandlerTest {
         Account a1 = new Account();
         a1.Name = 'Test Employer 1';
         a1.INT_OrganizationNumber__c = '919300760';
+        a1.INT_IndustryCode__c = '43.210';
         accounts.add(a1);
 
         Account a2 = new Account();
         a2.Name = 'Test Employer 2';
         a2.INT_OrganizationNumber__c = '12345678';
+        a2.INT_IndustryCode__c = '43.210';
         accounts.add(a2);
 
         insert accounts;
@@ -21,7 +23,7 @@ public class KafkaSykefravaerHandlerTest {
         KafkaMessage__c msg1 = new KafkaMessage__c();
         msg1.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-v1';
         msg1.CRM_Key__c = 'd60775ed-249f-49e6-bd15-ff790b56cc07';
-        msg1.CRM_Value__c = 'eyJ2aXJrc29taGV0U3lrZWZyYXbDpnIiOnsib3JnbnIiOiI5MTkzMDA3NjAiLCJuYXZuIjoiSEdOIEVMRUtUUk8gQVMiLCLDpXJzdGFsbCI6MjAyMCwia3ZhcnRhbCI6MywidGFwdGVEYWdzdmVyayI6MjU2LjIsIm11bGlnZURhZ3N2ZXJrIjoxOTg3LjcsImFudGFsbFBlcnNvbmVyIjozMywicHJvc2VudCI6MTIuOSwiZXJNYXNrZXJ0IjpmYWxzZSwia2F0ZWdvcmkiOiJWSVJLU09NSEVUIn0sIm7DpnJpbmc1U2lmZmVyU3lrZWZyYXbDpnIiOlt7ImthdGVnb3JpIjoiTsOGUklORzVTSUZGRVIiLCJrb2RlIjoiNDMyMTAiLCLDpXJzdGFsbCI6MjAyMCwia3ZhcnRhbCI6MywidGFwdGVEYWdzdmVyayI6Ijg1MzU5LjMiLCJtdWxpZ2VEYWdzdmVyayI6MjA3MzI2NC4wLCJhbnRhbGxQZXJzb25lciI6MzYzNTgsInByb3NlbnQiOjQuMSwiZXJNYXNrZXJ0IjpmYWxzZX1dLCJuw6ZyaW5nU3lrZWZyYXbDpnIiOnsia2F0ZWdvcmkiOiJOw4ZSSU5HMlNJRkZFUiIsImtvZGUiOiI0MyIsIsOlcnN0YWxsIjoyMDIwLCJrdmFydGFsIjozLCJ0YXB0ZURhZ3N2ZXJrIjoiMzQ2NjU3LjkiLCJtdWxpZ2VEYWdzdmVyayI6NzUzOTE1Mi42LCJhbnRhbGxQZXJzb25lciI6MTM1MDA3LCJwcm9zZW50Ijo0LjYsImVyTWFza2VydCI6ZmFsc2V9LCJzZWt0b3JTeWtlZnJhdsOmciI6eyJrYXRlZ29yaSI6IlNFS1RPUiIsImtvZGUiOiIzIiwiw6Vyc3RhbGwiOjIwMjAsImt2YXJ0YWwiOjMsInRhcHRlRGFnc3ZlcmsiOiIzOTM2NjIwLjYiLCJtdWxpZ2VEYWdzdmVyayI6OTUxMzI5NjAuNywiYW50YWxsUGVyc29uZXIiOjE5NDEzNzMsInByb3NlbnQiOjQuMSwiZXJNYXNrZXJ0IjpmYWxzZX0sImxhbmRTeWtlZnJhdsOmciI6eyJrYXRlZ29yaSI6IkxBTkQiLCJrb2RlIjoiTk8iLCLDpXJzdGFsbCI6MjAyMCwia3ZhcnRhbCI6MywidGFwdGVEYWdzdmVyayI6IjY0NzQ4ODUuNyIsIm11bGlnZURhZ3N2ZXJrIjoxNDM5NzExMDcuNSwiYW50YWxsUGVyc29uZXIiOjI5ODYzMTUsInByb3NlbnQiOjQuNSwiZXJNYXNrZXJ0IjpmYWxzZX19';
+        msg1.CRM_Value__c = 'eyJ2aXJrc29taGV0U3lrZWZyYXbDpnIiOnsib3JnbnIiOiI5MTkzMDA3NjAiLCJuYXZuIjoiRUxFS1RSTyBURVNUIEFTIiwiw6Vyc3RhbGwiOjIwMjAsImt2YXJ0YWwiOjMsInRhcHRlRGFnc3ZlcmsiOjI1Ni4yLCJtdWxpZ2VEYWdzdmVyayI6MTk4Ny43LCJhbnRhbGxQZXJzb25lciI6MzMsInByb3NlbnQiOjEyLjksImVyTWFza2VydCI6ZmFsc2UsImthdGVnb3JpIjoiVklSS1NPTUhFVCJ9LCJuw6ZyaW5nNVNpZmZlclN5a2VmcmF2w6ZyIjpbeyJrYXRlZ29yaSI6Ik7DhlJJTkc1U0lGRkVSIiwia29kZSI6IjQzMjEwIiwiw6Vyc3RhbGwiOjIwMjAsImt2YXJ0YWwiOjMsInRhcHRlRGFnc3ZlcmsiOiI4NTM1OS4zIiwibXVsaWdlRGFnc3ZlcmsiOjIwNzMyNjQuMCwiYW50YWxsUGVyc29uZXIiOjM2MzU4LCJwcm9zZW50Ijo0LjEsImVyTWFza2VydCI6ZmFsc2V9XSwibsOmcmluZ1N5a2VmcmF2w6ZyIjp7ImthdGVnb3JpIjoiTsOGUklORzJTSUZGRVIiLCJrb2RlIjoiNDMiLCLDpXJzdGFsbCI6MjAyMCwia3ZhcnRhbCI6MywidGFwdGVEYWdzdmVyayI6IjM0NjY1Ny45IiwibXVsaWdlRGFnc3ZlcmsiOjc1MzkxNTIuNiwiYW50YWxsUGVyc29uZXIiOjEzNTAwNywicHJvc2VudCI6NC42LCJlck1hc2tlcnQiOmZhbHNlfSwic2VrdG9yU3lrZWZyYXbDpnIiOnsia2F0ZWdvcmkiOiJTRUtUT1IiLCJrb2RlIjoiMyIsIsOlcnN0YWxsIjoyMDIwLCJrdmFydGFsIjozLCJ0YXB0ZURhZ3N2ZXJrIjoiMzkzNjYyMC42IiwibXVsaWdlRGFnc3ZlcmsiOjk1MTMyOTYwLjcsImFudGFsbFBlcnNvbmVyIjoxOTQxMzczLCJwcm9zZW50Ijo0LjEsImVyTWFza2VydCI6ZmFsc2V9LCJsYW5kU3lrZWZyYXbDpnIiOnsia2F0ZWdvcmkiOiJMQU5EIiwia29kZSI6Ik5PIiwiw6Vyc3RhbGwiOjIwMjAsImt2YXJ0YWwiOjMsInRhcHRlRGFnc3ZlcmsiOiI2NDc0ODg1LjciLCJtdWxpZ2VEYWdzdmVyayI6MTQzOTcxMTA3LjUsImFudGFsbFBlcnNvbmVyIjoyOTg2MzE1LCJwcm9zZW50Ijo0LjUsImVyTWFza2VydCI6ZmFsc2V9fQ==';
         messages.add(msg1);
 
         insert messages;
@@ -90,6 +92,7 @@ public class KafkaSykefravaerHandlerTest {
         Account a1 = new Account();
         a1.Name = 'Test Employer 1';
         a1.INT_OrganizationNumber__c = '919300760';
+        a1.INT_IndustryCode__c = '43.210';
         insert a1;
 
         // Create KafkaMessage with Base64 encoded JSON-payloads matching account Test Employer 1
@@ -97,7 +100,7 @@ public class KafkaSykefravaerHandlerTest {
         KafkaMessage__c msg1 = new KafkaMessage__c();
         msg1.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-v1';
         msg1.CRM_Key__c = 'd60775ed-249f-49e6-bd15-ff790b56cc07';
-        msg1.CRM_Value__c = 'eyJ2aXJrc29taGV0U3lrZWZyYXbDpnIiOnsib3JnbnIiOiI5MTkzMDA3NjAiLCJuYXZuIjoiSEdOIEVMRUtUUk8gQVMiLCLDpXJzdGFsbCI6MjAyMCwia3ZhcnRhbCI6MywidGFwdGVEYWdzdmVyayI6MjU2LjIsIm11bGlnZURhZ3N2ZXJrIjoxOTg3LjcsImFudGFsbFBlcnNvbmVyIjozMywicHJvc2VudCI6MTIuOSwiZXJNYXNrZXJ0IjpmYWxzZSwia2F0ZWdvcmkiOiJWSVJLU09NSEVUIn0sIm7DpnJpbmc1U2lmZmVyU3lrZWZyYXbDpnIiOlt7ImthdGVnb3JpIjoiTsOGUklORzVTSUZGRVIiLCJrb2RlIjoiNDMyMTAiLCLDpXJzdGFsbCI6MjAyMCwia3ZhcnRhbCI6MywidGFwdGVEYWdzdmVyayI6Ijg1MzU5LjMiLCJtdWxpZ2VEYWdzdmVyayI6MjA3MzI2NC4wLCJhbnRhbGxQZXJzb25lciI6MzYzNTgsInByb3NlbnQiOjQuMSwiZXJNYXNrZXJ0IjpmYWxzZX1dLCJuw6ZyaW5nU3lrZWZyYXbDpnIiOnsia2F0ZWdvcmkiOiJOw4ZSSU5HMlNJRkZFUiIsImtvZGUiOiI0MyIsIsOlcnN0YWxsIjoyMDIwLCJrdmFydGFsIjozLCJ0YXB0ZURhZ3N2ZXJrIjoiMzQ2NjU3LjkiLCJtdWxpZ2VEYWdzdmVyayI6NzUzOTE1Mi42LCJhbnRhbGxQZXJzb25lciI6MTM1MDA3LCJwcm9zZW50Ijo0LjYsImVyTWFza2VydCI6ZmFsc2V9LCJzZWt0b3JTeWtlZnJhdsOmciI6eyJrYXRlZ29yaSI6IlNFS1RPUiIsImtvZGUiOiIzIiwiw6Vyc3RhbGwiOjIwMjAsImt2YXJ0YWwiOjMsInRhcHRlRGFnc3ZlcmsiOiIzOTM2NjIwLjYiLCJtdWxpZ2VEYWdzdmVyayI6OTUxMzI5NjAuNywiYW50YWxsUGVyc29uZXIiOjE5NDEzNzMsInByb3NlbnQiOjQuMSwiZXJNYXNrZXJ0IjpmYWxzZX0sImxhbmRTeWtlZnJhdsOmciI6eyJrYXRlZ29yaSI6IkxBTkQiLCJrb2RlIjoiTk8iLCLDpXJzdGFsbCI6MjAyMCwia3ZhcnRhbCI6MywidGFwdGVEYWdzdmVyayI6IjY0NzQ4ODUuNyIsIm11bGlnZURhZ3N2ZXJrIjoxNDM5NzExMDcuNSwiYW50YWxsUGVyc29uZXIiOjI5ODYzMTUsInByb3NlbnQiOjQuNSwiZXJNYXNrZXJ0IjpmYWxzZX19';
+        msg1.CRM_Value__c = 'eyJ2aXJrc29taGV0U3lrZWZyYXbDpnIiOnsib3JnbnIiOiI5MTkzMDA3NjAiLCJuYXZuIjoiRUxFS1RSTyBURVNUIEFTIiwiw6Vyc3RhbGwiOjIwMjAsImt2YXJ0YWwiOjMsInRhcHRlRGFnc3ZlcmsiOjI1Ni4yLCJtdWxpZ2VEYWdzdmVyayI6MTk4Ny43LCJhbnRhbGxQZXJzb25lciI6MzMsInByb3NlbnQiOjEyLjksImVyTWFza2VydCI6ZmFsc2UsImthdGVnb3JpIjoiVklSS1NPTUhFVCJ9LCJuw6ZyaW5nNVNpZmZlclN5a2VmcmF2w6ZyIjpbeyJrYXRlZ29yaSI6Ik7DhlJJTkc1U0lGRkVSIiwia29kZSI6IjQzMjEwIiwiw6Vyc3RhbGwiOjIwMjAsImt2YXJ0YWwiOjMsInRhcHRlRGFnc3ZlcmsiOiI4NTM1OS4zIiwibXVsaWdlRGFnc3ZlcmsiOjIwNzMyNjQuMCwiYW50YWxsUGVyc29uZXIiOjM2MzU4LCJwcm9zZW50Ijo0LjEsImVyTWFza2VydCI6ZmFsc2V9XSwibsOmcmluZ1N5a2VmcmF2w6ZyIjp7ImthdGVnb3JpIjoiTsOGUklORzJTSUZGRVIiLCJrb2RlIjoiNDMiLCLDpXJzdGFsbCI6MjAyMCwia3ZhcnRhbCI6MywidGFwdGVEYWdzdmVyayI6IjM0NjY1Ny45IiwibXVsaWdlRGFnc3ZlcmsiOjc1MzkxNTIuNiwiYW50YWxsUGVyc29uZXIiOjEzNTAwNywicHJvc2VudCI6NC42LCJlck1hc2tlcnQiOmZhbHNlfSwic2VrdG9yU3lrZWZyYXbDpnIiOnsia2F0ZWdvcmkiOiJTRUtUT1IiLCJrb2RlIjoiMyIsIsOlcnN0YWxsIjoyMDIwLCJrdmFydGFsIjozLCJ0YXB0ZURhZ3N2ZXJrIjoiMzkzNjYyMC42IiwibXVsaWdlRGFnc3ZlcmsiOjk1MTMyOTYwLjcsImFudGFsbFBlcnNvbmVyIjoxOTQxMzczLCJwcm9zZW50Ijo0LjEsImVyTWFza2VydCI6ZmFsc2V9LCJsYW5kU3lrZWZyYXbDpnIiOnsia2F0ZWdvcmkiOiJMQU5EIiwia29kZSI6Ik5PIiwiw6Vyc3RhbGwiOjIwMjAsImt2YXJ0YWwiOjMsInRhcHRlRGFnc3ZlcmsiOiI2NDc0ODg1LjciLCJtdWxpZ2VEYWdzdmVyayI6MTQzOTcxMTA3LjUsImFudGFsbFBlcnNvbmVyIjoyOTg2MzE1LCJwcm9zZW50Ijo0LjUsImVyTWFza2VydCI6ZmFsc2V9fQ==';
         messages.add(msg1);
 
         insert messages;
@@ -130,7 +133,7 @@ public class KafkaSykefravaerHandlerTest {
         KafkaMessage__c msg2 = new KafkaMessage__c();
         msg2.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-v1';
         msg2.CRM_Key__c = 'd60775ed-249f-49e6-bd15-ff790b56cc07';
-        msg2.CRM_Value__c = 'eyJ2aXJrc29taGV0U3lrZWZyYXbDpnIiOnsib3JnbnIiOiI5MTkzMDA3NjAiLCJuYXZuIjoiSEdOIEVMRUtUUk8gQVMiLCLDpXJzdGFsbCI6MjAyMCwia3ZhcnRhbCI6MywidGFwdGVEYWdzdmVyayI6MjExLjEsIm11bGlnZURhZ3N2ZXJrIjoxOTg3LjcsImFudGFsbFBlcnNvbmVyIjozMywicHJvc2VudCI6MTIuOSwiZXJNYXNrZXJ0IjpmYWxzZSwia2F0ZWdvcmkiOiJWSVJLU09NSEVUIn0sIm7DpnJpbmc1U2lmZmVyU3lrZWZyYXbDpnIiOlt7ImthdGVnb3JpIjoiTsOGUklORzVTSUZGRVIiLCJrb2RlIjoiNDMyMTAiLCLDpXJzdGFsbCI6MjAyMCwia3ZhcnRhbCI6MywidGFwdGVEYWdzdmVyayI6Ijg1MTExLjEiLCJtdWxpZ2VEYWdzdmVyayI6MjA3MzI2NC4wLCJhbnRhbGxQZXJzb25lciI6MzYzNTgsInByb3NlbnQiOjQuMSwiZXJNYXNrZXJ0IjpmYWxzZX1dLCJuw6ZyaW5nU3lrZWZyYXbDpnIiOnsia2F0ZWdvcmkiOiJOw4ZSSU5HMlNJRkZFUiIsImtvZGUiOiI0MyIsIsOlcnN0YWxsIjoyMDIwLCJrdmFydGFsIjozLCJ0YXB0ZURhZ3N2ZXJrIjoiMzQ2MTExLjEiLCJtdWxpZ2VEYWdzdmVyayI6NzUzOTE1Mi42LCJhbnRhbGxQZXJzb25lciI6MTM1MDA3LCJwcm9zZW50Ijo0LjYsImVyTWFza2VydCI6ZmFsc2V9LCJzZWt0b3JTeWtlZnJhdsOmciI6eyJrYXRlZ29yaSI6IlNFS1RPUiIsImtvZGUiOiIzIiwiw6Vyc3RhbGwiOjIwMjAsImt2YXJ0YWwiOjMsInRhcHRlRGFnc3ZlcmsiOiIzOTM2NjIwLjYiLCJtdWxpZ2VEYWdzdmVyayI6OTUxMzI5NjAuNywiYW50YWxsUGVyc29uZXIiOjE5NDEzNzMsInByb3NlbnQiOjQuMSwiZXJNYXNrZXJ0IjpmYWxzZX0sImxhbmRTeWtlZnJhdsOmciI6eyJrYXRlZ29yaSI6IkxBTkQiLCJrb2RlIjoiTk8iLCLDpXJzdGFsbCI6MjAyMCwia3ZhcnRhbCI6MywidGFwdGVEYWdzdmVyayI6IjY0NzQ4ODUuNyIsIm11bGlnZURhZ3N2ZXJrIjoxNDM5NzExMDcuNSwiYW50YWxsUGVyc29uZXIiOjI5ODYzMTUsInByb3NlbnQiOjQuNSwiZXJNYXNrZXJ0IjpmYWxzZX19';
+        msg2.CRM_Value__c = 'eyJ2aXJrc29taGV0U3lrZWZyYXbDpnIiOnsib3JnbnIiOiI5MTkzMDA3NjAiLCJuYXZuIjoiRUxFS1RSTyBURVNUIEFTIiwiw6Vyc3RhbGwiOjIwMjAsImt2YXJ0YWwiOjMsInRhcHRlRGFnc3ZlcmsiOjIxMS4xLCJtdWxpZ2VEYWdzdmVyayI6MTk4Ny43LCJhbnRhbGxQZXJzb25lciI6MzMsInByb3NlbnQiOjEyLjksImVyTWFza2VydCI6ZmFsc2UsImthdGVnb3JpIjoiVklSS1NPTUhFVCJ9LCJuw6ZyaW5nNVNpZmZlclN5a2VmcmF2w6ZyIjpbeyJrYXRlZ29yaSI6Ik7DhlJJTkc1U0lGRkVSIiwia29kZSI6IjQzMjEwIiwiw6Vyc3RhbGwiOjIwMjAsImt2YXJ0YWwiOjMsInRhcHRlRGFnc3ZlcmsiOiI4NTExMS4xIiwibXVsaWdlRGFnc3ZlcmsiOjIwNzMyNjQuMCwiYW50YWxsUGVyc29uZXIiOjM2MzU4LCJwcm9zZW50Ijo0LjEsImVyTWFza2VydCI6ZmFsc2V9XSwibsOmcmluZ1N5a2VmcmF2w6ZyIjp7ImthdGVnb3JpIjoiTsOGUklORzJTSUZGRVIiLCJrb2RlIjoiNDMiLCLDpXJzdGFsbCI6MjAyMCwia3ZhcnRhbCI6MywidGFwdGVEYWdzdmVyayI6IjM0NjExMS4xIiwibXVsaWdlRGFnc3ZlcmsiOjc1MzkxNTIuNiwiYW50YWxsUGVyc29uZXIiOjEzNTAwNywicHJvc2VudCI6NC42LCJlck1hc2tlcnQiOmZhbHNlfSwic2VrdG9yU3lrZWZyYXbDpnIiOnsia2F0ZWdvcmkiOiJTRUtUT1IiLCJrb2RlIjoiMyIsIsOlcnN0YWxsIjoyMDIwLCJrdmFydGFsIjozLCJ0YXB0ZURhZ3N2ZXJrIjoiMzkzNjYyMC42IiwibXVsaWdlRGFnc3ZlcmsiOjk1MTMyOTYwLjcsImFudGFsbFBlcnNvbmVyIjoxOTQxMzczLCJwcm9zZW50Ijo0LjEsImVyTWFza2VydCI6ZmFsc2V9LCJsYW5kU3lrZWZyYXbDpnIiOnsia2F0ZWdvcmkiOiJMQU5EIiwia29kZSI6Ik5PIiwiw6Vyc3RhbGwiOjIwMjAsImt2YXJ0YWwiOjMsInRhcHRlRGFnc3ZlcmsiOiI2NDc0ODg1LjciLCJtdWxpZ2VEYWdzdmVyayI6MTQzOTcxMTA3LjUsImFudGFsbFBlcnNvbmVyIjoyOTg2MzE1LCJwcm9zZW50Ijo0LjUsImVyTWFza2VydCI6ZmFsc2V9fQ==';
         messagesUpdate.add(msg2);
 
         insert messagesUpdate;
@@ -159,5 +162,191 @@ public class KafkaSykefravaerHandlerTest {
         System.assertEquals('d60775ed-249f-49e6-bd15-ff790b56cc07', resultUpdated[0].CRM_Key__c);
         System.assertEquals(211.1, resultUpdated[0].CRM_VirksomhetTapteDagsverk__c);
         System.assertEquals(85111.1, resultUpdated[0].CRM_NaeringTapteDagsverk__c);
+    }
+
+    @IsTest
+    public static void testHandleMessagesNullIndustryCode() {
+        Account a1 = new Account();
+        a1.Name = 'Test Employer 1';
+        a1.INT_OrganizationNumber__c = '919300760';
+        insert a1;
+
+        // Create KafkaMessage with Base64 encoded JSON-payloads matching account Test Employer 1
+        List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
+        KafkaMessage__c msg1 = new KafkaMessage__c();
+        msg1.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-v1';
+        msg1.CRM_Key__c = 'd60775ed-249f-49e6-bd15-ff790b56cc07';
+        msg1.CRM_Value__c = 'eyJ2aXJrc29taGV0U3lrZWZyYXbDpnIiOnsib3JnbnIiOiI5MTkzMDA3NjAiLCJuYXZuIjoiRUxFS1RSTyBURVNUIEFTIiwiw6Vyc3RhbGwiOjIwMjAsImt2YXJ0YWwiOjMsInRhcHRlRGFnc3ZlcmsiOjI1Ni4yLCJtdWxpZ2VEYWdzdmVyayI6MTk4Ny43LCJhbnRhbGxQZXJzb25lciI6MzMsInByb3NlbnQiOjEyLjksImVyTWFza2VydCI6ZmFsc2UsImthdGVnb3JpIjoiVklSS1NPTUhFVCJ9LCJuw6ZyaW5nNVNpZmZlclN5a2VmcmF2w6ZyIjpbeyJrYXRlZ29yaSI6Ik7DhlJJTkc1U0lGRkVSIiwia29kZSI6IjQzMjEwIiwiw6Vyc3RhbGwiOjIwMjAsImt2YXJ0YWwiOjMsInRhcHRlRGFnc3ZlcmsiOiI4NTM1OS4zIiwibXVsaWdlRGFnc3ZlcmsiOjIwNzMyNjQuMCwiYW50YWxsUGVyc29uZXIiOjM2MzU4LCJwcm9zZW50Ijo0LjEsImVyTWFza2VydCI6ZmFsc2V9XSwibsOmcmluZ1N5a2VmcmF2w6ZyIjp7ImthdGVnb3JpIjoiTsOGUklORzJTSUZGRVIiLCJrb2RlIjoiNDMiLCLDpXJzdGFsbCI6MjAyMCwia3ZhcnRhbCI6MywidGFwdGVEYWdzdmVyayI6IjM0NjY1Ny45IiwibXVsaWdlRGFnc3ZlcmsiOjc1MzkxNTIuNiwiYW50YWxsUGVyc29uZXIiOjEzNTAwNywicHJvc2VudCI6NC42LCJlck1hc2tlcnQiOmZhbHNlfSwic2VrdG9yU3lrZWZyYXbDpnIiOnsia2F0ZWdvcmkiOiJTRUtUT1IiLCJrb2RlIjoiMyIsIsOlcnN0YWxsIjoyMDIwLCJrdmFydGFsIjozLCJ0YXB0ZURhZ3N2ZXJrIjoiMzkzNjYyMC42IiwibXVsaWdlRGFnc3ZlcmsiOjk1MTMyOTYwLjcsImFudGFsbFBlcnNvbmVyIjoxOTQxMzczLCJwcm9zZW50Ijo0LjEsImVyTWFza2VydCI6ZmFsc2V9LCJsYW5kU3lrZWZyYXbDpnIiOnsia2F0ZWdvcmkiOiJMQU5EIiwia29kZSI6Ik5PIiwiw6Vyc3RhbGwiOjIwMjAsImt2YXJ0YWwiOjMsInRhcHRlRGFnc3ZlcmsiOiI2NDc0ODg1LjciLCJtdWxpZ2VEYWdzdmVyayI6MTQzOTcxMTA3LjUsImFudGFsbFBlcnNvbmVyIjoyOTg2MzE1LCJwcm9zZW50Ijo0LjUsImVyTWFza2VydCI6ZmFsc2V9fQ==';
+        messages.add(msg1);
+
+        insert messages;
+
+        Test.startTest();
+        new KafkaMessageService(messages).handleMessages();
+        Test.stopTest();
+
+        List<Absence__c> result = [
+            SELECT
+                Id,
+                CRM_Quarter__c,
+                CRM_Year__c,
+                CRM_Account__c,
+                CRM_ErMaskert__c,
+                CRM_Key__c,
+                CRM_NaeringTapteDagsverk__c,
+                CRM_VirksomhetTapteDagsverk__c,
+                CRM_SektorProsent__c,
+                CRM_LandMuligeDagsverk__c
+            FROM Absence__c
+        ];
+        System.assertEquals(1, result.size());
+        System.assertEquals(3, result[0].CRM_Quarter__c);
+        System.assertEquals(2020, result[0].CRM_Year__c);
+        System.assertEquals(a1.Id, result[0].CRM_Account__c);
+        System.assertEquals(false, result[0].CRM_ErMaskert__c);
+        System.assertEquals('d60775ed-249f-49e6-bd15-ff790b56cc07', result[0].CRM_Key__c);
+        System.assertEquals(256.2, result[0].CRM_VirksomhetTapteDagsverk__c);
+        System.assertEquals(null, result[0].CRM_NaeringTapteDagsverk__c);
+        System.assertEquals(4.1, result[0].CRM_SektorProsent__c);
+        System.assertEquals(143971107.5, result[0].CRM_LandMuligeDagsverk__c);
+    }
+
+    @IsTest
+    public static void testHandleMessagesIndustryCodeNotMatching() {
+        Account a1 = new Account();
+        a1.Name = 'Test Employer 1';
+        a1.INT_OrganizationNumber__c = '919300760';
+        a1.INT_IndustryCode__c = '43.000';
+        insert a1;
+
+        // Create KafkaMessage with Base64 encoded JSON-payloads matching account Test Employer 1 with not-matching Industry code to Test Employer 1
+        List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
+        KafkaMessage__c msg1 = new KafkaMessage__c();
+        msg1.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-v1';
+        msg1.CRM_Key__c = 'd60775ed-249f-49e6-bd15-ff790b56cc07';
+        msg1.CRM_Value__c = 'eyJ2aXJrc29taGV0U3lrZWZyYXbDpnIiOnsib3JnbnIiOiI5MTkzMDA3NjAiLCJuYXZuIjoiRUxFS1RSTyBURVNUIEFTIiwiw6Vyc3RhbGwiOjIwMjAsImt2YXJ0YWwiOjMsInRhcHRlRGFnc3ZlcmsiOjI1Ni4yLCJtdWxpZ2VEYWdzdmVyayI6MTk4Ny43LCJhbnRhbGxQZXJzb25lciI6MzMsInByb3NlbnQiOjEyLjksImVyTWFza2VydCI6ZmFsc2UsImthdGVnb3JpIjoiVklSS1NPTUhFVCJ9LCJuw6ZyaW5nNVNpZmZlclN5a2VmcmF2w6ZyIjpbeyJrYXRlZ29yaSI6Ik7DhlJJTkc1U0lGRkVSIiwia29kZSI6IjQzMjEwIiwiw6Vyc3RhbGwiOjIwMjAsImt2YXJ0YWwiOjMsInRhcHRlRGFnc3ZlcmsiOiI4NTM1OS4zIiwibXVsaWdlRGFnc3ZlcmsiOjIwNzMyNjQuMCwiYW50YWxsUGVyc29uZXIiOjM2MzU4LCJwcm9zZW50Ijo0LjEsImVyTWFza2VydCI6ZmFsc2V9XSwibsOmcmluZ1N5a2VmcmF2w6ZyIjp7ImthdGVnb3JpIjoiTsOGUklORzJTSUZGRVIiLCJrb2RlIjoiNDMiLCLDpXJzdGFsbCI6MjAyMCwia3ZhcnRhbCI6MywidGFwdGVEYWdzdmVyayI6IjM0NjY1Ny45IiwibXVsaWdlRGFnc3ZlcmsiOjc1MzkxNTIuNiwiYW50YWxsUGVyc29uZXIiOjEzNTAwNywicHJvc2VudCI6NC42LCJlck1hc2tlcnQiOmZhbHNlfSwic2VrdG9yU3lrZWZyYXbDpnIiOnsia2F0ZWdvcmkiOiJTRUtUT1IiLCJrb2RlIjoiMyIsIsOlcnN0YWxsIjoyMDIwLCJrdmFydGFsIjozLCJ0YXB0ZURhZ3N2ZXJrIjoiMzkzNjYyMC42IiwibXVsaWdlRGFnc3ZlcmsiOjk1MTMyOTYwLjcsImFudGFsbFBlcnNvbmVyIjoxOTQxMzczLCJwcm9zZW50Ijo0LjEsImVyTWFza2VydCI6ZmFsc2V9LCJsYW5kU3lrZWZyYXbDpnIiOnsia2F0ZWdvcmkiOiJMQU5EIiwia29kZSI6Ik5PIiwiw6Vyc3RhbGwiOjIwMjAsImt2YXJ0YWwiOjMsInRhcHRlRGFnc3ZlcmsiOiI2NDc0ODg1LjciLCJtdWxpZ2VEYWdzdmVyayI6MTQzOTcxMTA3LjUsImFudGFsbFBlcnNvbmVyIjoyOTg2MzE1LCJwcm9zZW50Ijo0LjUsImVyTWFza2VydCI6ZmFsc2V9fQ==';
+        messages.add(msg1);
+
+        insert messages;
+
+        Test.startTest();
+        new KafkaMessageService(messages).handleMessages();
+        Test.stopTest();
+
+        List<Absence__c> result = [
+            SELECT
+                Id,
+                CRM_Quarter__c,
+                CRM_Year__c,
+                CRM_Account__c,
+                CRM_ErMaskert__c,
+                CRM_Key__c,
+                CRM_NaeringTapteDagsverk__c,
+                CRM_VirksomhetTapteDagsverk__c,
+                CRM_SektorProsent__c,
+                CRM_LandMuligeDagsverk__c
+            FROM Absence__c
+        ];
+        System.assertEquals(1, result.size());
+        System.assertEquals(3, result[0].CRM_Quarter__c);
+        System.assertEquals(2020, result[0].CRM_Year__c);
+        System.assertEquals(a1.Id, result[0].CRM_Account__c);
+        System.assertEquals(false, result[0].CRM_ErMaskert__c);
+        System.assertEquals('d60775ed-249f-49e6-bd15-ff790b56cc07', result[0].CRM_Key__c);
+        System.assertEquals(256.2, result[0].CRM_VirksomhetTapteDagsverk__c);
+        System.assertEquals(null, result[0].CRM_NaeringTapteDagsverk__c);
+        System.assertEquals(4.1, result[0].CRM_SektorProsent__c);
+        System.assertEquals(143971107.5, result[0].CRM_LandMuligeDagsverk__c);
+    }
+    @IsTest
+    public static void testHandleMessagesWith2IndustryCodes() {
+        Account a1 = new Account();
+        a1.Name = 'Test Employer 1';
+        a1.INT_OrganizationNumber__c = '919300760';
+        a1.INT_IndustryCode__c = '43.210';
+        insert a1;
+
+        // Create KafkaMessage with Base64 encoded JSON-payloads matching account Test Employer 1 and having 2 næring5siffer codes (array of 2 items)
+        List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
+        KafkaMessage__c msg1 = new KafkaMessage__c();
+        msg1.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-v1';
+        msg1.CRM_Key__c = 'd60775ed-249f-49e6-bd15-ff790b56cc07';
+        msg1.CRM_Value__c = 'eyJ2aXJrc29taGV0U3lrZWZyYXbDpnIiOnsib3JnbnIiOiI5MTkzMDA3NjAiLCJuYXZuIjoiRUxFS1RSTyBURVNUIEFTIiwiw6Vyc3RhbGwiOjIwMjAsImt2YXJ0YWwiOjMsInRhcHRlRGFnc3ZlcmsiOjI1Ni4yLCJtdWxpZ2VEYWdzdmVyayI6MTk4Ny43LCJhbnRhbGxQZXJzb25lciI6MzMsInByb3NlbnQiOjEyLjksImVyTWFza2VydCI6ZmFsc2UsImthdGVnb3JpIjoiVklSS1NPTUhFVCJ9LCJuw6ZyaW5nNVNpZmZlclN5a2VmcmF2w6ZyIjpbeyJrYXRlZ29yaSI6Ik7DhlJJTkc1U0lGRkVSIiwia29kZSI6IjExMTExMSIsIsOlcnN0YWxsIjoyMDIwLCJrdmFydGFsIjozLCJ0YXB0ZURhZ3N2ZXJrIjoiMTExMS4xIiwibXVsaWdlRGFnc3ZlcmsiOjIyMjIyLjIsImFudGFsbFBlcnNvbmVyIjozMzMzMywicHJvc2VudCI6My4zLCJlck1hc2tlcnQiOmZhbHNlfSx7ImthdGVnb3JpIjoiTsOGUklORzVTSUZGRVIiLCJrb2RlIjoiNDMyMTAiLCLDpXJzdGFsbCI6MjAyMCwia3ZhcnRhbCI6MywidGFwdGVEYWdzdmVyayI6Ijg1MzU5LjMiLCJtdWxpZ2VEYWdzdmVyayI6MjA3MzI2NC4wLCJhbnRhbGxQZXJzb25lciI6MzYzNTgsInByb3NlbnQiOjQuMSwiZXJNYXNrZXJ0IjpmYWxzZX1dLCJuw6ZyaW5nU3lrZWZyYXbDpnIiOnsia2F0ZWdvcmkiOiJOw4ZSSU5HMlNJRkZFUiIsImtvZGUiOiI0MyIsIsOlcnN0YWxsIjoyMDIwLCJrdmFydGFsIjozLCJ0YXB0ZURhZ3N2ZXJrIjoiMzQ2NjU3LjkiLCJtdWxpZ2VEYWdzdmVyayI6NzUzOTE1Mi42LCJhbnRhbGxQZXJzb25lciI6MTM1MDA3LCJwcm9zZW50Ijo0LjYsImVyTWFza2VydCI6ZmFsc2V9LCJzZWt0b3JTeWtlZnJhdsOmciI6eyJrYXRlZ29yaSI6IlNFS1RPUiIsImtvZGUiOiIzIiwiw6Vyc3RhbGwiOjIwMjAsImt2YXJ0YWwiOjMsInRhcHRlRGFnc3ZlcmsiOiIzOTM2NjIwLjYiLCJtdWxpZ2VEYWdzdmVyayI6OTUxMzI5NjAuNywiYW50YWxsUGVyc29uZXIiOjE5NDEzNzMsInByb3NlbnQiOjQuMSwiZXJNYXNrZXJ0IjpmYWxzZX0sImxhbmRTeWtlZnJhdsOmciI6eyJrYXRlZ29yaSI6IkxBTkQiLCJrb2RlIjoiTk8iLCLDpXJzdGFsbCI6MjAyMCwia3ZhcnRhbCI6MywidGFwdGVEYWdzdmVyayI6IjY0NzQ4ODUuNyIsIm11bGlnZURhZ3N2ZXJrIjoxNDM5NzExMDcuNSwiYW50YWxsUGVyc29uZXIiOjI5ODYzMTUsInByb3NlbnQiOjQuNSwiZXJNYXNrZXJ0IjpmYWxzZX19';
+        messages.add(msg1);
+
+        insert messages;
+
+        Test.startTest();
+        new KafkaMessageService(messages).handleMessages();
+        Test.stopTest();
+
+        List<Absence__c> result = [
+            SELECT
+                Id,
+                CRM_Quarter__c,
+                CRM_Year__c,
+                CRM_Account__c,
+                CRM_ErMaskert__c,
+                CRM_Key__c,
+                CRM_NaeringTapteDagsverk__c,
+                CRM_VirksomhetTapteDagsverk__c,
+                CRM_SektorProsent__c,
+                CRM_LandMuligeDagsverk__c
+            FROM Absence__c
+        ];
+        System.assertEquals(1, result.size());
+        System.assertEquals(3, result[0].CRM_Quarter__c);
+        System.assertEquals(2020, result[0].CRM_Year__c);
+        System.assertEquals(a1.Id, result[0].CRM_Account__c);
+        System.assertEquals(false, result[0].CRM_ErMaskert__c);
+        System.assertEquals('d60775ed-249f-49e6-bd15-ff790b56cc07', result[0].CRM_Key__c);
+        System.assertEquals(256.2, result[0].CRM_VirksomhetTapteDagsverk__c);
+        System.assertEquals(85359.3, result[0].CRM_NaeringTapteDagsverk__c);
+        System.assertEquals(4.1, result[0].CRM_SektorProsent__c);
+        System.assertEquals(143971107.5, result[0].CRM_LandMuligeDagsverk__c);
+    }
+
+    @IsTest
+    public static void testHandleMessagesErMaskertTrue() {
+        Account a1 = new Account();
+        a1.Name = 'Test Employer 1';
+        a1.INT_OrganizationNumber__c = '919300760';
+        a1.INT_IndustryCode__c = '43.210';
+        insert a1;
+
+        // Create KafkaMessage with Base64 encoded JSON-payloads matching account Test Employer 1 with erMaskert=true
+        List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
+        KafkaMessage__c msg1 = new KafkaMessage__c();
+        msg1.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-v1';
+        msg1.CRM_Key__c = 'd60775ed-249f-49e6-bd15-ff790b56cc07';
+        msg1.CRM_Value__c = 'eyJ2aXJrc29taGV0U3lrZWZyYXbDpnIiOnsib3JnbnIiOiI5MTkzMDA3NjAiLCJuYXZuIjoiRUxFS1RSTyBURVNUIEFTIiwiw6Vyc3RhbGwiOjIwMjAsImt2YXJ0YWwiOjMsInRhcHRlRGFnc3ZlcmsiOjI1Ni4yLCJtdWxpZ2VEYWdzdmVyayI6MTk4Ny43LCJhbnRhbGxQZXJzb25lciI6MzMsInByb3NlbnQiOjEyLjksImVyTWFza2VydCI6dHJ1ZSwia2F0ZWdvcmkiOiJWSVJLU09NSEVUIn0sIm7DpnJpbmc1U2lmZmVyU3lrZWZyYXbDpnIiOlt7ImthdGVnb3JpIjoiTsOGUklORzVTSUZGRVIiLCJrb2RlIjoiNDMyMTAiLCLDpXJzdGFsbCI6MjAyMCwia3ZhcnRhbCI6MywidGFwdGVEYWdzdmVyayI6Ijg1MzU5LjMiLCJtdWxpZ2VEYWdzdmVyayI6MjA3MzI2NC4wLCJhbnRhbGxQZXJzb25lciI6MzYzNTgsInByb3NlbnQiOjQuMSwiZXJNYXNrZXJ0IjpmYWxzZX1dLCJuw6ZyaW5nU3lrZWZyYXbDpnIiOnsia2F0ZWdvcmkiOiJOw4ZSSU5HMlNJRkZFUiIsImtvZGUiOiI0MyIsIsOlcnN0YWxsIjoyMDIwLCJrdmFydGFsIjozLCJ0YXB0ZURhZ3N2ZXJrIjoiMzQ2NjU3LjkiLCJtdWxpZ2VEYWdzdmVyayI6NzUzOTE1Mi42LCJhbnRhbGxQZXJzb25lciI6MTM1MDA3LCJwcm9zZW50Ijo0LjYsImVyTWFza2VydCI6ZmFsc2V9LCJzZWt0b3JTeWtlZnJhdsOmciI6eyJrYXRlZ29yaSI6IlNFS1RPUiIsImtvZGUiOiIzIiwiw6Vyc3RhbGwiOjIwMjAsImt2YXJ0YWwiOjMsInRhcHRlRGFnc3ZlcmsiOiIzOTM2NjIwLjYiLCJtdWxpZ2VEYWdzdmVyayI6OTUxMzI5NjAuNywiYW50YWxsUGVyc29uZXIiOjE5NDEzNzMsInByb3NlbnQiOjQuMSwiZXJNYXNrZXJ0IjpmYWxzZX0sImxhbmRTeWtlZnJhdsOmciI6eyJrYXRlZ29yaSI6IkxBTkQiLCJrb2RlIjoiTk8iLCLDpXJzdGFsbCI6MjAyMCwia3ZhcnRhbCI6MywidGFwdGVEYWdzdmVyayI6IjY0NzQ4ODUuNyIsIm11bGlnZURhZ3N2ZXJrIjoxNDM5NzExMDcuNSwiYW50YWxsUGVyc29uZXIiOjI5ODYzMTUsInByb3NlbnQiOjQuNSwiZXJNYXNrZXJ0IjpmYWxzZX19';
+        messages.add(msg1);
+
+        insert messages;
+
+        Test.startTest();
+        new KafkaMessageService(messages).handleMessages();
+        Test.stopTest();
+
+        List<Absence__c> result = [
+            SELECT
+                Id,
+                CRM_ErMaskert__c,
+                CRM_Key__c,
+                CRM_NaeringTapteDagsverk__c,
+                CRM_VirksomhetTapteDagsverk__c,
+                CRM_VirksomhetAntallPersoner__c,
+                CRM_SektorProsent__c,
+                CRM_LandMuligeDagsverk__c
+            FROM Absence__c
+        ];
+        System.assertEquals(1, result.size());
+        System.assertEquals(true, result[0].CRM_ErMaskert__c);
+        System.assertEquals(null, result[0].CRM_VirksomhetAntallPersoner__c,'Number of employees should not be saved if erMaskert=true');
+        System.assertEquals('d60775ed-249f-49e6-bd15-ff790b56cc07', result[0].CRM_Key__c);
+        System.assertEquals(256.2, result[0].CRM_VirksomhetTapteDagsverk__c);
+        System.assertEquals(85359.3, result[0].CRM_NaeringTapteDagsverk__c);
+        System.assertEquals(4.1, result[0].CRM_SektorProsent__c);
+        System.assertEquals(143971107.5, result[0].CRM_LandMuligeDagsverk__c);
     }
 }

@@ -8,7 +8,7 @@ public class KafkaSykefravaerHandler_Model {
     public Integer antallPersoner { get; set; }
     public Decimal prosent { get; set; }
     public Boolean erMaskert { get; set; }
-    public Naering5Siffer naering { get; set; }
+    public List<Naering5Siffer> naering { get; set; }
     public Sektor sektor { get; set; }
     public Land land { get; set; }
 
@@ -47,29 +47,33 @@ public class KafkaSykefravaerHandler_Model {
                         erMaskert = parser.getBooleanValue();
                     }
                     else if (text == 'næring5SifferSykefravær') {
-                        KafkaSykefravaerHandler_Model.Naering5Siffer modelNaering = new KafkaSykefravaerHandler_Model.Naering5Siffer();
-                        while (parser.nextToken() != System.JSONToken.END_OBJECT) {
-                            if (parser.getCurrentToken() == System.JSONToken.FIELD_NAME) {
-                                String naeringText = parser.getText();
-                                parser.nextToken();
-                                if (naeringText == 'kode') {
-                                    modelNaering.kode = parser.getText();
-                                }
-                                else if (naeringText == 'tapteDagsverk') {
-                                    modelNaering.tapteDagsverk = decimal.valueOf(parser.getText());
-                                }
-                                else if (naeringText == 'muligeDagsverk') {
-                                    modelNaering.muligeDagsverk = parser.getDecimalValue();
-                                }
-                                else if (naeringText == 'antallPersoner') {
-                                    modelNaering.antallPersoner = parser.getIntegerValue();
-                                }
-                                else if (naeringText == 'prosent') {
-                                    modelNaering.prosent = parser.getDecimalValue();
-                                    naering = modelNaering;
+                        List<Naering5Siffer> naeringList = new List<Naering5Siffer>();
+                        while (parser.nextToken() != System.JSONToken.END_ARRAY) {
+                            KafkaSykefravaerHandler_Model.Naering5Siffer modelNaering = new KafkaSykefravaerHandler_Model.Naering5Siffer();
+                            while (parser.nextToken() != System.JSONToken.END_OBJECT) {
+                                if (parser.getCurrentToken() == System.JSONToken.FIELD_NAME) {
+                                    String naeringText = parser.getText();
+                                    parser.nextToken();
+                                    if (naeringText == 'kode') {
+                                        modelNaering.kode = parser.getText();
+                                    }
+                                    else if (naeringText == 'tapteDagsverk') {
+                                        modelNaering.tapteDagsverk = decimal.valueOf(parser.getText());
+                                    }
+                                    else if (naeringText == 'muligeDagsverk') {
+                                        modelNaering.muligeDagsverk = parser.getDecimalValue();
+                                    }
+                                    else if (naeringText == 'antallPersoner') {
+                                        modelNaering.antallPersoner = parser.getIntegerValue();
+                                    }
+                                    else if (naeringText == 'prosent') {
+                                        modelNaering.prosent = parser.getDecimalValue();
+                                        naeringList.add(modelNaering);
+                                    }
                                 }
                             }
                         }
+                        naering = naeringList;
                     }
                     else if(text == 'sektorSykefravær') {
                         KafkaSykefravaerHandler_Model.Sektor modelSektor = new KafkaSykefravaerHandler_Model.Sektor();

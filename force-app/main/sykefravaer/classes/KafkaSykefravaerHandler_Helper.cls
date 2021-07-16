@@ -41,6 +41,15 @@ public with sharing class KafkaSykefravaerHandler_Helper {
         Absence__c a = new Absence__c();
         if (accountMap.containsKey(s.orgnr)) {
             a.CRM_Account__c = accountMap.get(s.orgnr).Id;
+            for(KafkaSykefravaerHandler_Model.Naering5Siffer naeringItem: s.naering) {
+                if (accountMap.get(s.orgnr).INT_IndustryCode__c != null && naeringItem.kode == accountMap.get(s.orgnr).INT_IndustryCode__c.remove('.')) {
+                    a.CRM_Naering5SifferKode__c = naeringItem.kode;
+                    a.CRM_NaeringTapteDagsverk__c = naeringItem.tapteDagsverk;
+                    a.CRM_NaeringMuligeDagsverk__c = naeringItem.muligeDagsverk;
+                    a.CRM_NaeringAntallPersoner__c = naeringItem.antallPersoner;
+                    a.CRM_NaeringProsent__c = naeringItem.prosent;
+                }
+            }
         }
         if (s.antallPersoner >= 5 && s.erMaskert == false) {
             a.CRM_VirksomhetAntallPersoner__c = s.antallPersoner;
@@ -53,11 +62,6 @@ public with sharing class KafkaSykefravaerHandler_Helper {
         a.CRM_VirksomhetTapteDagsverk__c = s.tapteDagsverk;
         a.CRM_VirksomhetMuligDagsverk__c = s.muligeDagsverk;
         a.CRM_VirksomhetProsent__c = s.prosent;
-        a.CRM_Naering5SifferKode__c = s.naering.kode;
-        a.CRM_NaeringTapteDagsverk__c = s.naering.tapteDagsverk;
-        a.CRM_NaeringMuligeDagsverk__c = s.naering.muligeDagsverk;
-        a.CRM_NaeringAntallPersoner__c = s.naering.antallPersoner;
-        a.CRM_NaeringProsent__c = s.naering.prosent;
         a.CRM_SektorKode__c = s.sektor.kode;
         a.CRM_SektorTapteDagsverk__c = s.sektor.tapteDagsverk;
         a.CRM_SektorMuligeDagsverk__c = s.sektor.muligeDagsverk;
@@ -70,5 +74,23 @@ public with sharing class KafkaSykefravaerHandler_Helper {
         a.CRM_LandProsent__c = s.land.prosent;
 
         return a;
+    }
+
+    public static Map<String, Account> fetchAccounts(List<String> organisationNumbers) {
+        List<Account> accounts = [
+            SELECT Id, INT_OrganizationNumber__c, INT_MunicipalityNumber__c, INT_IndustryCode__c
+            FROM Account
+            WHERE
+                INT_OrganizationNumber__c IN :organisationNumbers
+                AND INT_OrganizationNumber__c != NULL
+                AND IsPersonAccount = FALSE
+        ];
+
+        Map<String, Account> accountMap = new Map<String, Account>();
+        for (Account acc : accounts) {
+            accountMap.put(acc.INT_OrganizationNumber__c, acc);
+        }
+
+        return accountMap;
     }
 }
