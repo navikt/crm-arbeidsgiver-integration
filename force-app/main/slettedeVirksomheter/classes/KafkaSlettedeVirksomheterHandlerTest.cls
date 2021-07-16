@@ -10,7 +10,7 @@ private without sharing class KafkaSlettedeVirksomheterHandlerTest {
         Account acc2 = new Account(Name = 'Test Employer 2', INT_OrganizationNumber__c = '77777777');
         insert acc2;
 
-        List<Account> accts = [SELECT Id FROM Account WHERE TAG_IsDeleted__c = TRUE];
+        List<Account> accts = [SELECT Id FROM Account WHERE IsDeletedEmployer__c = TRUE];
         System.assertEquals(0, accts.size(), 'No accounts deleted');
 
         List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
@@ -32,8 +32,8 @@ private without sharing class KafkaSlettedeVirksomheterHandlerTest {
         AsyncRequestSchedulable.enqueueAsyncJobs();
         Test.stopTest();
 
-        accts = [SELECT Id, TAG_DeletedDate__c FROM Account WHERE TAG_IsDeleted__c = TRUE];
+        accts = [SELECT Id, EmployerDeletedDate__c FROM Account WHERE IsDeletedEmployer__c = TRUE];
         System.assertEquals(2, accts.size(), 'two accounts deleted');
-        System.assertEquals(Date.today(), accts[0].TAG_DeletedDate__c, 'deleted date is today');
+        System.assertEquals(Date.today(), accts[0].EmployerDeletedDate__c, 'deleted date is today');
     }
 }
