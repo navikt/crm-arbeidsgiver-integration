@@ -4,7 +4,7 @@
             "path": "force-app",
             "default": true,
             "package": "crm-arbeidsgiver-integration",
-            "versionNumber": "1.11.0.NEXT",
+            "versionNumber": "1.13.0.NEXT",
             "dependencies": [
                 {
                     "package": "crm-platform-base",
@@ -20,7 +20,7 @@
                 },
                 {
                     "package": "crm-platform-integration",
-                    "versionNumber": "0.34.0.LATEST"
+                    "versionNumber": "0.52.0.LATEST"
                 },
                 {
                     "package": "crm-shared-timeline",
