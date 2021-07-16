@@ -1,6 +1,5 @@
 @IsTest
 public class KafkaSykefravaerHandler_HelperTest {
-
     @IsTest
     private static void testConvertKafkaToSykefravaer() {
         String testJson = KafkaSykefravaerHandler_ModelTest.json;
@@ -15,7 +14,7 @@ public class KafkaSykefravaerHandler_HelperTest {
 
         Test.StartTest();
         List<KafkaSykefravaerHandler_Model> actual = KafkaSykefravaerHandler_Helper.convertKafkaToSykefravaer(
-        new List<KafkaMessage__c>{ msg1 }
+            new List<KafkaMessage__c>{ msg1 }
         );
         Test.StopTest();
 
@@ -40,7 +39,11 @@ public class KafkaSykefravaerHandler_HelperTest {
 
     @IsTest
     private static void testFetchAccounts() {
-        Account acc1 = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '99999999', INT_IndustryCode__c = '41.110');
+        Account acc1 = new Account(
+            Name = 'Test Employer 1',
+            INT_OrganizationNumber__c = '99999999',
+            INT_IndustryCode__c = '41.110'
+        );
         Account acc2 = new Account(Name = 'Test Employer 2', INT_OrganizationNumber__c = '77777777');
         insert new List<Account>{ acc1, acc2 };
 
@@ -56,8 +59,11 @@ public class KafkaSykefravaerHandler_HelperTest {
 
     @IsTest
     private static void testConvertSykefravaerToAbsence() {
-
-        Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '12345678', INT_IndustryCode__c = '43.210');
+        Account acc = new Account(
+            Name = 'Test Employer 1',
+            INT_OrganizationNumber__c = '12345678',
+            INT_IndustryCode__c = '43.210'
+        );
         insert acc;
 
         String testJson = KafkaSykefravaerHandler_ModelTest.json;
@@ -65,17 +71,12 @@ public class KafkaSykefravaerHandler_HelperTest {
             KafkaSykefravaerHandler_Model.parse(testJson, 'd60775ed-249f-49e6-bd15-ff790b56cc07')
         };
 
-        List<String> organisationNumbers = KafkaSykefravaerHandler_Helper.getOrgNumbersFromSykefravaer(
-            sykefravaer
-        );
+        List<String> organisationNumbers = KafkaSykefravaerHandler_Helper.getOrgNumbersFromSykefravaer(sykefravaer);
 
         Map<String, Account> accountMap = KafkaSykefravaerHandler_Helper.fetchAccounts(organisationNumbers);
 
         Test.StartTest();
-        List<Absence__c> result = KafkaSykefravaerHandler_Helper.convertSykefravaerToAbsence(
-            sykefravaer,
-            accountMap
-        );
+        List<Absence__c> result = KafkaSykefravaerHandler_Helper.convertSykefravaerToAbsence(sykefravaer, accountMap);
         Test.StopTest();
 
         System.assertEquals(1, result.size(), 'Only 1 sykefravaer');

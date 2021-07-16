@@ -34,15 +34,15 @@ public with sharing class KafkaSykefravaerHandler_Helper {
         return absence;
     }
 
-    public static Absence__c jsonToAbsence(
-        KafkaSykefravaerHandler_Model s,
-        Map<String, Account> accountMap
-    ) {
+    public static Absence__c jsonToAbsence(KafkaSykefravaerHandler_Model s, Map<String, Account> accountMap) {
         Absence__c a = new Absence__c();
         if (accountMap.containsKey(s.orgnr)) {
             a.CRM_Account__c = accountMap.get(s.orgnr).Id;
-            for(KafkaSykefravaerHandler_Model.Naering5Siffer naeringItem: s.naering) {
-                if (accountMap.get(s.orgnr).INT_IndustryCode__c != null && naeringItem.kode == accountMap.get(s.orgnr).INT_IndustryCode__c.remove('.')) {
+            for (KafkaSykefravaerHandler_Model.Naering5Siffer naeringItem : s.naering) {
+                if (
+                    accountMap.get(s.orgnr).INT_IndustryCode__c != null &&
+                    naeringItem.kode == accountMap.get(s.orgnr).INT_IndustryCode__c.remove('.')
+                ) {
                     a.CRM_Naering5SifferKode__c = naeringItem.kode;
                     a.CRM_NaeringTapteDagsverk__c = naeringItem.tapteDagsverk;
                     a.CRM_NaeringMuligeDagsverk__c = naeringItem.muligeDagsverk;

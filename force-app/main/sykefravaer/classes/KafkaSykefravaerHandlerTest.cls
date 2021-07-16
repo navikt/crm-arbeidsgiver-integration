@@ -1,6 +1,5 @@
 @IsTest
 public class KafkaSykefravaerHandlerTest {
-
     @IsTest
     public static void testHandleMessagesInsert() {
         List<Account> accounts = new List<Account>();
@@ -137,7 +136,7 @@ public class KafkaSykefravaerHandlerTest {
         messagesUpdate.add(msg2);
 
         insert messagesUpdate;
-        
+
         Test.startTest();
         new KafkaMessageService(messagesUpdate).handleMessages();
         Test.stopTest();
@@ -342,7 +341,11 @@ public class KafkaSykefravaerHandlerTest {
         ];
         System.assertEquals(1, result.size());
         System.assertEquals(true, result[0].CRM_ErMaskert__c);
-        System.assertEquals(null, result[0].CRM_VirksomhetAntallPersoner__c,'Number of employees should not be saved if erMaskert=true');
+        System.assertEquals(
+            null,
+            result[0].CRM_VirksomhetAntallPersoner__c,
+            'Number of employees should not be saved if erMaskert=true'
+        );
         System.assertEquals('d60775ed-249f-49e6-bd15-ff790b56cc07', result[0].CRM_Key__c);
         System.assertEquals(256.2, result[0].CRM_VirksomhetTapteDagsverk__c);
         System.assertEquals(85359.3, result[0].CRM_NaeringTapteDagsverk__c);

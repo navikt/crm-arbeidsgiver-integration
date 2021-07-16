@@ -1,9 +1,8 @@
 public class KafkaSykefravaerHandler_Model {
-    
     public String orgnr { get; set; }
     public Integer arstall { get; set; }
     public Integer kvartal { get; set; }
-    public Decimal tapteDagsverk { get; set; } 
+    public Decimal tapteDagsverk { get; set; }
     public Decimal muligeDagsverk { get; set; }
     public Integer antallPersoner { get; set; }
     public Decimal prosent { get; set; }
@@ -24,29 +23,21 @@ public class KafkaSykefravaerHandler_Model {
                 if (parser.nextToken() != System.JSONToken.VALUE_NULL) {
                     if (text == 'orgnr') {
                         orgnr = parser.getText();
-                    }
-                    else if (text == 'årstall') {
+                    } else if (text == 'årstall') {
                         arstall = integer.valueOf(parser.getText());
-                    }
-                    else if (text == 'kvartal') {
+                    } else if (text == 'kvartal') {
                         kvartal = parser.getIntegerValue();
-                    }
-                    else if (text == 'tapteDagsverk') {
+                    } else if (text == 'tapteDagsverk') {
                         tapteDagsverk = parser.getDecimalValue();
-                    }
-                    else if (text == 'muligeDagsverk') {
+                    } else if (text == 'muligeDagsverk') {
                         muligeDagsverk = parser.getDecimalValue();
-                    }
-                    else if (text == 'antallPersoner') {
+                    } else if (text == 'antallPersoner') {
                         antallPersoner = parser.getIntegerValue();
-                    }
-                    else if (text == 'prosent') {
+                    } else if (text == 'prosent') {
                         prosent = parser.getDecimalValue();
-                    }
-                    else if (text == 'erMaskert') {
+                    } else if (text == 'erMaskert') {
                         erMaskert = parser.getBooleanValue();
-                    }
-                    else if (text == 'næring5SifferSykefravær') {
+                    } else if (text == 'næring5SifferSykefravær') {
                         List<Naering5Siffer> naeringList = new List<Naering5Siffer>();
                         while (parser.nextToken() != System.JSONToken.END_ARRAY) {
                             KafkaSykefravaerHandler_Model.Naering5Siffer modelNaering = new KafkaSykefravaerHandler_Model.Naering5Siffer();
@@ -56,17 +47,13 @@ public class KafkaSykefravaerHandler_Model {
                                     parser.nextToken();
                                     if (naeringText == 'kode') {
                                         modelNaering.kode = parser.getText();
-                                    }
-                                    else if (naeringText == 'tapteDagsverk') {
+                                    } else if (naeringText == 'tapteDagsverk') {
                                         modelNaering.tapteDagsverk = decimal.valueOf(parser.getText());
-                                    }
-                                    else if (naeringText == 'muligeDagsverk') {
+                                    } else if (naeringText == 'muligeDagsverk') {
                                         modelNaering.muligeDagsverk = parser.getDecimalValue();
-                                    }
-                                    else if (naeringText == 'antallPersoner') {
+                                    } else if (naeringText == 'antallPersoner') {
                                         modelNaering.antallPersoner = parser.getIntegerValue();
-                                    }
-                                    else if (naeringText == 'prosent') {
+                                    } else if (naeringText == 'prosent') {
                                         modelNaering.prosent = parser.getDecimalValue();
                                         naeringList.add(modelNaering);
                                     }
@@ -74,58 +61,47 @@ public class KafkaSykefravaerHandler_Model {
                             }
                         }
                         naering = naeringList;
-                    }
-                    else if(text == 'sektorSykefravær') {
+                    } else if (text == 'sektorSykefravær') {
                         KafkaSykefravaerHandler_Model.Sektor modelSektor = new KafkaSykefravaerHandler_Model.Sektor();
-                        while(parser.nextToken() != System.JSONToken.END_OBJECT) {
+                        while (parser.nextToken() != System.JSONToken.END_OBJECT) {
                             if (parser.getCurrentToken() == System.JSONToken.FIELD_NAME) {
                                 String sektorText = parser.getText();
                                 parser.nextToken();
                                 if (sektorText == 'kode') {
                                     modelSektor.kode = parser.getText();
-                                }
-                                else if (sektorText == 'tapteDagsverk') {
+                                } else if (sektorText == 'tapteDagsverk') {
                                     modelSektor.tapteDagsverk = decimal.valueOf(parser.getText());
-                                }
-                                else if (sektorText == 'muligeDagsverk') {
+                                } else if (sektorText == 'muligeDagsverk') {
                                     modelSektor.muligeDagsverk = parser.getDecimalValue();
-                                }
-                                else if (sektorText == 'antallPersoner') {
+                                } else if (sektorText == 'antallPersoner') {
                                     modelSektor.antallPersoner = parser.getIntegerValue();
-                                }
-                                else if (sektorText == 'prosent') {
+                                } else if (sektorText == 'prosent') {
                                     modelSektor.prosent = parser.getDecimalValue();
                                     sektor = modelSektor;
                                 }
                             }
                         }
-                    }
-                    else if(text == 'landSykefravær') {
+                    } else if (text == 'landSykefravær') {
                         KafkaSykefravaerHandler_Model.Land modelLand = new KafkaSykefravaerHandler_Model.Land();
-                        while(parser.nextToken() != JSONToken.END_OBJECT) {
+                        while (parser.nextToken() != JSONToken.END_OBJECT) {
                             if (parser.getCurrentToken() == System.JSONToken.FIELD_NAME) {
                                 String landText = parser.getText();
                                 parser.nextToken();
                                 if (landText == 'kode') {
                                     modelLand.kode = parser.getText();
-                                }
-                                else if (landText == 'tapteDagsverk') {
+                                } else if (landText == 'tapteDagsverk') {
                                     modelLand.tapteDagsverk = decimal.valueOf(parser.getText());
-                                }
-                                else if (landText == 'muligeDagsverk') {
+                                } else if (landText == 'muligeDagsverk') {
                                     modelLand.muligeDagsverk = parser.getDecimalValue();
-                                }
-                                else if (landText == 'antallPersoner') {
+                                } else if (landText == 'antallPersoner') {
                                     modelLand.antallPersoner = parser.getIntegerValue();
-                                }
-                                else if (landText == 'prosent') {
+                                } else if (landText == 'prosent') {
                                     modelLand.prosent = parser.getDecimalValue();
                                     land = modelLand;
                                 }
                             }
                         }
-                    }
-                    else {
+                    } else {
                         System.debug(LoggingLevel.WARN, 'Sykefravaer consuming unrecognized property: ' + text);
                         consumeObject(parser);
                     }
@@ -146,16 +122,15 @@ public class KafkaSykefravaerHandler_Model {
 
     public class Naering5Siffer {
         public String kode { get; set; }
-        public Decimal tapteDagsverk { get; set; } 
+        public Decimal tapteDagsverk { get; set; }
         public Decimal muligeDagsverk { get; set; }
         public Integer antallPersoner { get; set; }
         public Decimal prosent { get; set; }
-
     }
 
     public class Sektor {
         public String kode { get; set; }
-        public Decimal tapteDagsverk { get; set; } 
+        public Decimal tapteDagsverk { get; set; }
         public Decimal muligeDagsverk { get; set; }
         public Integer antallPersoner { get; set; }
         public Decimal prosent { get; set; }
@@ -163,7 +138,7 @@ public class KafkaSykefravaerHandler_Model {
 
     public class Land {
         public String kode { get; set; }
-        public Decimal tapteDagsverk { get; set; } 
+        public Decimal tapteDagsverk { get; set; }
         public Decimal muligeDagsverk { get; set; }
         public Integer antallPersoner { get; set; }
         public Decimal prosent { get; set; }
