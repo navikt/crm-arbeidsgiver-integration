@@ -19,7 +19,17 @@ public class KafkaSykefravaerHandler_HelperTest {
         Test.StopTest();
 
         System.assertEquals('12345678', actual[0].orgnr);
-        System.assertEquals(expected[0].orgnr, actual[0].orgnr);
+        System.assertEquals('12345678', expected[0].orgnr);
+        System.assertEquals(256.2, actual[0].tapteDagsverk);
+        System.assertEquals(256.2, expected[0].tapteDagsverk);
+        System.assertEquals(12.9, actual[0].prosent);
+        System.assertEquals(12.9, expected[0].prosent);
+        System.assertEquals('43210', actual[0].naering[0].kode);
+        System.assertEquals('43210', expected[0].naering[0].kode);
+        System.assertEquals(1941373, actual[0].sektor.antallPersoner);
+        System.assertEquals(1941373, expected[0].sektor.antallPersoner);
+        System.assertEquals(143971107.5, actual[0].land.muligeDagsverk);
+        System.assertEquals(143971107.5, expected[0].land.muligeDagsverk);
     }
 
     @IsTest
