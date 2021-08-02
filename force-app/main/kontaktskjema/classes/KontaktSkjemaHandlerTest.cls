@@ -310,60 +310,6 @@ private without sharing class KontaktSkjemaHandlerTest {
         System.assertNotEquals(null, result, 'Returned value should NOT be null, as Møre og Romsdal is in the pilot');
     }
 
-    @isTest
-    private static void doPost_arbeidstrening() {
-        createTestAccounts();
-        createPostRequest(
-            '{ "type":"ARBEIDSTRENING","municipalityCode":"3033","organisationName":"Finstadtunet","organisationNumber":"960507878","firstName":"TestNavn","lastName":"TestEtternavn","email":"test@nav.no","phoneNo":"90080900","RegionCode":"0200" }'
-        );
-
-        Test.startTest();
-        KontaktSkjemaHandler.doPost();
-        Test.stopTest();
-
-        List<CustomOpportunity__c> optys = [
-            SELECT
-                Id,
-                InquiryCategory__c,
-                RecordTypeId,
-                INT_RegionNumber__c,
-                INT_MunicipalityNumber__c,
-                TAG_OrganizationNameFromForm__c,
-                Contact__r.FirstName,
-                Contact__r.LastName,
-                Contact__r.Email,
-                Contact__r.MobilePhone,
-                Account__r.INT_OrganizationNumber__c
-            FROM CustomOpportunity__c
-        ];
-
-        System.assertEquals(1, optys.size(), 'Size should be one after insert');
-        System.assertEquals('Arbeidstrening', optys[0].InquiryCategory__c, '"Type" should be "Arbeidstrening"');
-        System.assertEquals('TestNavn', optys[0].Contact__r.FirstName, '"Contact__r.FirstName" should be "TestNavn"');
-        System.assertEquals(
-            'TestEtternavn',
-            optys[0].Contact__r.LastName,
-            '"Contact__r.LastName" should be "TestEtternavn"'
-        );
-        System.assertEquals(null, optys[0].INT_RegionNumber__c, 'Region code should be null on non-IA optys');
-        System.assertEquals('3033', optys[0].INT_MunicipalityNumber__c, 'Region code should be null on non-IA optys');
-        System.assertEquals(
-            'Finstadtunet',
-            optys[0].TAG_OrganizationNameFromForm__c,
-            'Name of company should be set as Finstadtunet'
-        );
-        System.assertEquals('test@nav.no', optys[0].Contact__r.Email, '"Contact__r.Email" should be "test@nav.no"');
-        System.assertEquals(
-            '90080900',
-            optys[0].Contact__r.MobilePhone,
-            '"Contact__r.MobilePhone" should be "90080900"'
-        );
-        System.assertEquals(
-            '960507878',
-            optys[0].Account__r.INT_OrganizationNumber__c,
-            '"Account__r.INT_OrganizationNumber__c" should be "960507878"'
-        );
-    }
 
     @isTest
     private static void doPost_forebyggeSykefravaer() {
@@ -543,66 +489,7 @@ private without sharing class KontaktSkjemaHandlerTest {
         ];
 
         System.assertEquals(1, optys.size(), 'Size should be one after insert');
-        System.assertEquals('Rekruttering', optys[0].InquiryCategory__c, '"Type" should be "Rekruttering"');
-        System.assertEquals('TestNavn', optys[0].Contact__r.FirstName, '"Contact__r.FirstName" should be "TestNavn"');
-        System.assertEquals(
-            'TestEtternavn',
-            optys[0].Contact__r.LastName,
-            '"Contact__r.LastName" should be "TestEtternavn"'
-        );
-        System.assertEquals(null, optys[0].INT_RegionNumber__c, 'Region code should be null on non-IA optys');
-        System.assertEquals('3033', optys[0].INT_MunicipalityNumber__c, 'Region code should be null on non-IA optys');
-        System.assertEquals(
-            'Finstadtunet',
-            optys[0].TAG_OrganizationNameFromForm__c,
-            'Name of company should be set as Finstadtunet'
-        );
-        System.assertEquals('test@nav.no', optys[0].Contact__r.Email, '"Contact__r.Email" should be "test@nav.no"');
-        System.assertEquals(
-            '90080900',
-            optys[0].Contact__r.MobilePhone,
-            '"Contact__r.MobilePhone" should be "90080900"'
-        );
-        System.assertEquals(
-            '960507878',
-            optys[0].Account__r.INT_OrganizationNumber__c,
-            '"Account__r.INT_OrganizationNumber__c" should be "960507878"'
-        );
-    }
-
-    @isTest
-    private static void doPost_rekrutteringMedTilrettelegging() {
-        createTestAccounts();
-        createPostRequest(
-            '{ "type":"REKRUTTERING_MED_TILRETTELEGGING","municipalityCode":"3033","organisationName":"Finstadtunet","organisationNumber":"960507878","firstName":"TestNavn","lastName":"TestEtternavn","email":"test@nav.no","phoneNo":"90080900","RegionCode":"0200" }'
-        );
-
-        Test.startTest();
-        KontaktSkjemaHandler.doPost();
-        Test.stopTest();
-
-        List<CustomOpportunity__c> optys = [
-            SELECT
-                Id,
-                InquiryCategory__c,
-                RecordTypeId,
-                INT_RegionNumber__c,
-                INT_MunicipalityNumber__c,
-                TAG_OrganizationNameFromForm__c,
-                Contact__r.FirstName,
-                Contact__r.LastName,
-                Contact__r.Email,
-                Contact__r.MobilePhone,
-                Account__r.INT_OrganizationNumber__c
-            FROM CustomOpportunity__c
-        ];
-
-        System.assertEquals(1, optys.size(), 'Size should be one after insert');
-        System.assertEquals(
-            'Rekruttering med tilrettelegging',
-            optys[0].InquiryCategory__c,
-            '"Type" should be "Rekruttering med tilrettelegging"'
-        );
+        System.assertEquals('Skal ansette', optys[0].InquiryCategory__c, '"Type" should be "Skal ansette"');
         System.assertEquals('TestNavn', optys[0].Contact__r.FirstName, '"Contact__r.FirstName" should be "TestNavn"');
         System.assertEquals(
             'TestEtternavn',
