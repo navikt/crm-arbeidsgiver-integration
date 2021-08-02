@@ -26,10 +26,10 @@
                     "package": "crm-shared-timeline",
                     "versionNumber": "1.6.0.LATEST"
                 },
-                
+
                 {
                     "package": "crm-arbeidsgiver-base",
-                    "versionNumber": "1.156.0.LATEST"
+                    "versionNumber": "1.157.0.LATEST"
 
                 }
             ]
