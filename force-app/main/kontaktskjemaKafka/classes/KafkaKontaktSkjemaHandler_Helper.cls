@@ -1,9 +1,8 @@
 public with sharing class KafkaKontaktSkjemaHandler_Helper {
     public static Id inclusionRecordType = Schema.SObjectType.CustomOpportunity__c.getRecordTypeInfosByDeveloperName()
-    .get('Inclusion')
-    .getRecordTypeId();
+        .get('Inclusion')
+        .getRecordTypeId();
 
-    
     public static List<KafkaKontaktSkjemaHandler_Model> convertKafkaToOpportunity(List<KafkaMessage__c> messages) {
         List<KafkaKontaktSkjemaHandler_Model> kontaktskjema = new List<KafkaKontaktSkjemaHandler_Model>();
         for (KafkaMessage__c msg : messages) {
@@ -23,16 +22,28 @@ public with sharing class KafkaKontaktSkjemaHandler_Helper {
         List<KafkaKontaktSkjemaHandler_Model> kontaktskjema
     ) {
         List<CustomOpportunity__c> opportunity = new List<CustomOpportunity__c>();
+        Map<String, Account> accountMap = getAccountMap(kontaktskjema);
+        Map<String, Contact> contactMap = getContactMap(kontaktskjema);
+
         for (KafkaKontaktSkjemaHandler_Model k : kontaktskjema) {
-            Id contactId = fetchOrCreateContact(k);
-            Id accountId = getAccount(k.organisationNumber);
+            Id contactId = contactMap.containsKey(k.email.toLowerCase())
+                ? contactMap.get(k.email.toLowerCase()).Id
+                : null;
+            Id accountId = accountMap.containsKey(k.organisationNumber)
+                ? accountMap.get(k.organisationNumber).Id
+                : null;
             opportunity.add(jsonToOpportunity(accountId, contactId, k));
         }
         insert opportunity;
+
         return opportunity;
     }
 
-    public static CustomOpportunity__c jsonToOpportunity(Id accountId, Id contactId, KafkaKontaktSkjemaHandler_Model k) {
+    public static CustomOpportunity__c jsonToOpportunity(
+        Id accountId,
+        Id contactId,
+        KafkaKontaktSkjemaHandler_Model k
+    ) {
         CustomOpportunity__c co = new CustomOpportunity__c(
             Account__c = accountId,
             Contact__c = contactId,
@@ -52,26 +63,23 @@ public with sharing class KafkaKontaktSkjemaHandler_Helper {
         return co;
     }
 
-    public static Id fetchOrCreateContact(KafkaKontaktSkjemaHandler_Model rw) {
-        SharedFunctions_ContactModel wrapper = new SharedFunctions_ContactModel();
-        rw.email = rw.email == null ? '' : rw.email; // if null, make it empty to avoid bug in SharedFunctions.fetchOrCreateContact
+    public static Map<String, Contact> getContactMap(List<KafkaKontaktSkjemaHandler_Model> formSubmissions) {
+        List<SharedFunctions_ContactModel> contactWrappers = new List<SharedFunctions_ContactModel>();
 
-        setName(wrapper, rw);
-        wrapper.phone = rw.phoneNo;
-        wrapper.email = rw.email;
-        wrapper.source = 'Kontaktskjema';
-        wrapper.companyNumber = rw.organisationNumber;
+        for (KafkaKontaktSkjemaHandler_Model fs : formSubmissions) {
+            SharedFunctions_ContactModel wrapper = new SharedFunctions_ContactModel();
+            fs.email = fs.email == null ? '' : fs.email; // if null, make it empty to avoid bug in SharedFunctions.fetchOrCreateContact
+            setName(wrapper, fs);
+            wrapper.phone = fs.phoneNo;
+            wrapper.email = fs.email;
+            wrapper.source = 'Kontaktskjema';
+            wrapper.companyNumber = fs.organisationNumber;
+            contactWrappers.add(wrapper);
+        }
 
-        List<SharedFunctions_ContactModel> wrapperList = new List<SharedFunctions_ContactModel>{ wrapper };
-        List<String> orgNo = new List<String>{ rw.organisationNumber };
+        Map<String, Account> accountMap = getAccountMap(formSubmissions);
 
-        Map<String, Account> accountMap = SharedFunctions.fetchAccounts(orgNo);
-        Map<String, Contact> contactMap = SharedFunctions.fetchOrCreateContact(wrapperList, accountMap);
-        Id contactId = contactMap.containsKey(rw.email.toLowerCase())
-            ? contactMap.get(rw.email.toLowerCase()).Id
-            : null;
-
-        return contactId;
+        return SharedFunctions.fetchOrCreateContact(contactWrappers, accountMap);
     }
 
     public static void setName(SharedFunctions_ContactModel wrapper, KafkaKontaktSkjemaHandler_Model rw) {
@@ -87,11 +95,16 @@ public with sharing class KafkaKontaktSkjemaHandler_Helper {
         }
     }
 
-    public static Id getAccount(String organisationNumber) {
-        Map<String, Account> accountMap = SharedFunctions.fetchAccounts(new List<String>{ organisationNumber });
-        Id accountId = accountMap.containsKey(organisationNumber) ? accountMap.get(organisationNumber).Id : null;
+    public static Map<String, Account> getAccountMap(List<KafkaKontaktSkjemaHandler_Model> formSubmissions) {
+        List<String> orgnaizationNumbers = new List<String>();
 
-        return accountId;
+        for (KafkaKontaktSkjemaHandler_Model fs : formSubmissions) {
+            if (fs.organisationNumber != null) {
+                orgnaizationNumbers.add(fs.organisationNumber);
+            }
+        }
+
+        return SharedFunctions.fetchAccounts(orgnaizationNumbers);
     }
 
     public static Boolean isIA(String val) {
@@ -114,7 +127,7 @@ public with sharing class KafkaKontaktSkjemaHandler_Helper {
 
     public static void sendEmailReceipt(List<CustomOpportunity__c> opportunities) {
         List<EmailQueue__c> emails = new List<EmailQueue__c>();
-        for(CustomOpportunity__c co: opportunities) {
+        for (CustomOpportunity__c co : opportunities) {
             if (co.Contact__c != null) {
                 String templateName = co.InquiryCategory__c == 'Forebygge sykefravær'
                     ? 'kontaktskjemaSykefravaerReceipt'
