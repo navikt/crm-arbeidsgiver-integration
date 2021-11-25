@@ -23,9 +23,6 @@ public with sharing class KafkaModiaDialogMote_Model {
             model.hash = hash;
             model.jsonPayload = json;
 
-    /* Add parse method. Reference KafkaArenaHandler_Model.cls
-    public static KafkaModiaDialogMeeting_Model parse(String json, String key, String hash) {
-       
+            return model;
+        }
     }
-    */
-}
