@@ -8,7 +8,7 @@ public without sharing class KafkaSlettedeVirksomheterHandler implements IKafkaM
         Set<String> orgNrs = new Set<String>();
 
         for (KafkaMessage__c msg : messages) {
-            msg.CRM_Status__c = 'Processed';
+            msg.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
             orgNrs.add(msg.CRM_Key__c);
         }
 
