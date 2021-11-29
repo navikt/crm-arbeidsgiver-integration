@@ -52,6 +52,7 @@ public without sharing class KafkaModiaDialogMoteHandler extends ImportedActivit
             }
 
             ArenaActivity__c aa = new ArenaActivity__c(
+                // TODO: updated field mappings
                 //DateRegistered__c = dateTimeValue(model.statusEndringTidspunkt),
                 //DateFrom__c = dateTimeValue(model.dialogmoteTidspunkt),
                 //NAVIdent__c = model.navIdent,

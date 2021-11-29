@@ -28,10 +28,6 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
     }
 
     @isTest
-    static void processBulkMessages() {
-    }
-
-    @isTest
     static void updateExistingActivity() {
         String json = '{"dialogmoteUuid": "a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e", "dialogmoteTidspunkt": "1970-01-19T18:55:30.540Z", "statusEndringType": "AVLYST", "statusEndringTidspunkt": "1970-01-19T18:46:52.748Z", "personIdent": "05087321470", "virksomhetsnummer": "973113631", "enhetNr": "1805", "navIdent": "Z994911", "tilfelleStartdato": "1970-01-01T00:00:18.779Z", "arbeidstaker": true, "arbeidsgiver": true, "sykmelder": false}';
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
@@ -185,5 +181,10 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         System.assertEquals(acc.id, activities[0].Account__c, 'Correct Account');
         System.assertEquals(msg1.CRM_Key__c, activities[0].KafkaId__c, 'Correct KafkaId');
         System.assertEquals(msg1.CRM_Value__c, activities[0].KafkaHash__c, 'Correct KafkaId');
+    }
+
+    // TODO: Add test with multiple messages.
+    @isTest
+    static void runJobBulk() {
     }
 }
