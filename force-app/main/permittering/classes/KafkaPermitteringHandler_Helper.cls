@@ -3,11 +3,12 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
         List<KafkaPermitteringHandler_Model> permitteringer = new List<KafkaPermitteringHandler_Model>();
         for (KafkaMessage__c msg : messages) {
             try {
-                msg.CRM_Status__c = 'Processed';
+                msg.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
                 String decodedValue = KafkaMessageUtils.base64ULSafeDecode(msg.CRM_Value__c).toString();
                 KafkaPermitteringHandler_Model p = KafkaPermitteringHandler_Model.parse(decodedValue);
                 permitteringer.add(p);
             } catch (Exception e) {
+                msg.CRM_Status__c = KafkaMessageService.STATUS_ERROR;
                 msg.CRM_ErrorMessage__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
             }
         }
