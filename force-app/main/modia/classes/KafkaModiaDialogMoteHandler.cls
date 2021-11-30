@@ -24,6 +24,7 @@ public without sharing class KafkaModiaDialogMoteHandler extends ImportedActivit
 
     private KafkaModiaDialogMote_Model convertMessageToDialogMote(KafkaMessage__c message) {
         String decodedValue = KafkaMessageUtils.base64ULSafeDecode(message.CRM_Value__c).toString();
+
         KafkaModiaDialogMote_Model model = KafkaModiaDialogMote_Model.parse(
             decodedValue,
             message.CRM_Key__c,
@@ -53,8 +54,8 @@ public without sharing class KafkaModiaDialogMoteHandler extends ImportedActivit
 
             ArenaActivity__c aa = new ArenaActivity__c(
                 // TODO: updated field mappings
-                //DateRegistered__c = dateTimeValue(model.statusEndringTidspunkt),
-                //DateFrom__c = dateTimeValue(model.dialogmoteTidspunkt),
+                //DateRegistered__c = dateTimeValue(model.statusEndringTidspunkt).date(),
+                //DateFrom__c = dateTimeValue(model.dialogmoteTidspunkt).date(),
                 //NAVIdent__c = model.navIdent,
                 //NAVenhet__c = model.enhetNr,
                 JsonPayload__c = model.jsonPayload,

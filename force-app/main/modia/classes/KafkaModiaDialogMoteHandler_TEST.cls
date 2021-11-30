@@ -183,8 +183,51 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         System.assertEquals(msg1.CRM_Value__c, activities[0].KafkaHash__c, 'Correct KafkaId');
     }
 
-    // TODO: Add test with multiple messages.
     @isTest
     static void runJobBulk() {
+        KafkaEnhetFilter.bypassFilter = true;
+
+        Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '973113631');
+        insert acc;
+
+        String json = '{"dialogmoteUuid": "a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e", "dialogmoteTidspunkt": "1970-01-19T18:55:30.540Z", "statusEndringType": "INNKALT", "statusEndringTidspunkt": "1970-01-19T18:46:52.748Z", "personIdent": "05087321470", "virksomhetsnummer": "973113631", "enhetNr": "1805", "navIdent": "Z994911", "tilfelleStartdato": "1970-01-01T00:00:18.779Z", "arbeidstaker": true, "arbeidsgiver": true, "sykmelder": false}';
+        String json2 = '{"dialogmoteUuid": "a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e", "dialogmoteTidspunkt": "1970-01-19T18:55:30.540Z", "statusEndringType": "AVLYST", "statusEndringTidspunkt": "1970-01-20T18:46:52.748Z", "personIdent": "05087321470", "virksomhetsnummer": "973113631", "enhetNr": "1805", "navIdent": "Z994911", "tilfelleStartdato": "1970-01-01T00:00:18.779Z", "arbeidstaker": true, "arbeidsgiver": true, "sykmelder": false}';
+        String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
+        String encodedValue2 = EncodingUtil.base64Encode(Blob.valueOf(json2));
+
+        List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
+
+        KafkaMessage__c msg = new KafkaMessage__c();
+        msg.CRM_Topic__c = 'isdialogmote-dialogmote-statusendring';
+        msg.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
+        msg.CRM_Value__c = encodedValue;
+
+        KafkaMessage__c msg2 = msg.clone();
+        msg2.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1f';
+
+        KafkaMessage__c msg3 = msg.clone();
+        msg3.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1g';
+
+        // Same key as msg but different value
+        KafkaMessage__c msg4 = msg.clone();
+        msg.CRM_Value__c = encodedValue2;
+
+        messages.add(msg);
+        messages.add(msg2);
+        messages.add(msg3);
+        messages.add(msg4);
+
+        insert messages;
+
+        Test.StartTest();
+        AsyncRequestSchedulable.enqueueAsyncJobs();
+        Test.StopTest();
+
+        List<ArenaActivity__c> activities = [
+            SELECT Id, Account__c, KafkaId__c, KafkaHash__c, JsonPayload__c
+            FROM ArenaActivity__c
+        ];
+
+        System.assertEquals(3, activities.size(), '3 activities inserted. One updated with prexisting key');
     }
 }

@@ -17,17 +17,17 @@ public inherited sharing virtual class ImportedActivity {
         return dateTimeValue(newLastChanged) > dateTimeValue(oldLastChanged);
     }
 
-    public DateTime dateTimeValue(String timeDate) {
-        String formattedDateTime = timeDate.replaceAll('T', ' ');
-
-        return DateTime.valueOf(formattedDateTime);
-    }
-
     public Boolean isNewOrChanged(String kafkaId, String kafkaHash) {
         if (!keyToExistingActivity.containsKey(kafkaId)) {
             return true;
         }
         return keyToExistingActivity.get(kafkaId).KafkaHash__c != kafkaHash;
+    }
+
+    public DateTime dateTimeValue(String timeDate) {
+        String formattedDateTime = timeDate.replaceAll('T', ' ');
+
+        return DateTime.valueOf(formattedDateTime);
     }
 
     public Map<String, ArenaActivity__c> getExistingActivities(Set<String> kafkaIds) {
@@ -38,7 +38,6 @@ public inherited sharing virtual class ImportedActivity {
         ]) {
             keyToExistingActivity.put(aa.KafkaId__c, aa);
         }
-
         return keyToExistingActivity;
     }
 
