@@ -2,7 +2,7 @@
 public with sharing class ImportedActivity_TEST {
     @isTest
     static void addOrgNumber() {
-        ImportedActivity activity = new ImportedActivity();
+        ActivityExtension activity = new ActivityExtension();
 
         activity.addOrgNumber('123456789');
         activity.addOrgNumber('113456789');
@@ -12,7 +12,7 @@ public with sharing class ImportedActivity_TEST {
 
     @isTest
     static void addOrgNumber_null() {
-        ImportedActivity activity = new ImportedActivity();
+        ActivityExtension activity = new ActivityExtension();
 
         activity.addOrgNumber(null);
 
@@ -24,7 +24,7 @@ public with sharing class ImportedActivity_TEST {
         String newTime = '1970-01-19T18:46:53.748Z';
         String oldTime = '1970-01-19T18:46:52.748Z';
 
-        Boolean mostRecent = new ImportedActivity().isMostRecent(newTime, oldTime);
+        Boolean mostRecent = new ActivityExtension().isMostRecent(newTime, oldTime);
 
         System.assertEquals(true, mostRecent, 'New time is most recent');
     }
@@ -34,7 +34,7 @@ public with sharing class ImportedActivity_TEST {
         String newTime = '1970-01-19T18:46:52.748Z';
         String oldTime = '1970-01-19T18:46:53.748Z';
 
-        Boolean mostRecent = new ImportedActivity().isMostRecent(newTime, oldTime);
+        Boolean mostRecent = new ActivityExtension().isMostRecent(newTime, oldTime);
 
         System.assertEquals(false, mostRecent, 'Old time most recent');
     }
@@ -44,7 +44,7 @@ public with sharing class ImportedActivity_TEST {
         DateTime dt = DateTime.newInstance(1970, 1, 19, 18, 46, 52);
 
         String timeDate = '1970-01-19T18:46:52.748Z';
-        Datetime dateTimeValue = new ImportedActivity().dateTimeValue(timeDate);
+        Datetime dateTimeValue = new ActivityExtension().dateTimeValue(timeDate);
 
         System.assertEquals(dt, dateTimeValue, 'Successfull datetime conversion');
     }
@@ -54,7 +54,7 @@ public with sharing class ImportedActivity_TEST {
         DateTime dt = DateTime.newInstance(1600, 1, 19, 18, 46, 52);
 
         String timeDate = '1600-01-19T18:46:52.748Z';
-        Datetime dateTimeValue = new ImportedActivity().dateTimeValue(timeDate);
+        Datetime dateTimeValue = new ActivityExtension().dateTimeValue(timeDate);
 
         System.assertEquals(dt, dateTimeValue, 'Successfull datetime conversion');
     }
@@ -64,7 +64,7 @@ public with sharing class ImportedActivity_TEST {
         DateTime dt = DateTime.newInstance(4500, 1, 19, 18, 46, 52);
 
         String timeDate = '4500-01-19T18:46:52.748Z';
-        Datetime dateTimeValue = new ImportedActivity().dateTimeValue(timeDate);
+        Datetime dateTimeValue = new ActivityExtension().dateTimeValue(timeDate);
 
         System.assertEquals(dt, dateTimeValue, 'Successfull datetime conversion');
     }
@@ -76,7 +76,7 @@ public with sharing class ImportedActivity_TEST {
         String key = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
         ArenaActivity__c aa = new ArenaActivity__c(KafkaId__c = key, KafkaHash__c = encodedValue);
 
-        ImportedActivity activity = new ImportedActivity();
+        ActivityExtension activity = new ActivityExtension();
         activity.keyToExistingActivity.put(key, aa);
 
         Boolean isNewOrChanged = activity.isNewOrChanged(key, encodedValue);
@@ -94,7 +94,7 @@ public with sharing class ImportedActivity_TEST {
 
         ArenaActivity__c aa = new ArenaActivity__c(KafkaId__c = key, KafkaHash__c = encodedValue1);
 
-        ImportedActivity activity = new ImportedActivity();
+        ActivityExtension activity = new ActivityExtension();
         activity.keyToExistingActivity.put(key, aa);
 
         Boolean isNewOrChanged = activity.isNewOrChanged(key, encodedValue2);
@@ -108,7 +108,7 @@ public with sharing class ImportedActivity_TEST {
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
         String key = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
 
-        Boolean isNewOrChanged = new ImportedActivity().isNewOrChanged(key, encodedValue);
+        Boolean isNewOrChanged = new ActivityExtension().isNewOrChanged(key, encodedValue);
 
         System.assertEquals(true, isNewOrChanged, 'Is new. Not included in existing map.');
     }
@@ -118,7 +118,7 @@ public with sharing class ImportedActivity_TEST {
         Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '973113631');
         insert acc;
 
-        ImportedActivity activity = new ImportedActivity();
+        ActivityExtension activity = new ActivityExtension();
         Map<String, Account> accountMap = activity.getOrgNumberAccountMap(new Set<String>{ '973113631' });
 
         System.assertEquals(1, accountMap.size(), 'Account added to map');
@@ -135,11 +135,14 @@ public with sharing class ImportedActivity_TEST {
         ArenaActivity__c activity = new ArenaActivity__c(KafkaId__c = key, KafkaHash__c = encodedValue);
         insert activity;
 
-        Map<String, ArenaActivity__c> existingActivityMap = new ImportedActivity()
+        Map<String, ArenaActivity__c> existingActivityMap = new ActivityExtension()
             .getExistingActivities(new Set<String>{ key });
 
         System.assertEquals(1, existingActivityMap.size(), 'Account added to map');
         System.assertEquals(true, existingActivityMap.containsKey(key));
         System.assertEquals(encodedValue, existingActivityMap.get(key).KafkaHash__c);
+    }
+
+    public class ActivityExtension extends ImportedActivity {
     }
 }

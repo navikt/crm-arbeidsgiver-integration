@@ -1,4 +1,4 @@
-public inherited sharing virtual class ImportedActivity {
+public inherited sharing abstract class ImportedActivity {
     public Map<String, ArenaActivity__c> keyToExistingActivity;
     public Set<String> orgNumbers;
 

@@ -57,7 +57,6 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         System.assertEquals(msg1.CRM_Value__c, activities[0].KafkaHash__c, 'Correct KafkaId');
     }
 
-    // TODO: add dialogmoteTidspunkt change check
     @isTest
     static void newTimePlaceStatusUpdate() {
         String json = '{"dialogmoteUuid": "a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e", "dialogmoteTidspunkt": "1970-01-19T18:55:30.540Z", "statusEndringType": "NYTT_TID_STED", "statusEndringTidspunkt": "1970-01-19T18:46:52.748Z", "personIdent": "05087321470", "virksomhetsnummer": "973113631", "enhetNr": "1805", "navIdent": "Z994911", "tilfelleStartdato": "1970-01-01T00:00:18.779Z", "arbeidstaker": true, "arbeidsgiver": true, "sykmelder": false}';
