@@ -155,6 +155,8 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
             FROM ArenaActivity__c
         ];
 
+        String decodedValue = KafkaMessageUtils.base64ULSafeDecode(msg1.CRM_Value__c).toString();
+
         date checkDateRegistered = date.newInstance(1970, 1, 19);
         datetime checkDateTimeRegistered = datetime.newInstance(1970, 1, 19, 18, 46, 52);
         date checkDateFrom = date.newInstance(1970, 1, 19);
@@ -173,6 +175,7 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         System.assertEquals(checkDateFrom, activities[0].DateFrom__c, 'Successful DateFrom updated');
         System.assertEquals(checkDateTimeFrom, activities[0].DateTimeFrom__c, 'Successful DateTimeFrom updated');
         System.assertEquals(checkTilfelleStartdato, activities[0].TilfelleStartdato__c, 'Successful TilfelleStartdato updated');
+        System.assertEquals(decodedValue, activities[0].JsonPayload__c, 'Correct JsonPayload');
     }
 
     @isTest
