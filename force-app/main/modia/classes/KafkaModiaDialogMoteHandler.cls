@@ -11,6 +11,7 @@ public without sharing class KafkaModiaDialogMoteHandler extends ImportedActivit
                 addOrgNumber(dialogMote?.virksomhetsnummer);
                 msg.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
             } catch (Exception e) {
+                System.debug(e);
                 msg.CRM_Status__c = KafkaMessageService.STATUS_ERROR;
                 msg.CRM_ErrorMessage__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
             }

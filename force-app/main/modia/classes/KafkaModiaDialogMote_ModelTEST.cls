@@ -3,9 +3,9 @@ public with sharing class KafkaModiaDialogMote_ModelTEST {
     private static final String JSON =
         '{' +
         '   \"dialogmoteUuid\": \"a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e\",' +
-        '   \"statusEndringTidspunkt\": \"1970-01-19T18:46:52.748Z\",' +
-        '   \"dialogmoteTidspunkt\": \"1970-01-19T18:55:30.540Z\",' +
-        '   \"tilfelleStartdato\": \"1970-01-01T00:00:18.779Z\",' +
+        '   \"statusEndringTidspunkt\": 1970-01-19T18:46:52.748Z,' +
+        '   \"dialogmoteTidspunkt\": 1970-01-19T18:55:30.540Z,' +
+        '   \"tilfelleStartdato\": 1970-01-01T00:00:18.779Z,' +
         '   \"virksomhetsnummer\": \"974574861",' +
         '   \"statusEndringType\": \"AVLYST\",' +
         '   \"personIdent\": \"05087321470\",' +

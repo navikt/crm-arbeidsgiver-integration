@@ -5,7 +5,7 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '973113631');
         insert acc;
 
-        String json = '{"dialogmoteUuid": "a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e", "dialogmoteTidspunkt": "1970-01-19T18:55:30.540Z", "statusEndringType": "AVLYST", "statusEndringTidspunkt": "1970-01-19T18:46:52.748Z", "personIdent": "05087321470", "virksomhetsnummer": "973113631", "enhetNr": "1805", "navIdent": "Z994911", "tilfelleStartdato": "1970-01-01T00:00:18.779Z", "arbeidstaker": true, "arbeidsgiver": true, "sykmelder": false}';
+        String json = '{"dialogmoteUuid": "a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e", "dialogmoteTidspunkt": 1970-01-19T18:55:30.540Z, "statusEndringType": "AVLYST", "statusEndringTidspunkt": 1970-01-19T18:46:52.748Z, "personIdent": "05087321470", "virksomhetsnummer": "973113631", "enhetNr": "1805", "navIdent": "Z994911", "tilfelleStartdato": 1970-01-01T00:00:18.779Z, "arbeidstaker": true, "arbeidsgiver": true, "sykmelder": false}';
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
@@ -29,7 +29,7 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
 
     @isTest
     static void updateExistingActivity() {
-        String json = '{"dialogmoteUuid": "a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e", "dialogmoteTidspunkt": "1970-01-19T18:55:30.540Z", "statusEndringType": "AVLYST", "statusEndringTidspunkt": "1970-01-19T18:46:52.748Z", "personIdent": "05087321470", "virksomhetsnummer": "973113631", "enhetNr": "1805", "navIdent": "Z994911", "tilfelleStartdato": "1970-01-01T00:00:18.779Z", "arbeidstaker": true, "arbeidsgiver": true, "sykmelder": false}';
+        String json = '{"dialogmoteUuid": "a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e", "dialogmoteTidspunkt": 1970-01-19T18:55:30.540Z, "statusEndringType": "AVLYST", "statusEndringTidspunkt": 1970-01-19T18:46:52.748Z, "personIdent": "05087321470", "virksomhetsnummer": "973113631", "enhetNr": "1805", "navIdent": "Z994911", "tilfelleStartdato": 1970-01-01T00:00:18.779Z, "arbeidstaker": true, "arbeidsgiver": true, "sykmelder": false}';
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
@@ -59,7 +59,7 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
 
     @isTest
     static void newTimePlaceStatusUpdate() {
-        String json = '{"dialogmoteUuid": "a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e", "dialogmoteTidspunkt": "1970-01-19T18:55:30.540Z", "statusEndringType": "NYTT_TID_STED", "statusEndringTidspunkt": "1970-01-19T18:46:52.748Z", "personIdent": "05087321470", "virksomhetsnummer": "973113631", "enhetNr": "1805", "navIdent": "Z994911", "tilfelleStartdato": "1970-01-01T00:00:18.779Z", "arbeidstaker": true, "arbeidsgiver": true, "sykmelder": false}';
+        String json = '{"dialogmoteUuid": "a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e", "dialogmoteTidspunkt": 1970-01-19T18:55:30.540Z, "statusEndringType": "NYTT_TID_STED", "statusEndringTidspunkt": 1970-01-19T18:46:52.748Z, "personIdent": "05087321470", "virksomhetsnummer": "973113631", "enhetNr": "1805", "navIdent": "Z994911", "tilfelleStartdato": 1970-01-01T00:00:18.779Z, "arbeidstaker": true, "arbeidsgiver": true, "sykmelder": false}';
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
@@ -87,8 +87,8 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
 
     @isTest
     static void multipleMessageSameKey() {
-        String json = '{"dialogmoteUuid": "a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e", "dialogmoteTidspunkt": "1970-01-19T18:55:30.540Z", "statusEndringType": "NYTT_TID_STED", "statusEndringTidspunkt": "1970-01-19T18:46:52.748Z", "personIdent": "05087321470", "virksomhetsnummer": "973113631", "enhetNr": "1805", "navIdent": "Z994911", "tilfelleStartdato": "1970-01-01T00:00:18.779Z", "arbeidstaker": true, "arbeidsgiver": true, "sykmelder": false}';
-        String json2 = '{"dialogmoteUuid": "a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e", "dialogmoteTidspunkt": "1970-01-19T18:55:30.540Z", "statusEndringType": "AVLYST", "statusEndringTidspunkt": "1970-01-19T18:46:53.748Z", "personIdent": "05087321470", "virksomhetsnummer": "973113631", "enhetNr": "1805", "navIdent": "Z994911", "tilfelleStartdato": "1970-01-01T00:00:18.779Z", "arbeidstaker": true, "arbeidsgiver": true, "sykmelder": false}';
+        String json = '{"dialogmoteUuid": "a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e", "dialogmoteTidspunkt": 1970-01-19T18:55:30.540Z, "statusEndringType": "NYTT_TID_STED", "statusEndringTidspunkt": 1970-01-19T18:46:52.748Z, "personIdent": "05087321470", "virksomhetsnummer": "973113631", "enhetNr": "1805", "navIdent": "Z994911", "tilfelleStartdato": 1970-01-01T00:00:18.779Z, "arbeidstaker": true, "arbeidsgiver": true, "sykmelder": false}';
+        String json2 = '{"dialogmoteUuid": "a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e", "dialogmoteTidspunkt": 1970-01-19T18:55:30.540Z, "statusEndringType": "AVLYST", "statusEndringTidspunkt": 1970-01-19T18:46:53.748Z, "personIdent": "05087321470", "virksomhetsnummer": "973113631", "enhetNr": "1805", "navIdent": "Z994911", "tilfelleStartdato": 1970-01-01T00:00:18.779Z, "arbeidstaker": true, "arbeidsgiver": true, "sykmelder": false}';
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
         String encodedValue2 = EncodingUtil.base64Encode(Blob.valueOf(json2));
 
@@ -120,7 +120,7 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
 
     @isTest
     static void allFieldsChanged() {
-    String json = '{"dialogmoteUuid": "a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e", "dialogmoteTidspunkt": "1970-01-19T18:55:30.540Z", "statusEndringType": "AVLYST", "statusEndringTidspunkt": "1970-01-19T18:46:52.748Z", "personIdent": "05087321470", "virksomhetsnummer": "973113631", "enhetNr": "1805", "navIdent": "Z994911", "tilfelleStartdato": "1970-01-01T00:00:18.779Z", "arbeidstaker": true, "arbeidsgiver": true, "sykmelder": false}';
+        String json = '{"dialogmoteUuid": "a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e", "dialogmoteTidspunkt": 1970-01-19T18:55:30.540Z, "statusEndringType": "AVLYST", "statusEndringTidspunkt": 1970-01-19T18:46:52.748Z, "personIdent": "05087321470", "virksomhetsnummer": "973113631", "enhetNr": "1805", "navIdent": "Z994911", "tilfelleStartdato": 1970-01-01T00:00:18.779Z, "arbeidstaker": true, "arbeidsgiver": true, "sykmelder": false}';
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
         Account acc1 = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '973113631');
@@ -151,7 +151,20 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         handler.processMessages(new List<KafkaMessage__c>{ msg1 });
 
         List<ArenaActivity__c> activities = [
-            SELECT Id, Account__c, KafkaId__c, KafkaHash__c, JsonPayload__c, AktivitetStatuskode__c, NavIdent__c, NAVenhet__c, DateRegistered__c, DateFrom__c, DateTimeRegistered__c, DateTimeFrom__c, TilfelleStartdato__c
+            SELECT
+                Id,
+                Account__c,
+                KafkaId__c,
+                KafkaHash__c,
+                JsonPayload__c,
+                AktivitetStatuskode__c,
+                NavIdent__c,
+                NAVenhet__c,
+                DateRegistered__c,
+                DateFrom__c,
+                DateTimeRegistered__c,
+                DateTimeFrom__c,
+                TilfelleStartdato__c
             FROM ArenaActivity__c
         ];
 
@@ -171,16 +184,24 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         System.assertEquals('1805', activities[0].NAVenhet__c, 'Successful NavEnhet updated');
         System.assertEquals(acc1.id, activities[0].Account__c, 'Successful Account updated');
         System.assertEquals(checkDateRegistered, activities[0].DateRegistered__c, 'Successful DateRegistered updated');
-        System.assertEquals(checkDateTimeRegistered, activities[0].DateTimeRegistered__c, 'Successful DateTimeRegistered updated');
+        System.assertEquals(
+            checkDateTimeRegistered,
+            activities[0].DateTimeRegistered__c,
+            'Successful DateTimeRegistered updated'
+        );
         System.assertEquals(checkDateFrom, activities[0].DateFrom__c, 'Successful DateFrom updated');
         System.assertEquals(checkDateTimeFrom, activities[0].DateTimeFrom__c, 'Successful DateTimeFrom updated');
-        System.assertEquals(checkTilfelleStartdato, activities[0].TilfelleStartdato__c, 'Successful TilfelleStartdato updated');
+        System.assertEquals(
+            checkTilfelleStartdato,
+            activities[0].TilfelleStartdato__c,
+            'Successful TilfelleStartdato updated'
+        );
         System.assertEquals(decodedValue, activities[0].JsonPayload__c, 'Correct JsonPayload');
     }
 
     @isTest
     static void noChanges() {
-        String json = '{"dialogmoteUuid": "a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e", "dialogmoteTidspunkt": "1970-01-19T18:55:30.540Z", "statusEndringType": "INNKALT", "statusEndringTidspunkt": "1970-01-19T18:46:52.748Z", "personIdent": "05087321470", "virksomhetsnummer": "973113631", "enhetNr": "1805", "navIdent": "Z994911", "tilfelleStartdato": "1970-01-01T00:00:18.779Z", "arbeidstaker": true, "arbeidsgiver": true, "sykmelder": false}';
+        String json = '{"dialogmoteUuid": "a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e", "dialogmoteTidspunkt": 1970-01-19T18:55:30.540Z, "statusEndringType": "INNKALT", "statusEndringTidspunkt": 1970-01-19T18:46:52.748Z, "personIdent": "05087321470", "virksomhetsnummer": "973113631", "enhetNr": "1805", "navIdent": "Z994911", "tilfelleStartdato": 1970-01-01T00:00:18.779Z, "arbeidstaker": true, "arbeidsgiver": true, "sykmelder": false}';
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
@@ -213,7 +234,7 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '973113631');
         insert acc;
 
-        String json = '{"dialogmoteUuid": "a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e", "dialogmoteTidspunkt": "1970-01-19T18:55:30.540Z", "statusEndringType": "AVLYST", "statusEndringTidspunkt": "1970-01-19T18:46:52.748Z", "personIdent": "05087321470", "virksomhetsnummer": "973113631", "enhetNr": "1805", "navIdent": "Z994911", "tilfelleStartdato": "1970-01-01T00:00:18.779Z", "arbeidstaker": true, "arbeidsgiver": true, "sykmelder": false}';
+        String json = '{"dialogmoteUuid": "a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e", "dialogmoteTidspunkt": 1970-01-19T18:55:30.540Z, "statusEndringType": "AVLYST", "statusEndringTidspunkt": 1970-01-19T18:46:52.748Z, "personIdent": "05087321470", "virksomhetsnummer": "973113631", "enhetNr": "1805", "navIdent": "Z994911", "tilfelleStartdato": 1970-01-01T00:00:18.779Z, "arbeidstaker": true, "arbeidsgiver": true, "sykmelder": false}';
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
@@ -244,8 +265,8 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '973113631');
         insert acc;
 
-        String json = '{"dialogmoteUuid": "a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e", "dialogmoteTidspunkt": "1970-01-19T18:55:30.540Z", "statusEndringType": "INNKALT", "statusEndringTidspunkt": "1970-01-19T18:46:52.748Z", "personIdent": "05087321470", "virksomhetsnummer": "973113631", "enhetNr": "1805", "navIdent": "Z994911", "tilfelleStartdato": "1970-01-01T00:00:18.779Z", "arbeidstaker": true, "arbeidsgiver": true, "sykmelder": false}';
-        String json2 = '{"dialogmoteUuid": "a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e", "dialogmoteTidspunkt": "1970-01-19T18:55:30.540Z", "statusEndringType": "AVLYST", "statusEndringTidspunkt": "1970-01-20T18:46:52.748Z", "personIdent": "05087321470", "virksomhetsnummer": "973113631", "enhetNr": "1805", "navIdent": "Z994911", "tilfelleStartdato": "1970-01-01T00:00:18.779Z", "arbeidstaker": true, "arbeidsgiver": true, "sykmelder": false}';
+        String json = '{"dialogmoteUuid": "a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e", "dialogmoteTidspunkt": 1970-01-19T18:55:30.540Z, "statusEndringType": "INNKALT", "statusEndringTidspunkt": 1970-01-19T18:46:52.748Z, "personIdent": "05087321470", "virksomhetsnummer": "973113631", "enhetNr": "1805", "navIdent": "Z994911", "tilfelleStartdato": 1970-01-01T00:00:18.779Z, "arbeidstaker": true, "arbeidsgiver": true, "sykmelder": false}';
+        String json2 = '{"dialogmoteUuid": "a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e", "dialogmoteTidspunkt": 1970-01-19T18:55:30.540Z, "statusEndringType": "AVLYST", "statusEndringTidspunkt": 1970-01-20T18:46:52.748Z, "personIdent": "05087321470", "virksomhetsnummer": "973113631", "enhetNr": "1805", "navIdent": "Z994911", "tilfelleStartdato": 1970-01-01T00:00:18.779Z, "arbeidstaker": true, "arbeidsgiver": true, "sykmelder": false}';
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
         String encodedValue2 = EncodingUtil.base64Encode(Blob.valueOf(json2));
 
