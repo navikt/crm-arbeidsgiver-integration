@@ -9,7 +9,7 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'isdialogmote-dialogmote-statusendring';
+        msg1.CRM_Topic__c = 'teamsykefravr.isdialogmote-dialogmote-statusendring';
         msg1.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
         msg1.CRM_Value__c = encodedValue;
 
@@ -33,7 +33,7 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'isdialogmote-dialogmote-statusendring';
+        msg1.CRM_Topic__c = 'teamsykefravr.isdialogmote-dialogmote-statusendring';
         msg1.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
         msg1.CRM_Value__c = encodedValue;
 
@@ -63,7 +63,7 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'isdialogmote-dialogmote-statusendring';
+        msg1.CRM_Topic__c = 'teamsykefravr.isdialogmote-dialogmote-statusendring';
         msg1.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
         msg1.CRM_Value__c = encodedValue;
 
@@ -95,13 +95,13 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'isdialogmote-dialogmote-statusendring';
+        msg1.CRM_Topic__c = 'teamsykefravr.isdialogmote-dialogmote-statusendring';
         msg1.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
         msg1.CRM_Value__c = encodedValue;
         messages.add(msg1);
 
         KafkaMessage__c msg2 = new KafkaMessage__c();
-        msg2.CRM_Topic__c = 'isdialogmote-dialogmote-statusendring';
+        msg2.CRM_Topic__c = 'teamsykefravr.isdialogmote-dialogmote-statusendring';
         msg2.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
         msg2.CRM_Value__c = encodedValue2;
         messages.add(msg2);
@@ -129,7 +129,7 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         insert acc2;
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'isdialogmote-dialogmote-statusendring';
+        msg1.CRM_Topic__c = 'teamsykefravr.isdialogmote-dialogmote-statusendring';
         msg1.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
         msg1.CRM_Value__c = encodedValue;
 
@@ -205,7 +205,7 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'isdialogmote-dialogmote-statusendring';
+        msg1.CRM_Topic__c = 'teamsykefravr.isdialogmote-dialogmote-statusendring';
         msg1.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
         msg1.CRM_Value__c = encodedValue;
 
@@ -238,7 +238,7 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'isdialogmote-dialogmote-statusendring';
+        msg1.CRM_Topic__c = 'teamsykefravr.isdialogmote-dialogmote-statusendring';
         msg1.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
         msg1.CRM_Value__c = encodedValue;
         insert msg1;
@@ -273,7 +273,7 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
 
         KafkaMessage__c msg = new KafkaMessage__c();
-        msg.CRM_Topic__c = 'isdialogmote-dialogmote-statusendring';
+        msg.CRM_Topic__c = 'teamsykefravr.isdialogmote-dialogmote-statusendring';
         msg.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
         msg.CRM_Value__c = encodedValue;
 
