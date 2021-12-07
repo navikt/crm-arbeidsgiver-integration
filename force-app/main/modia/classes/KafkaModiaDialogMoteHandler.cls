@@ -59,6 +59,7 @@ public without sharing class KafkaModiaDialogMoteHandler extends ImportedActivit
                 DateTimeRegistered__c = dateTimeValue(model.statusEndringTidspunkt),
                 DateTimeFrom__c = dateTimeValue(model.dialogmoteTidspunkt),
                 TilfelleStartdato__c = dateTimeValue(model.tilfelleStartdato),
+                Aktivitetstype__c = 'Dialogmøte',
                 NAVIdent__c = model.navIdent,
                 NAVenhet__c = model.enhetNr,
                 JsonPayload__c = model.jsonPayload,
