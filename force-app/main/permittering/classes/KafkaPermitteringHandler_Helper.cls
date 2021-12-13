@@ -35,7 +35,7 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
             String lastName = name[name.size() - 1];
             String firstName = p.kontaktNavn.removeEnd(' ' + lastName);
             SharedFunctions_ContactModel wrapper = new SharedFunctions_ContactModel();
-            wrapper.firstName = firstName;
+            wrapper.firstName = firstName.left(39);
             wrapper.lastName = lastName;
             wrapper.phone = p.kontaktTlf;
             wrapper.email = p.kontaktEpost;
