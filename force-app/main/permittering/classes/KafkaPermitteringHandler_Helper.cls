@@ -31,6 +31,7 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
         List<SharedFunctions_ContactModel> wrapperList = new List<SharedFunctions_ContactModel>();
 
         for (KafkaPermitteringHandler_Model p : permitteringer) {
+            Boolean validateEmail = pattern.matches('^[a-zA-Z0-9._%+-/!#$%&*=?^_`{|}~]+@((?!-)[a-zA-Z0-9.-]{1,63}(?<!-))+\\.[a-zA-Z]{2,4}$', p.kontaktEpost);
             List<String> name = p.kontaktNavn.split(' ');
             String lastName = name[name.size() - 1];
             String firstName = p.kontaktNavn.removeEnd(' ' + lastName);
@@ -38,10 +39,14 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
             wrapper.firstName = firstName.left(39);
             wrapper.lastName = lastName;
             wrapper.phone = p.kontaktTlf;
-            wrapper.email = p.kontaktEpost;
             wrapper.source = 'Permittering';
             wrapper.companyNumber = p.bedriftsnummer;
             wrapperList.add(wrapper);
+                
+            if(validateEmail){
+                wrapper.email = p.kontaktEpost;}
+            else{
+                wrapper.email = null;}
         }
 
         return wrapperList;

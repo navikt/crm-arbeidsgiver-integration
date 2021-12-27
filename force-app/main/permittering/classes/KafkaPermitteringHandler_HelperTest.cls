@@ -204,4 +204,65 @@ private without sharing class KafkaPermitteringHandler_HelperTest {
 
         System.assertEquals(1, layoffs.size(), 'Same KafkaId on both, thus, only one should be added');
     }
+
+    @isTest
+    private static void testConvertKafkaToPermitteringWithWrongFormat() {
+
+        String json1 =
+            '{' +
+            '  \"id\" : \"2d727ceb-f3f1-4165-a146-2a2665d64441\",' +
+            '  \"bedriftsnummer\" : \"920845908\",' +
+            '  \"sendtInnTidspunkt\" : \"2020-04-19T16:02:22.033420Z\",' +
+            '  \"type\" : \"PERMITTERING_UTEN_LØNN\",' +
+            '  \"kontaktNavn\" : \"test nav with more than 40 characters and expecting the string to be cut\",' + //testing first name with more than 40 characters
+            '  \"kontaktTlf\" : \"80080900\",' +
+            '  \"kontaktEpost\" : \"test.tester@testing-.com\",' + //testing wrong format email address
+            '  \"varsletAnsattDato\" : \"2020-04-19\",' +
+            '  \"varsletNavDato\" : \"2020-04-19\",' +
+            '  \"startDato\" : \"2020-03-14\",' +
+            '  \"sluttDato\" : \"2020-04-26\",' +
+            '  \"fritekst\" : \"\\n### Årsak\\nCorona-virus\\n### Yrker\\nKafemedarbeider, Daglig leder\\n### Annet\\nHar tidligere sendt inn permitteringsvarsel fra dag 1 (14. mars 2020). Dette er varsel om forlenging frem til 27, april 2020. \",' +
+            '  \"antallBerorte\" : 2,' +
+            '  \"årsakskode\" : \"ANDRE_ÅRSAKER\",' +
+            '  \"årsakstekst\" : \"Corona-virus\",' +
+            '  \"yrkeskategorier\" : [ {' +
+            '    \"konseptId\" : 70029,' +
+            '    \"styrk08\" : \"5246\",' +
+            '    \"label\" : \"Kafemedarbeider\"' +
+            '  }, {' +
+            '    \"konseptId\" : 313808,' +
+            '    \"styrk08\" : \"1120\",' +
+            '    \"label\" : \"Daglig leder\"' +
+            '  } ],' +
+            '  \"bedrift\": [' +
+            '    {' +
+            '      \"bedriftNr\": \"12345678\",' +
+            '      \"bedriftNavn\": \"test\",' +
+            '      \"antallBerorte\": 12' +
+            '    },' +
+            '    {' +
+            '      \"bedriftNr\": \"87654321\",' +
+            '      \"bedriftNavn\": \"test2\",' +
+            '      \"antallBerorte\": 124' +
+            '    }' +
+            '  ]' +
+            '}';
+
+        List<KafkaPermitteringHandler_Model> permitteringer = new List<KafkaPermitteringHandler_Model>{
+            KafkaPermitteringHandler_Model.parse(json1)
+    };
+
+        Test.StartTest();
+        List<SharedFunctions_ContactModel> result = KafkaPermitteringHandler_Helper.convertPermitteringToContactWrapper(
+            permitteringer
+    );
+        Test.StopTest();
+
+        System.assertEquals(1, result.size(), 'Only one contact');
+        System.assertEquals('test nav with more than 40 characters a', result[0].firstName);
+        System.assertEquals('cut', result[0].lastName);
+        System.assertEquals('920845908', result[0].companyNumber);
+        System.assertEquals('80080900', result[0].phone);
+        System.assertEquals(null, result[0].email);
+    }
 }
