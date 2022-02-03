@@ -3,7 +3,6 @@ public inherited sharing class KafkaArenaHandler_Helper {
         List<KafkaArenaHandler_Model> arenaModels = new List<KafkaArenaHandler_Model>();
         for (KafkaMessage__c msg : messages) {
             try {
-                msg.CRM_Status__c = 'Processed';
                 String decodedValue = KafkaMessageUtils.base64ULSafeDecode(msg.CRM_Value__c).toString();
                 KafkaArenaHandler_Model arenaModel = KafkaArenaHandler_Model.parse(
                     decodedValue,
@@ -11,7 +10,9 @@ public inherited sharing class KafkaArenaHandler_Helper {
                     msg.CRM_Value__c
                 );
                 arenaModels.add(arenaModel);
+                msg.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
             } catch (Exception e) {
+                msg.CRM_Status__c = KafkaMessageService.STATUS_ERROR;
                 msg.CRM_ErrorMessage__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
             }
         }

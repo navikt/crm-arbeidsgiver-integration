@@ -3,11 +3,12 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
         List<KafkaPermitteringHandler_Model> permitteringer = new List<KafkaPermitteringHandler_Model>();
         for (KafkaMessage__c msg : messages) {
             try {
-                msg.CRM_Status__c = 'Processed';
+                msg.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
                 String decodedValue = KafkaMessageUtils.base64ULSafeDecode(msg.CRM_Value__c).toString();
                 KafkaPermitteringHandler_Model p = KafkaPermitteringHandler_Model.parse(decodedValue);
                 permitteringer.add(p);
             } catch (Exception e) {
+                msg.CRM_Status__c = KafkaMessageService.STATUS_ERROR;
                 msg.CRM_ErrorMessage__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
             }
         }
@@ -34,7 +35,7 @@ public inherited sharing class KafkaPermitteringHandler_Helper {
             String lastName = name[name.size() - 1];
             String firstName = p.kontaktNavn.removeEnd(' ' + lastName);
             SharedFunctions_ContactModel wrapper = new SharedFunctions_ContactModel();
-            wrapper.firstName = firstName;
+            wrapper.firstName = firstName.left(39);
             wrapper.lastName = lastName;
             wrapper.phone = p.kontaktTlf;
             wrapper.email = p.kontaktEpost;
