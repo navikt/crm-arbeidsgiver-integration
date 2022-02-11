@@ -61,22 +61,28 @@ public inherited sharing class ArbeidsgiverKontaktSkjemaHandler implements IKafk
     private static void sendEmailReceipts(List<CustomOpportunity__c> opportunities) {
         List<EmailQueue__c> emails = new List<EmailQueue__c>();
 
-        for (CustomOpportunity__c co : opportunities) {
-            if (co.Contact__c != null) {
-                String templateName = co.InquiryCategory__c == 'Forebygge sykefravær'
-                    ? 'kontaktskjemaSykefravaerReceipt'
-                    : 'kontaktskjemaRekrutteringReceipt';
-                EmailQueue__c email = new EmailQueue__c();
-                email.TemplateName__c = templateName;
-                email.TargetObjectId__c = co.Contact__c;
-                email.WhatId__c = co.Id;
-                email.Status__c = 'Instant';
-                email.SaveAsActivity__c = true;
+        try {
+            for (CustomOpportunity__c co : opportunities) {
+                if (co.Contact__c != null) {
+                    String templateName = co.InquiryCategory__c == 'Forebygge sykefravær'
+                        ? 'kontaktskjemaSykefravaerReceipt'
+                        : 'kontaktskjemaRekrutteringReceipt';
+                    EmailQueue__c email = new EmailQueue__c();
+                    email.TemplateName__c = templateName;
+                    email.TargetObjectId__c = co.Contact__c;
+                    email.WhatId__c = co.Id;
+                    email.Status__c = 'Instant';
+                    email.SaveAsActivity__c = true;
 
-                emails.add(email);
+                    emails.add(email);
+                }
             }
+            insert emails;
+        } catch (Exception e) {
+            LoggerUtility logger = new LoggerUtility();
+            logger.error(e.getMessage() + '\n ' + e.getStackTraceString(), null);
+            logger.publish();
         }
-        insert emails;
     }
 
     private static Map<String, Account> getAccountMap(List<ArbeidsgiverKontaktSkjema> formSubmissions) {
