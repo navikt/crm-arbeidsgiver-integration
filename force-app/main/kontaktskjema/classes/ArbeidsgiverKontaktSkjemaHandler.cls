@@ -60,6 +60,7 @@ public inherited sharing class ArbeidsgiverKontaktSkjemaHandler implements IKafk
 
     private static void sendEmailReceipts(List<CustomOpportunity__c> opportunities) {
         List<EmailQueue__c> emails = new List<EmailQueue__c>();
+
         try {
             for (CustomOpportunity__c co : opportunities) {
                 if (co.Contact__c != null) {
