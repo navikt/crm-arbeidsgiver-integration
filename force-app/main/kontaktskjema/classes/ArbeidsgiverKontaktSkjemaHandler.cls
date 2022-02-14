@@ -3,25 +3,31 @@ public inherited sharing class ArbeidsgiverKontaktSkjemaHandler implements IKafk
         .get('Inclusion')
         .getRecordTypeId();
 
+    private LoggerUtility logger;
+
+    public ArbeidsgiverKontaktSkjemaHandler() {
+        this.logger = new LoggerUtility();
+    }
+
     public void processMessages(List<KafkaMessage__c> messages) {
         List<ArbeidsgiverKontaktSkjema> models = new List<ArbeidsgiverKontaktSkjema>();
         List<CustomOpportunity__c> opportunities = new List<CustomOpportunity__c>();
-
-        for (KafkaMessage__c message : messages) {
-            try {
-                models.add(convertToKontaktSkjema(message));
-                message.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
-            } catch (Exception e) {
-                message.CRM_Status__c = KafkaMessageService.STATUS_ERROR;
-                message.CRM_ErrorMessage__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
-            }
-        }
         try {
+            for (KafkaMessage__c message : messages) {
+                try {
+                    models.add(convertToKontaktSkjema(message));
+                    message.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
+                } catch (Exception e) {
+                    message.CRM_Status__c = KafkaMessageService.STATUS_ERROR;
+                    message.CRM_ErrorMessage__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
+                    logger.error(e.getMessage() + '\n ' + e.getStackTraceString(), null);
+                    logger.publish();
+                }
+            }
             opportunities = toCustomOpportunity(models);
             insert opportunities;
             sendEmailReceipts(opportunities);
         } catch (Exception e) {
-            LoggerUtility logger = new LoggerUtility();
             logger.error(e.getMessage() + '\n ' + e.getStackTraceString(), null);
             logger.publish();
             throw e;
@@ -76,7 +82,8 @@ public inherited sharing class ArbeidsgiverKontaktSkjemaHandler implements IKafk
                 email.TemplateName__c = templateName;
                 email.TargetObjectId__c = co.Contact__c;
                 email.WhatId__c = co.Id;
-                email.Status__c = 'Instant';
+                email.Priority__c = '5';
+                email.Status__c = 'Queued';
                 email.SaveAsActivity__c = true;
 
                 emails.add(email);
