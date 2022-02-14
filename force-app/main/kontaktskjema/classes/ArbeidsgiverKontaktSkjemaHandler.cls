@@ -82,7 +82,7 @@ public inherited sharing class ArbeidsgiverKontaktSkjemaHandler implements IKafk
                 email.TemplateName__c = templateName;
                 email.TargetObjectId__c = co.Contact__c;
                 email.WhatId__c = co.Id;
-                email.Priority__c = 5;
+                email.Priority__c = '5';
                 email.Status__c = 'Queued';
                 email.SaveAsActivity__c = true;
 
