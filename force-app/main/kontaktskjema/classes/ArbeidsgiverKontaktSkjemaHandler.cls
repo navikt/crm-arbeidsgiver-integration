@@ -12,26 +12,20 @@ public inherited sharing class ArbeidsgiverKontaktSkjemaHandler implements IKafk
     public void processMessages(List<KafkaMessage__c> messages) {
         List<ArbeidsgiverKontaktSkjema> models = new List<ArbeidsgiverKontaktSkjema>();
         List<CustomOpportunity__c> opportunities = new List<CustomOpportunity__c>();
-        try {
-            for (KafkaMessage__c message : messages) {
-                try {
-                    models.add(convertToKontaktSkjema(message));
-                    message.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
-                } catch (Exception e) {
-                    message.CRM_Status__c = KafkaMessageService.STATUS_ERROR;
-                    message.CRM_ErrorMessage__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
-                    logger.error(e.getMessage() + '\n ' + e.getStackTraceString(), null);
-                    logger.publish();
-                }
+        for (KafkaMessage__c message : messages) {
+            try {
+                models.add(convertToKontaktSkjema(message));
+                message.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
+            } catch (Exception e) {
+                message.CRM_Status__c = KafkaMessageService.STATUS_ERROR;
+                message.CRM_ErrorMessage__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
+                logger.error(e.getMessage() + '\n ' + e.getStackTraceString(), null);
+                logger.publish();
             }
-            opportunities = toCustomOpportunity(models);
-            insert opportunities;
-            sendEmailReceipts(opportunities);
-        } catch (Exception e) {
-            logger.error(e.getMessage() + '\n ' + e.getStackTraceString(), null);
-            logger.publish();
-            throw e;
         }
+        opportunities = toCustomOpportunity(models);
+        insert opportunities;
+        sendEmailReceipts(opportunities);
     }
 
     private ArbeidsgiverKontaktSkjema convertToKontaktSkjema(KafkaMessage__c message) {
