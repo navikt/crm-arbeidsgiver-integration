@@ -13,8 +13,17 @@ public without sharing class KafkaPermitteringHandler implements IKafkaMessageCo
             permitteringer
         );
 
-        // will create non-existing contacts and fetch those already existing + map existing contacts to new accounts if represnting another unit
+        /*
+        * 22.02 ble det tatt en beslutning om å fjerne tilgang til permitteringsvarsler i Salesforce.
+        * Siden oppretelse av nye kontaktpersoner med kilde "permittering" kan tyde på mottakelse av nye permitteringsvarsler
+        * valgte vi å fjerne opprettelse av kontakter i forbindelse med permitteringsvarsel.
+        *
+        * Dette kan aktiveres på nytt senere of testene bør oppdateres.
+        *
         Map<String, Contact> contactMap = SharedFunctions.fetchOrCreateContact(wrapperList, accountMap);
+        */
+
+        Map<String, Contact> contactMap = new Map<String, Contact>();
 
         // create SObject version of layoff
         List<TemporaryLayoff__c> layoffs = KafkaPermitteringHandler_Helper.convertPermitteringToLayoff(

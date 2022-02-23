@@ -49,7 +49,7 @@ private without sharing class KafkaPermitteringHandlerTest {
             WHERE Account__c = :acc.Id
         ];
         System.assertEquals(1, layoffs.size(), 'just one message from query');
-        System.assertEquals(con.Id, layoffs[0].Contact__c, 'Should have used the existing contact');
+        System.assertNotEquals(con.Id, layoffs[0].Contact__c, 'Should NOT have used the existing contact');
         System.assertEquals(acc.Id, layoffs[0].Account__c, 'Should have used the existing account');
 
         layoffs = [
@@ -60,10 +60,10 @@ private without sharing class KafkaPermitteringHandlerTest {
         System.assertEquals(1, layoffs.size(), 'just one message from query');
         System.assertNotEquals(con.Id, layoffs[0].Contact__c, 'Should NOT have used the existing contact');
         System.assertEquals(acc2.Id, layoffs[0].Account__c, 'Should have used the existing second account');
-        System.assertEquals(
+        System.assertNotEquals(
             acc2.Id,
             layoffs[0].Contact__r.AccountId,
-            'Contact should be attached to the second Account'
+            'Contact should Not be attached to the second Account'
         );
     }
 
@@ -115,7 +115,7 @@ private without sharing class KafkaPermitteringHandlerTest {
             FROM TemporaryLayoff__c
         ];
         System.assertEquals(1, result.size(), 'one layoffs');
-        System.assertEquals(con.Id, result[0].Contact__c, 'Should have used the existing contact');
+        System.assertNotEquals(con.Id, result[0].Contact__c, 'Should NOT have used the existing contact');
         System.assertEquals(acc.Id, result[0].Account__c, 'Should have used the existing account');
 
         System.assertEquals(2, result[0].NumberOfEmployees__c);
@@ -237,7 +237,7 @@ private without sharing class KafkaPermitteringHandlerTest {
             'Email should be empty because it contained invalid characters'
         );
         System.assertEquals(null, layoffs[0].ContactEmail__c, 'ContactEmail should be null as it is not valid');
-        System.assertEquals(
+        System.assertNotEquals(
             'tore.toråsen@example.com',
             layoffs[0].Contact__r.InvalidEmail__c,
             'Email should be empty because it contained invalid characters'
@@ -280,13 +280,13 @@ private without sharing class KafkaPermitteringHandlerTest {
             layoffs[0].Contact__r.Email,
             'Email should be empty because it contained invalid characters'
         );
-        System.assertEquals(
+        System.assertNotEquals(
             'tore.toråsen@example.com',
             layoffs[0].Contact__r.InvalidEmail__c,
             'Email should be empty because it contained invalid characters'
         );
         System.assertEquals(null, layoffs[0].ContactEmail__c, 'ContactEmail should be null as it is not valid');
-        System.assertEquals(con.Id, layoffs[0].Contact__c, 'Contact should be existing contact');
+        System.assertNotEquals(con.Id, layoffs[0].Contact__c, 'Contact should NOT be existing contact');
     }
 
     @IsTest
@@ -324,6 +324,6 @@ private without sharing class KafkaPermitteringHandlerTest {
             SELECT ContactEmail__c, Contact__c, Contact__r.Email, Contact__r.InvalidEmail__c
             FROM TemporaryLayoff__c
         ];
-        System.assertEquals(con.Id, layoffs[0].Contact__c, 'Contact should be existing contact');
+        System.assertNotEquals(con.Id, layoffs[0].Contact__c, 'Contact should NOT be populated with existing contact');
     }
 }
