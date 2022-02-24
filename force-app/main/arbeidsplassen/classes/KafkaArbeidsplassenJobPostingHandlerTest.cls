@@ -1,6 +1,3 @@
-/**
- * Created by jordanmathews on 23/02/2022.
- */
-
+@isTest
 public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
 }
