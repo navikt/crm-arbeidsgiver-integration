@@ -1,4 +1,4 @@
-public with sharing class ArbeidsplassenJobPosting {
+public with sharing class ArbeidsplassenJobPosting implements IKafkaMessageParser {
     public List<Property> properties { get; set; }
     public List<Location> locations { get; set; }
     public List<Contact> contacts { get; set; }
