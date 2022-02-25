@@ -16,10 +16,9 @@ public with sharing class KafkaArbeidsplassenJobPostingHandler extends KafkaMess
             }
         }
 
-        getLastSaved(JobPosting__c.class, keyToJobPosting.keySet());
         jobPostings = toSObject();
 
-        //upsert jobPostings JobPosting__c.KafkaId__c;
+        upsert jobPostings JobPosting__c.KafkaId__c;
     }
 
     private void mapJobPosting(ArbeidsplassenJobPosting jobPosting) {
@@ -33,16 +32,37 @@ public with sharing class KafkaArbeidsplassenJobPostingHandler extends KafkaMess
     }
 
     private List<JobPosting__c> toSOBject() {
-        Map<String, Id> accountMap = getOrgNumberAccountIdMap();
         Map<String, String> lastSaved = getLastSaved(JobPosting__c.class, keyToJobPosting.keyset());
+        Map<String, Id> accountMap = getOrgNumberAccountIdMap();
+
         List<JobPosting__c> jobPostings = new List<JobPosting__c>();
 
         for (ArbeidsplassenJobPosting model : keyToJobPosting.values()) {
-            if (!isNewOrChanged(model.key, model.hash, lastSaved)) {
+            if (model.status != 'ACTIVE' || !isNewOrChanged(model.key, model.hash, lastSaved)) {
                 continue;
             }
 
-            JobPosting__c jobPosting = new JobPosting__c();
+            JobPosting__c jobPosting = new JobPosting__c(
+                EngagementType__c = model.getProperty('engagementtype'),
+                SourceURL__c = model.getProperty('sourceurl'),
+                Extent__c = model.getProperty('extent '),
+                WorkplaceCity__c = model.getCitiesAsString(),
+                LastUpdated__c = dateTimeValue(model.updated),
+                Published__c = dateTimeValue(model.published),
+                Created__c = dateTimeValue(model.created),
+                Expires__c = dateTimeValue(model.expires),
+                EmployerReference__c = model.reference,
+                JobPoster__c = model.businessName,
+                Status__c = model.status,
+                Medium__c = model.medium,
+                Source__c = model.source,
+                Title__c = model.title,
+                KafkaHash__c = model.hash,
+                KafkaId__c = model.key,
+                UUID__c = model.uuid
+
+                // TODO: add category
+            );
 
             if (accountMap.containsKey(model.employer.orgnr)) {
                 jobPosting.Account__c = accountMap.get(model.employer.orgnr);

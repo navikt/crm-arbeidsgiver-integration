@@ -17,6 +17,7 @@ public with sharing class ArbeidsplassenJobPosting implements IKafkaMessageParse
     public String title { get; set; }
     public String uuid { get; set; }
 
+    public Map<String, String> propertyMap { get; set; }
     public String jsonPayload { get; set; }
     public String hash { get; set; }
     public String key { get; set; }
@@ -60,6 +61,40 @@ public with sharing class ArbeidsplassenJobPosting implements IKafkaMessageParse
         public String name { get; set; }
     }
 
+    public String getProperty(String propertyName) {
+        return propertyMap.containsKey(propertyName) ? propertyMap.get(propertyName) : null;
+    }
+
+    public String getCategoryCodesAsString() {
+        String codes = '';
+
+        if (categories == null) {
+            return codes;
+        }
+
+        for (StyrkCategory c : categories) {
+            if (c.styrkCode != null) {
+                codes += c.styrkCode + ', ';
+            }
+        }
+        return codes.trim().removeEnd(',');
+    }
+
+    public String getCitiesAsString() {
+        String cities = '';
+
+        if (locations == null) {
+            return cities;
+        }
+
+        for (Location l : locations) {
+            if (l.city != null) {
+                cities += l.city + ', ';
+            }
+        }
+        return cities.trim().removeEnd(',');
+    }
+
     public static ArbeidsplassenJobPosting parse(String json, String key, String hash) {
         ArbeidsplassenJobPosting model = (ArbeidsplassenJobPosting) System.JSON.deserialize(
             json,
@@ -68,6 +103,12 @@ public with sharing class ArbeidsplassenJobPosting implements IKafkaMessageParse
         model.jsonPayload = json;
         model.hash = hash;
         model.key = key;
+
+        model.propertyMap = new Map<String, String>();
+
+        for (Property prop : model.properties) {
+            model.propertyMap.put(prop.key, prop.value);
+        }
 
         return model;
     }

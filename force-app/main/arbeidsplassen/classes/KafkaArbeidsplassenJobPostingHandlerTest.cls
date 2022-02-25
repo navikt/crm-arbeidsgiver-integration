@@ -1,3 +1,155 @@
 @isTest
 public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
+    @IsTest
+    static void processSingleMessage_success() {
+        Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '123456789');
+        insert acc;
+
+        String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(ArbeidsplassenJobPostingTest.JSON));
+
+        KafkaMessage__c msg1 = new KafkaMessage__c();
+        msg1.CRM_Topic__c = 'teampam.stilling-ekstern-1';
+        msg1.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
+        msg1.CRM_Value__c = encodedValue;
+
+        KafkaArbeidsplassenJobPostingHandler handler = new KafkaArbeidsplassenJobPostingHandler();
+        handler.processMessages(new List<KafkaMessage__c>{ msg1 });
+
+        List<JobPosting__c> jobPostings = [SELECT Id, Account__c, KafkaId__c, KafkaHash__c FROM JobPosting__c];
+
+        System.assertEquals(1, jobPostings.size(), 'Job Posting Inserted');
+        System.assertEquals(acc.id, jobPostings[0].Account__c, 'Correct Account');
+        System.assertEquals(msg1.CRM_Key__c, jobPostings[0].KafkaId__c, 'Correct KafkaId');
+        System.assertEquals(msg1.CRM_Value__c, jobPostings[0].KafkaHash__c, 'Correct KafkaId');
+    }
+
+    @IsTest
+    static void processSingleMessage_inactiveStatus() {
+        Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '123456789');
+        insert acc;
+
+        String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(ArbeidsplassenJobPostingTest.JSON_WITH_NULLS));
+
+        KafkaMessage__c msg1 = new KafkaMessage__c();
+        msg1.CRM_Topic__c = 'teampam.stilling-ekstern-1';
+        msg1.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
+        msg1.CRM_Value__c = encodedValue;
+
+        KafkaArbeidsplassenJobPostingHandler handler = new KafkaArbeidsplassenJobPostingHandler();
+        handler.processMessages(new List<KafkaMessage__c>{ msg1 });
+
+        List<JobPosting__c> jobPostings = [SELECT Id, Account__c, KafkaId__c, KafkaHash__c FROM JobPosting__c];
+
+        System.assertNotEquals(1, jobPostings.size(), 'Inactive job posting not inserted');
+    }
+
+    @isTest
+    static void processSingleMessage_updateExisting() {
+        String encodedValue1 = EncodingUtil.base64Encode(Blob.valueOf(ArbeidsplassenJobPostingTest.JSON_WITH_NULLS));
+        String encodedValue2 = EncodingUtil.base64Encode(Blob.valueOf(ArbeidsplassenJobPostingTest.JSON));
+
+        KafkaMessage__c msg1 = new KafkaMessage__c();
+        msg1.CRM_Topic__c = 'teampam.stilling-ekstern-1';
+        msg1.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
+        msg1.CRM_Value__c = encodedValue2;
+
+        JobPosting__c jobPosting = new JobPosting__c(
+            KafkaId__c = msg1.CRM_Key__c,
+            KafkaHash__c = encodedValue1,
+            Expires__c = Date.Today()
+        );
+        insert jobPosting;
+
+        KafkaArbeidsplassenJobPostingHandler handler = new KafkaArbeidsplassenJobPostingHandler();
+        handler.processMessages(new List<KafkaMessage__c>{ msg1 });
+
+        List<JobPosting__c> jobPostings = [SELECT Id, Expires__c, KafkaId__c, KafkaHash__c FROM JobPosting__c];
+
+        System.assertEquals(1, jobPostings.size(), 'Still only one job posting');
+        System.assertNotEquals(jobPosting.expires__c, jobPostings[0].Expires__c, 'Expired date updated');
+        System.assertEquals(msg1.CRM_Key__c, jobPostings[0].KafkaId__c, 'Correct KafkaId');
+        System.assertEquals(msg1.CRM_Value__c, jobPostings[0].KafkaHash__c, 'Updated Kafka hash');
+    }
+
+    @isTest
+    static void multipleMessage_SameKey() {
+        String encodedValue1 = EncodingUtil.base64Encode(Blob.valueOf(ArbeidsplassenJobPostingTest.JSON_WITH_NULLS));
+        String encodedValue2 = EncodingUtil.base64Encode(Blob.valueOf(ArbeidsplassenJobPostingTest.JSON));
+
+        KafkaMessage__c msg1 = new KafkaMessage__c();
+        msg1.CRM_Topic__c = 'teampam.stilling-ekstern-1';
+        msg1.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
+        msg1.CRM_Value__c = encodedValue1;
+
+        KafkaMessage__c msg2 = new KafkaMessage__c();
+        msg2.CRM_Topic__c = 'teampam.stilling-ekstern-1';
+        msg2.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
+        msg2.CRM_Value__c = encodedValue2;
+
+        KafkaArbeidsplassenJobPostingHandler handler = new KafkaArbeidsplassenJobPostingHandler();
+        handler.processMessages(new List<KafkaMessage__c>{ msg1, msg2 });
+
+        List<JobPosting__c> jobPostings = [
+            SELECT Id, Expires__c, LastUpdated__c, KafkaId__c, KafkaHash__c
+            FROM JobPosting__c
+        ];
+
+        System.assertEquals(1, jobPostings.size(), 'Only one job posting added');
+        System.assertEquals(
+            '2022-02-18 07:19:21',
+            String.valueOf(jobPostings[0].LastUpdated__c),
+            'Most recent message was used.'
+        );
+    }
+
+    @isTest
+    static void runJobBulk_insertAndUpdate() {
+        KafkaEnhetFilter.bypassFilter = true;
+
+        Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '123456789');
+        insert acc;
+
+        String encodedValue1 = EncodingUtil.base64Encode(Blob.valueOf(ArbeidsplassenJobPostingTest.JSON));
+        String encodedValue2 = EncodingUtil.base64Encode(Blob.valueOf(ArbeidsplassenJobPostingTest.JSON_WITH_NULLS));
+
+        List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
+
+        // Same key update Existing Job Posting
+        KafkaMessage__c msg = new KafkaMessage__c();
+        msg.CRM_Topic__c = 'teampam.stilling-ekstern-1';
+        msg.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
+        msg.CRM_Value__c = encodedValue1;
+
+        // New key new Job Posting
+        KafkaMessage__c msg2 = msg.clone();
+        msg2.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1f';
+
+        // Ignore inactive status
+        KafkaMessage__c msg3 = msg.clone();
+        msg3.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1g';
+        msg.CRM_Value__c = encodedValue2;
+
+        messages.add(msg);
+        messages.add(msg2);
+        messages.add(msg3);
+
+        JobPosting__c jobPosting = new JobPosting__c(
+            KafkaId__c = msg.CRM_Key__c,
+            KafkaHash__c = encodedValue2,
+            Expires__c = Date.Today()
+        );
+        insert jobPosting;
+        insert messages;
+
+        Test.StartTest();
+        AsyncRequestSchedulable.enqueueAsyncJobs();
+        Test.StopTest();
+
+        List<JobPosting__c> jobPostings = [
+            SELECT Id, Expires__c, LastUpdated__c, KafkaId__c, KafkaHash__c
+            FROM JobPosting__c
+        ];
+
+        System.assertEquals(2, jobPostings.size(), '1 new, 1 updated and 1 ignored');
+    }
 }

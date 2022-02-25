@@ -1,10 +1,10 @@
 @IsTest
 public with sharing class ArbeidsplassenJobPostingTest {
-    private static final String JSON =
+    public static final String JSON =
         '{\n' +
         '  "uuid": "8e019569-0a0b-4f34-8d43-4498b9f0b32b",\n' +
         '  "title": "Hedda Hytter søker tømrer/tømrerlag for oppføring av hytter på Østlandet.",\n' +
-        '  "status": "INACTIVE",\n' +
+        '  "status": "ACTIVE",\n' +
         '  "published": "2022-02-18T07:07:07.064711",\n' +
         '  "expires": "2022-03-31T00:00:00",\n' +
         '  "created": "2022-02-18T07:17:50.477069",\n' +
@@ -23,6 +23,20 @@ public with sharing class ArbeidsplassenJobPostingTest {
         '      "latitude": "60.54515075683594",\n' +
         '      "longitude": "9.809159278869629",\n' +
         '      "municipal": "SØR-AURDA",\n' +
+        '      "municipal_code": "3449",\n' +
+        '      "postalCode": "3528"\n' +
+        '\n' +
+        '\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "address": "Hedalsvegen 1165",\n' +
+        '      "city": "OSLO",\n' +
+        '      "country": "NORGE",\n' +
+        '      "county": "OSLO",\n' +
+        '      "county_code": "34",\n' +
+        '      "latitude": "60.54515075683594",\n' +
+        '      "longitude": "9.809159278869629",\n' +
+        '      "municipal": "OSLO",\n' +
         '      "municipal_code": "3449",\n' +
         '      "postalCode": "3528"\n' +
         '\n' +
@@ -73,7 +87,7 @@ public with sharing class ArbeidsplassenJobPostingTest {
         '\n' +
         '}';
 
-    private static final String JSON_WITH_NULLS =
+    public static final String JSON_WITH_NULLS =
         '{\n' +
         '  "uuid": "8e019569-0a0b-4f34-8d43-4498b9f0b32b",\n' +
         '  "title": "Hedda Hytter søker tømrer/tømrerlag for oppføring av hytter på Østlandet.",\n' +
@@ -81,7 +95,7 @@ public with sharing class ArbeidsplassenJobPostingTest {
         '  "published": "2022-02-18T07:07:07.064711",\n' +
         '  "expires": "2022-03-31T00:00:00",\n' +
         '  "created": "2022-02-18T07:17:50.477069",\n' +
-        '  "updated": "2022-02-18T07:19:21.575794",\n' +
+        '  "updated": "2021-02-18T07:19:21.575794",\n' +
         '  "source": "FINN",\n' +
         '  "medium": "FINN",\n' +
         '  "reference": "248749509",\n' +
@@ -120,12 +134,6 @@ public with sharing class ArbeidsplassenJobPostingTest {
         '      "value": "https://www.finn.no/248749509"\n' +
         '    }\n' +
         '  ],\n' +
-        '  "categories": [\n' +
-        '   {\n' +
-        '      "styrkCode": "STYRK08",\n' +
-        '      "name": "Fylkesjordskiftesjef"\n' +
-        '    }\n' +
-        '  ],\n' +
         '  "contacts": [\n' +
         '    {\n' +
         '      "name": "Kari Nordmann",\n' +
@@ -156,12 +164,12 @@ public with sharing class ArbeidsplassenJobPostingTest {
         System.assertEquals('2022-02-18T07:07:07.064711', model.published);
         System.assertEquals('2022-03-31T00:00:00', model.expires);
         System.assertEquals('2022-02-18T07:17:50.477069', model.created);
-        System.assertEquals('2022-02-18T07:19:21.575794', model.updated);
+        System.assertEquals('2021-02-18T07:19:21.575794', model.updated);
         System.assertEquals('FINN', model.source);
         System.assertEquals('FINN', model.medium);
         System.assertEquals('248749509', model.reference);
         System.assertEquals('Hedda Hytter AS', model.businessName);
-        System.assertEquals(1, model.locations.size());
+        System.assertEquals(2, model.locations.size());
         System.assertEquals(4, model.properties.size());
         System.assertEquals(1, model.categories.size());
         System.assertEquals(1, model.contacts.size());
@@ -189,12 +197,66 @@ public with sharing class ArbeidsplassenJobPostingTest {
         System.assertEquals('Hedda Hytter AS', model.businessName);
         System.assertEquals(1, model.locations.size());
         System.assertEquals(4, model.properties.size());
-        System.assertEquals(1, model.categories.size());
+        System.assert(model.categories == null);
         System.assertEquals(1, model.contacts.size());
         System.assertEquals('Hedda Hytter AS', model.employer.name);
         System.assertEquals('Hedda Hytter AS', model.employer.publicName);
         System.assertEquals(null, model.employer.orgnr);
         System.assertEquals(null, model.employer.parentOrgnr);
         System.assertEquals('AS', model.employer.orgform);
+    }
+
+    @IsTest
+    static void getProperty_success() {
+        ArbeidsplassenJobPosting model = ArbeidsplassenJobPosting.parse(JSON, 'testkey', 'testhash');
+
+        String value = model.getProperty('extent');
+
+        System.assertEquals('Heltid', value);
+    }
+
+    @IsTest
+    static void getProperty_notFound() {
+        ArbeidsplassenJobPosting model = ArbeidsplassenJobPosting.parse(JSON, 'testkey', 'testhash');
+
+        String value = model.getProperty('propnotfound');
+
+        System.assertEquals(null, value);
+    }
+
+    @IsTest
+    static void getCitiesAsString_noNulls() {
+        ArbeidsplassenJobPosting model = ArbeidsplassenJobPosting.parse(JSON, 'testkey', 'testhash');
+
+        String value = model.getCitiesAsString();
+
+        System.assertEquals('HEDALEN, OSLO', value);
+    }
+
+    @IsTest
+    static void getCitiesAsString_allNulls() {
+        ArbeidsplassenJobPosting model = ArbeidsplassenJobPosting.parse(JSON_WITH_NULLS, 'testkey', 'testhash');
+
+        String value = model.getCitiesAsString();
+
+        System.assert(String.isBlank(value));
+    }
+
+    @IsTest
+    static void getCategoryCodesAsString_noNulls() {
+        ArbeidsplassenJobPosting model = ArbeidsplassenJobPosting.parse(JSON, 'testkey', 'testhash');
+
+        String value = model.getCategoryCodesAsString();
+
+        System.assertEquals('STYRK08', value);
+    }
+
+    @IsTest
+    static void getCategoryCodesAsString_nulls() {
+        ArbeidsplassenJobPosting model = ArbeidsplassenJobPosting.parse(JSON_WITH_NULLS, 'testkey', 'testhash');
+
+        String value = model.getCitiesAsString();
+
+        System.assert(String.isBlank(value));
     }
 }

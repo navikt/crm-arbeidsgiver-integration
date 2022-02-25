@@ -41,7 +41,9 @@ public inherited sharing abstract class KafkaMessageProcessor {
         Map<String, String> keyToExistingHash = new Map<String, String>();
 
         for (SObject obj : Database.query(query)) {
-            keyToExistingHash.put(obj.get('KafkaId__c').toString(), obj.get('KafkaHash__c').toString());
+            if (obj.get('KafkaHash__c') != null) {
+                keyToExistingHash.put(obj.get('KafkaId__c').toString(), obj.get('KafkaHash__c').toString());
+            }
         }
 
         return keyToExistingHash;
