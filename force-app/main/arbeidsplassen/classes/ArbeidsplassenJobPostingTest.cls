@@ -57,7 +57,7 @@ public with sharing class ArbeidsplassenJobPostingTest {
         '      "value": "Fast"\n' +
         '    },\n' +
         '    {\n' +
-        '      "key": "sourceur",\n' +
+        '      "key": "sourceurl",\n' +
         '      "value": "https://www.finn.no/248749509"\n' +
         '    }\n' +
         '  ],\n' +
@@ -160,11 +160,11 @@ public with sharing class ArbeidsplassenJobPostingTest {
 
         System.assertEquals('8e019569-0a0b-4f34-8d43-4498b9f0b32b', model.uuid);
         System.assertEquals('Hedda Hytter søker tømrer/tømrerlag for oppføring av hytter på Østlandet.', model.title);
-        System.assertEquals('INACTIVE', model.status);
+        System.assertEquals('ACTIVE', model.status);
         System.assertEquals('2022-02-18T07:07:07.064711', model.published);
         System.assertEquals('2022-03-31T00:00:00', model.expires);
         System.assertEquals('2022-02-18T07:17:50.477069', model.created);
-        System.assertEquals('2021-02-18T07:19:21.575794', model.updated);
+        System.assertEquals('2022-02-18T07:19:21.575794', model.updated);
         System.assertEquals('FINN', model.source);
         System.assertEquals('FINN', model.medium);
         System.assertEquals('248749509', model.reference);
@@ -190,7 +190,7 @@ public with sharing class ArbeidsplassenJobPostingTest {
         System.assertEquals('2022-02-18T07:07:07.064711', model.published);
         System.assertEquals('2022-03-31T00:00:00', model.expires);
         System.assertEquals('2022-02-18T07:17:50.477069', model.created);
-        System.assertEquals('2022-02-18T07:19:21.575794', model.updated);
+        System.assertEquals('2021-02-18T07:19:21.575794', model.updated);
         System.assertEquals('FINN', model.source);
         System.assertEquals('FINN', model.medium);
         System.assertEquals('248749509', model.reference);

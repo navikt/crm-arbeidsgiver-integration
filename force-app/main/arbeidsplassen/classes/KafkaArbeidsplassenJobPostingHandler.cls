@@ -44,8 +44,9 @@ public with sharing class KafkaArbeidsplassenJobPostingHandler extends KafkaMess
 
             JobPosting__c jobPosting = new JobPosting__c(
                 EngagementType__c = model.getProperty('engagementtype'),
+                ProfessionCategoryCode__c = model.getCategoryCodesAsString(),
                 SourceURL__c = model.getProperty('sourceurl'),
-                Extent__c = model.getProperty('extent '),
+                Extent__c = model.getProperty('extent'),
                 WorkplaceCity__c = model.getCitiesAsString(),
                 LastUpdated__c = dateTimeValue(model.updated),
                 Published__c = dateTimeValue(model.published),
@@ -60,11 +61,9 @@ public with sharing class KafkaArbeidsplassenJobPostingHandler extends KafkaMess
                 KafkaHash__c = model.hash,
                 KafkaId__c = model.key,
                 UUID__c = model.uuid
-
-                // TODO: add category
             );
 
-            if (accountMap.containsKey(model.employer.orgnr)) {
+            if (accountMap.containsKey(model?.employer?.orgnr)) {
                 jobPosting.Account__c = accountMap.get(model.employer.orgnr);
             }
 

@@ -62,6 +62,18 @@ public with sharing class ArbeidsplassenJobPosting implements IKafkaMessageParse
     }
 
     public String getProperty(String propertyName) {
+        if (properties == null) {
+            return null;
+        }
+
+        if (propertyMap == null) {
+            propertyMap = new Map<String, String>();
+
+            for (Property prop : properties) {
+                propertyMap.put(prop.key, prop.value);
+            }
+        }
+
         return propertyMap.containsKey(propertyName) ? propertyMap.get(propertyName) : null;
     }
 
@@ -103,12 +115,6 @@ public with sharing class ArbeidsplassenJobPosting implements IKafkaMessageParse
         model.jsonPayload = json;
         model.hash = hash;
         model.key = key;
-
-        model.propertyMap = new Map<String, String>();
-
-        for (Property prop : model.properties) {
-            model.propertyMap.put(prop.key, prop.value);
-        }
 
         return model;
     }
