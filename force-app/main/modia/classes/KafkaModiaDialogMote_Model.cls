@@ -1,4 +1,4 @@
-public with sharing class KafkaModiaDialogMote_Model {
+public with sharing class KafkaModiaDialogMote_Model implements IKafkaMessageParser {
     public String statusEndringTidspunkt { get; set; }
     public String dialogmoteTidspunkt { get; set; }
     public String statusEndringType { get; set; }
