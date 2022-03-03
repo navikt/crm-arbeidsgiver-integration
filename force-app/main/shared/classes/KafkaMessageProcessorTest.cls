@@ -1,0 +1,205 @@
+@IsTest
+public with sharing class KafkaMessageProcessorTest {
+    @isTest
+    static void addOrgNumber() {
+        KafkaMessageProcessorExtension processor = new KafkaMessageProcessorExtension();
+
+        processor.addOrgNumber('123456789');
+        processor.addOrgNumber('113456789');
+
+        System.assertEquals(2, processor.orgNumbers.size(), 'Org Numbers added');
+    }
+
+    @isTest
+    static void addOrgNumber_null() {
+        KafkaMessageProcessorExtension processor = new KafkaMessageProcessorExtension();
+
+        processor.addOrgNumber(null);
+
+        System.assertEquals(0, processor.orgNumbers.size(), 'Org Numbers added');
+    }
+
+    @isTest
+    static void isMostRecent_mostRecent() {
+        String newTime = '1970-01-19T18:46:53.748Z';
+        String oldTime = '1970-01-19T18:46:52.748Z';
+
+        Boolean mostRecent = new KafkaMessageProcessorExtension().isMostRecent(newTime, oldTime);
+
+        System.assertEquals(true, mostRecent, 'New time is most recent');
+    }
+
+    @isTest
+    static void isMostRecent_notMostRecent() {
+        String newTime = '1970-01-19T18:46:52.748Z';
+        String oldTime = '1970-01-19T18:46:53.748Z';
+
+        Boolean mostRecent = new KafkaMessageProcessorExtension().isMostRecent(newTime, oldTime);
+
+        System.assertEquals(false, mostRecent, 'Old time most recent');
+    }
+
+    @isTest
+    static void isMostRecent_invalidFormat() {
+        String newTime = '18:46:52.748Z 1970-01-19';
+        String oldTime = '1970-01-19T18:46:53.748Z';
+        Exception caughtExcepiton;
+        try {
+            Boolean mostRecent = new KafkaMessageProcessorExtension().isMostRecent(newTime, oldTime);
+        } catch (Exception e) {
+            caughtExcepiton = e;
+        }
+
+        System.assertEquals(TypeException.class.getName(), caughtExcepiton.getTypeName(), 'Correct exception thrown');
+    }
+
+    @isTest
+    static void dateTimeValue() {
+        DateTime dt = DateTime.newInstance(1970, 1, 19, 18, 46, 52);
+
+        String timeDate = '1970-01-19T18:46:52.748Z';
+        Datetime dateTimeValue = new KafkaMessageProcessorExtension().dateTimeValue(timeDate);
+
+        System.assertEquals(dt, dateTimeValue, 'Successfull datetime conversion');
+    }
+
+    @isTest
+    static void dateTimeValue_Ancient() {
+        DateTime dt = DateTime.newInstance(1600, 1, 19, 18, 46, 52);
+
+        String timeDate = '1600-01-19T18:46:52.748Z';
+        Datetime dateTimeValue = new KafkaMessageProcessorExtension().dateTimeValue(timeDate);
+
+        System.assertEquals(dt, dateTimeValue, 'Successfull datetime conversion');
+    }
+
+    @isTest
+    static void dateTimeValue_Futuristic() {
+        DateTime dt = DateTime.newInstance(4500, 1, 19, 18, 46, 52);
+
+        String timeDate = '4500-01-19T18:46:52.748Z';
+        Datetime dateTimeValue = new KafkaMessageProcessorExtension().dateTimeValue(timeDate);
+
+        System.assertEquals(dt, dateTimeValue, 'Successfull datetime conversion');
+    }
+
+    @isTest
+    static void dateTimeValue_invalidFormat() {
+        Exception caughtExcepiton;
+        try {
+            String timeDate = '18:46:52.748Z 1970-01-19';
+            Datetime dateTimeValue = new KafkaMessageProcessorExtension().dateTimeValue(timeDate);
+        } catch (Exception e) {
+            caughtExcepiton = e;
+        }
+
+        System.assertEquals(TypeException.class.getName(), caughtExcepiton.getTypeName(), 'Correct exception thrown');
+    }
+
+    @isTest
+    static void isNewOrChanged_noChanges() {
+        String json = '{"status": "NY"}';
+        String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
+        String key = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
+
+        Map<String, String> keyToHash = new Map<String, String>{ key => encodedValue };
+
+        Boolean isNewOrChanged = new KafkaMessageProcessorExtension().isNewOrChanged(key, encodedValue, keyToHash);
+
+        System.assertEquals(false, isNewOrChanged, 'Hash did not change');
+    }
+
+    @isTest
+    static void isNewOrChanged_hasChanges() {
+        String json1 = '{"status": "NY"}';
+        String json2 = '{"status": "AVSLUTTET"}';
+        String encodedValue1 = EncodingUtil.base64Encode(Blob.valueOf(json1));
+        String encodedValue2 = EncodingUtil.base64Encode(Blob.valueOf(json2));
+        String key = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
+
+        Map<String, String> keyToHash = new Map<String, String>{ key => encodedValue1 };
+
+        Boolean isNewOrChanged = new KafkaMessageProcessorExtension().isNewOrChanged(key, encodedValue2, keyToHash);
+
+        System.assertEquals(true, isNewOrChanged, 'Hash changed');
+    }
+
+    @isTest
+    static void isNewOrChanged_newActivity() {
+        String json = '{"status": "NY"}';
+        String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
+        String key = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
+
+        Map<String, String> keyToHash = new Map<String, String>();
+
+        Boolean isNewOrChanged = new KafkaMessageProcessorExtension().isNewOrChanged(key, encodedValue, keyToHash);
+
+        System.assertEquals(true, isNewOrChanged, 'Is new. Not included in existing map.');
+    }
+
+    @isTest
+    static void lastSaved_success() {
+        String key = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
+        String json = '{"status": "NY"}';
+        String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
+
+        ArenaActivity__c activity = new ArenaActivity__c(KafkaId__c = key, KafkaHash__c = encodedValue);
+        insert activity;
+
+        Map<String, String> lastSavedMessages = new KafkaMessageProcessorExtension()
+            .getLastSaved(ArenaActivity__c.class, new Set<String>{ key });
+
+        System.assertEquals(1, lastSavedMessages.size(), 'Account added to map');
+        System.assertEquals(true, lastSavedMessages.containsKey(key));
+        System.assertEquals(encodedValue, lastSavedMessages.get(key));
+    }
+
+    @isTest
+    static void getOrgNumberAccountMap() {
+        Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '973113631');
+        insert acc;
+
+        Map<String, Id> accountMap = new KafkaMessageProcessorExtension()
+            .addOrgNumber('973113631')
+            .getOrgNumberAccountIdMap();
+
+        System.assertEquals(1, accountMap.size(), 'Account added to map');
+        System.assertEquals(true, accountMap.containsKey('973113631'));
+    }
+
+    @IsTest
+    static void parse_success() {
+        String json = '{}';
+        String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
+
+        KafkaMessage__c msg = new KafkaMessage__c();
+        msg.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
+        msg.CRM_Value__c = encodedValue;
+
+        KafkaMessageProcessorExtension processor = new KafkaMessageProcessorExtension();
+
+        MessageParser parser = (MessageParser) processor.parse(MessageParser.class, msg);
+
+        System.assertEquals(msg.CRM_Value__c, parser.hash);
+        System.assertEquals(msg.CRM_Key__c, parser.key);
+        System.assertEquals(json, parser.jsonPayload);
+    }
+
+    public class MessageParser implements IKafkaMessageParser {
+        public String jsonPayload { get; set; }
+        public String hash { get; set; }
+        public String key { get; set; }
+
+        public MessageParser parse(String json, String key, String hash) {
+            MessageParser model = (MessageParser) System.JSON.deserialize(json, MessageParser.class);
+            model.jsonPayload = json;
+            model.hash = hash;
+            model.key = key;
+
+            return model;
+        }
+    }
+
+    public class KafkaMessageProcessorExtension extends KafkaMessageProcessor {
+    }
+}
