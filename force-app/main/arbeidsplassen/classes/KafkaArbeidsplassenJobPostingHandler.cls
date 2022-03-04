@@ -33,7 +33,7 @@ public with sharing class KafkaArbeidsplassenJobPostingHandler extends KafkaMess
 
     private List<JobPosting__c> toSOBject() {
         Map<String, String> lastSaved = getLastSaved(JobPosting__c.class, keyToJobPosting.keyset());
-        Map<String, Id> accountMap = getOrgNumberAccountIdMap();
+        Map<String, Account> accountMap = getOrgNumberAccountMap();
 
         List<JobPosting__c> jobPostings = new List<JobPosting__c>();
 
@@ -64,7 +64,7 @@ public with sharing class KafkaArbeidsplassenJobPostingHandler extends KafkaMess
             );
 
             if (accountMap.containsKey(model?.employer?.orgnr)) {
-                jobPosting.Account__c = accountMap.get(model.employer.orgnr);
+                jobPosting.Account__c = accountMap.get(model.employer.orgnr).Id;
             }
 
             jobPostings.add(jobPosting);
