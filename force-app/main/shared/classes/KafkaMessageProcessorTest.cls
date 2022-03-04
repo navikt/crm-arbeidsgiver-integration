@@ -159,12 +159,13 @@ public with sharing class KafkaMessageProcessorTest {
         Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '973113631');
         insert acc;
 
-        Map<String, Id> accountMap = new KafkaMessageProcessorExtension()
+        Map<String, Account> accountMap = new KafkaMessageProcessorExtension()
             .addOrgNumber('973113631')
-            .getOrgNumberAccountIdMap();
+            .getOrgNumberAccountMap();
 
         System.assertEquals(1, accountMap.size(), 'Account added to map');
-        System.assertEquals(true, accountMap.containsKey('973113631'));
+        System.assertEquals(true, accountMap.containsKey(acc.INT_OrganizationNumber__c));
+        System.assertEquals(acc.Id, accountMap.get(acc.INT_OrganizationNumber__c).Id);
     }
 
     @IsTest

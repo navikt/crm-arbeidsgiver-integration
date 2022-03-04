@@ -1,49 +1,34 @@
-public inherited sharing class ArbeidsgiverKontaktSkjemaHandler implements IKafkaMessageConsumer {
+public inherited sharing class ArbeidsgiverKontaktSkjemaHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer {
     private static final Id INCLUSION_RECORD_TYPE = Schema.SObjectType.CustomOpportunity__c.getRecordTypeInfosByDeveloperName()
         .get('Inclusion')
         .getRecordTypeId();
 
-    private LoggerUtility logger;
-
-    public ArbeidsgiverKontaktSkjemaHandler() {
-        this.logger = new LoggerUtility();
-    }
-
     public void processMessages(List<KafkaMessage__c> messages) {
         List<ArbeidsgiverKontaktSkjema> models = new List<ArbeidsgiverKontaktSkjema>();
         List<CustomOpportunity__c> opportunities = new List<CustomOpportunity__c>();
-        try {
-            for (KafkaMessage__c message : messages) {
-                try {
-                    models.add(convertToKontaktSkjema(message));
-                    message.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
-                } catch (Exception e) {
-                    message.CRM_Status__c = KafkaMessageService.STATUS_ERROR;
-                    message.CRM_ErrorMessage__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
-                    logger.error(e.getMessage() + '\n ' + e.getStackTraceString(), null);
-                    logger.publish();
-                }
+        for (KafkaMessage__c message : messages) {
+            try {
+                ArbeidsgiverKontaktSkjema model = (ArbeidsgiverKontaktSkjema) parse(
+                    ArbeidsgiverKontaktSkjema.class,
+                    message
+                );
+                orgNumbers.add(model.organisationNumber);
+                models.add(model);
+                message.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
+            } catch (Exception e) {
+                message.CRM_Status__c = KafkaMessageService.STATUS_ERROR;
+                message.CRM_ErrorMessage__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
             }
-            opportunities = toCustomOpportunity(models);
-            insert opportunities;
-            sendEmailReceipts(opportunities);
-        } catch (Exception e) {
-            logger.error(e.getMessage() + '\n ' + e.getStackTraceString(), null);
-            logger.publish();
-            throw e;
         }
+        opportunities = toCustomOpportunity(models);
+        insert opportunities;
+        sendEmailReceipts(opportunities);
     }
 
-    private ArbeidsgiverKontaktSkjema convertToKontaktSkjema(KafkaMessage__c message) {
-        String decodedValue = KafkaMessageUtils.base64ULSafeDecode(message.CRM_Value__c).toString();
-
-        return ArbeidsgiverKontaktSkjema.parse(decodedValue);
-    }
-
-    private static List<CustomOpportunity__c> toCustomOpportunity(List<ArbeidsgiverKontaktSkjema> models) {
+    private List<CustomOpportunity__c> toCustomOpportunity(List<ArbeidsgiverKontaktSkjema> models) {
         List<CustomOpportunity__c> opportunities = new List<CustomOpportunity__c>();
-        Map<String, Account> accountMap = getAccountMap(models);
-        Map<String, Contact> contactMap = getContactMap(models);
+        Map<String, Account> accountMap = getOrgNumberAccountMap();
+        Map<String, Contact> contactMap = getContactMap(models, accountMap);
 
         for (ArbeidsgiverKontaktSkjema model : models) {
             CustomOpportunity__c opp = new CustomOpportunity__c(
@@ -70,7 +55,7 @@ public inherited sharing class ArbeidsgiverKontaktSkjemaHandler implements IKafk
         return opportunities;
     }
 
-    private static void sendEmailReceipts(List<CustomOpportunity__c> opportunities) {
+    private void sendEmailReceipts(List<CustomOpportunity__c> opportunities) {
         List<EmailQueue__c> emails = new List<EmailQueue__c>();
 
         for (CustomOpportunity__c co : opportunities) {
@@ -92,19 +77,10 @@ public inherited sharing class ArbeidsgiverKontaktSkjemaHandler implements IKafk
         insert emails;
     }
 
-    private static Map<String, Account> getAccountMap(List<ArbeidsgiverKontaktSkjema> formSubmissions) {
-        List<String> orgnaizationNumbers = new List<String>();
-
-        for (ArbeidsgiverKontaktSkjema fs : formSubmissions) {
-            if (fs.organisationNumber != null) {
-                orgnaizationNumbers.add(fs.organisationNumber);
-            }
-        }
-
-        return SharedFunctions.fetchAccounts(orgnaizationNumbers);
-    }
-
-    public static Map<String, Contact> getContactMap(List<ArbeidsgiverKontaktSkjema> formSubmissions) {
+    public Map<String, Contact> getContactMap(
+        List<ArbeidsgiverKontaktSkjema> formSubmissions,
+        Map<String, Account> accountMap
+    ) {
         List<SharedFunctions_ContactModel> contactWrappers = new List<SharedFunctions_ContactModel>();
 
         for (ArbeidsgiverKontaktSkjema submission : formSubmissions) {
@@ -119,10 +95,10 @@ public inherited sharing class ArbeidsgiverKontaktSkjemaHandler implements IKafk
             contactWrappers.add(wrapper);
         }
 
-        return SharedFunctions.fetchOrCreateContact(contactWrappers, getAccountMap(formSubmissions));
+        return SharedFunctions.fetchOrCreateContact(contactWrappers, accountMap);
     }
 
-    private static void setName(SharedFunctions_ContactModel wrapper, ArbeidsgiverKontaktSkjema model) {
+    private void setName(SharedFunctions_ContactModel wrapper, ArbeidsgiverKontaktSkjema model) {
         if (!String.isEmpty(model.fullName)) {
             List<String> fullName = model.fullName.split(' ');
             String lastNameSplitted = fullName[fullName.size() - 1];
@@ -132,7 +108,7 @@ public inherited sharing class ArbeidsgiverKontaktSkjemaHandler implements IKafk
         }
     }
 
-    private static String getType(String val) {
+    private String getType(String val) {
         switch on val {
             when 'REKRUTTERING' {
                 return 'Skal ansette';
