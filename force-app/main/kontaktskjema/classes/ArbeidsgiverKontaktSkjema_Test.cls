@@ -14,7 +14,7 @@ public class ArbeidsgiverKontaktSkjema_Test {
 
     @isTest
     static void parse() {
-        ArbeidsgiverKontaktSkjema model = ArbeidsgiverKontaktSkjema.parse(JSON);
+        ArbeidsgiverKontaktSkjema model = ArbeidsgiverKontaktSkjema.parse(JSON, null, null);
 
         System.assertEquals('Finstadtunet', model.organisationName);
         System.assertEquals('960507878', model.organisationNumber);

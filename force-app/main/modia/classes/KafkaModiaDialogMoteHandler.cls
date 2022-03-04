@@ -36,7 +36,7 @@ public without sharing class KafkaModiaDialogMoteHandler extends KafkaMessagePro
 
     private List<ArenaActivity__c> toSObject() {
         Map<String, String> lastSaved = getLastSaved(ArenaActivity__c.class, keyToDialogMote.keyset());
-        Map<String, Id> accountMap = getOrgNumberAccountIdMap();
+        Map<String, Account> accountMap = getOrgNumberAccountMap();
         List<ArenaActivity__c> activities = new List<ArenaActivity__c>();
 
         for (KafkaModiaDialogMote_Model model : keyToDialogMote.values()) {
@@ -63,7 +63,7 @@ public without sharing class KafkaModiaDialogMoteHandler extends KafkaMessagePro
             }
 
             if (accountMap.containsKey(model.virksomhetsnummer)) {
-                aa.Account__c = accountMap.get(model.virksomhetsnummer);
+                aa.Account__c = accountMap.get(model.virksomhetsnummer).Id;
             }
 
             activities.add(aa);
