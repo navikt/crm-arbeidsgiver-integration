@@ -28,6 +28,8 @@
 **/navigationMenus/*
 **fieldRestrictionRules
 
+**fieldRestrictionRules
+
 # LWC configuration files
 **/jsconfig.json
 **/.eslintrc.json

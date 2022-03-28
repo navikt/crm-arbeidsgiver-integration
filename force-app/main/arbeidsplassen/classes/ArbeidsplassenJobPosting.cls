@@ -92,6 +92,21 @@ public with sharing class ArbeidsplassenJobPosting implements IKafkaMessageParse
         return codes.trim().removeEnd(',');
     }
 
+    public String getCategoryNamesAsString() {
+        String names = '';
+
+        if (categories == null) {
+            return names;
+        }
+
+        for (StyrkCategory c : categories) {
+            if (c.styrkCode != null) {
+                names += c.styrkCode + ', ';
+            }
+        }
+        return names.trim().removeEnd(',');
+    }
+
     public String getCitiesAsString() {
         String cities = '';
 
