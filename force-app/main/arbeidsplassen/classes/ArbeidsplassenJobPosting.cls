@@ -77,7 +77,7 @@ public with sharing class ArbeidsplassenJobPosting implements IKafkaMessageParse
         return propertyMap.containsKey(propertyName) ? propertyMap.get(propertyName) : null;
     }
 
-    public String getCategoryCodesAsString() {
+    public String getCategoryCodes() {
         String codes = '';
 
         if (categories == null) {
@@ -92,7 +92,7 @@ public with sharing class ArbeidsplassenJobPosting implements IKafkaMessageParse
         return codes.trim().removeEnd(',');
     }
 
-    public String getCategoryNamesAsString() {
+    public String getCategoryNames() {
         String names = '';
 
         if (categories == null) {
@@ -100,14 +100,14 @@ public with sharing class ArbeidsplassenJobPosting implements IKafkaMessageParse
         }
 
         for (StyrkCategory c : categories) {
-            if (c.styrkCode != null) {
-                names += c.styrkCode + ', ';
+            if (c.name != null) {
+                names += c.name + ', ';
             }
         }
         return names.trim().removeEnd(',');
     }
 
-    public String getCitiesAsString() {
+    public String getCities() {
         String cities = '';
 
         if (locations == null) {

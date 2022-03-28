@@ -170,9 +170,24 @@ public with sharing class ArbeidsplassenJobPostingTest {
         System.assertEquals('248749509', model.reference);
         System.assertEquals('Hedda Hytter AS', model.businessName);
         System.assertEquals(2, model.locations.size());
+        System.assertEquals('Hedalsvegen 1165', model.locations[0].address);
+        System.assertEquals('HEDALEN', model.locations[0].city);
+        System.assertEquals('NORGE', model.locations[0].country);
+        System.assertEquals('INNLANDET', model.locations[0].county);
+        System.assertEquals('34', model.locations[0].county_code);
+        System.assertEquals('60.54515075683594', model.locations[0].latitude);
+        System.assertEquals('9.809159278869629', model.locations[0].longitude);
+        System.assertEquals('SØR-AURDA', model.locations[0].municipal);
+        System.assertEquals('3449', model.locations[0].municipal_code);
+        System.assertEquals('3528', model.locations[0].postalCode);
         System.assertEquals(4, model.properties.size());
         System.assertEquals(1, model.categories.size());
         System.assertEquals(1, model.contacts.size());
+        System.assertEquals('kari@nav.no', model.contacts[0].email);
+        System.assertEquals('Kari Nordmann', model.contacts[0].name);
+        System.assertEquals('41161711', model.contacts[0].phone);
+        System.assertEquals('Daglig leder', model.contacts[0].role);
+        System.assertEquals('Daglig leder', model.contacts[0].title);
         System.assertEquals('Hedda Hytter AS', model.employer.name);
         System.assertEquals('Hedda Hytter AS', model.employer.publicName);
         System.assertEquals('123456789', model.employer.orgnr);
@@ -225,37 +240,64 @@ public with sharing class ArbeidsplassenJobPostingTest {
     }
 
     @IsTest
-    static void getCitiesAsString_noNulls() {
+    static void getProperty_notProperties() {
+        ArbeidsplassenJobPosting model = ArbeidsplassenJobPosting.parse('{}', 'testkey', 'testhash');
+
+        String value = model.getProperty('propnotfound');
+
+        System.assertEquals(null, value);
+    }
+
+    @IsTest
+    static void getCities_noNulls() {
         ArbeidsplassenJobPosting model = ArbeidsplassenJobPosting.parse(JSON, 'testkey', 'testhash');
 
-        String value = model.getCitiesAsString();
+        String value = model.getCities();
 
         System.assertEquals('HEDALEN, OSLO', value);
     }
 
     @IsTest
-    static void getCitiesAsString_allNulls() {
-        ArbeidsplassenJobPosting model = ArbeidsplassenJobPosting.parse(JSON_WITH_NULLS, 'testkey', 'testhash');
+    static void getCities_allNulls() {
+        ArbeidsplassenJobPosting model = ArbeidsplassenJobPosting.parse('{}', 'testkey', 'testhash');
 
-        String value = model.getCitiesAsString();
+        String value = model.getCities();
 
         System.assert(String.isBlank(value));
     }
 
     @IsTest
-    static void getCategoryCodesAsString_noNulls() {
+    static void getCategoryCodes_noNulls() {
         ArbeidsplassenJobPosting model = ArbeidsplassenJobPosting.parse(JSON, 'testkey', 'testhash');
 
-        String value = model.getCategoryCodesAsString();
+        String value = model.getCategoryCodes();
 
         System.assertEquals('STYRK08', value);
     }
 
     @IsTest
-    static void getCategoryCodesAsString_nulls() {
+    static void getCategoryCodes_nulls() {
         ArbeidsplassenJobPosting model = ArbeidsplassenJobPosting.parse(JSON_WITH_NULLS, 'testkey', 'testhash');
 
-        String value = model.getCitiesAsString();
+        String value = model.getCategoryCodes();
+
+        System.assert(String.isBlank(value));
+    }
+
+    @IsTest
+    static void getCategoryNames_noNulls() {
+        ArbeidsplassenJobPosting model = ArbeidsplassenJobPosting.parse(JSON, 'testkey', 'testhash');
+
+        String value = model.getCategoryNames();
+
+        System.assertEquals('Fylkesjordskiftesjef', value);
+    }
+
+    @IsTest
+    static void getCategoryNames_nulls() {
+        ArbeidsplassenJobPosting model = ArbeidsplassenJobPosting.parse(JSON_WITH_NULLS, 'testkey', 'testhash');
+
+        String value = model.getCategoryNames();
 
         System.assert(String.isBlank(value));
     }
