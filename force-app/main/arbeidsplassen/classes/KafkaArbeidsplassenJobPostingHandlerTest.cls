@@ -101,6 +101,30 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
     }
 
     @IsTest
+    static void processSingleMessage_InvalidJson() {
+        String INVALID_JSON =
+            '{\n' +
+            '  "uuid": "8e019569-0a0b-4f34-8d43-4498b9f0b32b",\n' +
+            '  "title": null,\n' +
+            '  "status": "ACTIVE"';
+
+        String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(INVALID_JSON));
+
+        List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
+        KafkaMessage__c msg1 = new KafkaMessage__c();
+        msg1.CRM_Topic__c = 'teampam.stilling-ekstern-1';
+        msg1.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
+        msg1.CRM_Value__c = encodedValue;
+        messages.add(msg1);
+
+        KafkaArbeidsplassenJobPostingHandler handler = new KafkaArbeidsplassenJobPostingHandler();
+        handler.processMessages(messages);
+
+        System.assertEquals(KafkaMessageService.STATUS_ERROR, messages[0].CRM_Status__c);
+        System.assert(String.isNotBlank(messages[0].CRM_ErrorMessage__c));
+    }
+
+    @IsTest
     static void processSingleMessage_inactiveStatus() {
         Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '123456789');
         insert acc;
@@ -181,10 +205,8 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
 
     @isTest
     static void runJobBulk_insertAndUpdate() {
-        String encodedValue1 = EncodingUtil.base64Encode(Blob.valueOf(ArbeidsplassenJobPostingTest.JSON));
-        String encodedValue2 = EncodingUtil.base64Encode(Blob.valueOf(ArbeidsplassenJobPostingTest.JSON_WITH_NULLS));
-
-        List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
+        String encodedValue1 = EncodingUtil.base64Encode(Blob.valueOf(ArbeidsplassenJobPostingTest.JSON_WITH_NULLS));
+        String encodedValue2 = EncodingUtil.base64Encode(Blob.valueOf(ArbeidsplassenJobPostingTest.JSON));
 
         // Same key update Existing Job Posting
         KafkaMessage__c msg = new KafkaMessage__c();
@@ -201,17 +223,13 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
         msg3.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1g';
         msg3.CRM_Value__c = encodedValue2;
 
-        messages.add(msg);
-        messages.add(msg2);
-        messages.add(msg3);
-
         JobPosting__c jobPosting = new JobPosting__c(
             KafkaId__c = msg.CRM_Key__c,
             KafkaHash__c = encodedValue2,
             Expires__c = Date.Today()
         );
         insert jobPosting;
-        insert messages;
+        insert new List<KafkaMessage__c>{ msg, msg2, msg3 };
 
         Test.StartTest();
         AsyncRequestSchedulable.enqueueAsyncJobs();

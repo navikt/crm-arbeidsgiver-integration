@@ -168,6 +168,27 @@ public with sharing class KafkaMessageProcessorTest {
         System.assertEquals(acc.Id, accountMap.get(acc.INT_OrganizationNumber__c).Id);
     }
 
+    @isTest
+    static void logError() {
+        KafkaMessageProcessorExtension processor = new KafkaMessageProcessorExtension();
+        String reference = processor.logError('Test error message');
+
+        System.assert(String.isNotBlank(reference));
+    }
+
+    @isTest
+    static void setMessageError() {
+        KafkaMessageProcessorExtension processor = new KafkaMessageProcessorExtension();
+        KafkaMessage__c msg = new KafkaMessage__c(CRM_Status__c = KafkaMessageService.STATUS_PENDING);
+        List<KafkaMessage__c> messages = new List<KafkaMessage__c>{ msg };
+        String errorMessage = 'Test error message';
+
+        processor.setMessageErrors(messages, errorMessage);
+
+        System.assert(String.isNotBlank(messages[0].CRM_ErrorMessage__c));
+        System.assertEquals(KafkaMessageService.STATUS_ERROR, messages[0].CRM_Status__c);
+    }
+
     @IsTest
     static void parse_success() {
         String json = '{}';
