@@ -1,4 +1,4 @@
-public with sharing class KafkaArbeidsplassenJobPostingHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer {
+public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer {
     Map<String, ArbeidsplassenJobPosting> keyToJobPosting = new Map<String, ArbeidsplassenJobPosting>();
 
     public void processMessages(List<KafkaMessage__c> messages) {
@@ -44,7 +44,7 @@ public with sharing class KafkaArbeidsplassenJobPostingHandler extends KafkaMess
         List<JobPosting__c> jobPostings = new List<JobPosting__c>();
 
         for (ArbeidsplassenJobPosting model : keyToJobPosting.values()) {
-            if (isActiveOrChangedJobPosting(model, lastSaved)) {
+            if (isNewOrChanged(model.key, model.hash, lastSaved)) {
                 JobPosting__c jobPosting = convertToSObject(model, accountMap);
                 jobPostings.add(jobPosting);
             }
@@ -80,12 +80,5 @@ public with sharing class KafkaArbeidsplassenJobPostingHandler extends KafkaMess
         }
 
         return jobPosting;
-    }
-
-    private Boolean isActiveOrChangedJobPosting(ArbeidsplassenJobPosting model, Map<String, String> lastSaved) {
-        if (model.status != 'ACTIVE' || !isNewOrChanged(model.key, model.hash, lastSaved)) {
-            return false;
-        }
-        return true;
     }
 }
