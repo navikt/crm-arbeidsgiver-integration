@@ -4,7 +4,7 @@
             "path": "force-app",
             "default": true,
             "package": "crm-arbeidsgiver-integration",
-            "versionNumber": "1.23.0.NEXT",
+            "versionNumber": "1.25.0.NEXT",
             "dependencies": [
                 {
                     "package": "crm-platform-base",
@@ -39,7 +39,7 @@
     ],
     "namespace": "",
     "sfdcLoginUrl": "https://login.salesforce.com",
-    "sourceApiVersion": "48.0",
+    "sourceApiVersion": "52.0",
     "packageAliases": {
         "crm-platform-base": "0Ho2o0000008ORmCAM",
         "crm-platform-email-scheduling": "0Ho2o000000fxWwCAI",
