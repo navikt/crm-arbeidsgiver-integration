@@ -67,8 +67,8 @@ public inherited sharing abstract class KafkaMessageProcessor {
     public String logError(String message) {
         LoggerUtility.LogLevel logLevel = LoggerUtility.LogLevel.Error;
         String errorRef = '';
-
-        logger.logMessage(logLevel, errorRef, null, message, null, null);
+      
+        logger.logMessage(logLevel, errorRef, null, message, null, null, CRM_ApplicationDomain.Domain.POAB);
         errorRef = logger.peek().UUID__c;
         logger.publish();
 
