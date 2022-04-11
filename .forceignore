@@ -26,6 +26,8 @@
 # bugs (cannot be pushed)
 **/AppSwitcher.appMenu*
 **/navigationMenus/*
+**fieldRestrictionRules
+
 
 # LWC configuration files
 **/jsconfig.json

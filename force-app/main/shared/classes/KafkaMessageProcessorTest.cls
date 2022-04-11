@@ -159,12 +159,34 @@ public with sharing class KafkaMessageProcessorTest {
         Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '973113631');
         insert acc;
 
-        Map<String, Id> accountMap = new KafkaMessageProcessorExtension()
+        Map<String, Account> accountMap = new KafkaMessageProcessorExtension()
             .addOrgNumber('973113631')
-            .getOrgNumberAccountIdMap();
+            .getOrgNumberAccountMap();
 
         System.assertEquals(1, accountMap.size(), 'Account added to map');
-        System.assertEquals(true, accountMap.containsKey('973113631'));
+        System.assertEquals(true, accountMap.containsKey(acc.INT_OrganizationNumber__c));
+        System.assertEquals(acc.Id, accountMap.get(acc.INT_OrganizationNumber__c).Id);
+    }
+
+    @IsTest
+    static void logError() {
+        KafkaMessageProcessorExtension processor = new KafkaMessageProcessorExtension();
+        String reference = processor.logError('Test error message');
+
+        System.assert(String.isNotBlank(reference));
+    }
+
+    @IsTest
+    static void setMessageError() {
+        KafkaMessageProcessorExtension processor = new KafkaMessageProcessorExtension();
+        KafkaMessage__c msg = new KafkaMessage__c(CRM_Status__c = KafkaMessageService.STATUS_PENDING);
+        List<KafkaMessage__c> messages = new List<KafkaMessage__c>{ msg };
+        String errorMessage = 'Test error message';
+
+        processor.setMessageErrors(messages, errorMessage);
+
+        System.assert(String.isNotBlank(messages[0].CRM_ErrorMessage__c));
+        System.assertEquals(KafkaMessageService.STATUS_ERROR, messages[0].CRM_Status__c);
     }
 
     @IsTest

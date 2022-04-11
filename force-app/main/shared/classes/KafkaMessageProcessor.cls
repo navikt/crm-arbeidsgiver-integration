@@ -50,8 +50,8 @@ public inherited sharing abstract class KafkaMessageProcessor {
         return keyToExistingHash;
     }
 
-    public Map<String, Id> getOrgNumberAccountIdMap() {
-        Map<String, Id> accountMap = new Map<String, Id>();
+    public Map<String, Account> getOrgNumberAccountMap() {
+        Map<String, Account> accountMap = new Map<String, Account>();
         List<Account> accounts = [
             SELECT Id, Name, INT_OrganizationNumber__c, INT_MunicipalityNumber__c
             FROM Account
@@ -59,7 +59,7 @@ public inherited sharing abstract class KafkaMessageProcessor {
         ];
 
         for (Account a : accounts) {
-            accountMap.put(a.INT_OrganizationNumber__c, a.Id);
+            accountMap.put(a.INT_OrganizationNumber__c, a);
         }
         return accountMap;
     }
@@ -67,7 +67,7 @@ public inherited sharing abstract class KafkaMessageProcessor {
     public String logError(String message) {
         LoggerUtility.LogLevel logLevel = LoggerUtility.LogLevel.Error;
         String errorRef = '';
-
+      
         logger.logMessage(logLevel, errorRef, null, message, null, null, CRM_ApplicationDomain.Domain.POAB);
         errorRef = logger.peek().UUID__c;
         logger.publish();

@@ -1,4 +1,4 @@
-public with sharing class ArbeidsgiverKontaktSkjema {
+public with sharing class ArbeidsgiverKontaktSkjema implements IKafkaMessageParser {
     public String organisationNumber { get; set; }
     public String municipalityCode { get; set; }
     public String organisationName { get; set; }
@@ -9,6 +9,10 @@ public with sharing class ArbeidsgiverKontaktSkjema {
     public String type { get; set; }
 
     public String jsonPayload { get; set; }
+
+    public ArbeidsgiverKontaktSkjema() {
+        return;
+    }
 
     public ArbeidsgiverKontaktSkjema(JSONParser parser) {
         while (parser.nextToken() != System.JSONToken.END_OBJECT) {
@@ -37,7 +41,7 @@ public with sharing class ArbeidsgiverKontaktSkjema {
         }
     }
 
-    public static ArbeidsgiverKontaktSkjema parse(String json) {
+    public static ArbeidsgiverKontaktSkjema parse(String json, String key, String hash) {
         System.JSONParser parser = System.JSON.createParser(json);
 
         ArbeidsgiverKontaktSkjema p = new ArbeidsgiverKontaktSkjema(parser);
