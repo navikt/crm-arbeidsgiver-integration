@@ -2,7 +2,6 @@ public without sharing class KafkaModiaDialogMoteHandler extends KafkaMessagePro
     Map<String, KafkaModiaDialogMote_Model> keyToDialogMote = new Map<String, KafkaModiaDialogMote_Model>();
 
     public void processMessages(List<KafkaMessage__c> messages) {
-        List<ArenaActivity__c> activities = new List<ArenaActivity__c>();
 
         for (KafkaMessage__c msg : messages) {
             try {
@@ -19,9 +18,7 @@ public without sharing class KafkaModiaDialogMoteHandler extends KafkaMessagePro
             }
         }
 
-        activities = toSObject();
-
-        upsert activities ArenaActivity__c.KafkaId__c;
+        convertAndUpsertDialogMote(messages);
     }
 
     private void mapDialogMote(KafkaModiaDialogMote_Model dialogMote) {
@@ -31,6 +28,16 @@ public without sharing class KafkaModiaDialogMoteHandler extends KafkaMessagePro
             keyToDialogMote.put(key, dialogMote);
         } else if (isMostRecent(dialogMote.statusEndringTidspunkt, keyToDialogMote.get(key).statusEndringTidspunkt)) {
             keyToDialogMote.put(key, dialogMote);
+        }
+    }
+
+    private void convertAndUpsertDialogMote(List<KafkaMessage__c> messages) {
+        try {
+            List<ArenaActivity__c> arenaActivities = toSObject();
+            upsert arenaActivities ArenaActivity__c.KafkaId__c;
+        } catch (Exception e) {
+            String errorRef = logError(e.getMessage() + '/n' + e.getStackTraceString());
+            setMessageErrors(messages, errorRef);
         }
     }
 
