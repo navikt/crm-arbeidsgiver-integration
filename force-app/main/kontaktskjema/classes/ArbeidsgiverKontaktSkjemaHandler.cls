@@ -1,11 +1,10 @@
 public inherited sharing class ArbeidsgiverKontaktSkjemaHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer {
+    private List<ArbeidsgiverKontaktSkjema> models = new List<ArbeidsgiverKontaktSkjema>();
     private static final Id INCLUSION_RECORD_TYPE = Schema.SObjectType.CustomOpportunity__c.getRecordTypeInfosByDeveloperName()
         .get('Inclusion')
         .getRecordTypeId();
 
     public void processMessages(List<KafkaMessage__c> messages) {
-        List<ArbeidsgiverKontaktSkjema> models = new List<ArbeidsgiverKontaktSkjema>();
-        List<CustomOpportunity__c> opportunities = new List<CustomOpportunity__c>();
         for (KafkaMessage__c message : messages) {
             try {
                 ArbeidsgiverKontaktSkjema model = (ArbeidsgiverKontaktSkjema) parse(
@@ -20,9 +19,18 @@ public inherited sharing class ArbeidsgiverKontaktSkjemaHandler extends KafkaMes
                 message.CRM_ErrorMessage__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
             }
         }
-        opportunities = toCustomOpportunity(models);
-        insert opportunities;
-        sendEmailReceipts(opportunities);
+        convertAndInsertOpportunities(messages);
+    }
+
+    private void convertAndInsertOpportunities(List<KafkaMessage__c> messages) {
+        try {
+            List<CustomOpportunity__c> opportunities = toCustomOpportunity(models);
+            insert opportunities;
+            sendEmailReceipts(opportunities);
+        } catch (Exception e) {
+            String errorRef = logError(e.getMessage() + '/n' + e.getStackTraceString());
+            setMessageErrors(messages, errorRef);
+        }
     }
 
     private List<CustomOpportunity__c> toCustomOpportunity(List<ArbeidsgiverKontaktSkjema> models) {
@@ -57,24 +65,31 @@ public inherited sharing class ArbeidsgiverKontaktSkjemaHandler extends KafkaMes
 
     private void sendEmailReceipts(List<CustomOpportunity__c> opportunities) {
         List<EmailQueue__c> emails = new List<EmailQueue__c>();
-
-        for (CustomOpportunity__c co : opportunities) {
-            if (co.Contact__c != null) {
-                String templateName = co.InquiryCategory__c == 'Forebygge sykefravær'
-                    ? 'kontaktskjemaSykefravaerReceipt'
-                    : 'kontaktskjemaRekrutteringReceipt';
-                EmailQueue__c email = new EmailQueue__c();
-                email.TemplateName__c = templateName;
-                email.TargetObjectId__c = co.Contact__c;
-                email.WhatId__c = co.Id;
-                email.Priority__c = '5';
-                email.Status__c = 'Queued';
-                email.SaveAsActivity__c = true;
-
-                emails.add(email);
+        try {
+            for (CustomOpportunity__c co : opportunities) {
+                if (co.Contact__c != null) {
+                    emails.add(generateDraftEmailReceipt(co));
+                }
             }
+            insert emails;
+        } catch (Exception e) {
+            logError('Failed to send email confirmations' + e.getMessage() + '/n' + e.getStackTraceString());
         }
-        insert emails;
+    }
+
+    private EmailQueue__c generateDraftEmailReceipt(CustomOpportunity__c opportunity) {
+        String templateName = opportunity.InquiryCategory__c == 'Forebygge sykefravær'
+            ? 'kontaktskjemaSykefravaerReceipt'
+            : 'kontaktskjemaRekrutteringReceipt';
+        EmailQueue__c email = new EmailQueue__c();
+        email.TemplateName__c = templateName;
+        email.TargetObjectId__c = opportunity.Contact__c;
+        email.WhatId__c = opportunity.Id;
+        email.Priority__c = '5';
+        email.Status__c = 'Queued';
+        email.SaveAsActivity__c = true;
+
+        return email;
     }
 
     public Map<String, Contact> getContactMap(
