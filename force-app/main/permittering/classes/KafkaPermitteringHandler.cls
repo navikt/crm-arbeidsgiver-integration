@@ -1,40 +1,46 @@
-public without sharing class KafkaPermitteringHandler implements IKafkaMessageConsumer {
+public without sharing class KafkaPermitteringHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer {
     public void processMessages(List<KafkaMessage__c> messages) {
         List<KafkaPermitteringHandler_Model> permitteringer = KafkaPermitteringHandler_Helper.convertKafkaToPermittering(
             messages
         );
-        List<String> organisationNumbers = KafkaPermitteringHandler_Helper.getOrgNumbersFromPermittering(
-            permitteringer
-        );
-        Map<String, Account> accountMap = SharedFunctions.fetchAccounts(organisationNumbers);
 
-        // creates a list of each user / contact
-        List<SharedFunctions_ContactModel> wrapperList = KafkaPermitteringHandler_Helper.convertPermitteringToContactWrapper(
-            permitteringer
-        );
+        try {
+            List<String> organisationNumbers = KafkaPermitteringHandler_Helper.getOrgNumbersFromPermittering(
+                permitteringer
+            );
+            Map<String, Account> accountMap = SharedFunctions.fetchAccounts(organisationNumbers);
 
-        /*
-        * 22.02 ble det tatt en beslutning om å fjerne tilgang til permitteringsvarsler i Salesforce.
-        * Siden oppretelse av nye kontaktpersoner med kilde "permittering" kan tyde på mottakelse av nye permitteringsvarsler
-        * valgte vi å fjerne opprettelse av kontakter i forbindelse med permitteringsvarsel.
-        *
-        * Dette kan aktiveres på nytt senere of testene bør oppdateres.
-        *
-        Map<String, Contact> contactMap = SharedFunctions.fetchOrCreateContact(wrapperList, accountMap);
-        */
+            // creates a list of each user / contact
+            List<SharedFunctions_ContactModel> wrapperList = KafkaPermitteringHandler_Helper.convertPermitteringToContactWrapper(
+                permitteringer
+            );
 
-        Map<String, Contact> contactMap = new Map<String, Contact>();
+            /*
+            * 22.02 ble det tatt en beslutning om å fjerne tilgang til permitteringsvarsler i Salesforce.
+            * Siden oppretelse av nye kontaktpersoner med kilde "permittering" kan tyde på mottakelse av nye permitteringsvarsler
+            * valgte vi å fjerne opprettelse av kontakter i forbindelse med permitteringsvarsel.
+            *
+            * Dette kan aktiveres på nytt senere of testene bør oppdateres.
+            *
+            Map<String, Contact> contactMap = SharedFunctions.fetchOrCreateContact(wrapperList, accountMap);
+            */
 
-        // create SObject version of layoff
-        List<TemporaryLayoff__c> layoffs = KafkaPermitteringHandler_Helper.convertPermitteringToLayoff(
-            permitteringer,
-            accountMap,
-            contactMap
-        );
+            Map<String, Contact> contactMap = new Map<String, Contact>();
 
-        layoffs = KafkaPermitteringHandler_Helper.removeExistingTempLayoffs(layoffs);
-        layoffs = KafkaPermitteringHandler_Helper.removeDuplicateTempLayoffsInList(layoffs);
+            // create SObject version of layoff
+            List<TemporaryLayoff__c> layoffs = KafkaPermitteringHandler_Helper.convertPermitteringToLayoff(
+                permitteringer,
+                accountMap,
+                contactMap
+            );
 
-        insert layoffs;
+            layoffs = KafkaPermitteringHandler_Helper.removeExistingTempLayoffs(layoffs);
+            layoffs = KafkaPermitteringHandler_Helper.removeDuplicateTempLayoffsInList(layoffs);
+
+            insert layoffs;
+        } catch (Exception e) {
+            String errorRef = logError(e.getMessage() + '/n' + e.getStackTraceString());
+            setMessageErrors(messages, errorRef);
+        }
     }
 }
