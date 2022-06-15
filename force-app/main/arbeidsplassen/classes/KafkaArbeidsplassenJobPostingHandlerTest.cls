@@ -124,26 +124,6 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
         System.assert(String.isNotBlank(messages[0].CRM_ErrorMessage__c));
     }
 
-    @IsTest
-    static void processSingleMessage_inactiveStatus() {
-        Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '123456789');
-        insert acc;
-
-        String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(ArbeidsplassenJobPostingTest.JSON_WITH_NULLS));
-
-        KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'teampam.stilling-ekstern-1';
-        msg1.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
-        msg1.CRM_Value__c = encodedValue;
-
-        KafkaArbeidsplassenJobPostingHandler handler = new KafkaArbeidsplassenJobPostingHandler();
-        handler.processMessages(new List<KafkaMessage__c>{ msg1 });
-
-        List<JobPosting__c> jobPostings = [SELECT Id, Account__c, KafkaId__c, KafkaHash__c FROM JobPosting__c];
-
-        System.assertEquals(0, jobPostings.size(), 'Inactive job posting not inserted');
-    }
-
     @isTest
     static void processSingleMessage_updateExisting() {
         String encodedValue1 = EncodingUtil.base64Encode(Blob.valueOf(ArbeidsplassenJobPostingTest.JSON_WITH_NULLS));
@@ -240,6 +220,6 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
             FROM JobPosting__c
         ];
 
-        System.assertEquals(2, jobPostings.size(), '1 new, 1 updated and 1 ignored');
+        System.assertEquals(3, jobPostings.size(), '2 new, 1 updated');
     }
 }
