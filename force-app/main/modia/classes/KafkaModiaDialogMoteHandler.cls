@@ -2,7 +2,6 @@ public without sharing class KafkaModiaDialogMoteHandler extends KafkaMessagePro
     Map<String, KafkaModiaDialogMote_Model> keyToDialogMote = new Map<String, KafkaModiaDialogMote_Model>();
 
     public void processMessages(List<KafkaMessage__c> messages) {
-
         for (KafkaMessage__c msg : messages) {
             try {
                 KafkaModiaDialogMote_Model dialogMote = (KafkaModiaDialogMote_Model) parse(

@@ -1,7 +1,7 @@
 public without sharing class KafkaArenaHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer {
     public void processMessages(List<KafkaMessage__c> messages) {
         List<KafkaArenaHandler_Model> arenaModels = KafkaArenaHandler_Helper.convertKafkaToArenaModel(messages);
-        
+
         try {
             List<String> orgNumbers = KafkaArenaHandler_Helper.getOrgNumbers(arenaModels);
             Map<String, Account> accountMap = SharedFunctions.fetchAccounts(orgNumbers);
@@ -17,7 +17,6 @@ public without sharing class KafkaArenaHandler extends KafkaMessageProcessor imp
             arenaActivities = KafkaArenaHandler_Helper.removeDuplicates(arenaActivities);
 
             upsert arenaActivities ArenaActivity__c.KafkaId__c;
-            
         } catch (Exception e) {
             String errorRef = logError(e.getMessage() + '/n' + e.getStackTraceString());
             setMessageErrors(messages, errorRef);

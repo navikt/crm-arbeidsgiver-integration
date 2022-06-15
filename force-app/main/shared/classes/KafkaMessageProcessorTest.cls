@@ -168,7 +168,7 @@ public with sharing class KafkaMessageProcessorTest {
         System.assertEquals(acc.Id, accountMap.get(acc.INT_OrganizationNumber__c).Id);
     }
 
-    @IsTest
+    @isTest
     static void logError() {
         KafkaMessageProcessorExtension processor = new KafkaMessageProcessorExtension();
         String reference = processor.logError('Test error message');
@@ -176,7 +176,7 @@ public with sharing class KafkaMessageProcessorTest {
         System.assert(String.isNotBlank(reference));
     }
 
-    @IsTest
+    @isTest
     static void setMessageError() {
         KafkaMessageProcessorExtension processor = new KafkaMessageProcessorExtension();
         KafkaMessage__c msg = new KafkaMessage__c(CRM_Status__c = KafkaMessageService.STATUS_PENDING);

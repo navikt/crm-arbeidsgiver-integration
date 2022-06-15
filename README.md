@@ -48,6 +48,28 @@ Ved å bruke VS Code som IDE, er det lagt inn konfigurasjon som automatisk pushe
 -   `sfdx force:source:pull` for å hente endringer som du gjør i konfigurasjon i applikasjonen online.
 -   `sfdx force:source:push` for å publisere endringer du gjør i kode lokalt til applikasjonen online.
 
+## Bygg
+
+For å bygge lokalt uten SSDX, bruk føglende
+
+1. Hvis du ikke har autentisert en DevHub, kjør `sfdx auth:web:login -d -a production` og så logge inn.
+2. Installer sfdx plugin `echo y | sfdx plugins:install sfpowerkit@2.0.1`
+3. Opprette fil prosjekets root directory med navn `env.json`
+
+```
+{
+    "PACKAGE_KEY": "Your Package Key"
+}
+
+```
+
+4. Opprette scratch org, installer avhengigheter og så pushe metadata:
+
+```
+npm install
+npm run mac:build
+```
+
 ## Annet
 
 For spørsmål om denne applikasjonen, bruk #arbeidsgiver-crm på Slack.

@@ -38,7 +38,6 @@ public without sharing class KafkaPermitteringHandler extends KafkaMessageProces
             layoffs = KafkaPermitteringHandler_Helper.removeDuplicateTempLayoffsInList(layoffs);
 
             insert layoffs;
-
         } catch (Exception e) {
             String errorRef = logError(e.getMessage() + '/n' + e.getStackTraceString());
             setMessageErrors(messages, errorRef);

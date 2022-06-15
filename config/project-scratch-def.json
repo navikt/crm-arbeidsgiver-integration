@@ -9,6 +9,7 @@
         "Communities",
         "CustomerCommunity",
         "CustomerCommunityPlus",
+        "Knowledge",
         "PersonAccounts",
         "ProcessBuilder",
         "API",
@@ -41,6 +42,10 @@
         },
         "nameSettings": {
             "enableMiddleName": true
+        },
+        "knowledgeSettings": {
+            "enableKnowledge": true,
+            "enableLightningKnowledge": true
         },
         "fieldServiceSettings": {
             "fieldServiceOrgPref": true,
