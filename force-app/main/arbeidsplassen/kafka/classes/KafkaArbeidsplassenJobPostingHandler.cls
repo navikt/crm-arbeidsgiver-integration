@@ -28,11 +28,16 @@ public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends Kafk
     }
 
     private void convertAndUpsertJobPostings(List<KafkaMessage__c> messages) {
+        List<JobPosting__c> jobPostings = new List<JobPosting__c>();
         try {
-            List<JobPosting__c> jobPostings = getJobPostingSObjects();
+            jobPostings = getJobPostingSObjects();
             upsert jobPostings JobPosting__c.KafkaId__c;
         } catch (Exception e) {
-            String errorRef = logError(e.getMessage() + '/n' + e.getStackTraceString());
+            String errorMessage = e.getMessage() + '/n' + e.getStackTraceString() + '/n';
+            for (JobPosting__c jp : jobPostings) {
+                errorMessage += jp.KafkaId__c + ' => ' + jp.Expires__c;
+            }
+            String errorRef = logError(errorMessage);
             setMessageErrors(messages, errorRef);
         }
     }
