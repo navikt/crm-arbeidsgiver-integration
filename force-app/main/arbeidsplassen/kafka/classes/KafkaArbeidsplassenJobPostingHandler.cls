@@ -33,11 +33,7 @@ public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends Kafk
             jobPostings = getJobPostingSObjects();
             upsert jobPostings JobPosting__c.KafkaId__c;
         } catch (Exception e) {
-            String errorMessage = e.getMessage() + '/n' + e.getStackTraceString() + '/n';
-            for (JobPosting__c jp : jobPostings) {
-                errorMessage += jp.KafkaId__c + ' => ' + jp.Expires__c;
-            }
-            String errorRef = logError(errorMessage);
+            String errorRef = logError(e.getMessage() + '/n' + e.getStackTraceString());
             setMessageErrors(messages, errorRef);
         }
     }

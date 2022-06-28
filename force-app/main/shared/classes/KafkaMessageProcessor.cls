@@ -33,8 +33,13 @@ public inherited sharing abstract class KafkaMessageProcessor {
 
     public DateTime dateTimeValue(String timeDate) {
         String formattedDateTime = timeDate.replaceAll('T', ' ');
+        DateTime dtime = DateTime.valueOf(formattedDateTime);
 
-        return DateTime.valueOf(formattedDateTime);
+        if (dtime.year() < 1700 || dtime.year() > 4000) {
+            return null;
+        }
+
+        return dtime;
     }
 
     public Map<String, String> getLastSaved(Type className, Set<String> kafkaIds) {
