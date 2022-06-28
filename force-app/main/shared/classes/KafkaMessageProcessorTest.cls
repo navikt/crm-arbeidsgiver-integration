@@ -65,22 +65,18 @@ public with sharing class KafkaMessageProcessorTest {
 
     @isTest
     static void dateTimeValue_Ancient() {
-        DateTime dt = DateTime.newInstance(1600, 1, 19, 18, 46, 52);
-
         String timeDate = '1600-01-19T18:46:52.748Z';
         Datetime dateTimeValue = new KafkaMessageProcessorExtension().dateTimeValue(timeDate);
 
-        System.assertEquals(dt, dateTimeValue, 'Successfull datetime conversion');
+        System.assertEquals(null, dateTimeValue, 'Successfull datetime conversion');
     }
 
     @isTest
     static void dateTimeValue_Futuristic() {
-        DateTime dt = DateTime.newInstance(4500, 1, 19, 18, 46, 52);
-
         String timeDate = '4500-01-19T18:46:52.748Z';
         Datetime dateTimeValue = new KafkaMessageProcessorExtension().dateTimeValue(timeDate);
 
-        System.assertEquals(dt, dateTimeValue, 'Successfull datetime conversion');
+        System.assertEquals(null, dateTimeValue, 'Successfull datetime conversion');
     }
 
     @isTest
