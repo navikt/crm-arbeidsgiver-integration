@@ -29,7 +29,7 @@ public with sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor impl
         List<Account> fiaCases = new List<Account>();
         try {
             fiaCases = getFiaCasesSObjects();
-            upsert fiaCases Account.INT_OrganizationNumber__c;
+            update fiaCases;
         } catch (Exception e) {
             String errorRef = logError(e.getMessage() + '/n' + e.getStackTraceString());
             setMessageErrors(messages, errorRef);
