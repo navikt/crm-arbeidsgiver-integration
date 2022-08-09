@@ -6,6 +6,7 @@ public with sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor impl
             try {
                 KafkaFiaCase_Model fia = (KafkaFiaCase_Model) parse(KafkaFiaCase_Model.class, msg);
                 mapFiaCase(fia);
+                addOrgNumber(fia?.orgnr);
                 msg.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
             } catch (Exception e) {
                 msg.CRM_Status__c = KafkaMessageService.STATUS_ERROR;
@@ -39,19 +40,20 @@ public with sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor impl
     private List<Account> getFiaCasesSObjects() {
         Map<String, String> lastSaved = getLastSavedFiaCase(Account.class, keyToFiaCase.keyset());
         List<Account> fiaCases = new List<Account>();
+        Map<String, Account> accountMap = getOrgNumberAccountMap();
 
         for (KafkaFiaCase_Model model : keyToFiaCase.values()) {
  
             if (isNewOrChanged(model.key, model.hash, lastSaved)) {
-                Account fiaCase = convertToSObject(model);
+                Account fiaCase = convertToSObject(model, accountMap);
                 fiaCases.add(fiaCase);
             }
         }
         return fiaCases;
     }
 
-    private Account convertToSObject(KafkaFiaCase_Model model) {
-        Account a = [SELECT Id, INT_OrganizationNumber__c, TAG_FiaCaseNr__c, TAG_FiaCaseOwner__c, TAG_FiaCaseStatus__c, TAG_FiaStartDate__c, TAG_FiaLastModifiedDate__c, TAG_FiaKafkaId__c, KafkaHash__c, JsonPayload__c FROM Account WHERE INT_OrganizationNumber__c =:model.orgnr];
+    private Account convertToSObject(KafkaFiaCase_Model model, Map<String, Account> accountMap) {
+            Account a = accountMap.get(model.orgnr);
             a.TAG_FiaCaseNr__c = model.saksnummer;
             a.TAG_FiaCaseOwner__c = model.eierAvSak;
             a.TAG_FiaCaseStatus__c = model.status;
@@ -62,7 +64,7 @@ public with sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor impl
             a.JsonPayload__c = model.jsonPayload;
 
         return a;
-    }
+     }
 
     public Map<String, String> getLastSavedFiaCase(Type className, Set<String> kafkaIds) {
         String query = 'SELECT KafkaHash__c, TAG_FiaKafkaId__c FROM Account WHERE TAG_FiaKafkaId__c IN: kafkaIds';
