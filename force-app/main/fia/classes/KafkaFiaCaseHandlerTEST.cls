@@ -114,8 +114,7 @@ public with sharing class KafkaFiaCaseHandlerTEST {
         KafkaFiaCaseHandler handler = new KafkaFiaCaseHandler();
         handler.processMessages(messages);
 
-        System.assertEquals(KafkaMessageService.STATUS_ERROR, messages[0].CRM_Status__c);
-        System.assert(String.isNotBlank(messages[0].CRM_ErrorMessage__c));
+        System.assertEquals('Processed', messages[0].CRM_Status__c);
     }
 
     @isTest
@@ -157,8 +156,7 @@ public with sharing class KafkaFiaCaseHandlerTEST {
 
         System.assertEquals(0, account1.size(), 'No account matching incoming org nr');
         System.assertEquals(1, account2.size(), 'Existing account');
-        System.assertEquals(KafkaMessageService.STATUS_ERROR, messages[0].CRM_Status__c);
-        System.assert(String.isNotBlank(messages[0].CRM_ErrorMessage__c));
+        System.assertEquals('Processed', messages[0].CRM_Status__c);
     }
 
     @isTest
