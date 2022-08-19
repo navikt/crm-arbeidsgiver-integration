@@ -9,7 +9,7 @@ public with sharing class KafkaFiaCaseHandlerTEST {
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'ia-sak-v1';
+        msg1.CRM_Topic__c = 'pia.ia-sak-v1';
         msg1.CRM_Key__c = 'a240d1adtuasydt';
         msg1.CRM_Value__c = encodedValue;
 
@@ -45,7 +45,7 @@ public with sharing class KafkaFiaCaseHandlerTEST {
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'ia-sak-v1';
+        msg1.CRM_Topic__c = 'pia.ia-sak-v1';
         msg1.CRM_Key__c = 'a240d1adtuasydt';
         msg1.CRM_Value__c = encodedValue;
 
@@ -76,13 +76,13 @@ public with sharing class KafkaFiaCaseHandlerTEST {
         List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'ia-sak-v1';
+        msg1.CRM_Topic__c = 'pia.ia-sak-v1';
         msg1.CRM_Key__c = 'a240d1adtuasydt';
         msg1.CRM_Value__c = encodedValue;
         messages.add(msg1);
 
         KafkaMessage__c msg2 = new KafkaMessage__c();
-        msg2.CRM_Topic__c = 'ia-sak-v1';
+        msg2.CRM_Topic__c = 'pia.ia-sak-v1';
         msg2.CRM_Key__c = 'a240d1adtuasydt';
         msg2.CRM_Value__c = encodedValue2;
         messages.add(msg2);
@@ -106,7 +106,7 @@ public with sharing class KafkaFiaCaseHandlerTEST {
 
         List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'ia-sak-v1';
+        msg1.CRM_Topic__c = 'pia.ia-sak-v1';
         msg1.CRM_Key__c = 'a240d1adtuasydt';
         msg1.CRM_Value__c = encodedValue;
         messages.add(msg1);
@@ -131,13 +131,13 @@ public with sharing class KafkaFiaCaseHandlerTEST {
 
         List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'ia-sak-v1';
+        msg1.CRM_Topic__c = 'pia.ia-sak-v1';
         msg1.CRM_Key__c = 'a240d1adtuasydt';
         msg1.CRM_Value__c = encodedValue;
         messages.add(msg1);
 
         KafkaMessage__c msg2 = new KafkaMessage__c();
-        msg2.CRM_Topic__c = 'ia-sak-v1';
+        msg2.CRM_Topic__c = 'pia.ia-sak-v1';
         msg2.CRM_Key__c = 'a240d1adtuasydt';
         msg2.CRM_Value__c = encodedValue2;
         messages.add(msg2);
@@ -182,22 +182,22 @@ public with sharing class KafkaFiaCaseHandlerTEST {
         List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'ia-sak-v1';
+        msg1.CRM_Topic__c = 'pia.ia-sak-v1';
         msg1.CRM_Key__c = 'a240d1adtuasydt1';
         msg1.CRM_Value__c = encodedValue1;
 
         KafkaMessage__c msg2 = new KafkaMessage__c();
-        msg2.CRM_Topic__c = 'ia-sak-v1';
+        msg2.CRM_Topic__c = 'pia.ia-sak-v1';
         msg2.CRM_Key__c = 'a240d1adtuasydt2';
         msg2.CRM_Value__c = encodedValue2;
 
         KafkaMessage__c msg3 = new KafkaMessage__c();
-        msg3.CRM_Topic__c = 'ia-sak-v1';
+        msg3.CRM_Topic__c = 'pia.ia-sak-v1';
         msg3.CRM_Key__c = 'a240d1adtuasydt3';
         msg3.CRM_Value__c = encodedValue3;
 
         KafkaMessage__c msg4 = new KafkaMessage__c();
-        msg4.CRM_Topic__c = 'ia-sak-v1';
+        msg4.CRM_Topic__c = 'pia.ia-sak-v1';
         msg4.CRM_Key__c = 'a240d1adtuasydt3';
         msg4.CRM_Value__c = encodedValue4;
 
@@ -243,7 +243,7 @@ public with sharing class KafkaFiaCaseHandlerTEST {
         List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'ia-sak-v1';
+        msg1.CRM_Topic__c = 'pia.ia-sak-v1';
         msg1.CRM_Key__c = 'a240d1adtuasydt1';
         msg1.CRM_Value__c = encodedValue;
         messages.add(msg1);
@@ -265,7 +265,7 @@ public with sharing class KafkaFiaCaseHandlerTEST {
 
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'ia-sak-v1';
+        msg1.CRM_Topic__c = 'pia.ia-sak-v1';
         msg1.CRM_Key__c = 'a240d1adtuasydt1';
         msg1.CRM_Value__c = encodedValue;
 
