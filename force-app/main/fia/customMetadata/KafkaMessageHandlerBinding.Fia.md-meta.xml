@@ -20,6 +20,6 @@
     </values>
     <values>
         <field>Topic__c</field>
-        <value xsi:type="xsd:string">ia-sak-v1</value>
+        <value xsi:type="xsd:string">pia.ia-sak-v1</value>
     </values>
 </CustomMetadata>
