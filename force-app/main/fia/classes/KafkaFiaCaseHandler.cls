@@ -44,7 +44,7 @@ public with sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor impl
 
         for (KafkaFiaCase_Model model : keyToFiaCase.values()) {
  
-            if (isNewOrChanged(model.key, model.hash, lastSaved)) {
+            if (isNewOrChanged(model.key, model.hash, lastSaved) && accountMap.containsKey(model.orgnr)) {
                 Account fiaCase = convertToSObject(model, accountMap);
                 fiaCases.add(fiaCase);
             }
