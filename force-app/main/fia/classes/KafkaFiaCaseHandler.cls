@@ -1,5 +1,10 @@
 public with sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer{
     Map<String, KafkaFiaCase_Model> keyToFiaCase = new Map<String, KafkaFiaCase_Model>();
+    public Set<String> navIdents;
+
+    public KafkaFiaCaseHandler(){
+        navIdents = new Set<String>();
+    }
 
     public void processMessages(List<KafkaMessage__c> messages) {
         for (KafkaMessage__c msg : messages) {
@@ -7,6 +12,7 @@ public with sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor impl
                 KafkaFiaCase_Model fia = (KafkaFiaCase_Model) parse(KafkaFiaCase_Model.class, msg);
                 mapFiaCase(fia);
                 addOrgNumber(fia?.orgnr);
+                addNavIdent(fia?.eierAvSak);
                 msg.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
             } catch (Exception e) {
                 msg.CRM_Status__c = KafkaMessageService.STATUS_ERROR;
@@ -53,6 +59,8 @@ public with sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor impl
     }
 
     private Account convertToSObject(KafkaFiaCase_Model model, Map<String, Account> accountMap) {
+            Map<String, String> navIdentMap = getNavIdentMap();
+
             Account a = accountMap.get(model.orgnr);
             a.TAG_FiaCaseNr__c = model.saksnummer;
             a.TAG_FiaCaseOwner__c = model.eierAvSak;
@@ -62,6 +70,11 @@ public with sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor impl
             a.TAG_FiaKafkaId__c = model.key;
             a.KafkaHash__c = model.hash;
             a.JsonPayload__c = model.jsonPayload;
+
+            if (navIdentMap.containsKey(model.eierAvSak)){
+                String fullName = navIdentMap.get(model.eierAvSak);
+                a.TAG_FiaCaseOwnerName__c = fullName;
+            }
 
         return a;
      }
@@ -76,5 +89,24 @@ public with sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor impl
             }
         }
         return keyToExistingHash;
+    }
+
+    public KafkaFiaCaseHandler addNavIdent(String navIdent) {
+        if (navIdent != null){
+            navIdents.add(navIdent);
+    }
+    return this;
+}
+
+    public Map<String, String> getNavIdentMap() {
+        Map<String, String> navIdentMap = new Map<String, String>();
+        List<User> users = [SELECT Id, firstName, lastName, CRM_NAV_Ident__c FROM User WHERE CRM_NAV_Ident__c IN: navIdents];
+
+        for (User u : users){
+            String name = u.firstName + ' ' + u.lastName; 
+            navIdentMap.put(u.CRM_NAV_Ident__c, name);
+        }
+    
+        return navIdentMap;
     }
 }

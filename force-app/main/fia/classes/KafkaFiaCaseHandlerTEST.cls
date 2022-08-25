@@ -5,6 +5,10 @@ public with sharing class KafkaFiaCaseHandlerTEST {
         Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '973113631');
         insert acc;
 
+        List<User> use = TestDataFactory.getUsers(1, 'Standard User', false, false);
+        use[0].CRM_NAV_Ident__c = 'C156986';
+        insert use;        
+
         String json = '{"saksnummer": "a240d1adtuasydt", "orgnr": "973113631", "eierAvSak": "C156986", "endretAvHendelseId": "sdfhoisdyfio49856", "status": "Vurderes", "opprettetTidspunkt": "2022-02-18T07:07:07.064711", "endretTidspunkt": "2022-02-18T07:19:21.575794"}';
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
@@ -17,7 +21,7 @@ public with sharing class KafkaFiaCaseHandlerTEST {
         handler.processMessages(new List<KafkaMessage__c>{ msg1 });
 
         List<Account> accounts = [
-            SELECT Id, Name, INT_OrganizationNumber__c, TAG_FiaCaseNr__c, TAG_FiaCaseOwner__c, TAG_FiaCaseStatus__c, TAG_FiaStartDate__c, TAG_FiaLastModifiedDate__c, TAG_FiaKafkaId__c, KafkaHash__c, JsonPayload__c 
+            SELECT Id, Name, INT_OrganizationNumber__c, TAG_FiaCaseNr__c, TAG_FiaCaseOwner__c, TAG_FiaCaseStatus__c, TAG_FiaStartDate__c, TAG_FiaLastModifiedDate__c, TAG_FiaKafkaId__c, KafkaHash__c, JsonPayload__c, TAG_FiaCaseOwnerName__c
             FROM Account
         ];
 
@@ -34,6 +38,7 @@ public with sharing class KafkaFiaCaseHandlerTEST {
         System.assertEquals('Vurderes', accounts[0].TAG_FiaCaseStatus__c, 'Correct Status');
         System.assertEquals('2022-02-18 07:07:07', startDate, 'Correct Start date');
         System.assertEquals('2022-02-18 07:19:21', lastModified, 'Correct Last Modified date');
+        System.assertEquals('User 1', accounts[0].TAG_FiaCaseOwnerName__c, 'Correct Fia case owner name');
     }
 
     @isTest
@@ -168,10 +173,17 @@ public with sharing class KafkaFiaCaseHandlerTEST {
         Account acc3 = new Account(Name = 'Test Employer 3', INT_OrganizationNumber__c = '973113633');
         insert acc3;
 
+        List<User> use = TestDataFactory.getUsers(3, 'Standard User', false, false);
+        use[0].CRM_NAV_Ident__c = 'C156986';
+        use[1].CRM_NAV_Ident__c = 'C156987';
+        use[2].CRM_NAV_Ident__c = 'C156988';
+        insert use;        
+
+
         String json1 = '{"saksnummer": "a240d1adtuasydt1", "orgnr": "973113631", "eierAvSak": "C156986", "endretAvHendelseId": "sdfhoisdyfio49856", "status": "Vurderes", "opprettetTidspunkt": "2022-02-18T07:07:07.064711", "endretTidspunkt": "2022-02-18T07:19:21.575794"}';
-        String json2 = '{"saksnummer": "a240d1adtuasydt2", "orgnr": "973113632", "eierAvSak": "C156986", "endretAvHendelseId": "sdfhoisdyfio49856", "status": "Vurderes", "opprettetTidspunkt": "2022-02-18T07:07:07.064711", "endretTidspunkt": "2022-02-18T07:19:21.575794"}';
-        String json3 = '{"saksnummer": "a240d1adtuasydt3", "orgnr": "973113633", "eierAvSak": "C156986", "endretAvHendelseId": "sdfhoisdyfio49856", "status": "Vurderes", "opprettetTidspunkt": "2022-02-18T07:07:07.064711", "endretTidspunkt": "2022-02-18T07:19:21.575794"}';
-        String json4 = '{"saksnummer": "a240d1adtuasydt3", "orgnr": "973113633", "eierAvSak": "C156986", "endretAvHendelseId": "sdfhoisdyfio49856", "status": "Kartlegges", "opprettetTidspunkt": "2022-02-18T07:07:07.064711", "endretTidspunkt": "2022-02-18T07:19:23.575794"}';
+        String json2 = '{"saksnummer": "a240d1adtuasydt2", "orgnr": "973113632", "eierAvSak": "C156987", "endretAvHendelseId": "sdfhoisdyfio49856", "status": "Vurderes", "opprettetTidspunkt": "2022-02-18T07:07:07.064711", "endretTidspunkt": "2022-02-18T07:19:21.575794"}';
+        String json3 = '{"saksnummer": "a240d1adtuasydt3", "orgnr": "973113633", "eierAvSak": "C156988", "endretAvHendelseId": "sdfhoisdyfio49856", "status": "Vurderes", "opprettetTidspunkt": "2022-02-18T07:07:07.064711", "endretTidspunkt": "2022-02-18T07:19:21.575794"}';
+        String json4 = '{"saksnummer": "a240d1adtuasydt3", "orgnr": "973113633", "eierAvSak": "C156988", "endretAvHendelseId": "sdfhoisdyfio49856", "status": "Kartlegges", "opprettetTidspunkt": "2022-02-18T07:07:07.064711", "endretTidspunkt": "2022-02-18T07:19:23.575794"}';
         String encodedValue1 = EncodingUtil.base64Encode(Blob.valueOf(json1));
         String encodedValue2 = EncodingUtil.base64Encode(Blob.valueOf(json2));
         String encodedValue3 = EncodingUtil.base64Encode(Blob.valueOf(json3));
@@ -211,23 +223,26 @@ public with sharing class KafkaFiaCaseHandlerTEST {
         Test.StopTest();
 
         List<Account> account1 = [
-            SELECT Id, Name, INT_OrganizationNumber__c, TAG_FiaCaseNr__c, TAG_FiaCaseOwner__c, TAG_FiaCaseStatus__c, TAG_FiaStartDate__c, TAG_FiaLastModifiedDate__c, TAG_FiaKafkaId__c, KafkaHash__c, JsonPayload__c 
+            SELECT Id, Name, INT_OrganizationNumber__c, TAG_FiaCaseNr__c, TAG_FiaCaseOwner__c, TAG_FiaCaseStatus__c, TAG_FiaStartDate__c, TAG_FiaLastModifiedDate__c, TAG_FiaKafkaId__c, KafkaHash__c, JsonPayload__c, TAG_FiaCaseOwnerName__c 
             FROM Account WHERE INT_OrganizationNumber__c = '973113631'
         ];
 
         List<Account> account2 = [
-            SELECT Id, Name, INT_OrganizationNumber__c, TAG_FiaCaseNr__c, TAG_FiaCaseOwner__c, TAG_FiaCaseStatus__c, TAG_FiaStartDate__c, TAG_FiaLastModifiedDate__c, TAG_FiaKafkaId__c, KafkaHash__c, JsonPayload__c 
+            SELECT Id, Name, INT_OrganizationNumber__c, TAG_FiaCaseNr__c, TAG_FiaCaseOwner__c, TAG_FiaCaseStatus__c, TAG_FiaStartDate__c, TAG_FiaLastModifiedDate__c, TAG_FiaKafkaId__c, KafkaHash__c, JsonPayload__c, TAG_FiaCaseOwnerName__c 
             FROM Account WHERE INT_OrganizationNumber__c = '973113632'
         ];
 
         List<Account> account3 = [
-            SELECT Id, Name, INT_OrganizationNumber__c, TAG_FiaCaseNr__c, TAG_FiaCaseOwner__c, TAG_FiaCaseStatus__c, TAG_FiaStartDate__c, TAG_FiaLastModifiedDate__c, TAG_FiaKafkaId__c, KafkaHash__c, JsonPayload__c 
+            SELECT Id, Name, INT_OrganizationNumber__c, TAG_FiaCaseNr__c, TAG_FiaCaseOwner__c, TAG_FiaCaseStatus__c, TAG_FiaStartDate__c, TAG_FiaLastModifiedDate__c, TAG_FiaKafkaId__c, KafkaHash__c, JsonPayload__c, TAG_FiaCaseOwnerName__c 
             FROM Account WHERE INT_OrganizationNumber__c = '973113633'
         ];
 
         System.assertEquals('Vurderes', account1[0].TAG_FiaCaseStatus__c, 'Account 1 updated');
         System.assertEquals('Vurderes', account2[0].TAG_FiaCaseStatus__c, 'Account 2 updated');
         System.assertEquals('Kartlegges', account3[0].TAG_FiaCaseStatus__c, 'Account 3 updated with newest value');
+        System.assertEquals('User 1', account1[0].TAG_FiaCaseOwnerName__c, 'Account 1 user updated');
+        System.assertEquals('User 2', account2[0].TAG_FiaCaseOwnerName__c, 'Account 2 user updated');
+        System.assertEquals('User 3', account3[0].TAG_FiaCaseOwnerName__c, 'Account 3 user updated');
     }
 
     @IsTest
@@ -283,5 +298,38 @@ public with sharing class KafkaFiaCaseHandlerTEST {
         System.assertEquals(null, accounts[0].TAG_FiaCaseOwner__c, 'Case Owner is null');
         System.assertEquals(null, accounts[0].TAG_FiaCaseStatus__c, 'Status is null');
         System.assertEquals('2022-02-18 07:19:21', lastModified, 'Correct Last Modified date');
+    }
+
+    @isTest
+    static void noMatchingUser() {
+        Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '973113631');
+        insert acc;
+
+        List<User> use = TestDataFactory.getUsers(1, 'Standard User', false, false);
+        use[0].CRM_NAV_Ident__c = 'C156987';
+        insert use; 
+
+        String json = '{"saksnummer": "a240d1adtuasydt", "orgnr": "973113631", "eierAvSak": "C156986", "endretAvHendelseId": "sdfhoisdyfio49856", "status": "Vurderes", "opprettetTidspunkt": "2022-02-18T07:07:07.064711", "endretTidspunkt": "2022-02-18T07:19:21.575794"}';
+        String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
+
+        KafkaMessage__c msg1 = new KafkaMessage__c();
+        msg1.CRM_Topic__c = 'pia.ia-sak-v1';
+        msg1.CRM_Key__c = 'a240d1adtuasydt';
+        msg1.CRM_Value__c = encodedValue;
+
+        KafkaFiaCaseHandler handler = new KafkaFiaCaseHandler();
+        handler.processMessages(new List<KafkaMessage__c>{ msg1 });
+
+        List<Account> accounts = [
+            SELECT Id, Name, INT_OrganizationNumber__c, TAG_FiaCaseNr__c, TAG_FiaCaseOwner__c, TAG_FiaCaseStatus__c, TAG_FiaStartDate__c, TAG_FiaLastModifiedDate__c, TAG_FiaKafkaId__c, KafkaHash__c, JsonPayload__c, TAG_FiaCaseOwnerName__c
+            FROM Account
+        ];
+
+        String startDate = string.valueOf(accounts[0].TAG_FiaStartDate__c);
+        String lastModified = string.valueOf(accounts[0].TAG_FiaLastModifiedDate__c);
+
+        System.assertEquals(1, accounts.size(), 'Account inserted');
+        System.assertEquals('C156986', accounts[0].TAG_FiaCaseOwner__c, 'Correct Case Owner');
+        System.assertEquals(Null, accounts[0].TAG_FiaCaseOwnerName__c, 'Fia case owner name is null');
     }
 }
