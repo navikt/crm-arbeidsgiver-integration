@@ -1,8 +1,9 @@
 public with sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer{
     Map<String, KafkaFiaCase_Model> keyToFiaCase = new Map<String, KafkaFiaCase_Model>();
-    public Set<String> navIdents;
+    private Set<String> navIdents;
+    private List<User> users = [SELECT Id, firstName, lastName, CRM_NAV_Ident__c FROM User WHERE CRM_NAV_Ident__c IN: navIdents];
 
-    public KafkaFiaCaseHandler(){
+    private KafkaFiaCaseHandler(){
         navIdents = new Set<String>();
     }
 
@@ -91,17 +92,14 @@ public with sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor impl
         return keyToExistingHash;
     }
 
-    public KafkaFiaCaseHandler addNavIdent(String navIdent) {
+    private void addNavIdent(String navIdent) {
         if (navIdent != null){
             navIdents.add(navIdent);
+        }
     }
-    return this;
-}
 
-    public Map<String, String> getNavIdentMap() {
+    private Map<String, String> getNavIdentMap() {
         Map<String, String> navIdentMap = new Map<String, String>();
-        List<User> users = [SELECT Id, firstName, lastName, CRM_NAV_Ident__c FROM User WHERE CRM_NAV_Ident__c IN: navIdents];
-
         for (User u : users){
             String name = u.firstName + ' ' + u.lastName; 
             navIdentMap.put(u.CRM_NAV_Ident__c, name);
