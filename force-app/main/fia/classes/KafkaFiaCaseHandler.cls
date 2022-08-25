@@ -1,9 +1,8 @@
 public with sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer{
     Map<String, KafkaFiaCase_Model> keyToFiaCase = new Map<String, KafkaFiaCase_Model>();
     private Set<String> navIdents;
-    private List<User> users = [SELECT Id, firstName, lastName, CRM_NAV_Ident__c FROM User WHERE CRM_NAV_Ident__c IN: navIdents];
-
-    private KafkaFiaCaseHandler(){
+    
+    public KafkaFiaCaseHandler(){
         navIdents = new Set<String>();
     }
 
@@ -48,20 +47,19 @@ public with sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor impl
         Map<String, String> lastSaved = getLastSavedFiaCase(Account.class, keyToFiaCase.keyset());
         List<Account> fiaCases = new List<Account>();
         Map<String, Account> accountMap = getOrgNumberAccountMap();
+        Map<String, String> navIdentMap = getNavIdentMap();
 
         for (KafkaFiaCase_Model model : keyToFiaCase.values()) {
  
             if (isNewOrChanged(model.key, model.hash, lastSaved) && accountMap.containsKey(model.orgnr)) {
-                Account fiaCase = convertToSObject(model, accountMap);
+                Account fiaCase = convertToSObject(model, accountMap, navIdentMap);
                 fiaCases.add(fiaCase);
             }
         }
         return fiaCases;
     }
 
-    private Account convertToSObject(KafkaFiaCase_Model model, Map<String, Account> accountMap) {
-            Map<String, String> navIdentMap = getNavIdentMap();
-
+    private Account convertToSObject(KafkaFiaCase_Model model, Map<String, Account> accountMap, Map<String, String> navIdentMap) {
             Account a = accountMap.get(model.orgnr);
             a.TAG_FiaCaseNr__c = model.saksnummer;
             a.TAG_FiaCaseOwner__c = model.eierAvSak;
@@ -80,7 +78,7 @@ public with sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor impl
         return a;
      }
 
-    public Map<String, String> getLastSavedFiaCase(Type className, Set<String> kafkaIds) {
+    private Map<String, String> getLastSavedFiaCase(Type className, Set<String> kafkaIds) {
         String query = 'SELECT KafkaHash__c, TAG_FiaKafkaId__c FROM Account WHERE TAG_FiaKafkaId__c IN: kafkaIds';
         Map<String, String> keyToExistingHash = new Map<String, String>();
 
@@ -100,6 +98,8 @@ public with sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor impl
 
     private Map<String, String> getNavIdentMap() {
         Map<String, String> navIdentMap = new Map<String, String>();
+        List<User> users = [SELECT Id, firstName, lastName, CRM_NAV_Ident__c FROM User WHERE CRM_NAV_Ident__c IN: navIdents];
+
         for (User u : users){
             String name = u.firstName + ' ' + u.lastName; 
             navIdentMap.put(u.CRM_NAV_Ident__c, name);
