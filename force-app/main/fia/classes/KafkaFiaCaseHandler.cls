@@ -1,6 +1,8 @@
 public with sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer{
     Map<String, KafkaFiaCase_Model> keyToFiaCase = new Map<String, KafkaFiaCase_Model>();
     private Set<String> navIdents;
+    Integer count = 0;
+    String errorMsg = ' ';
     
     public KafkaFiaCaseHandler(){
         navIdents = new Set<String>();
@@ -17,6 +19,9 @@ public with sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor impl
             } catch (Exception e) {
                 msg.CRM_Status__c = KafkaMessageService.STATUS_ERROR;
                 msg.CRM_ErrorMessage__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
+                errorMsg = e.getMessage() + '/n' + e.getStackTraceString() + '/n';
+
+                count++;
             }
         }
         convertAndUpsertFiaCases(messages);
@@ -37,6 +42,11 @@ public with sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor impl
         try {
             fiaCases = getFiaCasesSObjects();
             update fiaCases;
+
+            if(count > 0){
+                String errorMsgExtended = errorMsg + '/n Kafka message batch input failure. A total of ' + count + ' messages has failed in the same batch';
+                logError(errorMsgExtended);
+            }
         } catch (Exception e) {
             String errorRef = logError(e.getMessage() + '/n' + e.getStackTraceString());
             setMessageErrors(messages, errorRef);

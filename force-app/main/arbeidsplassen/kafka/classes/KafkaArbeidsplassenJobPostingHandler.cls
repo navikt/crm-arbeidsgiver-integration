@@ -1,5 +1,7 @@
 public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer {
     Map<String, ArbeidsplassenJobPosting> keyToJobPosting = new Map<String, ArbeidsplassenJobPosting>();
+    Integer count = 0;
+    String errorMsg = ' ';
 
     public void processMessages(List<KafkaMessage__c> messages) {
         for (KafkaMessage__c msg : messages) {
@@ -11,6 +13,9 @@ public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends Kafk
             } catch (Exception e) {
                 msg.CRM_Status__c = KafkaMessageService.STATUS_ERROR;
                 msg.CRM_ErrorMessage__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
+                errorMsg = e.getMessage() + '/n' + e.getStackTraceString() + '/n';
+
+                count++;
             }
         }
 
@@ -32,6 +37,11 @@ public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends Kafk
         try {
             jobPostings = getJobPostingSObjects();
             upsert jobPostings JobPosting__c.KafkaId__c;
+
+            if(count > 0){
+                String errorMsgExtended = errorMsg + '/n Kafka message batch input failure. A total of ' + count + ' messages has failed in the same batch';
+                logError(errorMsgExtended);
+            }
         } catch (Exception e) {
             String errorMessage = e.getMessage() + '/n' + e.getStackTraceString() + '/n';
             for (JobPosting__c jp : jobPostings) {
