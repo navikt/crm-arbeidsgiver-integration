@@ -167,7 +167,7 @@ public with sharing class KafkaMessageProcessorTest {
     @isTest
     static void logError() {
         KafkaMessageProcessorExtension processor = new KafkaMessageProcessorExtension();
-        String reference = processor.logError('Test error message');
+        String reference = processor.getLogger().logError('Test error message');
 
         System.assert(String.isNotBlank(reference));
     }
@@ -179,7 +179,7 @@ public with sharing class KafkaMessageProcessorTest {
         List<KafkaMessage__c> messages = new List<KafkaMessage__c>{ msg };
         String errorMessage = 'Test error message';
 
-        processor.setMessageErrors(messages, errorMessage);
+        processor.getLogger().setMessageErrors(messages, errorMessage);
 
         System.assert(String.isNotBlank(messages[0].CRM_ErrorMessage__c));
         System.assertEquals(KafkaMessageService.STATUS_ERROR, messages[0].CRM_Status__c);
@@ -219,5 +219,8 @@ public with sharing class KafkaMessageProcessorTest {
     }
 
     public class KafkaMessageProcessorExtension extends KafkaMessageProcessor {
+        public AG_KafkaLogger getLogger() {
+            return logger;
+        }
     }
 }

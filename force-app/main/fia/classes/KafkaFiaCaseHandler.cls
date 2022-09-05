@@ -1,8 +1,8 @@
-public with sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer{
+public with sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer {
     Map<String, KafkaFiaCase_Model> keyToFiaCase = new Map<String, KafkaFiaCase_Model>();
     private Set<String> navIdents;
-    
-    public KafkaFiaCaseHandler(){
+
+    public KafkaFiaCaseHandler() {
         navIdents = new Set<String>();
     }
 
@@ -17,9 +17,11 @@ public with sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor impl
             } catch (Exception e) {
                 msg.CRM_Status__c = KafkaMessageService.STATUS_ERROR;
                 msg.CRM_ErrorMessage__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
+                logger.addError();
             }
         }
         convertAndUpsertFiaCases(messages);
+        logger.publish();
     }
 
     private void mapFiaCase(KafkaFiaCase_Model fiaCase) {
@@ -38,8 +40,8 @@ public with sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor impl
             fiaCases = getFiaCasesSObjects();
             update fiaCases;
         } catch (Exception e) {
-            String errorRef = logError(e.getMessage() + '/n' + e.getStackTraceString());
-            setMessageErrors(messages, errorRef);
+            String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
+            logger.setMessageErrors(messages, errorRef);
         }
     }
 
@@ -50,7 +52,6 @@ public with sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor impl
         Map<String, String> navIdentMap = getNavIdentMap();
 
         for (KafkaFiaCase_Model model : keyToFiaCase.values()) {
- 
             if (isNewOrChanged(model.key, model.hash, lastSaved) && accountMap.containsKey(model.orgnr)) {
                 Account fiaCase = convertToSObject(model, accountMap, navIdentMap);
                 fiaCases.add(fiaCase);
@@ -59,24 +60,28 @@ public with sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor impl
         return fiaCases;
     }
 
-    private Account convertToSObject(KafkaFiaCase_Model model, Map<String, Account> accountMap, Map<String, String> navIdentMap) {
-            Account a = accountMap.get(model.orgnr);
-            a.TAG_FiaCaseNr__c = model.saksnummer;
-            a.TAG_FiaCaseOwner__c = model.eierAvSak;
-            a.TAG_FiaCaseStatus__c = model.status;
-            a.TAG_FiaStartDate__c = dateTimeValue(model.opprettetTidspunkt);
-            a.TAG_FiaLastModifiedDate__c = dateTimeValue(model.endretTidspunkt);
-            a.TAG_FiaKafkaId__c = model.key;
-            a.KafkaHash__c = model.hash;
-            a.JsonPayload__c = model.jsonPayload;
+    private Account convertToSObject(
+        KafkaFiaCase_Model model,
+        Map<String, Account> accountMap,
+        Map<String, String> navIdentMap
+    ) {
+        Account a = accountMap.get(model.orgnr);
+        a.TAG_FiaCaseNr__c = model.saksnummer;
+        a.TAG_FiaCaseOwner__c = model.eierAvSak;
+        a.TAG_FiaCaseStatus__c = model.status;
+        a.TAG_FiaStartDate__c = dateTimeValue(model.opprettetTidspunkt);
+        a.TAG_FiaLastModifiedDate__c = dateTimeValue(model.endretTidspunkt);
+        a.TAG_FiaKafkaId__c = model.key;
+        a.KafkaHash__c = model.hash;
+        a.JsonPayload__c = model.jsonPayload;
 
-            if (navIdentMap.containsKey(model.eierAvSak)){
-                String fullName = navIdentMap.get(model.eierAvSak);
-                a.TAG_FiaCaseOwnerName__c = fullName;
-            }
+        if (navIdentMap.containsKey(model.eierAvSak)) {
+            String fullName = navIdentMap.get(model.eierAvSak);
+            a.TAG_FiaCaseOwnerName__c = fullName;
+        }
 
         return a;
-     }
+    }
 
     private Map<String, String> getLastSavedFiaCase(Type className, Set<String> kafkaIds) {
         String query = 'SELECT KafkaHash__c, TAG_FiaKafkaId__c FROM Account WHERE TAG_FiaKafkaId__c IN: kafkaIds';
@@ -91,20 +96,24 @@ public with sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor impl
     }
 
     private void addNavIdent(String navIdent) {
-        if (navIdent != null){
+        if (navIdent != null) {
             navIdents.add(navIdent);
         }
     }
 
     private Map<String, String> getNavIdentMap() {
         Map<String, String> navIdentMap = new Map<String, String>();
-        List<User> users = [SELECT Id, firstName, lastName, CRM_NAV_Ident__c FROM User WHERE CRM_NAV_Ident__c IN: navIdents];
+        List<User> users = [
+            SELECT Id, firstName, lastName, CRM_NAV_Ident__c
+            FROM User
+            WHERE CRM_NAV_Ident__c IN :navIdents
+        ];
 
-        for (User u : users){
-            String name = u.firstName + ' ' + u.lastName; 
+        for (User u : users) {
+            String name = u.firstName + ' ' + u.lastName;
             navIdentMap.put(u.CRM_NAV_Ident__c, name);
         }
-    
+
         return navIdentMap;
     }
 }

@@ -1,9 +1,9 @@
 public inherited sharing abstract class KafkaMessageProcessor {
-    private static final LoggerUtility logger = new LoggerUtility();
+    public static AG_KafkaLogger logger = AG_KafkaLogger.get();
     public Set<String> orgNumbers;
 
     public KafkaMessageProcessor() {
-        orgNumbers = new Set<String>();
+        this.orgNumbers = new Set<String>();
     }
 
     public IKafkaMessageParser parse(Type className, KafkaMessage__c message) {
@@ -67,24 +67,5 @@ public inherited sharing abstract class KafkaMessageProcessor {
             accountMap.put(a.INT_OrganizationNumber__c, a);
         }
         return accountMap;
-    }
-
-    public String logError(String message) {
-        LoggerUtility.LogLevel logLevel = LoggerUtility.LogLevel.Error;
-        String errorRef = '';
-
-        logger.logMessage(logLevel, errorRef, null, message, null, null, CRM_ApplicationDomain.Domain.POAB);
-        errorRef = logger.peek().UUID__c;
-        logger.publish();
-
-        return errorRef;
-    }
-
-    public List<KafkaMessage__c> setMessageErrors(List<KafkaMessage__c> messages, String errorRef) {
-        for (KafkaMessage__c m : messages) {
-            m.CRM_Status__c = KafkaMessageService.STATUS_ERROR;
-            m.CRM_ErrorMessage__c = 'Message Processing error. See log with ref: ' + errorRef;
-        }
-        return messages;
     }
 }
