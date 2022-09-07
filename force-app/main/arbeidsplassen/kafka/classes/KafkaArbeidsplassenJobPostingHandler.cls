@@ -11,10 +11,12 @@ public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends Kafk
             } catch (Exception e) {
                 msg.CRM_Status__c = KafkaMessageService.STATUS_ERROR;
                 msg.CRM_ErrorMessage__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
+                logger.addError();
             }
         }
 
         convertAndUpsertJobPostings(messages);
+        logger.publish();
     }
 
     private void mapJobPosting(ArbeidsplassenJobPosting jobPosting) {
@@ -33,12 +35,8 @@ public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends Kafk
             jobPostings = getJobPostingSObjects();
             upsert jobPostings JobPosting__c.KafkaId__c;
         } catch (Exception e) {
-            String errorMessage = e.getMessage() + '/n' + e.getStackTraceString() + '/n';
-            for (JobPosting__c jp : jobPostings) {
-                errorMessage += jp.KafkaId__c + ' => ' + jp.Expires__c;
-            }
-            String errorRef = logError(errorMessage);
-            setMessageErrors(messages, errorRef);
+            String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
+            logger.setMessageErrors(messages, errorRef);
         }
     }
 

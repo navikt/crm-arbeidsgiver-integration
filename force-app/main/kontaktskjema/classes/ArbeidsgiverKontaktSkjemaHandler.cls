@@ -17,9 +17,11 @@ public inherited sharing class ArbeidsgiverKontaktSkjemaHandler extends KafkaMes
             } catch (Exception e) {
                 message.CRM_Status__c = KafkaMessageService.STATUS_ERROR;
                 message.CRM_ErrorMessage__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
+                logger.addError();
             }
         }
         convertAndInsertOpportunities(messages);
+        logger.publish();
     }
 
     private void convertAndInsertOpportunities(List<KafkaMessage__c> messages) {
@@ -28,8 +30,8 @@ public inherited sharing class ArbeidsgiverKontaktSkjemaHandler extends KafkaMes
             insert opportunities;
             sendEmailReceipts(opportunities);
         } catch (Exception e) {
-            String errorRef = logError(e.getMessage() + '/n' + e.getStackTraceString());
-            setMessageErrors(messages, errorRef);
+            String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
+            logger.setMessageErrors(messages, errorRef);
         }
     }
 
@@ -73,7 +75,7 @@ public inherited sharing class ArbeidsgiverKontaktSkjemaHandler extends KafkaMes
             }
             insert emails;
         } catch (Exception e) {
-            logError('Failed to send email confirmations' + e.getMessage() + '/n' + e.getStackTraceString());
+            logger.logError('Failed to send email confirmations' + e.getMessage() + '/n' + e.getStackTraceString());
         }
     }
 

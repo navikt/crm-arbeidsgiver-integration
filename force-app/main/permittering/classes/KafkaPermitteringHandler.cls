@@ -39,8 +39,8 @@ public without sharing class KafkaPermitteringHandler extends KafkaMessageProces
 
             insert layoffs;
         } catch (Exception e) {
-            String errorRef = logError(e.getMessage() + '/n' + e.getStackTraceString());
-            setMessageErrors(messages, errorRef);
+            String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
+            logger.setMessageErrors(messages, errorRef);
         }
     }
 }

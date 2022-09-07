@@ -1,5 +1,5 @@
 public without sharing class KafkaModiaDialogMoteHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer {
-    Map<String, KafkaModiaDialogMote_Model> keyToDialogMote = new Map<String, KafkaModiaDialogMote_Model>();
+    private Map<String, KafkaModiaDialogMote_Model> keyToDialogMote = new Map<String, KafkaModiaDialogMote_Model>();
 
     public void processMessages(List<KafkaMessage__c> messages) {
         for (KafkaMessage__c msg : messages) {
@@ -14,10 +14,11 @@ public without sharing class KafkaModiaDialogMoteHandler extends KafkaMessagePro
             } catch (Exception e) {
                 msg.CRM_Status__c = KafkaMessageService.STATUS_ERROR;
                 msg.CRM_ErrorMessage__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
+                logger.addError();
             }
         }
-
         convertAndUpsertDialogMote(messages);
+        logger.publish();
     }
 
     private void mapDialogMote(KafkaModiaDialogMote_Model dialogMote) {
@@ -35,8 +36,8 @@ public without sharing class KafkaModiaDialogMoteHandler extends KafkaMessagePro
             List<ArenaActivity__c> arenaActivities = toSObject();
             upsert arenaActivities ArenaActivity__c.KafkaId__c;
         } catch (Exception e) {
-            String errorRef = logError(e.getMessage() + '/n' + e.getStackTraceString());
-            setMessageErrors(messages, errorRef);
+            String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
+            logger.setMessageErrors(messages, errorRef);
         }
     }
 
