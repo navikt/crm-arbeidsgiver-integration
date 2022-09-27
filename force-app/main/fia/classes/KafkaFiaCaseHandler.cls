@@ -25,7 +25,7 @@ public without sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor i
     }
 
     private void mapFiaCase(KafkaFiaCase_Model fiaCase) {
-        String key = fiaCase.key;
+        String key = fiaCase.orgnr;
 
         if (!keyToFiaCase.containsKey(key)) {
             keyToFiaCase.put(key, fiaCase);
@@ -48,15 +48,25 @@ public without sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor i
     private List<Account> getFiaCasesSObjects() {
         Map<String, String> lastSaved = getLastSavedFiaCase(Account.class, keyToFiaCase.keyset());
         List<Account> fiaCases = new List<Account>();
+        //List<Account> fiaCasesForDelete = new List<Account>();
         Map<String, Account> accountMap = getOrgNumberAccountMap();
         Map<String, String> navIdentMap = getNavIdentMap();
 
         for (KafkaFiaCase_Model model : keyToFiaCase.values()) {
-            if (isNewOrChanged(model.key, model.hash, lastSaved) && accountMap.containsKey(model.orgnr)) {
-                Account fiaCase = convertToSObject(model, accountMap, navIdentMap);
+            if (isNewOrChanged(model.orgnr, model.hash, lastSaved) && accountMap.containsKey(model.orgnr)) {
+                Account fiaCase = new Account();                
+
+                if (model.status == 'Slettes' || model.status == 'IKKE_AKTUELL'){
+                    fiaCase = deleteFiaCaseFields(model, accountMap);
+                }
+                else {
+                    fiaCase = convertToSObject(model, accountMap, navIdentMap);
+                }
+
                 fiaCases.add(fiaCase);
             }
         }
+
         return fiaCases;
     }
 
@@ -83,13 +93,31 @@ public without sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor i
         return a;
     }
 
-    private Map<String, String> getLastSavedFiaCase(Type className, Set<String> kafkaIds) {
-        String query = 'SELECT KafkaHash__c, TAG_FiaKafkaId__c FROM Account WHERE TAG_FiaKafkaId__c IN: kafkaIds';
+    private Account deleteFiaCaseFields(
+        KafkaFiaCase_Model model,
+        Map<String, Account> accountMap
+    ) {
+        Account a = accountMap.get(model.orgnr);
+        a.TAG_FiaCaseNr__c = '';
+        a.TAG_FiaCaseOwner__c = '';
+        a.TAG_FiaCaseStatus__c = '';
+        a.TAG_FiaStartDate__c = null;
+        a.TAG_FiaLastModifiedDate__c = null;
+        a.TAG_FiaCaseOwnerName__c = '';
+        a.TAG_FiaKafkaId__c = '';
+        a.KafkaHash__c = '';
+        a.JsonPayload__c = '';
+
+        return a;
+    }
+
+    private Map<String, String> getLastSavedFiaCase(Type className, Set<String> organizationNumbers) {
+        String query = 'SELECT KafkaHash__c, INT_OrganizationNumber__c FROM Account WHERE INT_OrganizationNumber__c IN: organizationNumbers';
         Map<String, String> keyToExistingHash = new Map<String, String>();
 
         for (SObject obj : Database.query(query)) {
             if (obj.get('KafkaHash__c') != null) {
-                keyToExistingHash.put(obj.get('TAG_FiaKafkaId__c').toString(), obj.get('KafkaHash__c').toString());
+                keyToExistingHash.put(obj.get('INT_OrganizationNumber__c').toString(), obj.get('KafkaHash__c').toString());
             }
         }
         return keyToExistingHash;
