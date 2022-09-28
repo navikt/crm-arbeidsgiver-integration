@@ -56,11 +56,7 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
         System.assertEquals('FINN', jobPostings[0].Source__c);
         System.assertEquals('FINN', jobPostings[0].Medium__c);
         System.assertEquals(1, jobPostings.size());
-
-        System.assertEquals(
-            'Hedda Hytter søker tømrer/tømrerlag for oppføring av hytter på Østlandet.',
-            jobPostings[0].Title__c
-        );
+        System.assertEquals('Medarbeider søkes', jobPostings[0].Title__c);
         System.assertEquals(msg1.CRM_Value__c, jobPostings[0].KafkaHash__c, 'Correct KafkaId');
         System.assertEquals(msg1.CRM_Key__c, jobPostings[0].KafkaId__c, 'Correct KafkaId');
         System.assertEquals(acc.id, jobPostings[0].Account__c);
@@ -221,5 +217,40 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
         ];
 
         System.assertEquals(3, jobPostings.size(), '2 new, 1 updated');
+    }
+
+    @IsTest
+    static void processSingleMessage_tooLongTitle() {
+        final String JSON_WITH_LONG_TITLE =
+            '{\n' +
+            '  "uuid": "8e019569-0a0b-4f34-8d43-4498b9f0b32b",\n' +
+            '  "title": "Er du engasjert i politikk, samfunn og næringsliv? Vi ser etter deg som har god kunnskap om og gjerne erfaring fra politiske styrings- og beslutningsstrukturer på nasjonalt nivå. Du evner å se helheten og setter deg raskt inn i komplekse saker. Vil du være med å jobbe for politiske gjennomslag, delta i trepartssamarbeidet, bygge Virkes omdømme og fremme våre medlemmers interesser på arbeidslivsfeltet? Er du særlig interessert i inkludering og mangfold, og likestilling og diskriminering eller noe annet",\n' +
+            '  "status": "ACTIVE",\n' +
+            '  "published": "2022-02-18T07:07:07.064711",\n' +
+            '  "expires": "2022-03-31T00:00:00",\n' +
+            '  "created": "2022-02-18T07:17:50.477069",\n' +
+            '  "updated": "2021-02-18T07:19:21.575794",\n' +
+            '  "source": null,\n' +
+            '  "medium": null,\n' +
+            '  "reference": "248749509",\n' +
+            '  "businessName": "Hedda Hytter AS"\n' +
+            '}';
+
+        String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(JSON_WITH_LONG_TITLE));
+
+        KafkaMessage__c msg1 = new KafkaMessage__c();
+        msg1.CRM_Topic__c = 'teampam.stilling-ekstern-1';
+        msg1.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
+        msg1.CRM_Value__c = encodedValue;
+
+        KafkaArbeidsplassenJobPostingHandler handler = new KafkaArbeidsplassenJobPostingHandler();
+        handler.processMessages(new List<KafkaMessage__c>{ msg1 });
+
+        List<JobPosting__c> jobPostings = [SELECT Id, Account__c, Title__c, KafkaId__c, KafkaHash__c FROM JobPosting__c];
+
+        System.assertEquals(msg1.CRM_Value__c, jobPostings[0].KafkaHash__c, 'Correct KafkaId');
+        System.assertEquals(msg1.CRM_Key__c, jobPostings[0].KafkaId__c, 'Correct KafkaId');
+        System.assertEquals(1, jobPostings.size(), 'Job Posting Inserted');
+        System.assertEquals('Er du engasjert i politikk, samfunn og næringsliv? Vi ser etter deg som har god kunnskap om og gjerne erfaring fra politiske styrings- og beslutningsstrukturer på nasjonalt nivå. Du evner å se helheten og setter deg raskt inn i komplekse saker. Vil du væ', jobPostings[0].Title__c, 'Correct Title');
     }
 }

@@ -48,7 +48,6 @@ public without sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor i
     private List<Account> getFiaCasesSObjects() {
         Map<String, String> lastSaved = getLastSavedFiaCase(Account.class, keyToFiaCase.keyset());
         List<Account> fiaCases = new List<Account>();
-        //List<Account> fiaCasesForDelete = new List<Account>();
         Map<String, Account> accountMap = getOrgNumberAccountMap();
         Map<String, String> navIdentMap = getNavIdentMap();
 
@@ -56,8 +55,8 @@ public without sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor i
             if (isNewOrChanged(model.orgnr, model.hash, lastSaved) && accountMap.containsKey(model.orgnr)) {
                 Account fiaCase = new Account();                
 
-                if (model.status == 'Slettes' || model.status == 'IKKE_AKTUELL'){
-                    fiaCase = deleteFiaCaseFields(model, accountMap);
+                if (model.status == 'SLETTES' || model.status == 'IKKE_AKTUELL'){
+                    fiaCase = setFiaCaseFieldsToNull(model, accountMap);
                 }
                 else {
                     fiaCase = convertToSObject(model, accountMap, navIdentMap);
@@ -93,7 +92,7 @@ public without sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor i
         return a;
     }
 
-    private Account deleteFiaCaseFields(
+    private Account setFiaCaseFieldsToNull(
         KafkaFiaCase_Model model,
         Map<String, Account> accountMap
     ) {
