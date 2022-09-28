@@ -73,7 +73,7 @@ public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends Kafk
             Status__c = model.status,
             Medium__c = model.medium,
             Source__c = model.source,
-            Title__c = model.title,
+            Title__c = model.title.left(254),
             KafkaHash__c = model.hash,
             KafkaId__c = model.key,
             UUID__c = model.uuid
