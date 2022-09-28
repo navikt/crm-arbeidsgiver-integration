@@ -3,7 +3,7 @@ public with sharing class ArbeidsplassenJobPostingTest {
     public static final String JSON =
         '{\n' +
         '  "uuid": "8e019569-0a0b-4f34-8d43-4498b9f0b32b",\n' +
-        '  "title": "Hedda Hytter søker tømrer/tømrerlag for oppføring av hytter på Østlandet.",\n' +
+        '  "title": "Medarbeider søkes",\n' +
         '  "status": "ACTIVE",\n' +
         '  "published": "2022-02-18T07:07:07.064711",\n' +
         '  "expires": "2022-03-31T00:00:00",\n' +
@@ -90,7 +90,7 @@ public with sharing class ArbeidsplassenJobPostingTest {
     public static final String JSON_WITH_NULLS =
         '{\n' +
         '  "uuid": "8e019569-0a0b-4f34-8d43-4498b9f0b32b",\n' +
-        '  "title": "Hedda Hytter søker tømrer/tømrerlag for oppføring av hytter på Østlandet.",\n' +
+        '  "title": "Medarbeider søkes",\n' +
         '  "status": "INACTIVE",\n' +
         '  "published": "2022-02-18T07:07:07.064711",\n' +
         '  "expires": "2022-03-31T00:00:00",\n' +
@@ -159,7 +159,7 @@ public with sharing class ArbeidsplassenJobPostingTest {
         ArbeidsplassenJobPosting model = ArbeidsplassenJobPosting.parse(JSON, 'testkey', 'testhash');
 
         System.assertEquals('8e019569-0a0b-4f34-8d43-4498b9f0b32b', model.uuid);
-        System.assertEquals('Hedda Hytter søker tømrer/tømrerlag for oppføring av hytter på Østlandet.', model.title);
+        System.assertEquals('Medarbeider søkes', model.title);
         System.assertEquals('ACTIVE', model.status);
         System.assertEquals('2022-02-18T07:07:07.064711', model.published);
         System.assertEquals('2022-03-31T00:00:00', model.expires);
@@ -200,7 +200,7 @@ public with sharing class ArbeidsplassenJobPostingTest {
         ArbeidsplassenJobPosting model = ArbeidsplassenJobPosting.parse(JSON_WITH_NULLS, 'testkey', 'testhash');
 
         System.assertEquals('8e019569-0a0b-4f34-8d43-4498b9f0b32b', model.uuid);
-        System.assertEquals('Hedda Hytter søker tømrer/tømrerlag for oppføring av hytter på Østlandet.', model.title);
+        System.assertEquals('Medarbeider søkes', model.title);
         System.assertEquals('INACTIVE', model.status);
         System.assertEquals('2022-02-18T07:07:07.064711', model.published);
         System.assertEquals('2022-03-31T00:00:00', model.expires);
