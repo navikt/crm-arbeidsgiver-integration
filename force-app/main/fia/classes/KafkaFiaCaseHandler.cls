@@ -55,7 +55,7 @@ public without sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor i
             if (isNewOrChanged(model.orgnr, model.hash, lastSaved) && accountMap.containsKey(model.orgnr)) {
                 Account fiaCase = new Account();                
 
-                if (model.status == 'SLETTES' || model.status == 'IKKE_AKTUELL'){
+                if (model.status == 'SLETTET' || model.status == 'IKKE_AKTIV'){
                     fiaCase = setFiaCaseFieldsToNull(model, accountMap);
                 }
                 else {
