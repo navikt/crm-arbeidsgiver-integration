@@ -371,14 +371,14 @@ public with sharing class KafkaFiaCaseHandlerTEST {
     }
 
     @isTest
-    static void statusSlettesOrIkkeAktuell() {
+    static void statusSlettesOrIkkeAktiv() {
         Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '973113631', TAG_FiaCaseStatus__c = 'Vurderes', TAG_FiaCaseOwner__c = 'B2508285');
         insert acc;
         Account acc2 = new Account(Name = 'Test Employer 2', INT_OrganizationNumber__c = '973113632', TAG_FiaCaseStatus__c = 'Vurderes', TAG_FiaCaseOwner__c = 'B2508286');
         insert acc2;
 
-        String json = '{"saksnummer": "a240d1adtuasydt", "orgnr": "973113631", "eierAvSak": "C156986", "endretAvHendelseId": "sdfhoisdyfio49856", "status": "Slettes", "opprettetTidspunkt": "2022-02-18T07:07:07.064711", "endretTidspunkt": "2022-02-18T07:19:21.575794"}';
-        String json2 = '{"saksnummer": "a240d1adtuasyy", "orgnr": "973113632", "eierAvSak": "C156987", "endretAvHendelseId": "sdfhoisdyfio49856", "status": "IKKE_AKTUELL", "opprettetTidspunkt": "2022-02-18T07:07:07.064711", "endretTidspunkt": "2022-02-18T07:19:23.575794"}';
+        String json = '{"saksnummer": "a240d1adtuasydt", "orgnr": "973113631", "eierAvSak": "C156986", "endretAvHendelseId": "sdfhoisdyfio49856", "status": "SLETTET", "opprettetTidspunkt": "2022-02-18T07:07:07.064711", "endretTidspunkt": "2022-02-18T07:19:21.575794"}';
+        String json2 = '{"saksnummer": "a240d1adtuasyy", "orgnr": "973113632", "eierAvSak": "C156987", "endretAvHendelseId": "sdfhoisdyfio49856", "status": "IKKE_AKTIV", "opprettetTidspunkt": "2022-02-18T07:07:07.064711", "endretTidspunkt": "2022-02-18T07:19:23.575794"}';
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
         String encodedValue2 = EncodingUtil.base64Encode(Blob.valueOf(json2));
 
