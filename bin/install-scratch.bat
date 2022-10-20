@@ -19,18 +19,38 @@ call :checkForError
 
 echo Installing dependencies...
 for /f "tokens=1,2 delims=:{} " %%A in (env.json) do set secret=%%~A
-set x[0]=crm-platform-base:%secret%
-set x[1]=crm-platform-access-control:%secret%
-set x[2]=crm-shared-base:%secret%
-set x[3]=crm-shared-timeline:%secret%
-set x[4]=crm-platform-integration:%secret%
-set x[5]=crm-platform-email-scheduling:%secret%
-set x[6]=crm-arbeidsgiver-base:%secret%
-for /L %%p in (0,1,7) do cmd.exe /c sfdx sfpowerkit:package:dependencies:install -u %ORG_ALIAS% -r -a -k %%x[%%p]%%
-call :checkForError
+
+echo "Installing crm-platform-base ver. 0.175"
+call sfdx force:package:install --package 04t7U000000TqrpQAC -r -k %secret% --wait 10 --publishwait 10
+
+echo "Installing crm-platform-integration ver. 0.86"
+call sfdx force:package:install --package 04t7U000000TqfjQAC -r -k %secret% --wait 10 --publishwait 10
+
+echo "Installing crm-platform-access-control ver. 0.104"
+call sfdx force:package:install --package 04t7U000000TqXkQAK -r -k %secret% --wait 10 --publishwait 10
+
+echo "Installing crm-shared-base ver. 1.1"
+call sfdx force:package:install --package 04t2o000000ySqpAAE -r -k %secret% --wait 10 --publishwait 10
+
+echo "Installing crm-thread-view ver. 0.1"
+call sfdx force:package:install --package 04t7U000000TqVFQA0 -r -k %secret% --wait 10 --publishwait 10
+
+echo "Installing crm-shared-timeline ver. 1.18"
+call sfdx force:package:install --package 04t7U000000TqbDQAS -r -k %secret% --wait 10 --publishwait 10
+
+echo "Installing crm-arbeidsgiver-base ver. 1.267"
+call sfdx force:package:install --package 04t7U000000TqsYQAS -r -k %secret% --wait 10 --publishwait 10
+
+echo "Installing crm-platform-email-scheduling ver. 1.6"
+call sfdx force:package:install --package 04t2o000000yRsBAAU -r -k %secret% --wait 10 --publishwait 10
 
 echo Pushing metadata...
 cmd.exe /c sfdx force:source:push
+call :checkForError
+@echo:
+
+echo Pushing unpackaged data...
+cmd.exe /c sfdx force:source:deploy -p ./unpackagable
 call :checkForError
 @echo:
 
