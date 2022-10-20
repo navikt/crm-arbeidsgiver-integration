@@ -41,6 +41,9 @@ call sfdx force:package:install --package 04t7U000000TqsYQAS -r -k %secret% --wa
 echo "Installing crm-platform-email-scheduling ver. 1.6"
 call sfdx force:package:install --package 04t2o000000yRsBAAU -r -k %secret% --wait 10 --publishwait 10
 
+echo "Installing crm-thread-view ver. 0.1"
+call sfdx force:package:install --package 04t7U000000TqVFQA0 -r -k %secret% --wait 10 --publishwait 10
+
 echo Pushing metadata...
 cmd.exe /c sfdx force:source:push
 call :checkForError
