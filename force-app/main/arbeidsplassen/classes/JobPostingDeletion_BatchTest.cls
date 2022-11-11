@@ -29,6 +29,6 @@ public with sharing class JobPostingDeletion_BatchTest {
 
         List<JobPosting__c> updatedJobPostings = [SELECT Id FROM JobPosting__c];
 
-        System.assertEquals(1, updatedJobPostings.size(), 'All job postings deleted except for active');
+        System.assertEquals(2, updatedJobPostings.size(), 'All job postings deleted except for active and inactive');
     }
 }
