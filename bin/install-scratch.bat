@@ -21,28 +21,28 @@ echo Installing dependencies...
 for /f "tokens=1,2 delims=:{} " %%A in (env.json) do set secret=%%~A
 
 echo "Installing crm-platform-base ver. 0.175"
-call sfdx force:package:install --package 04t7U000000TqrpQAC -r -k %secret% --wait 10 --publishwait 10
+call sfdx force:package:install --package 04t7U000000TqrpQAC -r -k %secret% --wait 30 --publishwait 30
 
 echo "Installing crm-platform-integration ver. 0.86"
-call sfdx force:package:install --package 04t7U000000TqfjQAC -r -k %secret% --wait 10 --publishwait 10
+call sfdx force:package:install --package 04t7U000000TqfjQAC -r -k %secret% --wait 30 --publishwait 30
 
 echo "Installing crm-platform-access-control ver. 0.104"
-call sfdx force:package:install --package 04t7U000000TqXkQAK -r -k %secret% --wait 10 --publishwait 10
+call sfdx force:package:install --package 04t7U000000TqXkQAK -r -k %secret% --wait 30 --publishwait 30
 
 echo "Installing crm-shared-base ver. 1.1"
-call sfdx force:package:install --package 04t2o000000ySqpAAE -r -k %secret% --wait 10 --publishwait 10
+call sfdx force:package:install --package 04t2o000000ySqpAAE -r -k %secret% --wait 30 --publishwait 30
 
 echo "Installing crm-thread-view ver. 0.1"
-call sfdx force:package:install --package 04t7U000000TqVFQA0 -r -k %secret% --wait 10 --publishwait 10
+call sfdx force:package:install --package 04t7U000000TqVFQA0 -r -k %secret% --wait 30 --publishwait 30
 
 echo "Installing crm-shared-timeline ver. 1.18"
-call sfdx force:package:install --package 04t7U000000TqbDQAS -r -k %secret% --wait 10 --publishwait 10
+call sfdx force:package:install --package 04t7U000000TqbDQAS -r -k %secret% --wait 30 --publishwait 30
 
-echo "Installing crm-arbeidsgiver-base ver. 1.267"
-call sfdx force:package:install --package 04t7U000000TqsYQAS -r -k %secret% --wait 10 --publishwait 10
+echo "Installing crm-arbeidsgiver-base ver. 1.274"
+call sfdx force:package:install --package 04t7U0000008qbvQAA -r -k %secret% --wait 30 --publishwait 30
 
 echo "Installing crm-platform-email-scheduling ver. 1.6"
-call sfdx force:package:install --package 04t2o000000yRsBAAU -r -k %secret% --wait 10 --publishwait 10
+call sfdx force:package:install --package 04t2o000000yRsBAAU -r -k %secret% --wait 30 --publishwait 30
 
 echo Pushing metadata...
 cmd.exe /c sfdx force:source:push
