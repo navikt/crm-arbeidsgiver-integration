@@ -3,7 +3,8 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
     private Set<String> navIdents;
     private Set<String> navUnits;
 
-    public Id avtaleRecordTypeId = Schema.SObjectType.Contract__c.getRecordTypeInfosByName().get('MeasureAgreement').getRecordTypeId();
+    public Id avtaleRecordTypeId = [SELECT Id FROM RecordType WHERE Name = 'Measure Agreement'].id;
+    //Schema.SObjectType.Contract__c.getRecordTypeInfosByName().get('MeasureAgreement').getRecordTypeId();
 
     public KafkaToiAvtaleHandler() {
         navIdents = new Set<String>();
