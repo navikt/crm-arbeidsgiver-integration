@@ -1,4 +1,4 @@
-public class KafkaToiAvtaleHandler_Model {
+public class KafkaToiAvtaleHandler_Model implements IKafkaMessageParser{
 
     public String hendelseType { get; set; }
 	public String avtaleStatus { get; set; }
@@ -67,19 +67,19 @@ public class KafkaToiAvtaleHandler_Model {
 	public Integer sumLonnsutgifter { get; set; }
 	public Integer sumLonnstilskudd { get; set; }
 	public Integer manedslonn100pst { get; set; }
-	//public Integer sumLønnstilskuddRedusert { get; set; }
+	public Integer sumLonnstilskuddRedusert { get; set; }
 	public String datoForRedusertProsent { get; set; }
 	public String stillingstype { get; set; }
 	public List<String> maal { get; set; }
 	public List<String> inkluderingstilskuddsutgift { get; set; }
 	public String inkluderingstilskuddBegrunnelse { get; set; }
-	//public Integer inkluderingstilskuddTotalBeløp { get; set; }
+	public Integer inkluderingstilskuddTotalBelop { get; set; }
 	public String godkjentAvDeltaker { get; set; }
-	//public String godkjentTaushetserklæringAvMentor { get; set; }
+	public String godkjentTaushetserklaeingAvMentor { get; set; }
 	public String godkjentAvArbeidsgiver { get; set; }
 	public String godkjentAvVeileder { get; set; }
 	public String godkjentAvBeslutter { get; set; }
-	//public String avtaleInngått { get; set; }
+	public String avtaleInngatt { get; set; }
 	public String ikrafttredelsestidspunkt { get; set; }
 	public String godkjentAvNavIdent { get; set; }
 	public String godkjentAvBeslutterNavIdent { get; set; }
@@ -90,7 +90,7 @@ public class KafkaToiAvtaleHandler_Model {
 	public String godkjentPaVegneAvArbeidsgiverGrunn { get; set; }
 	public Boolean godkjentPaVegneAvArbeidsgiver { get; set; }
 	public String innholdType { get; set; }
-	//public String utførtAv { get; set; }
+	public String utfortAv { get; set; }
 
 	public class GodkjentPaVegneGrunn {
 		public Boolean ikkeBankId { get; set; }
@@ -103,8 +103,14 @@ public class KafkaToiAvtaleHandler_Model {
     public String key { get; set; }
 
     public static KafkaToiAvtaleHandler_Model parse(String json, String key, String hash) {
+        String formattedJSON = json.replaceAll('sumLønnstilskuddRedusert', 'sumLonnstilskuddRedusert')
+            .replaceAll('inkluderingstilskuddTotalBeløp', 'inkluderingstilskuddTotalBelop')
+            .replaceAll('godkjentTaushetserklæringAvMentor', 'godkjentTaushetserklaeingAvMentor')
+            .replaceAll('avtaleInngått', 'avtaleInngatt')
+            .replaceAll('utførtAv', 'utfortAv');
+
         KafkaToiAvtaleHandler_Model model = (KafkaToiAvtaleHandler_Model) System.JSON.deserialize(
-            json,
+            formattedJSON,
             KafkaToiAvtaleHandler_Model.class
         );
         model.jsonPayload = json;

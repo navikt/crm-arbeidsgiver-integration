@@ -3,7 +3,7 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
     private Set<String> navIdents;
     private Set<String> navUnits;
 
-    public Id avtaleRecordTypeId = Schema.SObjectType.Contract__c.getRecordTypeInfosByName().get('MeasureAgreement').getRecordTypeId();
+    public Id avtaleRecordTypeId = [SELECT Id FROM RecordType WHERE Name = 'Measure Agreement'].id;
 
     public KafkaToiAvtaleHandler() {
         navIdents = new Set<String>();
@@ -64,17 +64,29 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
  
             Contract__c c = new Contract__c(
                 RecordTypeId = avtaleRecordTypeId,
-                TAG_StartDate__c = dateTimeValue(model.startDato).date(),
-                TAG_EndDate__c = dateTimeValue(model.sluttDato).date(),
+                TAG_StartDate__c = Date.valueof(model.startDato),
                 ExternalId__c = model.avtaleNr,
                 TAG_Status__c = model.avtaleStatus,
-                TAG_MeasureParticipant__c = model.deltakerFornavn + ' ' + model.deltakerEtternavn,
-                TAG_EmployerContact__c = model.arbeidsgiverFornavn + ' ' + model.arbeidsgiverEtternavn,
-                TAG_Mentor__c = model.mentorFornavn + ' ' + model.mentorEtternavn,
                 TAG_ExternalURL__c = 'https://arbeidsgiver.labs.nais.io/tiltaksgjennomforing/avtale/' + model.id + '?bedrift=' + model.bedriftnr,
                 KafkaHash__c = model.hash,
                 KafkaId__c = model.key
             );
+
+            if (model.sluttDato != null) {
+                c.TAG_EndDate__c = Date.valueof(model.sluttDato);
+            }
+
+            if (model.deltakerFornavn != null & model.deltakerEtternavn != null) {
+                c.TAG_MeasureParticipant__c = model.deltakerFornavn + ' ' + model.deltakerEtternavn;
+            }
+
+            if (model.arbeidsgiverFornavn != null & model.arbeidsgiverEtternavn != null) {
+                c.TAG_EmployerContact__c = model.arbeidsgiverFornavn + ' ' + model.arbeidsgiverEtternavn;
+            }
+
+            if (model.mentorFornavn != null & model.mentorEtternavn != null) {
+                c.TAG_Mentor__c = model.mentorFornavn + ' ' + model.mentorEtternavn;
+            }
 
             if (model.tiltakstype == 'MIDLERTIDIG_LONNSTILSKUDD') {
                 c.TAG_Category__c = 'Midlertidig lønnstilskudd';

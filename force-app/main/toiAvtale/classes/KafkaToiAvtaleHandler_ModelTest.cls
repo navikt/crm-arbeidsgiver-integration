@@ -185,6 +185,7 @@ public with sharing class KafkaToiAvtaleHandler_ModelTest {
         System.assertEquals(false, model.godkjentPaVegneAvArbeidsgiver);
         System.assertEquals('ENDRE_STILLING', model.innholdType);
         System.assertEquals(null, model.key);
+        System.assertEquals('Z992800', model.utfortAv);
     }
 
 }
