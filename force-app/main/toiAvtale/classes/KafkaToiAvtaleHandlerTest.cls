@@ -45,7 +45,7 @@ public with sharing class KafkaToiAvtaleHandlerTest {
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'arbeidsgiver.avtaletiltak-v1';
+        msg1.CRM_Topic__c = 'arbeidsgiver.tiltak-avtale-hendelse';
         msg1.CRM_Key__c = 'c9d8fe1e-c4d2-499e-bd16-af3a88b1e734';
         msg1.CRM_Value__c = encodedValue;
 
@@ -126,7 +126,7 @@ public with sharing class KafkaToiAvtaleHandlerTest {
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'arbeidsgiver.avtaletiltak-v1';
+        msg1.CRM_Topic__c = 'arbeidsgiver.tiltak-avtale-hendelse';
         msg1.CRM_Key__c = 'c9d8fe1e-c4d2-499e-bd16-af3a88b1e734';
         msg1.CRM_Value__c = encodedValue;
 
@@ -208,7 +208,7 @@ public with sharing class KafkaToiAvtaleHandlerTest {
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'arbeidsgiver.avtaletiltak-v1';
+        msg1.CRM_Topic__c = 'arbeidsgiver.tiltak-avtale-hendelse';
         msg1.CRM_Key__c = 'c9d8fe1e-c4d2-499e-bd16-af3a88b1e734';
         msg1.CRM_Value__c = encodedValue;
 
