@@ -187,5 +187,4 @@ public with sharing class KafkaToiAvtaleHandler_ModelTest {
         System.assertEquals(null, model.key);
         System.assertEquals('Z992800', model.utfortAv);
     }
-
 }
