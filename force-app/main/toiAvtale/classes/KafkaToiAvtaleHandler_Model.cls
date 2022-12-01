@@ -8,7 +8,7 @@ public class KafkaToiAvtaleHandler_Model implements IKafkaMessageParser{
 	public String veilederNavIdent { get; set; }
 	public String tiltakstype { get; set; }
 	public String opprettetTidspunkt { get; set; }
-	public String id { get; set; }
+	public String avtaleId { get; set; }
 	public String avtaleNr { get; set; }
 	public String sistEndret { get; set; }
 	public String annullertTidspunkt { get; set; }

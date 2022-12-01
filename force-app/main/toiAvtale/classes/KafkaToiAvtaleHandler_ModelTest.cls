@@ -10,7 +10,7 @@ public with sharing class KafkaToiAvtaleHandler_ModelTest {
     '   \"veilederNavIdent\":\"Z992800\",' +
     '   \"tiltakstype\":\"MIDLERTIDIG_LONNSTILSKUDD\",' +
     '   \"opprettetTidspunkt\":\"2022-05-23T10:27:13.626211\",' +
-    '   \"id\":\"c9d8fe1e-c4d2-499e-bd16-af3a88b1e734\",' +
+    '   \"avtaleId\":\"c9d8fe1e-c4d2-499e-bd16-af3a88b1e734\",' +
     '   \"avtaleNr\":397,' +
     '   \"sistEndret\":\"2022-10-26T09:54:34.265048609Z\",' +
     '   \"annullertTidspunkt\":null,' +
@@ -106,7 +106,7 @@ public with sharing class KafkaToiAvtaleHandler_ModelTest {
         System.assertEquals('910825526', model.bedriftNr);
         System.assertEquals('Z992800', model.veilederNavIdent);
         System.assertEquals('2022-05-23T10:27:13.626211', model.opprettetTidspunkt);
-        System.assertEquals('c9d8fe1e-c4d2-499e-bd16-af3a88b1e734', model.id);
+        System.assertEquals('c9d8fe1e-c4d2-499e-bd16-af3a88b1e734', model.avtaleId);
         System.assertEquals('397', model.avtaleNr);
         System.assertEquals('2022-10-26T09:54:34.265048609Z', model.sistEndret);
         System.assertEquals(null, model.annullertTidspunkt);

@@ -43,7 +43,7 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
         List<Contract__c> avtaler = new List<Contract__c>();
         try {
             avtaler = toSObjects();
-            upsert avtaler Contract__c.KafkaId__c;
+            upsert avtaler Contract__c.ExternalId__c;
         } catch (Exception e) {
             String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
             logger.setMessageErrors(messages, errorRef);
@@ -67,7 +67,7 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
                 TAG_StartDate__c = Date.valueof(model.startDato),
                 ExternalId__c = model.avtaleNr,
                 TAG_Status__c = model.avtaleStatus,
-                TAG_ExternalURL__c = 'https://arbeidsgiver.labs.nais.io/tiltaksgjennomforing/avtale/' + model.id + '?bedrift=' + model.bedriftnr,
+                TAG_ExternalURL__c = 'https://arbeidsgiver.labs.nais.io/tiltaksgjennomforing/avtale/' + model.avtaleId + '?bedrift=' + model.bedriftnr,
                 KafkaHash__c = model.hash,
                 KafkaId__c = model.key
             );
