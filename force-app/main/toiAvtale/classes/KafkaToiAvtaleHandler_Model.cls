@@ -22,7 +22,6 @@ public class KafkaToiAvtaleHandler_Model implements IKafkaMessageParser{
 	public Boolean godkjentForEtterregistrering { get; set; }
 	public String kvalifiseringsgruppe { get; set; }
 	public String formidlingsgruppe { get; set; }
-	public List<String> tilskuddPeriode { get; set; }
 	public Boolean feilregistrert { get; set; }
 	public Integer versjon { get; set; }
 	public String deltakerFornavn { get; set; }
@@ -70,8 +69,6 @@ public class KafkaToiAvtaleHandler_Model implements IKafkaMessageParser{
 	public Integer sumLonnstilskuddRedusert { get; set; }
 	public String datoForRedusertProsent { get; set; }
 	public String stillingstype { get; set; }
-	public List<String> maal { get; set; }
-	public List<String> inkluderingstilskuddsutgift { get; set; }
 	public String inkluderingstilskuddBegrunnelse { get; set; }
 	public Integer inkluderingstilskuddTotalBelop { get; set; }
 	public String godkjentAvDeltaker { get; set; }
