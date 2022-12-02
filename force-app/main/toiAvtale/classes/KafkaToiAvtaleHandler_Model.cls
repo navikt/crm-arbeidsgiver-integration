@@ -45,7 +45,6 @@ public class KafkaToiAvtaleHandler_Model implements IKafkaMessageParser{
 	public Integer stillingStyrk08 { get; set; }
 	public Integer stillingKonseptId { get; set; }
 	public Integer antallDagerPerUke { get; set; }
-	public String refusjonKontaktperson { get; set; }
 	public String mentorFornavn { get; set; }
 	public String mentorEtternavn { get; set; }
 	public String mentorOppgaver { get; set; }
