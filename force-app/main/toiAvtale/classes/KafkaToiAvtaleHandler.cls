@@ -64,13 +64,16 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
  
             Contract__c c = new Contract__c(
                 RecordTypeId = avtaleRecordTypeId,
-                TAG_StartDate__c = Date.valueof(model.startDato),
                 ExternalId__c = model.avtaleNr,
                 TAG_Status__c = model.avtaleStatus,
                 TAG_ExternalURL__c = 'https://arbeidsgiver.labs.nais.io/tiltaksgjennomforing/avtale/' + model.avtaleId + '?bedrift=' + model.bedriftnr,
                 KafkaHash__c = model.hash,
                 KafkaId__c = model.key
             );
+
+            if (model.startDato != null) {
+                c.TAG_StartDate__c = Date.valueof(model.startDato);
+            }
 
             if (model.sluttDato != null) {
                 c.TAG_EndDate__c = Date.valueof(model.sluttDato);

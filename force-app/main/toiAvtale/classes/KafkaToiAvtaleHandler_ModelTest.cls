@@ -141,7 +141,6 @@ public with sharing class KafkaToiAvtaleHandler_ModelTest {
         System.assertEquals(9122, model.stillingStyrk08);
         System.assertEquals(168963, model.stillingKonseptId);
         System.assertEquals(5, model.antallDagerPerUke);
-        System.assertEquals(null, model.refusjonKontaktperson);
         System.assertEquals(null, model.mentorFornavn);
         System.assertEquals(null, model.mentorEtternavn);
         System.assertEquals(null, model.mentorOppgaver);
