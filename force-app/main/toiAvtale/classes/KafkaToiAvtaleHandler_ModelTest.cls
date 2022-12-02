@@ -24,7 +24,7 @@ public with sharing class KafkaToiAvtaleHandler_ModelTest {
     '   \"godkjentForEtterregistrering\":true,' +
     '   \"kvalifiseringsgruppe\":\"BFORM\",' +
     '   \"formidlingsgruppe\":\"ARBS\",' +
-    '   \"tilskuddPeriode\":[],' +
+    '   \"tilskuddPeriode\":[{"id":"cb153a4f-bb17-4140-80bb-6ed398c690b7","beløp":4434,"startDato":"2022-10-26","sluttDato":"2022-10-31","godkjentAvNavIdent":null,"godkjentTidspunkt":null,"enhet":null,"enhetsnavn":null,"lonnstilskuddProsent":40,"avslagsårsaker":[],"avslagsforklaring":null,"avslåttAvNavIdent":null,"avslåttTidspunkt":null,"løpenummer":1,"status":"UBEHANDLET","refusjonStatus":null,"aktiv":true,"kanBesluttesFom":"-999999999-01-01"},{"id":"eb935214-ea38-4bf6-923e-aaeeabf23a99","beløp":22491,"startDato":"2022-11-01","sluttDato":"2022-11-30","godkjentAvNavIdent":null,"godkjentTidspunkt":null,"enhet":null,"enhetsnavn":null,"lonnstilskuddProsent":40,"avslagsårsaker":[],"avslagsforklaring":null,"avslåttAvNavIdent":null,"avslåttTidspunkt":null,"løpenummer":2,"status":"UBEHANDLET","refusjonStatus":null,"aktiv":true,"kanBesluttesFom":"2022-08-01"},{"id":"6e03ed0c-70bb-498d-a406-201eb9fe89c5","beløp":22491,"startDato":"2022-12-01","sluttDato":"2022-12-31","godkjentAvNavIdent":null,"godkjentTidspunkt":null,"enhet":null,"enhetsnavn":null,"lonnstilskuddProsent":40,"avslagsårsaker":[],"avslagsforklaring":null,"avslåttAvNavIdent":null,"avslåttTidspunkt":null,"løpenummer":3,"status":"UBEHANDLET","refusjonStatus":null,"aktiv":true,"kanBesluttesFom":"2022-09-01"},{"id":"f4d7d44b-d779-4d2b-be1b-f8b8fef9745c","beløp":739,"startDato":"2023-01-01","sluttDato":"2023-01-01","godkjentAvNavIdent":null,"godkjentTidspunkt":null,"enhet":null,"enhetsnavn":null,"lonnstilskuddProsent":40,"avslagsårsaker":[],"avslagsforklaring":null,"avslåttAvNavIdent":null,"avslåttTidspunkt":null,"løpenummer":4,"status":"UBEHANDLET","refusjonStatus":null,"aktiv":true,"kanBesluttesFom":"2023-01-01"}],' +
     '   \"feilregistrert\":false,' +
     '   \"versjon\":5,' +
     '   \"deltakerFornavn\":\"Overfølsom\",' +
@@ -120,7 +120,6 @@ public with sharing class KafkaToiAvtaleHandler_ModelTest {
         System.assertEquals(true, model.godkjentForEtterregistrering);
         System.assertEquals('BFORM', model.kvalifiseringsgruppe);
         System.assertEquals('ARBS', model.formidlingsgruppe);
-        System.assertEquals(0, model.tilskuddPeriode.size());
         System.assertEquals(false, model.feilregistrert);
         System.assertEquals(5, model.versjon);
         System.assertEquals('Overfølsom', model.deltakerFornavn);
@@ -165,8 +164,6 @@ public with sharing class KafkaToiAvtaleHandler_ModelTest {
         System.assertEquals(27811, model.manedslonn100pst);
         System.assertEquals('2022-07-01', model.datoForRedusertProsent);
         System.assertEquals('FAST', model.stillingstype);
-        System.assertEquals(0, model.maal.size());
-        System.assertEquals(0, model.inkluderingstilskuddsutgift.size());
         System.assertEquals(null, model.inkluderingstilskuddBegrunnelse);
         System.assertEquals('2022-05-23T10:31:49.922613', model.godkjentAvDeltaker);
         System.assertEquals('2022-05-23T10:31:18.693921', model.godkjentAvArbeidsgiver);
