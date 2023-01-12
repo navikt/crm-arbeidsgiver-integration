@@ -71,7 +71,7 @@ public with sharing class KafkaToiAvtaleHandlerTest {
         System.assertEquals('Dolly Duck', avtaler[0].TAG_EmployerContact__c);
         System.assertEquals(null, avtaler[0].TAG_Mentor__c);
         System.assertEquals('https://arbeidsgiver.labs.nais.io/tiltaksgjennomforing/avtale/c9d8fe1e-c4d2-499e-bd16-af3a88b1e734?bedrift=910825526', avtaler[0].TAG_ExternalURL__c);
-        System.assertEquals('Midlertidig lønnstilskudd', avtaler[0].TAG_Category__c);
+        System.assertEquals('MIDLERTIDIG_LONNSTILSKUDD', avtaler[0].TAG_Category__c);
         System.assertEquals(users[0].Id, avtaler[0].TAG_InternalContact__c);
         System.assertEquals(users[0].Id, avtaler[0].OwnerId);
         System.assertEquals(unit.Id, avtaler[0].TAG_NAVUnit__c);
@@ -152,7 +152,7 @@ public with sharing class KafkaToiAvtaleHandlerTest {
         System.assertEquals('Dolly Duck', avtaler[0].TAG_EmployerContact__c);
         System.assertEquals(null, avtaler[0].TAG_Mentor__c);
         System.assertEquals('https://arbeidsgiver.labs.nais.io/tiltaksgjennomforing/avtale/c9d8fe1e-c4d2-499e-bd16-af3a88b1e734?bedrift=910825526', avtaler[0].TAG_ExternalURL__c);
-        System.assertEquals('Midlertidig lønnstilskudd', avtaler[0].TAG_Category__c);
+        System.assertEquals('MIDLERTIDIG_LONNSTILSKUDD', avtaler[0].TAG_Category__c);
         System.assert(String.isBlank(avtaler[0].TAG_InternalContact__c));
         System.assertEquals(g.Id, avtaler[0].OwnerId);
         System.assertEquals(unit.Id, avtaler[0].TAG_NAVUnit__c);
@@ -234,7 +234,7 @@ public with sharing class KafkaToiAvtaleHandlerTest {
         System.assertEquals('Dolly Duck', avtaler[0].TAG_EmployerContact__c);
         System.assertEquals(null, avtaler[0].TAG_Mentor__c);
         System.assertEquals('https://arbeidsgiver.labs.nais.io/tiltaksgjennomforing/avtale/c9d8fe1e-c4d2-499e-bd16-af3a88b1e734?bedrift=910825526', avtaler[0].TAG_ExternalURL__c);
-        System.assertEquals('Midlertidig lønnstilskudd', avtaler[0].TAG_Category__c);
+        System.assertEquals('MIDLERTIDIG_LONNSTILSKUDD', avtaler[0].TAG_Category__c);
         System.assert(String.isBlank(avtaler[0].TAG_InternalContact__c));
         System.assertEquals(g.Id, avtaler[0].OwnerId);
         System.assertEquals(unit.Id, avtaler[0].TAG_NAVUnit__c);
