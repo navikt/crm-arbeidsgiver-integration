@@ -66,7 +66,7 @@ public with sharing class KafkaToiAvtaleHandlerTest {
         System.assertEquals('2022-01-01', String.valueOf(avtaler[0].TAG_StartDate__c));
         System.assertEquals('2023-01-01', String.valueOf(avtaler[0].TAG_EndDate__c));
         System.assertEquals('397', avtaler[0].ExternalId__c);
-        System.assertEquals('Gjennomføres', avtaler[0].TAG_Status__c);
+        System.assertEquals('GJENNOMFØRES', avtaler[0].TAG_Status__c);
         System.assertEquals('Overfølsom Klovn', avtaler[0].TAG_MeasureParticipant__c);
         System.assertEquals('Dolly Duck', avtaler[0].TAG_EmployerContact__c);
         System.assertEquals(null, avtaler[0].TAG_Mentor__c);
@@ -147,7 +147,7 @@ public with sharing class KafkaToiAvtaleHandlerTest {
         System.assertEquals('2022-01-01', String.valueOf(avtaler[0].TAG_StartDate__c));
         System.assertEquals('2023-01-01', String.valueOf(avtaler[0].TAG_EndDate__c));
         System.assertEquals('397', avtaler[0].ExternalId__c);
-        System.assertEquals('Gjennomføres', avtaler[0].TAG_Status__c);
+        System.assertEquals('GJENNOMFØRES', avtaler[0].TAG_Status__c);
         System.assertEquals('Overfølsom Klovn', avtaler[0].TAG_MeasureParticipant__c);
         System.assertEquals('Dolly Duck', avtaler[0].TAG_EmployerContact__c);
         System.assertEquals(null, avtaler[0].TAG_Mentor__c);
@@ -229,7 +229,7 @@ public with sharing class KafkaToiAvtaleHandlerTest {
         System.assertEquals('2022-01-01', String.valueOf(avtaler[0].TAG_StartDate__c));
         System.assertEquals(null, String.valueOf(avtaler[0].TAG_EndDate__c));
         System.assertEquals('397', avtaler[0].ExternalId__c);
-        System.assertEquals('Gjennomføres', avtaler[0].TAG_Status__c);
+        System.assertEquals('GJENNOMFØRES', avtaler[0].TAG_Status__c);
         System.assertEquals('Overfølsom Klovn', avtaler[0].TAG_MeasureParticipant__c);
         System.assertEquals('Dolly Duck', avtaler[0].TAG_EmployerContact__c);
         System.assertEquals(null, avtaler[0].TAG_Mentor__c);
