@@ -11,12 +11,50 @@ public with sharing class KafkaMessageProcessorTest {
     }
 
     @isTest
+    static void addNavIdent() {
+        KafkaMessageProcessorExtension processor = new KafkaMessageProcessorExtension();
+
+        processor.addNavIdent('C112233');
+        processor.addNavIdent('B112233');
+
+        System.assertEquals(2, processor.navIdents.size(), 'Nav Idents added');
+    }
+
+    @isTest
+    static void addNavUnit() {
+        KafkaMessageProcessorExtension processor = new KafkaMessageProcessorExtension();
+
+        processor.addNavUnit('0303');
+        processor.addNavUnit('0202');
+
+        System.assertEquals(2, processor.navUnits.size(), 'Nav Units added');
+    }
+
+    @isTest
     static void addOrgNumber_null() {
         KafkaMessageProcessorExtension processor = new KafkaMessageProcessorExtension();
 
         processor.addOrgNumber(null);
 
         System.assertEquals(0, processor.orgNumbers.size(), 'Org Numbers added');
+    }
+
+    @isTest
+    static void addNavIdent_null() {
+        KafkaMessageProcessorExtension processor = new KafkaMessageProcessorExtension();
+
+        processor.addNavIdent(null);
+
+        System.assertEquals(0, processor.navIdents.size(), 'Nav Idents added');
+    }
+
+    @isTest
+    static void addNavUnit_null() {
+        KafkaMessageProcessorExtension processor = new KafkaMessageProcessorExtension();
+
+        processor.addNavUnit(null);
+
+        System.assertEquals(0, processor.navUnits.size(), 'Nav Units added');
     }
 
     @isTest
@@ -162,6 +200,35 @@ public with sharing class KafkaMessageProcessorTest {
         System.assertEquals(1, accountMap.size(), 'Account added to map');
         System.assertEquals(true, accountMap.containsKey(acc.INT_OrganizationNumber__c));
         System.assertEquals(acc.Id, accountMap.get(acc.INT_OrganizationNumber__c).Id);
+    }
+
+    @isTest
+    static void getNavIdentMap() {
+        List<User> us = TestDataFactory.getUsers(1, 'Standard User', false, false);
+        us[0].CRM_NAV_Ident__c = 'C112233';
+        insert us; 
+
+        Map<String, User> navIdentMap = new KafkaMessageProcessorExtension()
+            .addNavIdent('C112233')
+            .getNavIdentMap();
+
+        System.assertEquals(1, navIdentMap.size(), 'User added to map');
+        System.assertEquals(true, navIdentMap.containsKey(us[0].CRM_NAV_Ident__c));
+        System.assertEquals(us[0].Id, navIdentMap.get(us[0].CRM_NAV_Ident__c).Id);
+    }
+
+    @isTest
+    static void getNavUnitsMap() {
+        NavUnit__c unit = new NavUnit__c(Name = 'NAV Test', INT_UnitNumber__c = '0303');
+        insert unit;
+
+        Map<String, NavUnit__c> navUnitMap = new KafkaMessageProcessorExtension()
+            .addNavUnit('0303')
+            .getNavUnitsMap();
+
+        System.assertEquals(1, navUnitMap.size(), 'Nav unit added to map');
+        System.assertEquals(true, navUnitMap.containsKey(unit.INT_UnitNumber__c));
+        System.assertEquals(unit.Id, navUnitMap.get(unit.INT_UnitNumber__c).Id);
     }
 
     @isTest

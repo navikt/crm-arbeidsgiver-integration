@@ -1,9 +1,13 @@
 public inherited sharing abstract class KafkaMessageProcessor {
     public static AG_KafkaLogger logger = AG_KafkaLogger.get();
     public Set<String> orgNumbers;
+    public Set<String> navIdents;
+    public Set<String> navUnits;
 
     public KafkaMessageProcessor() {
         this.orgNumbers = new Set<String>();
+        this.navIdents = new Set<String>();
+        this.navUnits = new Set<String>();
     }
 
     public IKafkaMessageParser parse(Type className, KafkaMessage__c message) {
@@ -16,6 +20,20 @@ public inherited sharing abstract class KafkaMessageProcessor {
     public KafkaMessageProcessor addOrgNumber(String orgNumber) {
         if (orgNumber != null) {
             orgNumbers.add(orgNumber);
+        }
+        return this;
+    }
+
+    public KafkaMessageProcessor addNavIdent(String navIdent) {
+        if (navIdent != null) {
+            navIdents.add(navIdent);
+        }
+        return this;
+    }
+
+    public KafkaMessageProcessor addNavUnit(String navUnit) {
+        if (navUnit != null) {
+            navUnits.add(navUnit);
         }
         return this;
     }
@@ -67,5 +85,33 @@ public inherited sharing abstract class KafkaMessageProcessor {
             accountMap.put(a.INT_OrganizationNumber__c, a);
         }
         return accountMap;
+    }
+
+    public Map<String, User> getNavIdentMap() {
+        Map<String, User> navIdentMap = new Map<String, User>();
+        List<User> users = [
+            SELECT Id, firstName, lastName, CRM_NAV_Ident__c
+            FROM User
+            WHERE CRM_NAV_Ident__c IN :navIdents
+        ];
+
+        for (User u : users) {
+            navIdentMap.put(u.CRM_NAV_Ident__c, u);
+        }
+        return navIdentMap;
+    }
+
+    public Map<String, NAVUnit__c> getNavUnitsMap() {
+        Map<String, NAVUnit__c> navUnitMap = new Map<String, NAVUnit__c>();
+        List<NAVUnit__c> navUnits = [
+            SELECT Id, Name, CRM_QueueId__c, INT_UnitNumber__c
+            FROM NAVUnit__c
+            WHERE INT_UnitNumber__c IN :navUnits AND IsDeleted = FALSE
+        ];
+
+        for (NAVUnit__c n : navUnits) {
+            navUnitMap.put(n.INT_UnitNumber__c, n);
+        }
+        return navUnitMap;
     }
 }
