@@ -38,8 +38,8 @@ call sfdx force:package:install --package 04t7U000000TqVFQA0 -r -k %secret% --wa
 echo "Installing crm-shared-timeline ver. 1.18"
 call sfdx force:package:install --package 04t7U000000TqbDQAS -r -k %secret% --wait 30 --publishwait 30
 
-echo "Installing crm-arbeidsgiver-base ver. 1.274"
-call sfdx force:package:install --package 04t7U0000008qbvQAA -r -k %secret% --wait 30 --publishwait 30
+echo "Installing crm-arbeidsgiver-base ver. 1.290"
+call sfdx force:package:install --package 04t7U0000008rAlQAI -r -k %secret% --wait 30 --publishwait 30
 
 echo "Installing crm-platform-email-scheduling ver. 1.6"
 call sfdx force:package:install --package 04t2o000000yRsBAAU -r -k %secret% --wait 30 --publishwait 30
