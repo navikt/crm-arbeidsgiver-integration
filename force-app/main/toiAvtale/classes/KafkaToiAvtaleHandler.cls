@@ -74,7 +74,8 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
                 KafkaHash__c = model.hash,
                 KafkaId__c = model.key,
                 TAG_Category__c = model.tiltakstype,
-                NavIdent__c = model.veilederNavIdent
+                NavIdent__c = model?.veilederNavIdent,
+                TAG_EmployerContactPhone__c = model?.arbeidsgiverTlf
             );
 
             if (model.startDato != null) {
@@ -141,7 +142,8 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
                     Aktivitetstype__c = model.tiltakstype,
                     KafkaId__c = model.key,
                     KafkaHash__c = model.hash,
-                    NAVIdent__c = model.veilederNavIdent
+                    NAVIdent__c = model?.veilederNavIdent,
+                    TAG_Source__c = 'Tiltaksløsning'
             );
 
 

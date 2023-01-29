@@ -55,12 +55,12 @@ public with sharing class KafkaToiAvtaleHandlerTest {
         Test.StopTest();
 
         List<Contract__c> avtaler = [
-            SELECT Id, RecordTypeId, TAG_StartDate__c, TAG_EndDate__c, ExternalId__c, TAG_Status__c, TAG_MeasureParticipant__c, TAG_EmployerContact__c, TAG_Mentor__c, TAG_ExternalURL__c, TAG_Category__c, TAG_InternalContact__c, OwnerId, TAG_Account__c, TAG_NAVUnit__c, KafkaHash__c, KafkaId__c
+            SELECT Id, RecordTypeId, TAG_StartDate__c, TAG_EndDate__c, ExternalId__c, TAG_EmployerContactPhone__c, TAG_Status__c, TAG_MeasureParticipant__c, TAG_EmployerContact__c, TAG_Mentor__c, TAG_ExternalURL__c, TAG_Category__c, TAG_InternalContact__c, OwnerId, TAG_Account__c, TAG_NAVUnit__c, KafkaHash__c, KafkaId__c
             FROM Contract__c
         ];
 
         List<ArenaActivity__c> aktiviteter = [
-            SELECT Id, DateFrom__c, DateTo__c, DateTimeRegistered__c, DateTimeFrom__c, Aktivitetsgruppekode__c, AktivitetStatuskode__c, AktivitetsKode__c, KafkaId__c, NAVIdent__c, Account__c, NAV_Kontor__c, CaseWorker__c, OwnerId
+            SELECT Id, DateFrom__c, DateTo__c, DateTimeRegistered__c, DateTimeFrom__c, Aktivitetsgruppekode__c, TAG_Source__c, AktivitetStatuskode__c, AktivitetsKode__c, KafkaId__c, NAVIdent__c, Account__c, NAV_Kontor__c, CaseWorker__c, OwnerId
             FROM ArenaActivity__c
         ];
 
@@ -74,6 +74,7 @@ public with sharing class KafkaToiAvtaleHandlerTest {
         System.assertEquals('GJENNOMFØRES', avtaler[0].TAG_Status__c);
         System.assertEquals('Overfølsom Klovn', avtaler[0].TAG_MeasureParticipant__c);
         System.assertEquals('Dolly Duck', avtaler[0].TAG_EmployerContact__c);
+        System.assertEquals('12345678', avtaler[0].TAG_EmployerContactPhone__c);
         System.assertEquals(null, avtaler[0].TAG_Mentor__c);
         System.assertEquals('https://arbeidsgiver.labs.nais.io/tiltaksgjennomforing/avtale/c9d8fe1e-c4d2-499e-bd16-af3a88b1e734?bedrift=910825526', avtaler[0].TAG_ExternalURL__c);
         System.assertEquals('MIDLERTIDIG_LONNSTILSKUDD', avtaler[0].TAG_Category__c);
@@ -89,6 +90,7 @@ public with sharing class KafkaToiAvtaleHandlerTest {
         System.assertEquals(users[0].Id, aktiviteter[0].CaseWorker__c);
         System.assertEquals(acc.id, aktiviteter[0].Account__c);
         System.assertEquals(unit.Id, aktiviteter[0].NAV_Kontor__c);
+        System.assertEquals('Tiltaksløsning', aktiviteter[0].TAG_Source__c);
     }
 
     @isTest
