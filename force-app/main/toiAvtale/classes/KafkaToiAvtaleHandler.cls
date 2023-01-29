@@ -1,14 +1,6 @@
 public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer {
     private Map<String, KafkaToiAvtaleHandler_Model> keyToAvtale = new Map<String, KafkaToiAvtaleHandler_Model>();
-    private Set<String> navIdents;
-    private Set<String> navUnits;
-
     public Id avtaleRecordTypeId = [SELECT Id FROM RecordType WHERE Name = 'Measure Agreement'].id;
-
-    public KafkaToiAvtaleHandler() {
-        navIdents = new Set<String>();
-        navUnits = new Set<String>();
-    }
 
     public void processMessages(List<KafkaMessage__c> messages) {
         for (KafkaMessage__c msg : messages) {
@@ -26,6 +18,7 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
             }
         }
         convertAndUpsertAvtale(messages);
+        convertAndUpsertActivity(messages);
         logger.publish();
     }
 
@@ -43,7 +36,18 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
         List<Contract__c> avtaler = new List<Contract__c>();
         try {
             avtaler = toSObjects();
-            upsert avtaler Contract__c.ExternalId__c;
+            upsert avtaler;
+        } catch (Exception e) {
+            String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
+            logger.setMessageErrors(messages, errorRef);
+        }
+    }
+
+    private void convertAndUpsertActivity(List<KafkaMessage__c> messages) {
+        List<ArenaActivity__c> activities = new List<ArenaActivity__c>();
+        try {
+            activities = toSObjectsActivity();
+            upsert activities;
         } catch (Exception e) {
             String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
             logger.setMessageErrors(messages, errorRef);
@@ -53,7 +57,7 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
     private List<Contract__c> toSObjects() {
         Map<String, String> lastSaved = getLastSaved(Contract__c.class, keyToAvtale.keyset());
         Map<String, Account> accountMap = getOrgNumberAccountMap();
-        Map<String, String> navIdentMap = getNavIdentMap();
+        Map<String, User> navIdentMap = getNavIdentMap();
         Map<String, NavUnit__c> navUnitMap = getNavUnitsMap();
         List<Contract__c> contracts = new List<Contract__c>();
 
@@ -69,7 +73,8 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
                 TAG_ExternalURL__c = 'https://arbeidsgiver.labs.nais.io/tiltaksgjennomforing/avtale/' + model.avtaleId + '?bedrift=' + model.bedriftnr,
                 KafkaHash__c = model.hash,
                 KafkaId__c = model.key,
-                TAG_Category__c = model.tiltakstype
+                TAG_Category__c = model.tiltakstype,
+                NavIdent__c = model.veilederNavIdent
             );
 
             if (model.startDato != null) {
@@ -93,8 +98,9 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
             }
 
             if (navIdentMap.containsKey(model.veilederNavIdent)) {
-                c.TAG_InternalContact__c = navIdentMap.get(model.veilederNavIdent);
-                c.OwnerId = navIdentMap.get(model.veilederNavIdent);
+                User us = navIdentMap.get(model.veilederNavIdent);
+                c.TAG_InternalContact__c = us.id;
+                c.OwnerId = us.id;
             }   else if (!navIdentMap.containsKey(model.veilederNavIdent) && navUnitMap.containsKey(model.enhetOppfolging)) {
                 c.OwnerId = navUnitMap.get(model.enhetOppfolging).CRM_QueueId__c;
             }
@@ -112,44 +118,48 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
         return contracts;
     }
 
-    private void addNavIdent(String navIdent) {
-        if (navIdent != null) {
-            navIdents.add(navIdent);
+    private List<ArenaActivity__c> toSObjectsActivity() {
+        Map<String, String> lastSaved = getLastSaved(ArenaActivity__c.class, keyToAvtale.keyset());
+        Map<String, Account> accountMap = getOrgNumberAccountMap();
+        Map<String, User> navIdentMap = getNavIdentMap();
+        Map<String, NavUnit__c> navUnitMap = getNavUnitsMap();
+        List<ArenaActivity__c> activities = new List<ArenaActivity__c>();
+
+        for (KafkaToiAvtaleHandler_Model model : keyToAvtale.values()) {
+            if (!isNewOrChanged(model.key, model.hash, lastSaved)) {
+                continue;
+            }
+
+            ArenaActivity__c aa = new ArenaActivity__c(
+                    DateRegistered__c = dateTimeValue(model.opprettetTidspunkt).date(),
+                    DateFrom__c = Date.valueof(model.startDato),
+                    DateTo__c = Date.valueof(model.sluttDato),
+                    DateTimeRegistered__c = dateTimeValue(model.opprettetTidspunkt),
+                    Aktivitetsgruppekode__c = 'TLTAK',
+                    AktivitetStatuskode__c = model.avtaleStatus,
+                    AktivitetsKode__c = ' ',
+                    Aktivitetstype__c = model.tiltakstype,
+                    KafkaId__c = model.key,
+                    KafkaHash__c = model.hash,
+                    NAVIdent__c = model.veilederNavIdent
+            );
+
+
+            if (accountMap.containsKey(model.bedriftnr)) {
+                aa.Account__c = accountMap.get(model.bedriftnr).Id;
+            }
+
+             if (navUnitMap.containsKey(model.enhetOppfolging)) {
+                 aa.NAV_Kontor__c = navUnitMap.get(model.enhetOppfolging).Id;
+             }
+
+            if (navIdentMap.containsKey(model.veilederNavIdent)) {
+                User us = navIdentMap.get(model.veilederNavIdent);
+                aa.CaseWorker__c = us.id;
+                aa.OwnerId = us.id;
+            }
+            activities.add(aa);
         }
-    }
-
-    public void addNavUnit(String navUnit) {
-        if (navUnit != null) {
-            navUnits.add(navUnit);
-        }
-    }
-
-    private Map<String, String> getNavIdentMap() {
-        Map<String, String> navIdentMap = new Map<String, String>();
-        List<User> users = [
-            SELECT Id, firstName, lastName, CRM_NAV_Ident__c
-            FROM User
-            WHERE CRM_NAV_Ident__c IN :navIdents
-        ];
-
-        for (User u : users) {
-            navIdentMap.put(u.CRM_NAV_Ident__c, u.Id);
-        }
-
-        return navIdentMap;
-    }
-
-    private Map<String, NAVUnit__c> getNavUnitsMap() {
-        Map<String, NAVUnit__c> navUnitMap = new Map<String, NAVUnit__c>();
-        List<NAVUnit__c> navUnits = [
-            SELECT Id, Name, CRM_QueueId__c, INT_UnitNumber__c
-            FROM NAVUnit__c
-            WHERE INT_UnitNumber__c IN :navUnits AND IsDeleted = FALSE
-        ];
-
-        for (NAVUnit__c n : navUnits) {
-            navUnitMap.put(n.INT_UnitNumber__c, n);
-        }
-        return navUnitMap;
+        return activities;
     }
 }

@@ -1,10 +1,5 @@
 public without sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer {
     Map<String, KafkaFiaCase_Model> keyToFiaCase = new Map<String, KafkaFiaCase_Model>();
-    private Set<String> navIdents;
-
-    public KafkaFiaCaseHandler() {
-        navIdents = new Set<String>();
-    }
 
     public void processMessages(List<KafkaMessage__c> messages) {
         for (KafkaMessage__c msg : messages) {
@@ -49,7 +44,7 @@ public without sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor i
         Map<String, String> lastSaved = getLastSavedFiaCase(Account.class, keyToFiaCase.keyset());
         List<Account> fiaCases = new List<Account>();
         Map<String, Account> accountMap = getOrgNumberAccountMap();
-        Map<String, String> navIdentMap = getNavIdentMap();
+        Map<String, User> navIdentMap = getNavIdentMap();
 
         for (KafkaFiaCase_Model model : keyToFiaCase.values()) {
             if (isNewOrChanged(model.orgnr, model.hash, lastSaved) && accountMap.containsKey(model.orgnr)) {
@@ -72,7 +67,7 @@ public without sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor i
     private Account convertToSObject(
         KafkaFiaCase_Model model,
         Map<String, Account> accountMap,
-        Map<String, String> navIdentMap
+        Map<String, User> navIdentMap
     ) {
         Account a = accountMap.get(model.orgnr);
         a.TAG_FiaCaseNr__c = model.saksnummer;
@@ -85,8 +80,8 @@ public without sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor i
         a.JsonPayload__c = model.jsonPayload;
 
         if (navIdentMap.containsKey(model.eierAvSak)) {
-            String fullName = navIdentMap.get(model.eierAvSak);
-            a.TAG_FiaCaseOwnerName__c = fullName;
+            User us = navIdentMap.get(model.eierAvSak);
+            a.TAG_FiaCaseOwnerName__c = us.FirstName + ' ' + us.LastName;
         }
 
         return a;
@@ -120,27 +115,5 @@ public without sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor i
             }
         }
         return keyToExistingHash;
-    }
-
-    private void addNavIdent(String navIdent) {
-        if (navIdent != null) {
-            navIdents.add(navIdent);
-        }
-    }
-
-    private Map<String, String> getNavIdentMap() {
-        Map<String, String> navIdentMap = new Map<String, String>();
-        List<User> users = [
-            SELECT Id, firstName, lastName, CRM_NAV_Ident__c
-            FROM User
-            WHERE CRM_NAV_Ident__c IN :navIdents
-        ];
-
-        for (User u : users) {
-            String name = u.firstName + ' ' + u.lastName;
-            navIdentMap.put(u.CRM_NAV_Ident__c, name);
-        }
-
-        return navIdentMap;
     }
 }
