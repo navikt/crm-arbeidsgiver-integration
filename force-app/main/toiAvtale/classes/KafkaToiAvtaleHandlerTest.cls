@@ -59,6 +59,11 @@ public with sharing class KafkaToiAvtaleHandlerTest {
             FROM Contract__c
         ];
 
+        List<ArenaActivity__c> aktiviteter = [
+            SELECT Id, DateFrom__c, DateTo__c, DateTimeRegistered__c, DateTimeFrom__c, Aktivitetsgruppekode__c, AktivitetStatuskode__c, AktivitetsKode__c, KafkaId__c, NAVIdent__c, Account__c, NAV_Kontor__c, CaseWorker__c, OwnerId
+            FROM ArenaActivity__c
+        ];
+
         System.assertEquals(1, avtaler.size());
         System.assertEquals(acc.id, avtaler[0].TAG_Account__c);
         System.assertEquals(msg1.CRM_Key__c, avtaler[0].KafkaId__c);
@@ -75,7 +80,17 @@ public with sharing class KafkaToiAvtaleHandlerTest {
         System.assertEquals(users[0].Id, avtaler[0].TAG_InternalContact__c);
         System.assertEquals(users[0].Id, avtaler[0].OwnerId);
         System.assertEquals(unit.Id, avtaler[0].TAG_NAVUnit__c);
+        System.assertEquals(1, aktiviteter.size());
+        System.assertEquals('GJENNOMFØRES', aktiviteter[0].AktivitetStatuskode__c);
+        System.assertEquals('2022-01-01', String.valueOf(aktiviteter[0].DateFrom__c));
+        System.assertEquals('2023-01-01', String.valueOf(aktiviteter[0].DateTo__c));
+        System.assertEquals('TLTAK', aktiviteter[0].Aktivitetsgruppekode__c);
+        System.assertEquals('Z992800', aktiviteter[0].NAVIdent__c);
+        System.assertEquals(users[0].Id, aktiviteter[0].CaseWorker__c);
+        System.assertEquals(acc.id, aktiviteter[0].Account__c);
+        System.assertEquals(unit.Id, aktiviteter[0].NAV_Kontor__c);
     }
+
     @isTest
     static void missingUserMatch() {
         Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '910825526');
