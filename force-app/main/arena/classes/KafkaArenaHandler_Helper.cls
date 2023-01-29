@@ -83,7 +83,8 @@ public inherited sharing class KafkaArenaHandler_Helper {
                     KafkaHash__c = model.hash,
                     JsonPayload__c = model.jsonPayload,
                     RegisteredByNavIdent__c = model.regUser,
-                    CaseWorkerNavIdent__c = model.saksbehandler
+                    CaseWorkerNavIdent__c = model.saksbehandler,
+                    TAG_Source__c = 'Arena'
                 );
 
                 if (model.etternavn != null) {

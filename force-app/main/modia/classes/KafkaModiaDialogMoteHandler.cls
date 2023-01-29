@@ -62,7 +62,8 @@ public without sharing class KafkaModiaDialogMoteHandler extends KafkaMessagePro
                 NAVenhet__c = model.enhetNr,
                 JsonPayload__c = model.jsonPayload,
                 KafkaHash__c = model.hash,
-                KafkaId__c = model.key
+                KafkaId__c = model.key,
+                TAG_Source__c = 'Modia'
             );
 
             if (model.statusEndringType != 'NYTT_TID_STED') {
