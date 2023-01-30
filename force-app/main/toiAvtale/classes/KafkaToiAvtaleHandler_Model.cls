@@ -83,7 +83,6 @@ public class KafkaToiAvtaleHandler_Model implements IKafkaMessageParser{
 	public String enhetsnavnKostnadssted { get; set; }
 	public GodkjentPaVegneGrunn godkjentPaVegneGrunn { get; set; }
 	public Boolean godkjentPaVegneAv { get; set; }
-	public String godkjentPaVegneAvArbeidsgiverGrunn { get; set; }
 	public Boolean godkjentPaVegneAvArbeidsgiver { get; set; }
 	public String innholdType { get; set; }
 	public String utfortAv { get; set; }
