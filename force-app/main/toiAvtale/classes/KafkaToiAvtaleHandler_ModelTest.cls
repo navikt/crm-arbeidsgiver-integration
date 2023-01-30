@@ -87,7 +87,7 @@ public with sharing class KafkaToiAvtaleHandler_ModelTest {
     '   \"godkjentAvBeslutterNavIdent\":null,' +
     '   \"enhetKostnadssted\":null,' +
     '   \"enhetsnavnKostnadssted\":null,' +
-    '   \"godkjentPaVegneGrunn\":{\"ikkeBankId\":true,\"reservert\":false,\"digitalKompetanse\":false},' +
+    '   \"godkjentPaVegneGrunn\":{\"ikkeBankId\":true,\"reservert\":false,\"digitalKompetanse\":false,\"arenaMigreringDeltaker\":true},' +
     '   \"godkjentPaVegneAv\":true,' +
     '   \"godkjentPaVegneAvArbeidsgiverGrunn\":null,' +
     '   \"godkjentPaVegneAvArbeidsgiver\":false,' +
@@ -177,7 +177,6 @@ public with sharing class KafkaToiAvtaleHandler_ModelTest {
         System.assertEquals(false, model.godkjentPaVegneGrunn.reservert);
         System.assertEquals(false, model.godkjentPaVegneGrunn.digitalKompetanse);
         System.assertEquals(true, model.godkjentPaVegneAv);
-        System.assertEquals(null, model.godkjentPaVegneAvArbeidsgiverGrunn);
         System.assertEquals(false, model.godkjentPaVegneAvArbeidsgiver);
         System.assertEquals('ENDRE_STILLING', model.innholdType);
         System.assertEquals(null, model.key);

@@ -70,7 +70,6 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
                 RecordTypeId = avtaleRecordTypeId,
                 ExternalId__c = model.avtaleNr,
                 TAG_Status__c = model.avtaleStatus,
-                TAG_ExternalURL__c = 'https://arbeidsgiver.labs.nais.io/tiltaksgjennomforing/avtale/' + model.avtaleId + '?bedrift=' + model.bedriftnr,
                 KafkaHash__c = model.hash,
                 KafkaId__c = model.key,
                 TAG_Category__c = model.tiltakstype,
@@ -96,6 +95,12 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
 
             if (model.mentorFornavn != null & model.mentorEtternavn != null) {
                 c.TAG_Mentor__c = model.mentorFornavn + ' ' + model.mentorEtternavn;
+            }
+
+            if (model.bedriftNr != null) {
+                c.TAG_ExternalURL__c = 'https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/' + model.avtaleId + '?bedrift=' + model.bedriftnr;
+            }   else {
+                c.TAG_ExternalURL__c = 'https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/' + model.avtaleId;
             }
 
             if (navIdentMap.containsKey(model.veilederNavIdent)) {
