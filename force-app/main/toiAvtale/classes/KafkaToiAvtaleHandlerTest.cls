@@ -373,97 +373,235 @@ public with sharing class KafkaToiAvtaleHandlerTest {
         System.assertEquals('GJENNOMFØRES', aktiviteter[0].AktivitetStatuskode__c);
     }
 
-    // @isTest
-    // static void testMultipleUpdatesToSameContract() {
-    //     Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '910825526');
-    //     insert acc;
+    @isTest
+    static void multipleMessageSameKey() {
 
-    //     List<Account> accounts = [
-    //         SELECT Id
-    //         FROM Account
-    //     ];
+        Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '910825526');
+        insert acc;
 
-    //     System.assertEquals(1, accounts.size(), 'Acc Inserted');
+        List<Account> accounts = [
+            SELECT Id
+            FROM Account
+        ];
 
-    //     List<User> users = TestDataFactory.getUsers(1, 'Standard User', false, false);
-    //     users[0].CRM_NAV_Ident__c = 'Z992800';
-    //     insert users;
+        System.assertEquals(1, accounts.size(), 'Acc Inserted');
 
-    //     System.assertEquals(1, users.size(), 'User Inserted');
+        List<User> users = TestDataFactory.getUsers(1, 'Standard User', false, false);
+        users[0].CRM_NAV_Ident__c = 'Z992800';
+        insert users;
 
-    //     Group g = new Group(Name = 'Test queue', DeveloperName = 'queue_219', Type = 'Queue');
-    //     insert g;
+        System.assertEquals(1, users.size(), 'User Inserted');
 
-    //     List<Group> groups = [
-    //         SELECT Id
-    //         FROM Group
-    //         WHERE Name = 'Test queue'
-    //     ];
+        Group g = new Group(Name = 'Test queue', DeveloperName = 'queue_219', Type = 'Queue');
+        insert g;
 
-    //     System.assertEquals(1, groups.size(), 'Group Inserted');
+        List<Group> groups = [
+            SELECT Id
+            FROM Group
+            WHERE Name = 'Test queue'
+        ];
 
-    //     NavUnit__c unit = new NavUnit__c(Name = 'NAV Test', INT_UnitNumber__c = '0219', CRM_QueueId__c = g.Id);
-    //     insert unit;
+        System.assertEquals(1, groups.size(), 'Group Inserted');
 
-    //     List<NavUnit__c> units = [
-    //         SELECT Id, INT_UnitNumber__c
-    //         FROM NavUnit__c
-    //         WHERE Name = 'NAV Test'
-    //     ];
+        NavUnit__c unit = new NavUnit__c(Name = 'NAV Test', INT_UnitNumber__c = '0219', CRM_QueueId__c = g.Id);
+        insert unit;
 
-    //     System.assertEquals(1, units.size(), 'Unit Inserted');
-    //     System.assertEquals('0219', units[0].INT_UnitNumber__c, 'Unit nr Inserted');
+        List<NavUnit__c> units = [
+            SELECT Id, INT_UnitNumber__c
+            FROM NavUnit__c
+            WHERE Name = 'NAV Test'
+        ];
 
-    //     String json1 = '{"hendelseType":"AVTALE_FORLENGET","avtaleStatus":"GJENNOMFØRES","deltakerFnr":"07860198775","mentorFnr":null,"bedriftNr":"910825526","veilederNavIdent":"Z992785","tiltakstype":"VARIG_LONNSTILSKUDD","opprettetTidspunkt":"2023-01-23T15:08:53.014813","avtaleId":"d0abcf43-f240-442f-913b-8865521c40b3","avtaleNr":548,"sistEndret":"2023-01-30T10:39:22.029935206Z","annullertTidspunkt":null,"annullertGrunn":null,"slettemerket":false,"opprettetAvArbeidsgiver":false,"enhetGeografisk":"1860","enhetsnavnGeografisk":"NAV Lofoten","enhetOppfolging":"1860","enhetsnavnOppfolging":"NAV Lofoten","godkjentForEtterregistrering":false,"kvalifiseringsgruppe":"VARIG","formidlingsgruppe":"IARBS","tilskuddPeriode":[],"feilregistrert":false,"versjon":3,"deltakerFornavn":"Konge","deltakerEtternavn":"Syndebukk","deltakerTlf":"12121212","bedriftNavn":"MAURA OG KOLBU REGNSKAP","arbeidsgiverFornavn":"For","arbeidsgiverEtternavn":"Navn","arbeidsgiverTlf":"12121212","veilederFornavn":"Kontakt","veilederEtternavn":"Person","veilederTlf":"12121212","oppfolging":"Water spider things","tilrettelegging":"Water spider things","startDato":"2023-01-16","sluttDato":"2025-04-01","stillingprosent":100,"journalpostId":null,"arbeidsoppgaver":"Spindler i vannet","stillingstittel":"Water Spider","stillingStyrk08":4322,"stillingKonseptId":259822,"antallDagerPerUke":5,"refusjonKontaktperson":null,"mentorFornavn":null,"mentorEtternavn":null,"mentorOppgaver":null,"mentorAntallTimer":null,"mentorTimelonn":null,"mentorTlf":null,"arbeidsgiverKontonummer":"91311592950","lonnstilskuddProsent":60,"manedslonn":4000,"feriepengesats":0.143,"arbeidsgiveravgift":0.106,"harFamilietilknytning":false,"familietilknytningForklaring":null,"feriepengerBelop":5720,"otpSats":0.07,"otpBelop":3200,"arbeidsgiveravgiftBelop":5186,"sumLonnsutgifter":54106,"sumLonnstilskudd":32464,"manedslonn100pst":54106,"sumLønnstilskuddRedusert":null,"datoForRedusertProsent":null,"stillingstype":"FAST","maal":[],"inkluderingstilskuddsutgift":[],"inkluderingstilskuddBegrunnelse":null,"inkluderingstilskuddTotalBeløp":0,"godkjentAvDeltaker":"2023-01-23T15:12:07.444992","godkjentTaushetserklæringAvMentor":null,"godkjentAvArbeidsgiver":"2023-01-23T15:12:07.444992","godkjentAvVeileder":"2023-01-23T15:12:07.444992","godkjentAvBeslutter":null,"avtaleInngått":"2023-01-23T15:12:07.444992","ikrafttredelsestidspunkt":"2023-01-30T11:39:22.029904056","godkjentAvNavIdent":"Z992785","godkjentAvBeslutterNavIdent":null,"enhetKostnadssted":null,"enhetsnavnKostnadssted":null,"godkjentPaVegneGrunn":{"ikkeBankId":false,"reservert":false,"digitalKompetanse":false,"arenaMigreringDeltaker":true},"godkjentPaVegneAv":true,"godkjentPaVegneAvArbeidsgiverGrunn":{"klarerIkkeGiFaTilgang":false,"vetIkkeHvemSomKanGiTilgang":false,"farIkkeTilgangPersonvern":false,"arenaMigreringArbeidsgiver":true},"godkjentPaVegneAvArbeidsgiver":true,"innholdType":"FORLENGE","utførtAv":"Z992785","utførtAvRolle":"VEILEDER"}';
-    //     String json2 = '{"hendelseType":"AVTALE_FORLENGET","avtaleStatus":"GJENNOMFØRES","deltakerFnr":"07860198775","mentorFnr":null,"bedriftNr":"910825526","veilederNavIdent":"Z992785","tiltakstype":"VARIG_LONNSTILSKUDD","opprettetTidspunkt":"2023-01-23T15:08:53.014813","avtaleId":"d0abcf43-f240-442f-913b-8865521c40b3","avtaleNr":548,"sistEndret":"2023-01-30T10:39:24.029935206Z","annullertTidspunkt":null,"annullertGrunn":null,"slettemerket":false,"opprettetAvArbeidsgiver":false,"enhetGeografisk":"1860","enhetsnavnGeografisk":"NAV Lofoten","enhetOppfolging":"1860","enhetsnavnOppfolging":"NAV Lofoten","godkjentForEtterregistrering":false,"kvalifiseringsgruppe":"VARIG","formidlingsgruppe":"IARBS","tilskuddPeriode":[],"feilregistrert":false,"versjon":3,"deltakerFornavn":"Donald","deltakerEtternavn":"Duck","deltakerTlf":"12121212","bedriftNavn":"MAURA OG KOLBU REGNSKAP","arbeidsgiverFornavn":"For","arbeidsgiverEtternavn":"Navn","arbeidsgiverTlf":"12121212","veilederFornavn":"Kontakt","veilederEtternavn":"Person","veilederTlf":"12121212","oppfolging":"Water spider things","tilrettelegging":"Water spider things","startDato":"2023-01-15","sluttDato":"2025-04-01","stillingprosent":100,"journalpostId":null,"arbeidsoppgaver":"Spindler i vannet","stillingstittel":"Water Spider","stillingStyrk08":4322,"stillingKonseptId":259822,"antallDagerPerUke":5,"refusjonKontaktperson":null,"mentorFornavn":null,"mentorEtternavn":null,"mentorOppgaver":null,"mentorAntallTimer":null,"mentorTimelonn":null,"mentorTlf":null,"arbeidsgiverKontonummer":"91311592950","lonnstilskuddProsent":60,"manedslonn":4000,"feriepengesats":0.143,"arbeidsgiveravgift":0.106,"harFamilietilknytning":false,"familietilknytningForklaring":null,"feriepengerBelop":5720,"otpSats":0.07,"otpBelop":3200,"arbeidsgiveravgiftBelop":5186,"sumLonnsutgifter":54106,"sumLonnstilskudd":32464,"manedslonn100pst":54106,"sumLønnstilskuddRedusert":null,"datoForRedusertProsent":null,"stillingstype":"FAST","maal":[],"inkluderingstilskuddsutgift":[],"inkluderingstilskuddBegrunnelse":null,"inkluderingstilskuddTotalBeløp":0,"godkjentAvDeltaker":"2023-01-23T15:12:07.444992","godkjentTaushetserklæringAvMentor":null,"godkjentAvArbeidsgiver":"2023-01-23T15:12:07.444992","godkjentAvVeileder":"2023-01-23T15:12:07.444992","godkjentAvBeslutter":null,"avtaleInngått":"2023-01-23T15:12:07.444992","ikrafttredelsestidspunkt":"2023-01-30T11:39:22.029904056","godkjentAvNavIdent":"Z992785","godkjentAvBeslutterNavIdent":null,"enhetKostnadssted":null,"enhetsnavnKostnadssted":null,"godkjentPaVegneGrunn":{"ikkeBankId":false,"reservert":false,"digitalKompetanse":false,"arenaMigreringDeltaker":true},"godkjentPaVegneAv":true,"godkjentPaVegneAvArbeidsgiverGrunn":{"klarerIkkeGiFaTilgang":false,"vetIkkeHvemSomKanGiTilgang":false,"farIkkeTilgangPersonvern":false,"arenaMigreringArbeidsgiver":true},"godkjentPaVegneAvArbeidsgiver":true,"innholdType":"FORLENGE","utførtAv":"Z992785","utførtAvRolle":"VEILEDER"}';
-    //     String json3 = '{"hendelseType":"AVTALE_FORLENGET","avtaleStatus":"GJENNOMFØRES","deltakerFnr":"07860198775","mentorFnr":null,"bedriftNr":"910825526","veilederNavIdent":"Z992785","tiltakstype":"VARIG_LONNSTILSKUDD","opprettetTidspunkt":"2023-01-23T15:08:53.014813","avtaleId":"d0abcf43-f240-442f-913b-8865521c40b3","avtaleNr":548,"sistEndret":"2023-01-30T10:39:23.029935206Z","annullertTidspunkt":null,"annullertGrunn":null,"slettemerket":false,"opprettetAvArbeidsgiver":false,"enhetGeografisk":"1860","enhetsnavnGeografisk":"NAV Lofoten","enhetOppfolging":"1860","enhetsnavnOppfolging":"NAV Lofoten","godkjentForEtterregistrering":false,"kvalifiseringsgruppe":"VARIG","formidlingsgruppe":"IARBS","tilskuddPeriode":[],"feilregistrert":false,"versjon":3,"deltakerFornavn":"Konge","deltakerEtternavn":"Syndebukk","deltakerTlf":"12121212","bedriftNavn":"MAURA OG KOLBU REGNSKAP","arbeidsgiverFornavn":"For","arbeidsgiverEtternavn":"Navn","arbeidsgiverTlf":"12121212","veilederFornavn":"Kontakt","veilederEtternavn":"Person","veilederTlf":"12121212","oppfolging":"Water spider things","tilrettelegging":"Water spider things","startDato":"2023-01-16","sluttDato":"2025-04-01","stillingprosent":100,"journalpostId":null,"arbeidsoppgaver":"Spindler i vannet","stillingstittel":"Water Spider","stillingStyrk08":4322,"stillingKonseptId":259822,"antallDagerPerUke":5,"refusjonKontaktperson":null,"mentorFornavn":null,"mentorEtternavn":null,"mentorOppgaver":null,"mentorAntallTimer":null,"mentorTimelonn":null,"mentorTlf":null,"arbeidsgiverKontonummer":"91311592950","lonnstilskuddProsent":60,"manedslonn":4000,"feriepengesats":0.143,"arbeidsgiveravgift":0.106,"harFamilietilknytning":false,"familietilknytningForklaring":null,"feriepengerBelop":5720,"otpSats":0.07,"otpBelop":3200,"arbeidsgiveravgiftBelop":5186,"sumLonnsutgifter":54106,"sumLonnstilskudd":32464,"manedslonn100pst":54106,"sumLønnstilskuddRedusert":null,"datoForRedusertProsent":null,"stillingstype":"FAST","maal":[],"inkluderingstilskuddsutgift":[],"inkluderingstilskuddBegrunnelse":null,"inkluderingstilskuddTotalBeløp":0,"godkjentAvDeltaker":"2023-01-23T15:12:07.444992","godkjentTaushetserklæringAvMentor":null,"godkjentAvArbeidsgiver":"2023-01-23T15:12:07.444992","godkjentAvVeileder":"2023-01-23T15:12:07.444992","godkjentAvBeslutter":null,"avtaleInngått":"2023-01-23T15:12:07.444992","ikrafttredelsestidspunkt":"2023-01-30T11:39:22.029904056","godkjentAvNavIdent":"Z992785","godkjentAvBeslutterNavIdent":null,"enhetKostnadssted":null,"enhetsnavnKostnadssted":null,"godkjentPaVegneGrunn":{"ikkeBankId":false,"reservert":false,"digitalKompetanse":false,"arenaMigreringDeltaker":true},"godkjentPaVegneAv":true,"godkjentPaVegneAvArbeidsgiverGrunn":{"klarerIkkeGiFaTilgang":false,"vetIkkeHvemSomKanGiTilgang":false,"farIkkeTilgangPersonvern":false,"arenaMigreringArbeidsgiver":true},"godkjentPaVegneAvArbeidsgiver":true,"innholdType":"FORLENGE","utførtAv":"Z992785","utførtAvRolle":"VEILEDER"}';
+        System.assertEquals(1, units.size(), 'Unit Inserted');
+        System.assertEquals('0219', units[0].INT_UnitNumber__c, 'Unit nr Inserted');
+   
+        String json1 = '{"hendelseType":"AVTALE_FORLENGET","avtaleStatus":"KLAR_FOR_OPPSTART","deltakerFnr":"07860198775","mentorFnr":null,"bedriftNr":"910825526","veilederNavIdent":"Z992785","tiltakstype":"VARIG_LONNSTILSKUDD","opprettetTidspunkt":"2023-01-23T15:08:53.014813","avtaleId":"d0abcf43-f240-442f-913b-8865521c40b3","avtaleNr":548,"sistEndret":"2023-01-30T10:39:22.029935206Z","annullertTidspunkt":null,"annullertGrunn":null,"slettemerket":false,"opprettetAvArbeidsgiver":false,"enhetGeografisk":"1860","enhetsnavnGeografisk":"NAV Lofoten","enhetOppfolging":"1860","enhetsnavnOppfolging":"NAV Lofoten","godkjentForEtterregistrering":false,"kvalifiseringsgruppe":"VARIG","formidlingsgruppe":"IARBS","tilskuddPeriode":[],"feilregistrert":false,"versjon":3,"deltakerFornavn":"Konge","deltakerEtternavn":"Syndebukk","deltakerTlf":"12121212","bedriftNavn":"MAURA OG KOLBU REGNSKAP","arbeidsgiverFornavn":"For","arbeidsgiverEtternavn":"Navn","arbeidsgiverTlf":"12121212","veilederFornavn":"Kontakt","veilederEtternavn":"Person","veilederTlf":"12121212","oppfolging":"Water spider things","tilrettelegging":"Water spider things","startDato":"2023-01-16","sluttDato":"2025-04-01","stillingprosent":100,"journalpostId":null,"arbeidsoppgaver":"Spindler i vannet","stillingstittel":"Water Spider","stillingStyrk08":4322,"stillingKonseptId":259822,"antallDagerPerUke":5,"refusjonKontaktperson":null,"mentorFornavn":null,"mentorEtternavn":null,"mentorOppgaver":null,"mentorAntallTimer":null,"mentorTimelonn":null,"mentorTlf":null,"arbeidsgiverKontonummer":"91311592950","lonnstilskuddProsent":60,"manedslonn":4000,"feriepengesats":0.143,"arbeidsgiveravgift":0.106,"harFamilietilknytning":false,"familietilknytningForklaring":null,"feriepengerBelop":5720,"otpSats":0.07,"otpBelop":3200,"arbeidsgiveravgiftBelop":5186,"sumLonnsutgifter":54106,"sumLonnstilskudd":32464,"manedslonn100pst":54106,"sumLønnstilskuddRedusert":null,"datoForRedusertProsent":null,"stillingstype":"FAST","maal":[],"inkluderingstilskuddsutgift":[],"inkluderingstilskuddBegrunnelse":null,"inkluderingstilskuddTotalBeløp":0,"godkjentAvDeltaker":"2023-01-23T15:12:07.444992","godkjentTaushetserklæringAvMentor":null,"godkjentAvArbeidsgiver":"2023-01-23T15:12:07.444992","godkjentAvVeileder":"2023-01-23T15:12:07.444992","godkjentAvBeslutter":null,"avtaleInngått":"2023-01-23T15:12:07.444992","ikrafttredelsestidspunkt":"2023-01-30T11:39:22.029904056","godkjentAvNavIdent":"Z992785","godkjentAvBeslutterNavIdent":null,"enhetKostnadssted":null,"enhetsnavnKostnadssted":null,"godkjentPaVegneGrunn":{"ikkeBankId":false,"reservert":false,"digitalKompetanse":false,"arenaMigreringDeltaker":true},"godkjentPaVegneAv":true,"godkjentPaVegneAvArbeidsgiverGrunn":{"klarerIkkeGiFaTilgang":false,"vetIkkeHvemSomKanGiTilgang":false,"farIkkeTilgangPersonvern":false,"arenaMigreringArbeidsgiver":true},"godkjentPaVegneAvArbeidsgiver":true,"innholdType":"FORLENGE","utførtAv":"Z992785","utførtAvRolle":"VEILEDER"}';
+        String json2 = '{"hendelseType":"AVTALE_FORLENGET","avtaleStatus":"GJENNOMFØRES","deltakerFnr":"07860198775","mentorFnr":null,"bedriftNr":"910825526","veilederNavIdent":"Z992785","tiltakstype":"VARIG_LONNSTILSKUDD","opprettetTidspunkt":"2023-01-23T15:08:53.014813","avtaleId":"d0abcf43-f240-442f-913b-8865521c40b3","avtaleNr":548,"sistEndret":"2023-01-30T10:39:24.029935206Z","annullertTidspunkt":null,"annullertGrunn":null,"slettemerket":false,"opprettetAvArbeidsgiver":false,"enhetGeografisk":"1860","enhetsnavnGeografisk":"NAV Lofoten","enhetOppfolging":"1860","enhetsnavnOppfolging":"NAV Lofoten","godkjentForEtterregistrering":false,"kvalifiseringsgruppe":"VARIG","formidlingsgruppe":"IARBS","tilskuddPeriode":[],"feilregistrert":false,"versjon":3,"deltakerFornavn":"Donald","deltakerEtternavn":"Duck","deltakerTlf":"12121212","bedriftNavn":"MAURA OG KOLBU REGNSKAP","arbeidsgiverFornavn":"For","arbeidsgiverEtternavn":"Navn","arbeidsgiverTlf":"12121212","veilederFornavn":"Kontakt","veilederEtternavn":"Person","veilederTlf":"12121212","oppfolging":"Water spider things","tilrettelegging":"Water spider things","startDato":"2023-01-15","sluttDato":"2025-04-01","stillingprosent":100,"journalpostId":null,"arbeidsoppgaver":"Spindler i vannet","stillingstittel":"Water Spider","stillingStyrk08":4322,"stillingKonseptId":259822,"antallDagerPerUke":5,"refusjonKontaktperson":null,"mentorFornavn":null,"mentorEtternavn":null,"mentorOppgaver":null,"mentorAntallTimer":null,"mentorTimelonn":null,"mentorTlf":null,"arbeidsgiverKontonummer":"91311592950","lonnstilskuddProsent":60,"manedslonn":4000,"feriepengesats":0.143,"arbeidsgiveravgift":0.106,"harFamilietilknytning":false,"familietilknytningForklaring":null,"feriepengerBelop":5720,"otpSats":0.07,"otpBelop":3200,"arbeidsgiveravgiftBelop":5186,"sumLonnsutgifter":54106,"sumLonnstilskudd":32464,"manedslonn100pst":54106,"sumLønnstilskuddRedusert":null,"datoForRedusertProsent":null,"stillingstype":"FAST","maal":[],"inkluderingstilskuddsutgift":[],"inkluderingstilskuddBegrunnelse":null,"inkluderingstilskuddTotalBeløp":0,"godkjentAvDeltaker":"2023-01-23T15:12:07.444992","godkjentTaushetserklæringAvMentor":null,"godkjentAvArbeidsgiver":"2023-01-23T15:12:07.444992","godkjentAvVeileder":"2023-01-23T15:12:07.444992","godkjentAvBeslutter":null,"avtaleInngått":"2023-01-23T15:12:07.444992","ikrafttredelsestidspunkt":"2023-01-30T11:39:22.029904056","godkjentAvNavIdent":"Z992785","godkjentAvBeslutterNavIdent":null,"enhetKostnadssted":null,"enhetsnavnKostnadssted":null,"godkjentPaVegneGrunn":{"ikkeBankId":false,"reservert":false,"digitalKompetanse":false,"arenaMigreringDeltaker":true},"godkjentPaVegneAv":true,"godkjentPaVegneAvArbeidsgiverGrunn":{"klarerIkkeGiFaTilgang":false,"vetIkkeHvemSomKanGiTilgang":false,"farIkkeTilgangPersonvern":false,"arenaMigreringArbeidsgiver":true},"godkjentPaVegneAvArbeidsgiver":true,"innholdType":"FORLENGE","utførtAv":"Z992785","utførtAvRolle":"VEILEDER"}';
+        String json3 = '{"hendelseType":"AVTALE_FORLENGET","avtaleStatus":"MANGLER_GODKJENNING","deltakerFnr":"07860198775","mentorFnr":null,"bedriftNr":"910825526","veilederNavIdent":"Z992785","tiltakstype":"VARIG_LONNSTILSKUDD","opprettetTidspunkt":"2023-01-23T15:08:53.014813","avtaleId":"d0abcf43-f240-442f-913b-8865521c40b3","avtaleNr":548,"sistEndret":"2023-01-30T10:39:23.029935206Z","annullertTidspunkt":null,"annullertGrunn":null,"slettemerket":false,"opprettetAvArbeidsgiver":false,"enhetGeografisk":"1860","enhetsnavnGeografisk":"NAV Lofoten","enhetOppfolging":"1860","enhetsnavnOppfolging":"NAV Lofoten","godkjentForEtterregistrering":false,"kvalifiseringsgruppe":"VARIG","formidlingsgruppe":"IARBS","tilskuddPeriode":[],"feilregistrert":false,"versjon":3,"deltakerFornavn":"Konge","deltakerEtternavn":"Syndebukk","deltakerTlf":"12121212","bedriftNavn":"MAURA OG KOLBU REGNSKAP","arbeidsgiverFornavn":"For","arbeidsgiverEtternavn":"Navn","arbeidsgiverTlf":"12121212","veilederFornavn":"Kontakt","veilederEtternavn":"Person","veilederTlf":"12121212","oppfolging":"Water spider things","tilrettelegging":"Water spider things","startDato":"2023-01-16","sluttDato":"2025-04-01","stillingprosent":100,"journalpostId":null,"arbeidsoppgaver":"Spindler i vannet","stillingstittel":"Water Spider","stillingStyrk08":4322,"stillingKonseptId":259822,"antallDagerPerUke":5,"refusjonKontaktperson":null,"mentorFornavn":null,"mentorEtternavn":null,"mentorOppgaver":null,"mentorAntallTimer":null,"mentorTimelonn":null,"mentorTlf":null,"arbeidsgiverKontonummer":"91311592950","lonnstilskuddProsent":60,"manedslonn":4000,"feriepengesats":0.143,"arbeidsgiveravgift":0.106,"harFamilietilknytning":false,"familietilknytningForklaring":null,"feriepengerBelop":5720,"otpSats":0.07,"otpBelop":3200,"arbeidsgiveravgiftBelop":5186,"sumLonnsutgifter":54106,"sumLonnstilskudd":32464,"manedslonn100pst":54106,"sumLønnstilskuddRedusert":null,"datoForRedusertProsent":null,"stillingstype":"FAST","maal":[],"inkluderingstilskuddsutgift":[],"inkluderingstilskuddBegrunnelse":null,"inkluderingstilskuddTotalBeløp":0,"godkjentAvDeltaker":"2023-01-23T15:12:07.444992","godkjentTaushetserklæringAvMentor":null,"godkjentAvArbeidsgiver":"2023-01-23T15:12:07.444992","godkjentAvVeileder":"2023-01-23T15:12:07.444992","godkjentAvBeslutter":null,"avtaleInngått":"2023-01-23T15:12:07.444992","ikrafttredelsestidspunkt":"2023-01-30T11:39:22.029904056","godkjentAvNavIdent":"Z992785","godkjentAvBeslutterNavIdent":null,"enhetKostnadssted":null,"enhetsnavnKostnadssted":null,"godkjentPaVegneGrunn":{"ikkeBankId":false,"reservert":false,"digitalKompetanse":false,"arenaMigreringDeltaker":true},"godkjentPaVegneAv":true,"godkjentPaVegneAvArbeidsgiverGrunn":{"klarerIkkeGiFaTilgang":false,"vetIkkeHvemSomKanGiTilgang":false,"farIkkeTilgangPersonvern":false,"arenaMigreringArbeidsgiver":true},"godkjentPaVegneAvArbeidsgiver":true,"innholdType":"FORLENGE","utførtAv":"Z992785","utførtAvRolle":"VEILEDER"}';
+        String encodedValue1 = EncodingUtil.base64Encode(Blob.valueOf(json1));
+        String encodedValue2 = EncodingUtil.base64Encode(Blob.valueOf(json2));
+        String encodedValue3 = EncodingUtil.base64Encode(Blob.valueOf(json3));
 
-    //     String encodedValue1 = EncodingUtil.base64Encode(Blob.valueOf(json1));
-    //     String encodedValue2 = EncodingUtil.base64Encode(Blob.valueOf(json2));
-    //     String encodedValue3 = EncodingUtil.base64Encode(Blob.valueOf(json3));
+        List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
 
-    //     List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
+        KafkaMessage__c msg1 = new KafkaMessage__c();
+            msg1.CRM_Topic__c = 'arbeidsgiver.tiltak-avtale-hendelse';
+            msg1.CRM_Key__c = 'd0abcf43-f240-442f-913b-8865521c40b3';
+            msg1.CRM_Value__c = encodedValue1;
+            messages.add(msg1);
 
-    //     KafkaMessage__c msg1 = new KafkaMessage__c();
-    //     msg1.CRM_Topic__c = 'arbeidsgiver.tiltak-avtale-hendelse';
-    //     msg1.CRM_Key__c = 'd0abcf43-f240-442f-913b-8865521c40b3';
-    //     msg1.CRM_Value__c = encodedValue1;
-    //     messages.add(msg1);
+        KafkaMessage__c msg2 = new KafkaMessage__c();
+            msg2.CRM_Topic__c = 'arbeidsgiver.tiltak-avtale-hendelse';
+            msg2.CRM_Key__c = 'd0abcf43-f240-442f-913b-8865521c40b3';
+            msg2.CRM_Value__c = encodedValue2;
+            messages.add(msg2);
 
-    //     KafkaMessage__c msg2 = new KafkaMessage__c();
-    //     msg1.CRM_Topic__c = 'arbeidsgiver.tiltak-avtale-hendelse';
-    //     msg1.CRM_Key__c = 'd0abcf43-f240-442f-913b-8865521c40b3';
-    //     msg1.CRM_Value__c = encodedValue2;
-    //     messages.add(msg2);
+        KafkaMessage__c msg3 = new KafkaMessage__c();
+            msg3.CRM_Topic__c = 'arbeidsgiver.tiltak-avtale-hendelse';
+            msg3.CRM_Key__c = 'd0abcf43-f240-442f-913b-8865521c40b3';
+            msg3.CRM_Value__c = encodedValue3;
+            messages.add(msg3);
 
-    //     KafkaMessage__c msg3 = new KafkaMessage__c();
-    //     msg1.CRM_Topic__c = 'arbeidsgiver.tiltak-avtale-hendelse';
-    //     msg1.CRM_Key__c = 'd0abcf43-f240-442f-913b-8865521c40b3';
-    //     msg1.CRM_Value__c = encodedValue3;
-    //     messages.add(msg3);
+        Test.StartTest();
+            KafkaToiAvtaleHandler handler = new KafkaToiAvtaleHandler();
+            handler.processMessages(messages);
+        Test.StopTest();
+    
+        List<Contract__c> avtaler = [
+            SELECT Id, RecordTypeId, TAG_StartDate__c, TAG_EndDate__c, ExternalId__c, TAG_EmployerContactPhone__c, TAG_Status__c, TAG_MeasureParticipant__c, TAG_EmployerContact__c, TAG_Mentor__c, TAG_ExternalURL__c, TAG_Category__c, TAG_InternalContact__c, OwnerId, TAG_Account__c, TAG_NAVUnit__c, KafkaHash__c, KafkaId__c
+            FROM Contract__c
+        ];
+    
+        List<ArenaActivity__c> aktiviteter = [
+            SELECT Id, DateFrom__c, DateTo__c, DateTimeRegistered__c, DateTimeFrom__c, Aktivitetsgruppekode__c, TAG_Source__c, AktivitetStatuskode__c, AktivitetsKode__c, KafkaId__c, NAVIdent__c, Account__c, NAV_Kontor__c, CaseWorker__c, OwnerId
+            FROM ArenaActivity__c
+        ];
 
-    //     Test.StartTest();
-    //     KafkaToiAvtaleHandler handler = new KafkaToiAvtaleHandler();
-    //     handler.processMessages(messages);
-    //     Test.StopTest();
+        System.assertEquals(1, avtaler.size());
+        System.assertEquals(acc.id, avtaler[0].TAG_Account__c);
+        System.assertEquals('548', avtaler[0].ExternalId__c);
+        System.assertEquals('GJENNOMFØRES', avtaler[0].TAG_Status__c);
+        System.assertEquals('Donald Duck', avtaler[0].TAG_MeasureParticipant__c);
+        System.assertEquals('VARIG_LONNSTILSKUDD', avtaler[0].TAG_Category__c);
+        System.assertEquals(1, aktiviteter.size());
+        System.assertEquals('2023-01-15', String.valueOf(aktiviteter[0].DateFrom__c));
+        System.assertEquals('GJENNOMFØRES', aktiviteter[0].AktivitetStatuskode__c);
+    }
 
-    //     List<Contract__c> avtaler = [
-    //         SELECT Id, RecordTypeId, TAG_StartDate__c, TAG_EndDate__c, ExternalId__c, TAG_EmployerContactPhone__c, TAG_Status__c, TAG_MeasureParticipant__c, TAG_EmployerContact__c, TAG_Mentor__c, TAG_ExternalURL__c, TAG_Category__c, TAG_InternalContact__c, OwnerId, TAG_Account__c, TAG_NAVUnit__c, KafkaHash__c, KafkaId__c
-    //         FROM Contract__c
-    //     ];
+    @isTest
+    static void updateExistingRecords() {
+        Id avtRecordTypeId = [SELECT Id FROM RecordType WHERE Name = 'Measure Agreement'].id;
+        
+        Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '910825526');
+        insert acc;
 
-    //     List<ArenaActivity__c> aktiviteter = [
-    //         SELECT Id, DateFrom__c, DateTo__c, DateTimeRegistered__c, DateTimeFrom__c, Aktivitetsgruppekode__c, TAG_Source__c, AktivitetStatuskode__c, AktivitetsKode__c, KafkaId__c, NAVIdent__c, Account__c, NAV_Kontor__c, CaseWorker__c, OwnerId
-    //         FROM ArenaActivity__c
-    //     ];
+        List<Account> accounts = [
+            SELECT Id
+            FROM Account
+        ];
 
-    //     System.assertEquals(1, avtaler.size());
-    //     System.assertEquals(acc.id, avtaler[0].TAG_Account__c);
-    //     System.assertEquals('548', avtaler[0].ExternalId__c);
-    //     System.assertEquals('GJENNOMFØRES', avtaler[0].TAG_Status__c);
-    //     System.assertEquals('Donald Duck', avtaler[0].TAG_MeasureParticipant__c);
-    //     System.assertEquals('VARIG_LONNSTILSKUDD', avtaler[0].TAG_Category__c);
-    //     System.assertEquals(1, aktiviteter.size());
-    //     System.assertEquals('2023-01-15', String.valueOf(aktiviteter[0].DateFrom__c));
-    // }
+        System.assertEquals(1, accounts.size(), 'Acc Inserted');
+
+        List<User> users = TestDataFactory.getUsers(1, 'Standard User', false, false);
+        users[0].CRM_NAV_Ident__c = 'Z992800';
+        insert users;
+
+        System.assertEquals(1, users.size(), 'User Inserted');
+
+        Group g = new Group(Name = 'Test queue', DeveloperName = 'queue_219', Type = 'Queue');
+        insert g;
+
+        List<Group> groups = [
+            SELECT Id
+            FROM Group
+            WHERE Name = 'Test queue'
+        ];
+
+        System.assertEquals(1, groups.size(), 'Group Inserted');
+
+        NavUnit__c unit = new NavUnit__c(Name = 'NAV Test', INT_UnitNumber__c = '0219', CRM_QueueId__c = g.Id);
+        insert unit;
+
+        List<NavUnit__c> units = [
+            SELECT Id, INT_UnitNumber__c
+            FROM NavUnit__c
+            WHERE Name = 'NAV Test'
+        ];
+
+        System.assertEquals(1, units.size(), 'Unit Inserted');
+        System.assertEquals('0219', units[0].INT_UnitNumber__c, 'Unit nr Inserted');
+
+        Contract__c con = new Contract__c(
+            KafkaId__c = 'd0abcf43-f240-442f-913b-8865521c40b3',
+            TAG_Status__c = 'MANGLER_GODKJENNING',
+            ExternalId__c = '548',
+            RecordTypeId = avtRecordTypeId
+        );
+        insert con;
+
+        List<Contract__c> contracts = [
+            SELECT Id
+            FROM Contract__c
+        ];
+        System.assertEquals(1, contracts.size(), 'Contract Inserted');
+
+        ArenaActivity__c act = new ArenaActivity__c(
+            KafkaId__c = 'd0abcf43-f240-442f-913b-8865521c40b3',
+            AktivitetStatuskode__c = 'MANGLER_GODKJENNING'
+        );
+        insert act;
+
+        List<ArenaActivity__c> aa = [
+            SELECT Id
+            FROM ArenaActivity__c
+        ];
+        System.assertEquals(1, aa.size(), 'Arena Activity Inserted');
+   
+        String json1 = '{"hendelseType":"AVTALE_FORLENGET","avtaleStatus":"KLAR_FOR_OPPSTART","deltakerFnr":"07860198775","mentorFnr":null,"bedriftNr":"910825526","veilederNavIdent":"Z992785","tiltakstype":"VARIG_LONNSTILSKUDD","opprettetTidspunkt":"2023-01-23T15:08:53.014813","avtaleId":"d0abcf43-f240-442f-913b-8865521c40b3","avtaleNr":548,"sistEndret":"2023-01-30T10:39:22.029935206Z","annullertTidspunkt":null,"annullertGrunn":null,"slettemerket":false,"opprettetAvArbeidsgiver":false,"enhetGeografisk":"1860","enhetsnavnGeografisk":"NAV Lofoten","enhetOppfolging":"1860","enhetsnavnOppfolging":"NAV Lofoten","godkjentForEtterregistrering":false,"kvalifiseringsgruppe":"VARIG","formidlingsgruppe":"IARBS","tilskuddPeriode":[],"feilregistrert":false,"versjon":3,"deltakerFornavn":"Konge","deltakerEtternavn":"Syndebukk","deltakerTlf":"12121212","bedriftNavn":"MAURA OG KOLBU REGNSKAP","arbeidsgiverFornavn":"For","arbeidsgiverEtternavn":"Navn","arbeidsgiverTlf":"12121212","veilederFornavn":"Kontakt","veilederEtternavn":"Person","veilederTlf":"12121212","oppfolging":"Water spider things","tilrettelegging":"Water spider things","startDato":"2023-01-16","sluttDato":"2025-04-01","stillingprosent":100,"journalpostId":null,"arbeidsoppgaver":"Spindler i vannet","stillingstittel":"Water Spider","stillingStyrk08":4322,"stillingKonseptId":259822,"antallDagerPerUke":5,"refusjonKontaktperson":null,"mentorFornavn":null,"mentorEtternavn":null,"mentorOppgaver":null,"mentorAntallTimer":null,"mentorTimelonn":null,"mentorTlf":null,"arbeidsgiverKontonummer":"91311592950","lonnstilskuddProsent":60,"manedslonn":4000,"feriepengesats":0.143,"arbeidsgiveravgift":0.106,"harFamilietilknytning":false,"familietilknytningForklaring":null,"feriepengerBelop":5720,"otpSats":0.07,"otpBelop":3200,"arbeidsgiveravgiftBelop":5186,"sumLonnsutgifter":54106,"sumLonnstilskudd":32464,"manedslonn100pst":54106,"sumLønnstilskuddRedusert":null,"datoForRedusertProsent":null,"stillingstype":"FAST","maal":[],"inkluderingstilskuddsutgift":[],"inkluderingstilskuddBegrunnelse":null,"inkluderingstilskuddTotalBeløp":0,"godkjentAvDeltaker":"2023-01-23T15:12:07.444992","godkjentTaushetserklæringAvMentor":null,"godkjentAvArbeidsgiver":"2023-01-23T15:12:07.444992","godkjentAvVeileder":"2023-01-23T15:12:07.444992","godkjentAvBeslutter":null,"avtaleInngått":"2023-01-23T15:12:07.444992","ikrafttredelsestidspunkt":"2023-01-30T11:39:22.029904056","godkjentAvNavIdent":"Z992785","godkjentAvBeslutterNavIdent":null,"enhetKostnadssted":null,"enhetsnavnKostnadssted":null,"godkjentPaVegneGrunn":{"ikkeBankId":false,"reservert":false,"digitalKompetanse":false,"arenaMigreringDeltaker":true},"godkjentPaVegneAv":true,"godkjentPaVegneAvArbeidsgiverGrunn":{"klarerIkkeGiFaTilgang":false,"vetIkkeHvemSomKanGiTilgang":false,"farIkkeTilgangPersonvern":false,"arenaMigreringArbeidsgiver":true},"godkjentPaVegneAvArbeidsgiver":true,"innholdType":"FORLENGE","utførtAv":"Z992785","utførtAvRolle":"VEILEDER"}';
+        String encodedValue1 = EncodingUtil.base64Encode(Blob.valueOf(json1));
+
+        List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
+
+        KafkaMessage__c msg1 = new KafkaMessage__c();
+            msg1.CRM_Topic__c = 'arbeidsgiver.tiltak-avtale-hendelse';
+            msg1.CRM_Key__c = 'd0abcf43-f240-442f-913b-8865521c40b3';
+            msg1.CRM_Value__c = encodedValue1;
+            messages.add(msg1);
+
+        Test.StartTest();
+            KafkaToiAvtaleHandler handler = new KafkaToiAvtaleHandler();
+            handler.processMessages(messages);
+        Test.StopTest();
+    
+        List<Contract__c> avtaler = [
+            SELECT Id, RecordTypeId, TAG_StartDate__c, TAG_EndDate__c, ExternalId__c, TAG_EmployerContactPhone__c, TAG_Status__c, TAG_MeasureParticipant__c, TAG_EmployerContact__c, TAG_Mentor__c, TAG_ExternalURL__c, TAG_Category__c, TAG_InternalContact__c, OwnerId, TAG_Account__c, TAG_NAVUnit__c, KafkaHash__c, KafkaId__c
+            FROM Contract__c
+        ];
+    
+        List<ArenaActivity__c> aktiviteter = [
+            SELECT Id, DateFrom__c, DateTo__c, DateTimeRegistered__c, DateTimeFrom__c, Aktivitetsgruppekode__c, TAG_Source__c, AktivitetStatuskode__c, AktivitetsKode__c, KafkaId__c, NAVIdent__c, Account__c, NAV_Kontor__c, CaseWorker__c, OwnerId
+            FROM ArenaActivity__c
+        ];
+
+        System.assertEquals(1, avtaler.size());
+        System.assertEquals(acc.id, avtaler[0].TAG_Account__c);
+        System.assertEquals('548', avtaler[0].ExternalId__c);
+        System.assertEquals('KLAR_FOR_OPPSTART', avtaler[0].TAG_Status__c);
+        System.assertEquals('Konge Syndebukk', avtaler[0].TAG_MeasureParticipant__c);
+        System.assertEquals('VARIG_LONNSTILSKUDD', avtaler[0].TAG_Category__c);
+        System.assertEquals(1, aktiviteter.size());
+        System.assertEquals('2023-01-16', String.valueOf(aktiviteter[0].DateFrom__c));
+        System.assertEquals('KLAR_FOR_OPPSTART', aktiviteter[0].AktivitetStatuskode__c);
+    }
+
+    @IsTest
+    static void processSingleMessage_InvalidJson() {
+        Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '910825526');
+        insert acc;
+
+        List<Account> accounts = [
+            SELECT Id
+            FROM Account
+        ];
+
+        String json1 = '{"hendelseTyper":,"veilederNavIdent":"Z992785","tiltakstype":"VARIG_LONNSTILSKUDD","opprettetTidspunkt":"2023-01-23T15:08:53.014813","avtaleId":"d0abcf43-f240-442f-913b-8865521c40b3","avtaleNr":548,"sistEndret":"2023-01-30T10:39:22.029935206Z","annullertTidspunkt":null,"annullertGrunn":null,"slettemerket":false,"opprettetAvArbeidsgiver":false,"enhetGeografisk":"1860","enhetsnavnGeografisk":"NAV Lofoten","enhetOppfolging":"1860","enhetsnavnOppfolging":"NAV Lofoten","godkjentForEtterregistrering":false,"kvalifiseringsgruppe":"VARIG","formidlingsgruppe":"IARBS","tilskuddPeriode":[],"feilregistrert":false,"versjon":3,"deltakerFornavn":"Konge","deltakerEtternavn":"Syndebukk","deltakerTlf":"12121212","bedriftNavn":"MAURA OG KOLBU REGNSKAP","arbeidsgiverFornavn":"For","arbeidsgiverEtternavn":"Navn","arbeidsgiverTlf":"12121212","veilederFornavn":"Kontakt","veilederEtternavn":"Person","veilederTlf":"12121212","oppfolging":"Water spider things","tilrettelegging":"Water spider things","startDato":"2023-01-16","sluttDato":"2025-04-01","stillingprosent":100,"journalpostId":null,"arbeidsoppgaver":"Spindler i vannet","stillingstittel":"Water Spider","stillingStyrk08":4322,"stillingKonseptId":259822,"antallDagerPerUke":5,"refusjonKontaktperson":null,"mentorFornavn":null,"mentorEtternavn":null,"mentorOppgaver":null,"mentorAntallTimer":null,"mentorTimelonn":null,"mentorTlf":null,"arbeidsgiverKontonummer":"91311592950","lonnstilskuddProsent":60,"manedslonn":4000,"feriepengesats":0.143,"arbeidsgiveravgift":0.106,"harFamilietilknytning":false,"familietilknytningForklaring":null,"feriepengerBelop":5720,"otpSats":0.07,"otpBelop":3200,"arbeidsgiveravgiftBelop":5186,"sumLonnsutgifter":54106,"sumLonnstilskudd":32464,"manedslonn100pst":54106,"sumLønnstilskuddRedusert":null,"datoForRedusertProsent":null,"stillingstype":"FAST","maal":[],"inkluderingstilskuddsutgift":[],"inkluderingstilskuddBegrunnelse":null,"inkluderingstilskuddTotalBeløp":0,"godkjentAvDeltaker":"2023-01-23T15:12:07.444992","godkjentTaushetserklæringAvMentor":null,"godkjentAvArbeidsgiver":"2023-01-23T15:12:07.444992","godkjentAvVeileder":"2023-01-23T15:12:07.444992","godkjentAvBeslutter":null,"avtaleInngått":"2023-01-23T15:12:07.444992","ikrafttredelsestidspunkt":"2023-01-30T11:39:22.029904056","godkjentAvNavIdent":"Z992785","godkjentAvBeslutterNavIdent":null,"enhetKostnadssted":null,"enhetsnavnKostnadssted":null,"godkjentPaVegneGrunn":{"ikkeBankId":false,"reservert":false,"digitalKompetanse":false,"arenaMigreringDeltaker":true},"godkjentPaVegneAv":true,"godkjentPaVegneAvArbeidsgiverGrunn":{"klarerIkkeGiFaTilgang":false,"vetIkkeHvemSomKanGiTilgang":false,"farIkkeTilgangPersonvern":false,"arenaMigreringArbeidsgiver":true},"godkjentPaVegneAvArbeidsgiver":true,"innholdType":"FORLENGE","utførtAv":"Z992785","utførtAvRolle":"VEILEDER"}';
+        String encodedValue1 = EncodingUtil.base64Encode(Blob.valueOf(json1));
+
+        List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
+
+        KafkaMessage__c msg1 = new KafkaMessage__c();
+            msg1.CRM_Topic__c = 'arbeidsgiver.tiltak-avtale-hendelse';
+            msg1.CRM_Key__c = 'd0abcf43-f240-442f-913b-8865521c40b3';
+            msg1.CRM_Value__c = encodedValue1;
+            messages.add(msg1);
+
+        Test.StartTest();
+            KafkaToiAvtaleHandler handler = new KafkaToiAvtaleHandler();
+            handler.processMessages(messages);
+        Test.StopTest();
+
+        System.assertEquals(KafkaMessageService.STATUS_ERROR, messages[0].CRM_Status__c);
+        System.assert(String.isNotBlank(messages[0].CRM_ErrorMessage__c));
+    }
 }
+
