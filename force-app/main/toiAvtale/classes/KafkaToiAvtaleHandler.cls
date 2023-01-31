@@ -138,18 +138,24 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
 
             ArenaActivity__c aa = new ArenaActivity__c(
                     DateRegistered__c = dateTimeValue(model.opprettetTidspunkt).date(),
-                    DateFrom__c = Date.valueof(model.startDato),
-                    DateTo__c = Date.valueof(model.sluttDato),
                     DateTimeRegistered__c = dateTimeValue(model.opprettetTidspunkt),
                     Aktivitetsgruppekode__c = 'TLTAK',
-                    AktivitetStatuskode__c = model.avtaleStatus,
+                    AktivitetStatuskode__c = model?.avtaleStatus,
                     AktivitetsKode__c = ' ',
-                    Aktivitetstype__c = model.tiltakstype,
+                    Aktivitetstype__c = model?.tiltakstype,
                     KafkaId__c = model.key,
                     KafkaHash__c = model.hash,
                     NAVIdent__c = model?.veilederNavIdent,
                     TAG_Source__c = 'Tiltaksløsning'
             );
+
+            if (model.startDato != null) {
+                aa.DateFrom__c = Date.valueof(model.startDato);
+            }
+
+            if (model.sluttDato != null) {
+                aa.DateTo__c = Date.valueof(model.sluttDato);
+            }
 
 
             if (accountMap.containsKey(model.bedriftnr)) {
