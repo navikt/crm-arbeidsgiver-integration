@@ -36,7 +36,7 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
         List<Contract__c> avtaler = new List<Contract__c>();
         try {
             avtaler = toSObjects();
-            upsert avtaler Contract__c.ExternalId__c;
+            upsert avtaler Contract__c.KafkaId__c;
         } catch (Exception e) {
             String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
             logger.setMessageErrors(messages, errorRef);
@@ -74,7 +74,7 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
                 KafkaId__c = model.key,
                 TAG_Category__c = model.tiltakstype,
                 NavIdent__c = model?.veilederNavIdent,
-                TAG_EmployerContactPhone__c = model?.arbeidsgiverTlf
+                TAG_EmployerContactPhone__c = model?.arbeidsgiverTlf            
             );
 
             if (model.startDato != null) {
