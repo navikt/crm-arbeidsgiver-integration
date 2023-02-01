@@ -103,13 +103,13 @@ public inherited sharing abstract class KafkaMessageProcessor {
 
     public Map<String, NAVUnit__c> getNavUnitsMap() {
         Map<String, NAVUnit__c> navUnitMap = new Map<String, NAVUnit__c>();
-        List<NAVUnit__c> navUnits = [
+        List<NAVUnit__c> units = [
             SELECT Id, Name, CRM_QueueId__c, INT_UnitNumber__c
             FROM NAVUnit__c
             WHERE INT_UnitNumber__c IN :navUnits AND IsDeleted = FALSE
         ];
 
-        for (NAVUnit__c n : navUnits) {
+        for (NAVUnit__c n : units) {
             navUnitMap.put(n.INT_UnitNumber__c, n);
         }
         return navUnitMap;

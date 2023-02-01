@@ -1,7 +1,7 @@
 public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer {
     private Map<String, KafkaToiAvtaleHandler_Model> keyToAvtale = new Map<String, KafkaToiAvtaleHandler_Model>();
     public Id avtaleRecordTypeId = [SELECT Id FROM RecordType WHERE Name = 'Measure Agreement'].id;
-
+    
     public void processMessages(List<KafkaMessage__c> messages) {
         for (KafkaMessage__c msg : messages) {
             try {
@@ -99,7 +99,7 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
 
             if (model.bedriftNr != null) {
                 c.TAG_ExternalURL__c = 'https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/' + model.avtaleId + '?bedrift=' + model.bedriftnr;
-            }   else {
+            } else {
                 c.TAG_ExternalURL__c = 'https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/' + model.avtaleId;
             }
 
@@ -107,9 +107,9 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
                 User us = navIdentMap.get(model.veilederNavIdent);
                 c.TAG_InternalContact__c = us.id;
                 c.OwnerId = us.id;
-            }   else if (!navIdentMap.containsKey(model.veilederNavIdent) && navUnitMap.containsKey(model.enhetOppfolging)) {
+            } else if (!navIdentMap.containsKey(model.veilederNavIdent) && navUnitMap.containsKey(model.enhetOppfolging)) {
                 c.OwnerId = navUnitMap.get(model.enhetOppfolging).CRM_QueueId__c;
-            }
+            } 
 
             if (accountMap.containsKey(model.bedriftnr)) {
                 c.TAG_Account__c = accountMap.get(model.bedriftnr).Id;
