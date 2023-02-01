@@ -90,7 +90,7 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
             }
 
             if (model.arbeidsgiverFornavn != null & model.arbeidsgiverEtternavn != null) {
-                c.TAG_EmployerContact__c = model.arbeidsgiverFornavn + ' ' + model.arbeidsgiverEtternavn;
+                c.TAG_EmployerContact__c = model.arbeidsgiverFornavn.left(31) + ' ' + model.arbeidsgiverEtternavn.left(32);
             }
 
             if (model.mentorFornavn != null & model.mentorEtternavn != null) {
