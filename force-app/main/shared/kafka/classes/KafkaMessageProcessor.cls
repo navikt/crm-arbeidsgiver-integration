@@ -92,7 +92,7 @@ public inherited sharing abstract class KafkaMessageProcessor {
         List<User> users = [
             SELECT Id, firstName, lastName, CRM_NAV_Ident__c
             FROM User
-            WHERE CRM_NAV_Ident__c IN :navIdents
+            WHERE IsActive = true AND CRM_NAV_Ident__c IN :navIdents
         ];
 
         for (User u : users) {

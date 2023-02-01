@@ -137,8 +137,6 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
             }
 
             ArenaActivity__c aa = new ArenaActivity__c(
-                    DateRegistered__c = dateTimeValue(model.opprettetTidspunkt).date(),
-                    DateTimeRegistered__c = dateTimeValue(model.opprettetTidspunkt),
                     Aktivitetsgruppekode__c = 'TLTAK',
                     AktivitetStatuskode__c = model?.avtaleStatus,
                     AktivitetsKode__c = ' ',
@@ -148,6 +146,11 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
                     NAVIdent__c = model?.veilederNavIdent,
                     TAG_Source__c = 'Tiltaksløsning'
             );
+
+            if (model.opprettetTidspunkt != null) {
+                aa.DateRegistered__c = dateTimeValue(model.opprettetTidspunkt).date();
+                aa.DateTimeRegistered__c = dateTimeValue(model.opprettetTidspunkt);
+            }
 
             if (model.startDato != null) {
                 aa.DateFrom__c = Date.valueof(model.startDato);
