@@ -576,6 +576,8 @@ public with sharing class KafkaToiAvtaleHandlerTest {
 
     @isTest
     static void inactiveUser() {
+        Id sysUser = [SELECT Id FROM User WHERE Name = 'Systembruker Asynkron Prosessering'].id;
+
         Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '910825526');
         insert acc;
 
@@ -670,6 +672,7 @@ public with sharing class KafkaToiAvtaleHandlerTest {
         System.assertEquals(null, aktiviteter[0].CaseWorker__c);
         System.assertEquals(acc.id, aktiviteter[0].Account__c);
         System.assertEquals(unit.Id, aktiviteter[0].NAV_Kontor__c);
+        System.assertEquals(sysUser, aktiviteter[0].OwnerId);
         System.assertEquals('Tiltaksløsning', aktiviteter[0].TAG_Source__c);
     }
 }
