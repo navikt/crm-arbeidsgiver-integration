@@ -576,7 +576,7 @@ public with sharing class KafkaToiAvtaleHandlerTest {
 
     @isTest
     static void inactiveUser() {
-        Id sysUser = [SELECT Id FROM User WHERE Name = 'Integrasjonsbruker Arbeidsgiveraktivitet'].id;
+        
 
         Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '910825526');
         insert acc;
@@ -591,9 +591,13 @@ public with sharing class KafkaToiAvtaleHandlerTest {
         List<User> users = TestDataFactory.getUsers(1, 'Standard User', false, false);
         users[0].CRM_NAV_Ident__c = 'Z992800';
         users[0].IsActive = false;
+        users[0].firstName = 'Integrasjonsbruker';
+        users[0].firstName = 'Arbeidsgiveraktivitet';
         insert users;
 
         System.assertEquals(1, users.size(), 'User Inserted');
+
+        Id sysUser = [SELECT Id FROM User WHERE Name = 'Integrasjonsbruker Arbeidsgiveraktivitet'].id;
 
         Group g = new Group(Name = 'Test queue', DeveloperName = 'queue_219', Type = 'Queue');
         insert g;
