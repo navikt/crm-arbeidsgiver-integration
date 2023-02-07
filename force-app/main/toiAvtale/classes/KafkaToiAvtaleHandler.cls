@@ -1,6 +1,7 @@
 public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer {
     private Map<String, KafkaToiAvtaleHandler_Model> keyToAvtale = new Map<String, KafkaToiAvtaleHandler_Model>();
     public Id avtaleRecordTypeId = [SELECT Id FROM RecordType WHERE Name = 'Measure Agreement'].id;
+    public Id NavKontorProfileId = [SELECT Id FROM Profile WHERE Name = 'NAV Kontor'].Id;
 
     public void processMessages(List<KafkaMessage__c> messages) {
         for (KafkaMessage__c msg : messages) {
@@ -57,7 +58,7 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
     private List<Contract__c> toSObjects() {
         Map<String, String> lastSaved = getLastSaved(Contract__c.class, keyToAvtale.keyset());
         Map<String, Account> accountMap = getOrgNumberAccountMap();
-        Map<String, User> navIdentMap = getNavIdentMap();
+        Map<String, User> navIdentMap = getNavIdentMapWithProfile();
         Map<String, NavUnit__c> navUnitMap = getNavUnitsMap();
         List<Contract__c> contracts = new List<Contract__c>();
 
@@ -109,7 +110,9 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
                 c.OwnerId = us.id;
             } else if (!navIdentMap.containsKey(model.veilederNavIdent) && navUnitMap.containsKey(model.enhetOppfolging)) {
                 c.OwnerId = navUnitMap.get(model.enhetOppfolging).CRM_QueueId__c;
-            } 
+            } else  if (!navIdentMap.containsKey(model.veilederNavIdent) && !navUnitMap.containsKey(model.enhetOppfolging)) {
+                c.OwnerId = getSystemAsynkronUser();
+            }
 
             if (accountMap.containsKey(model.bedriftnr)) {
                 c.TAG_Account__c = accountMap.get(model.bedriftnr).Id;
@@ -127,7 +130,7 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
     private List<ArenaActivity__c> toSObjectsActivity() {
         Map<String, String> lastSaved = getLastSaved(ArenaActivity__c.class, keyToAvtale.keyset());
         Map<String, Account> accountMap = getOrgNumberAccountMap();
-        Map<String, User> navIdentMap = getNavIdentMap();
+        Map<String, User> navIdentMap = getNavIdentMapWithProfile();
         Map<String, NavUnit__c> navUnitMap = getNavUnitsMap();
         List<ArenaActivity__c> activities = new List<ArenaActivity__c>();
 
@@ -176,5 +179,23 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
             activities.add(aa);
         }
         return activities;
+    }
+
+    public Map<String, User> getNavIdentMapWithProfile() {
+        Map<String, User> navIdentMap = new Map<String, User>();
+        List<User> users = [
+            SELECT Id, firstName, lastName, CRM_NAV_Ident__c, ProfileId
+            FROM User
+            WHERE IsActive = true AND ProfileId = :NavKontorProfileId AND CRM_NAV_Ident__c IN :navIdents
+        ];
+
+        for (User u : users) {
+            navIdentMap.put(u.CRM_NAV_Ident__c, u);
+        }
+        return navIdentMap;
+    }
+
+    public Id getSystemAsynkronUser () {
+        return [SELECT Id FROM User WHERE Name = 'Systembruker Asynkron Prosessering' LIMIT 1].id;
     }
 }
