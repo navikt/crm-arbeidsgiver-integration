@@ -1,7 +1,6 @@
 public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer {
     private Map<String, KafkaToiAvtaleHandler_Model> keyToAvtale = new Map<String, KafkaToiAvtaleHandler_Model>();
     public Id avtaleRecordTypeId = [SELECT Id FROM RecordType WHERE Name = 'Measure Agreement'].id;
-    public Id NavKontorProfileId = [SELECT Id FROM Profile WHERE Name = 'NAV Kontor'].Id;
 
     public void processMessages(List<KafkaMessage__c> messages) {
         for (KafkaMessage__c msg : messages) {
@@ -186,7 +185,7 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
         List<User> users = [
             SELECT Id, firstName, lastName, CRM_NAV_Ident__c, ProfileId
             FROM User
-            WHERE IsActive = true AND ProfileId = :NavKontorProfileId AND CRM_NAV_Ident__c IN :navIdents
+            WHERE IsActive = true AND Profile.Name = 'NAV Kontor' AND CRM_NAV_Ident__c IN :navIdents
         ];
 
         for (User u : users) {

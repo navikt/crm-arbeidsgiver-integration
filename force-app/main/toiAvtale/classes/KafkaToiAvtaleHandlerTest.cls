@@ -478,6 +478,7 @@ public with sharing class KafkaToiAvtaleHandlerTest {
     @isTest
     static void updateExistingRecords() {
         Id avtRecordTypeId = [SELECT Id FROM RecordType WHERE Name = 'Measure Agreement'].id;
+        //Id permissionSetId = [SELECT Id, Name FROM PermissionSet WHERE Name = 'Arbeidsgiver_base'].Id;
         
         Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '910825526');
         insert acc;
@@ -524,6 +525,11 @@ public with sharing class KafkaToiAvtaleHandlerTest {
 
         System.assertEquals(1, units.size(), 'Unit Inserted');
         System.assertEquals('0219', units[0].INT_UnitNumber__c, 'Unit nr Inserted');
+
+        // PermissionSetAssignment permissionSetAssignment = new PermissionSetAssignment(PermissionSetId = permissionSetId, AssigneeId =  users[1].Id);
+        // insert permissionSetAssignment;
+        // permissionSetAssignment.PermissionSetId = permissionSetId;
+        // permissionSetAssignment.AssigneeId =  users[1].Id;
 
         Contract__c con = new Contract__c(
             KafkaId__c = 'd0abcf43-f240-442f-913b-8865521c40b3',
