@@ -30,6 +30,11 @@ public with sharing class KafkaToiAvtaleHandlerTest {
 
         System.assertEquals(1, groups.size(), 'Group Inserted');
 
+        System.runAs ( new User(Id = UserInfo.getUserId()) ) {
+            QueueSobject qs = new QueueSobject(QueueId = g.Id, SobjectType = 'Contract__c');
+                insert qs;
+        }
+
         NavUnit__c unit = new NavUnit__c(Name = 'NAV Test', INT_UnitNumber__c = '0219', CRM_QueueId__c = g.Id);
         insert unit;
 
