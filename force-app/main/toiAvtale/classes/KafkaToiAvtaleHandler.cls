@@ -57,6 +57,7 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
     private List<Contract__c> toSObjects() {
         Map<String, String> lastSaved = getLastSaved(Contract__c.class, keyToAvtale.keyset());
         Map<String, Account> accountMap = getOrgNumberAccountMap();
+        Map<String, User> navIdentMapAllProfile = getNavIdentMap();
         Map<String, User> navIdentMap = getNavIdentMapWithProfile();
         Map<String, NavUnit__c> navUnitMap = getNavUnitsMap();
         List<Contract__c> contracts = new List<Contract__c>();
@@ -102,10 +103,14 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
             } else {
                 c.TAG_ExternalURL__c = 'https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/' + model.avtaleId;
             }
-
+            
+            if (navIdentMapAllProfile.containsKey(model.veilederNavIdent)) {
+                User us = navIdentMapAllProfile.get(model.veilederNavIdent);
+                c.TAG_InternalContact__c = us.id;
+            }
+            
             if (navIdentMap.containsKey(model.veilederNavIdent)) {
                 User us = navIdentMap.get(model.veilederNavIdent);
-                c.TAG_InternalContact__c = us.id;
                 c.OwnerId = us.id;
             } else if (!navIdentMap.containsKey(model.veilederNavIdent) && navUnitMap.containsKey(model.enhetOppfolging)) {
                 c.OwnerId = navUnitMap.get(model.enhetOppfolging).CRM_QueueId__c;
@@ -129,7 +134,7 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
     private List<ArenaActivity__c> toSObjectsActivity() {
         Map<String, String> lastSaved = getLastSaved(ArenaActivity__c.class, keyToAvtale.keyset());
         Map<String, Account> accountMap = getOrgNumberAccountMap();
-        Map<String, User> navIdentMap = getNavIdentMapWithProfile();
+        Map<String, User> navIdentMapAllProfile = getNavIdentMap();
         Map<String, NavUnit__c> navUnitMap = getNavUnitsMap();
         List<ArenaActivity__c> activities = new List<ArenaActivity__c>();
 
@@ -171,8 +176,8 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
                  aa.NAV_Kontor__c = navUnitMap.get(model.enhetOppfolging).Id;
              }
 
-            if (navIdentMap.containsKey(model.veilederNavIdent)) {
-                User us = navIdentMap.get(model.veilederNavIdent);
+            if (navIdentMapAllProfile.containsKey(model.veilederNavIdent)) {
+                User us = navIdentMapAllProfile.get(model.veilederNavIdent);
                 aa.CaseWorker__c = us.id;
             } 
             activities.add(aa);
