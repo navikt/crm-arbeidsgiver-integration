@@ -60,6 +60,7 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
         Map<String, User> navIdentMapAllProfile = getNavIdentMap();
         Map<String, User> navIdentMap = getNavIdentMapWithProfile();
         Map<String, NavUnit__c> navUnitMap = getNavUnitsMap();
+        Map<String, NavUnit__c> navUnitMapWithQueues = getNavUnitsMapWithQueues();
         List<Contract__c> contracts = new List<Contract__c>();
 
         for (KafkaToiAvtaleHandler_Model model : keyToAvtale.values()) {
@@ -108,13 +109,13 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
                 User us = navIdentMapAllProfile.get(model.veilederNavIdent);
                 c.TAG_InternalContact__c = us.id;
             }
-            
+
             if (navIdentMap.containsKey(model.veilederNavIdent)) {
                 User us = navIdentMap.get(model.veilederNavIdent);
                 c.OwnerId = us.id;
-            } else if (!navIdentMap.containsKey(model.veilederNavIdent) && navUnitMap.containsKey(model.enhetOppfolging)) {
-                c.OwnerId = navUnitMap.get(model.enhetOppfolging).CRM_QueueId__c;
-            } else  if (!navIdentMap.containsKey(model.veilederNavIdent) && !navUnitMap.containsKey(model.enhetOppfolging)) {
+            } else if (!navIdentMap.containsKey(model.veilederNavIdent) && navUnitMapWithQueues.containsKey(model.enhetOppfolging)) {
+                c.OwnerId = navUnitMapWithQueues.get(model.enhetOppfolging).CRM_QueueId__c;
+            } else  if (!navIdentMap.containsKey(model.veilederNavIdent) && !navUnitMapWithQueues.containsKey(model.enhetOppfolging)) {
                 c.OwnerId = getSystemAsynkronUser();
             }
 
@@ -197,6 +198,20 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
             navIdentMap.put(u.CRM_NAV_Ident__c, u);
         }
         return navIdentMap;
+    }
+
+    public Map<String, NAVUnit__c> getNavUnitsMapWithQueues() {
+        Map<String, NAVUnit__c> navUnitMap = new Map<String, NAVUnit__c>();
+        List<NAVUnit__c> units = [
+            SELECT Id, Name, CRM_QueueId__c, INT_UnitNumber__c
+            FROM NAVUnit__c
+            WHERE INT_UnitNumber__c IN :navUnits AND IsDeleted = FALSE AND CRM_QueueId__c != null
+        ];
+
+        for (NAVUnit__c n : units) {
+            navUnitMap.put(n.INT_UnitNumber__c, n);
+        }
+        return navUnitMap;
     }
 
     public Id getSystemAsynkronUser () {
