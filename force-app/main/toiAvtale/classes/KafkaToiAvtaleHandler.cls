@@ -79,16 +79,16 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
                 TAG_EmployerContactPhone__c = model?.arbeidsgiverTlf            
             );
 
-            if (model.startDato != null) {
+            if (model.startDato != null && Date.valueof(model.startDato).year() > 1700) {
                 c.TAG_StartDate__c = Date.valueof(model.startDato);
             }
 
-            if (model.sluttDato != null) {
+            if (model.sluttDato != null && Date.valueof(model.sluttDato).year() < 4000) {
                 c.TAG_EndDate__c = Date.valueof(model.sluttDato);
             }
 
             if (model.deltakerFornavn != null & model.deltakerEtternavn != null) {
-                c.TAG_MeasureParticipant__c = model.deltakerFornavn + ' ' + model.deltakerEtternavn;
+                c.TAG_MeasureParticipant__c = model.deltakerFornavn.left(31) + ' ' + model.deltakerEtternavn.left(32);
             }
 
             if (model.arbeidsgiverFornavn != null & model.arbeidsgiverEtternavn != null) {
@@ -96,7 +96,7 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
             }
 
             if (model.mentorFornavn != null & model.mentorEtternavn != null) {
-                c.TAG_Mentor__c = model.mentorFornavn + ' ' + model.mentorEtternavn;
+                c.TAG_Mentor__c = model.mentorFornavn.left(31) + ' ' + model.mentorEtternavn.left(32);
             }
 
             if (model.bedriftNr != null) {
@@ -160,11 +160,11 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
                 aa.DateTimeRegistered__c = dateTimeValue(model.opprettetTidspunkt);
             }
 
-            if (model.startDato != null) {
+            if (model.startDato != null && Date.valueof(model.startDato).year() > 1700) {
                 aa.DateFrom__c = Date.valueof(model.startDato);
             }
 
-            if (model.sluttDato != null) {
+            if (model.sluttDato != null && Date.valueof(model.sluttDato).year() < 4000) {
                 aa.DateTo__c = Date.valueof(model.sluttDato);
             }
 
