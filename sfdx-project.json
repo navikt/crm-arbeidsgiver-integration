@@ -8,7 +8,7 @@
             "dependencies": [
                 {
                     "package": "crm-platform-base",
-                    "versionNumber": "0.196.0.3"
+                    "versionNumber": "0.196.0.LATEST"
                 },
                 {
                     "package": "crm-platform-email-scheduling",
