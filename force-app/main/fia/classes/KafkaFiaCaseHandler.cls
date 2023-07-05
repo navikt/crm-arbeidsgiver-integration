@@ -18,7 +18,7 @@ public without sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor i
         convertAndUpsertFiaCases(messages);
         logger.publish();
     } 
-
+//Kan denne fjernes?
     private void mapFiaCase(KafkaFiaCase_Model fiaCase) {
         String key = fiaCase.orgnr;
 
@@ -32,7 +32,7 @@ public without sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor i
     private void convertAndUpsertFiaCases(List<KafkaMessage__c> messages) {
         List<Account> fiaCases = new List<Account>();
         try {
-            fiaCases = getFiaCasesSObjects(); //dead now.
+          //  fiaCases = getFiaCasesSObjects(); //dead now.
             update fiaCases;
         } catch (Exception e) {
             String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
@@ -48,21 +48,49 @@ public without sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor i
 
         Map<String, String> lastSaved = getLastSaved(Account.class, keyToFiaCase.keyset());
         List<Account> fiaCases = new List<Account>();
-        Map<String, Account> accountMap = getOrgNumberAccountMap();
-        Map<String, User> navIdentMap = getNavIdentMap();
+       // Map<String, Account> accountMap = getOrgNumberAccountMap();
+        //Map<String, User> navIdentMap = getNavIdentMap();
 
 
         //Gjør det fra en record til en liste med fiacases 
-        //oppretter en ny record av fiacase for hver gang man henter. 
+        //oppretter en ny record av fiacase for hver gang man henter.
+
+       // List<FiaCase__c> fiaCasesList = new List<FiaCases__c>();
+
         Account a = accountMap.get(model.orgnr);
-        a.TAG_FiaCaseNr__c = model.saksnummer;
-        a.TAG_FiaCaseOwner__c = model.eierAvSak;
-        a.TAG_FiaCaseStatus__c = model.status;
-        a.TAG_FiaStartDate__c = dateTimeValue(model.opprettetTidspunkt);
-        a.TAG_FiaLastModifiedDate__c = dateTimeValue(model.endretTidspunkt);
-        a.TAG_FiaKafkaId__c = model.key;
-        a.KafkaHash__c = model.hash;
-        a.JsonPayload__c = model.jsonPayload;
+        
+    /*     for(String key : accountMap.keySet()){
+            for(Account account: accountMap.get(key)){
+                System.debug(account);
+          // fiaCase__c a;
+            a.TAG_FiaCaseNr__c = account.saksnummer;
+            a.TAG_FiaCaseOwner__c = account.eierAvSak;
+            a.TAG_FiaCaseStatus__c = account.status;
+            a.TAG_FiaStartDate__c = dateTimeValue(account.opprettetTidspunkt);
+            a.TAG_FiaLastModifiedDate__c = dateTimeValue(account.endretTidspunkt);
+            a.TAG_FiaKafkaId__c = account.key;
+            a.KafkaHash__c = account.hash;
+            a.JsonPayload__c = account.jsonPayload;
+        
+
+            //dette kan gi en heftig loop hvis jeg ikke er forsiktig. Må finne en god måte å debuge det på. Start her i morgen, 
+            //Sjekk om denne lagrer det jeg tror den lagrer, som skal være fiacases. 
+        // fiaCasesList.add(a);
+            system.debug('hello');
+        }
+            //Set<KafkaFiaCase_Model>model = model.orgnr; //accountMap.get(key);
+
+            a.TAG_FiaCaseNr__c = model.saksnummer;
+            a.TAG_FiaCaseOwner__c = model.eierAvSak;
+            a.TAG_FiaCaseStatus__c = model.status;
+            a.TAG_FiaStartDate__c = dateTimeValue(model.opprettetTidspunkt);
+            a.TAG_FiaLastModifiedDate__c = dateTimeValue(model.endretTidspunkt);
+            a.TAG_FiaKafkaId__c = model.key;
+            a.KafkaHash__c = model.hash;
+            a.JsonPayload__c = model.jsonPayload;
+
+        } */
+
 
         if (navIdentMap.containsKey(model.eierAvSak)) {
             User us = navIdentMap.get(model.eierAvSak);

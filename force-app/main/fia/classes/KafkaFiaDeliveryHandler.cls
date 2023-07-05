@@ -2,17 +2,17 @@ public without sharing class KafkaFiaDeliveryHandler extends KafkaMessageProcess
     Map<String, KafkaFiaDelivery_Model> keyToFiaDelivery = new Map<String, KafkaFiaDelivery_Model>();
     public Set<String> caseNumbers;
 
-public KafkaFiaDeliveryHandler(){
+/* public KafkaFiaDeliveryHandler(){
    this.caseNumbers = new Set<String>();
-}
+} */ 
 
     public void processMessages(List<KafkaMessage__c> messages) {
-        for (KafkaMessage__c msg : messages) {
+        /* for (KafkaMessage__c msg : messages) {
             try {
                 KafkaFiaDelivery_Model fiaDelivery = (KafkaFiaDelivery_Model) parse(
                     KafkaFiaDelivery_Model.class, msg
                     ); 
-                    mapFiaDelivery(fiaDelivery);
+                  //  mapFiaDelivery(fiaDelivery);
                     addNavIdent(fiaDelivery?.opprettetAv);
                     addCaseNumber(fiaDelivery?.saksnummer);
                     msg.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED; 
@@ -21,13 +21,13 @@ public KafkaFiaDeliveryHandler(){
                 msg.CRM_ErrorMessage__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
                 logger.addError();
             }
-        }
-        convertAndUpsertFiaDeliveries(messages);
-        logger.public;
+        } */
+       // convertAndUpsertFiaDeliveries(messages);
+       // logger.public;
     }
-
+/*
     private void addCaseNumber(String caseNumber){
-        String caseNr = caseNumber?.saksnummer;
+      //  String caseNr = caseNumber?.saksnummer;
         caseNumbers.add(caseNr);
 
     }
@@ -71,11 +71,11 @@ public KafkaFiaDeliveryHandler(){
                 //https://github.com/navikt/crm-arbeidsgiver-integration/blob/e2a52a10fa94320fcb1d00a8faeeab3a78514ec5/force-app/main/modia/classes/KafkaModiaDialogMoteHandler.cls
                 
             }
-    }
+    } */
 
 
   //Bruk en av de 3 nederst funksjonene i kafkamessageprocessor, for å finne id ti lfiasak, 
   //vi legger i map for å unngå sqlqueries i loops. vi legger den i map, også henter vi de tilbake fra map for unngå sql quieries i loops. 
   //Derfor querier vi ikke direkte, da kræsjer det
-}
+//}
 }
