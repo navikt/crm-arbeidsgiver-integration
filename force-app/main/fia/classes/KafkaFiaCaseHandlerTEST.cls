@@ -1,5 +1,8 @@
 @isTest
 public with sharing class KafkaFiaCaseHandlerTEST {
+
+
+
     @isTest
     static void processSingleMessage() {
         Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '973113631');
@@ -418,4 +421,70 @@ public with sharing class KafkaFiaCaseHandlerTEST {
         System.assertEquals(null, account2[0].TAG_FiaLastModifiedDate__c, 'Most recent change inserted');
         System.assertEquals(null, account2[0].JsonPayload__c, 'Most recent change inserted');
     }
+
+
+    @TestSetup
+static void makeData(){
+   
+}
+    @isTest
+    static void testTestKlasse() {
+        Boolean b = false;
+        KafkaFiaCaseHandler handler = new KafkaFiaCaseHandler(); 
+        test.startTest();
+        Boolean result = handler.testKlasse(b);
+        test.stopTest();
+        System.assertEquals(true, result, 'Ønsker å teste at result ble oppdatert');
+    }
+
+    @isTest
+    static void checkThatAllFiaCasesAreSavedOnAccount() {
+
+        Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '973113631', TAG_FiaCaseStatus__c = 'Vurderes', TAG_FiaCaseOwner__c = 'B2508285');
+        insert acc;
+        Account acc2 = new Account(Name = 'Test Employer 2', INT_OrganizationNumber__c = '973113632', TAG_FiaCaseStatus__c = 'Vurderes', TAG_FiaCaseOwner__c = 'B2508286');
+        insert acc2;
+
+        String json = '{"saksnummer": "a240d1adtuasydt", "orgnr": "973113631", "eierAvSak": "C156986", "endretAvHendelseId": "sdfhoisdyfio49856", "status": "SLETTET", "opprettetTidspunkt": "2022-02-18T07:07:07.064711", "endretTidspunkt": "2022-02-18T07:19:21.575794"}';
+        String json2 = '{"saksnummer": "a240d1adtuasyy", "orgnr": "973113632", "eierAvSak": "C156986", "endretAvHendelseId": "sdfhoisdyfio49856", "status": "IKKE_AKTIV", "opprettetTidspunkt": "2022-02-18T07:07:07.064711", "endretTidspunkt": "2022-02-18T07:19:23.575794"}';
+        String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
+        String encodedValue2 = EncodingUtil.base64Encode(Blob.valueOf(json2));
+
+        List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
+
+        KafkaMessage__c msg1 = new KafkaMessage__c();
+        msg1.CRM_Topic__c = 'pia.ia-sak-v1';
+        msg1.CRM_Key__c = 'a240d1adtuasydt';
+        msg1.CRM_Value__c = encodedValue;
+        messages.add(msg1);
+
+        KafkaMessage__c msg2 = new KafkaMessage__c();
+        msg2.CRM_Topic__c = 'pia.ia-sak-v1';
+        msg2.CRM_Key__c = 'a240d1adtuasyy';
+        msg2.CRM_Value__c = encodedValue2;
+        messages.add(msg2);
+
+        KafkaFiaCaseHandler handler = new KafkaFiaCaseHandler();
+        handler.processMessages(messages);
+
+        List<Account> account1 = [
+            SELECT Id, Name, INT_OrganizationNumber__c, TAG_FiaCaseNr__c, TAG_FiaCaseOwner__c, TAG_FiaCaseStatus__c, TAG_FiaStartDate__c, TAG_FiaLastModifiedDate__c, TAG_FiaKafkaId__c, KafkaHash__c, JsonPayload__c 
+            FROM Account WHERE INT_OrganizationNumber__c = '973113631'
+        ];
+
+        List<Account> account2 = [
+            SELECT Id, Name, INT_OrganizationNumber__c, TAG_FiaCaseNr__c, TAG_FiaCaseOwner__c, TAG_FiaCaseStatus__c, TAG_FiaStartDate__c, TAG_FiaLastModifiedDate__c, TAG_FiaKafkaId__c, KafkaHash__c, JsonPayload__c 
+            FROM Account WHERE INT_OrganizationNumber__c = '973113632'
+        ];
+        List<FiaSak__c> fiaCases = new List<FiaSak__c>();
+        test.startTest();
+        fiaCases = handler.getFiaCasesSObjects();
+        test.stopTest();
+
+        Assert.areEqual('SLETTET', fiaCases[0].CaseStatus__c, 'Check is first fiacase in array fiacases har TAG_FiaCaseStatus__c deleted');
+        Assert.areEqual('IKKE_AKTIV', fiaCases[1].CaseStatus__c, 'Check is second fiacase in array fiacases har TAG_FiaCaseStatus__c IKKE_AKTIV');
+      
+       
+    }
+
 }
