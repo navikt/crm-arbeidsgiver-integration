@@ -30,24 +30,13 @@ public without sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor i
     }
 
 
-    public Boolean testKlasse(Boolean b){
-      /*   // List<FiaCase__c> fiaCasesList = new List<FiaCases__c>();
-        fiaCasesList.add(fiaCase);
-        System.debug('It works');
-      for(FiaCase__c fiaCase1 : fiaCasesList ){
-      System.debug(fiaCase1);
-        System.debug('lol');
-        } */
-       b = true;
-        return b;
-    }
 
 
 
     private void convertAndUpsertFiaCases(List<KafkaMessage__c> messages) {
         
         List<FiaSak__c> fiaCases = new List<FiaSak__c>();
-        //List<Account> fiaCases = new List<Account>();
+       // List<Account> fiaCases = new List<Account>();
         try {
             fiaCases = getFiaCasesSObjects(); 
             update fiaCases;
@@ -93,16 +82,14 @@ public without sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor i
         System.debug(JSON.serializePretty(keyToFiaCase.values()));
   
         for (KafkaFiaCase_Model model : keyToFiaCase.values()) {
-
+     //   Account fiaCase = new Account();            
            FiaSak__c fiaCase = convertToSObject(model, accountMap, navIdentMap);
             fiaCases.add(fiaCase);
                          
-        //      Account fiaCase = new Account();            
+      
                
-              /*   fiaCases.add(fiaCase);
-                system.debug(fiaCase);
-                system.debug(fiaCases);  */
+    
         }
         return fiaCases;
-    }
+    }      
 }
