@@ -11,7 +11,7 @@
                     "versionNumber": "0.196.0.LATEST"
                 },
                 {
-                    "package": "crm-shared-email-scheduling",
+                    "package": "crm-platform-email-scheduling",
                     "versionNumber": "1.6.0.LATEST"
                 },
                 {
@@ -58,7 +58,7 @@
     "sourceApiVersion": "56.0",
     "packageAliases": {
         "crm-platform-base": "0Ho2o0000008ORmCAM",
-        "crm-shared-email-scheduling": "0Ho2o000000fxWwCAI",
+        "crm-platform-email-scheduling": "0Ho2o000000fxWwCAI",
         "crm-platform-access-control": "0Ho2o0000008OR3CAM",
         "crm-platform-integration": "0Ho2o0000008ORrCAM",
         "crm-arbeidsgiver-base": "0Ho2o0000008OQtCAM",
