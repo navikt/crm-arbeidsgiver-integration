@@ -20,7 +20,7 @@ public without sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor i
     }
 
     private void mapFiaCase(KafkaFiaCase_Model fiaCase) {
-        String key = fiaCase.orgnr;
+        String key = fiaCase.key;
 
         if (!keyToFiaCase.containsKey(key)) {
             keyToFiaCase.put(key, fiaCase);
@@ -29,91 +29,49 @@ public without sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor i
         }
     }
 
-    private void convertAndUpsertFiaCases(List<KafkaMessage__c> messages) {
+    private void convertAndUpsertFiaCases(List<KafkaMessage__c> messages) { 
         List<Account> fiaCases = new List<Account>();
         try {
             fiaCases = getFiaCasesSObjects();
-            update fiaCases;
+            upsert fiaCases;
         } catch (Exception e) {
             String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
             logger.setMessageErrors(messages, errorRef);
         }
     }
 
-    private List<Account> getFiaCasesSObjects() {
-        Map<String, String> lastSaved = getLastSavedFiaCase(Account.class, keyToFiaCase.keyset());
-        List<Account> fiaCases = new List<Account>();
+    private List<FiaSak__c> convertToSObject() {
+        Map<String, String> lastSaved = getLastSaved(FiaSak__c.class, keyToFiaCase.keyset());
         Map<String, Account> accountMap = getOrgNumberAccountMap();
         Map<String, User> navIdentMap = getNavIdentMap();
-
+        List<FiaSak__c > fiaSaker = new List<FiaSak__c> ();
+        
         for (KafkaFiaCase_Model model : keyToFiaCase.values()) {
-            if (isNewOrChanged(model.orgnr, model.hash, lastSaved) && accountMap.containsKey(model.orgnr)) {
-                Account fiaCase = new Account();                
-
-                if (model.status == 'SLETTET' || model.status == 'IKKE_AKTIV'){
-                    fiaCase = setFiaCaseFieldsToNull(model, accountMap);
-                }
-                else {
-                    fiaCase = convertToSObject(model, accountMap, navIdentMap);
-                }
-
-                fiaCases.add(fiaCase);
+            if (!isNewOrChanged(model.key, model.hash, lastSaved)) {
+                continue;
             }
-        }
 
-        return fiaCases;
-    }
-
-    private Account convertToSObject(
-        KafkaFiaCase_Model model,
-        Map<String, Account> accountMap,
-        Map<String, User> navIdentMap
-    ) {
-        Account a = accountMap.get(model.orgnr);
-        a.TAG_FiaCaseNr__c = model.saksnummer;
-        a.TAG_FiaCaseOwner__c = model.eierAvSak;
-        a.TAG_FiaCaseStatus__c = model.status;
-        a.TAG_FiaStartDate__c = dateTimeValue(model.opprettetTidspunkt);
-        a.TAG_FiaLastModifiedDate__c = dateTimeValue(model.endretTidspunkt);
-        a.TAG_FiaKafkaId__c = model.key;
-        a.KafkaHash__c = model.hash;
-        a.JsonPayload__c = model.jsonPayload;
+        FiaSak__c fs = new FiaSak__c (
+        name = model.saksnummer,
+        CaseOwner__c = model.eierAvSak,
+        CaseStatus__c = model.status,
+        StartDate__c = dateTimeValue(model.opprettetTidspunkt),
+        LastModifiedDate__c = dateTimeValue(model.endretTidspunkt),
+        KafkaId__c = model.key,
+        KafkaHash__c = model.hash,
+        JsonPayload__c = model.jsonPayload
+        );
 
         if (navIdentMap.containsKey(model.eierAvSak)) {
-            User us = navIdentMap.get(model.eierAvSak);
-            a.TAG_FiaCaseOwnerName__c = us.FirstName + ' ' + us.LastName;
+            fs.Owner = navIdentMap.get(model.eierAvSak);
         }
 
-        return a;
-    }
-
-    private Account setFiaCaseFieldsToNull(
-        KafkaFiaCase_Model model,
-        Map<String, Account> accountMap
-    ) {
-        Account a = accountMap.get(model.orgnr);
-        a.TAG_FiaCaseNr__c = '';
-        a.TAG_FiaCaseOwner__c = '';
-        a.TAG_FiaCaseStatus__c = '';
-        a.TAG_FiaStartDate__c = null;
-        a.TAG_FiaLastModifiedDate__c = null;
-        a.TAG_FiaCaseOwnerName__c = '';
-        a.TAG_FiaKafkaId__c = '';
-        a.KafkaHash__c = '';
-        a.JsonPayload__c = '';
-
-        return a;
-    }
-
-    private Map<String, String> getLastSavedFiaCase(Type className, Set<String> organizationNumbers) {
-        String query = 'SELECT KafkaHash__c, INT_OrganizationNumber__c FROM Account WHERE INT_OrganizationNumber__c IN: organizationNumbers';
-        Map<String, String> keyToExistingHash = new Map<String, String>();
-
-        for (SObject obj : Database.query(query)) {
-            if (obj.get('KafkaHash__c') != null) {
-                keyToExistingHash.put(obj.get('INT_OrganizationNumber__c').toString(), obj.get('KafkaHash__c').toString());
-            }
+        if (accountMap.containsKey(model.orgnr)) {
+            fs.Account__c = accountMap.get(model.orgnr).Id;
         }
-        return keyToExistingHash;
+        
+        fiaSaker.add(fs);
+    }
+        return fiaSaker;
     }
 }
