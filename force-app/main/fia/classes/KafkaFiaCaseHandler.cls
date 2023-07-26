@@ -68,7 +68,8 @@ public without sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor i
 
             fiaCases1.add(ic);
             fiaCases1.add(ic);
-            fiaCases.add(ic);
+            
+            
 /*
             if (navIdentMap.containsKey(model.eierAvSak)) {
                 User us = navIdentMap.get(model.eierAvSak);
@@ -77,7 +78,7 @@ public without sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor i
 
           
         }
-        return fiaCases;
+        return fiaCases1;
     }
 /* 
     public List<IACase__c> getFiaCasesSObjects() {
