@@ -33,7 +33,10 @@ public without sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor i
         List<IACase__c> fiaCases = new List<IACase__c>();
         try {
             fiaCases = convertToSObject(); 
-            upsert fiaCases;
+
+            Schema.SObjectField f = IACase__c.Fields.KafkaId__c;
+            Database.UpsertResult [] cr = Database.upsert(fiaCases , f, false);
+
         } catch (Exception e) {
             String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
             logger.setMessageErrors(messages, errorRef);
@@ -58,9 +61,7 @@ private List<IACase__c> convertToSObject() {
         ic.KafkaId__c = model.key;
         ic.KafkaHash__c = model.hash;
         ic.JsonPayload__c = model.jsonPayload;
-        if (accountMap.containsKey(model.orgnr)) {
-            ic.Account__c = accountMap.get(model.orgnr).Id;
-        }
+        ic.Account__c = accountMap.get(model.orgnr).Id;
                
 /*         if (navIdentMap.containsKey(model.eierAvSak)) {
             User us = navIdentMap.get(model.eierAvSak);
