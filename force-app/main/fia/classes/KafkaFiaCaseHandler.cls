@@ -61,8 +61,7 @@ private List<IACase__c> convertToSObject() {
         ic.KafkaId__c = model.key;
         ic.KafkaHash__c = model.hash;
         ic.JsonPayload__c = model.jsonPayload;
-        ic.Account__c = accountMap.get(model.orgnr).Id;
-               
+        ic.Account__c = accountMap.get(model.orgnr).Id;              
 /*         if (navIdentMap.containsKey(model.eierAvSak)) {
             User us = navIdentMap.get(model.eierAvSak);
             ic.CreatedById = us.id;  
