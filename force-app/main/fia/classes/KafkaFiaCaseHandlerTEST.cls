@@ -65,20 +65,26 @@ static void makeData(){
         Test.stopTest();
 
         List<IACase__c> iacase = [
-            SELECT Id, Name, CaseOwner__c, CaseStatus__c, Account__c, IALastModifiedDate__c, IACreatedDate__c, KafkaId__c, KafkaHash__c
+            SELECT Id, Name, CaseOwnerNavIdent__c, CaseOwner__c, CaseStatus__c, Account__c, IALastModifiedDate__c, IACreatedDate__c, KafkaId__c, KafkaHash__c
             FROM IACase__c WHERE IACase__c.Name = 'a240d1adtuasydt1'
+        ];
+
+        List<User> us = [
+            SELECT Id
+            FROM User WHERE CRM_NAV_Ident__c = 'C156986'
         ];
 
         String startDate = string.valueOf(iacase[0].IACreatedDate__c);
         String lastModified = string.valueOf(iacase[0].IALastModifiedDate__c); 
     
         System.assertEquals(msg[0].CRM_Key__c, iacase[0].KafkaId__c, 'Correct KafkaId');
-        System.assertEquals(msg[0].CRM_Value__c, iacase[0].KafkaHash__c, 'Correct KafkaId');
+        System.assertEquals(msg[0].CRM_Value__c, iacase[0].KafkaHash__c, 'Correct KafkaHash');
         System.assertEquals('a240d1adtuasydt1', iacase[0].Name, 'Correct Case Nr');
-        System.assertEquals('C156986', iacase[0].CaseOwner__c, 'Correct Case Owner');
+        System.assertEquals('C156986', iacase[0].CaseOwnerNavIdent__c, 'Correct Case Owner NAV Ident');
         System.assertEquals('VURDERES', iacase[0].CaseStatus__c, 'Correct Status');
         System.assertEquals('2022-02-18 07:07:07', startDate, 'Correct Start date');
         System.assertEquals('2022-02-18 07:19:21', lastModified, 'Correct Last Modified date');
+        System.assertEquals(us[0].id, iacase[0].CaseOwner__c);
     }
 
     @isTest
@@ -101,7 +107,7 @@ static void makeData(){
         Test.stopTest();
 
         List<IACase__c> iacase = [
-            SELECT Id, Name, CaseOwner__c, CaseStatus__c, Account__c, IALastModifiedDate__c, IACreatedDate__c, KafkaId__c, KafkaHash__c
+            SELECT Id, Name, CaseOwnerNavIdent__c, CaseStatus__c, Account__c, IALastModifiedDate__c, IACreatedDate__c, KafkaId__c, KafkaHash__c
             FROM IACase__c WHERE IACase__c.Name = 'a240d1adtuasydt1'
         ];
       
@@ -111,7 +117,7 @@ static void makeData(){
         System.assertEquals(1, iacase.size(), 'check that iacase does not add a new case when changes are made');
         System.assertEquals('SLETTET', iacase[0].CaseStatus__c,  'Status updated from vurderes to slettet');
         System.assertEquals('a240d1adtuasydt1', iacase[0].Name, 'Correct Case Nr');
-        System.assertEquals('C156986', iacase[0].CaseOwner__c, 'Correct Case Owner');
+        System.assertEquals('C156986', iacase[0].CaseOwnerNavIdent__c, 'Correct Case Owner');
         System.assertEquals('2023-07-18 09:20:21',lastModified, 'Last Modified date updated');
     }
 
@@ -146,22 +152,21 @@ static void makeData(){
         Test.stopTest();
 
         List<IACase__c> iacase1 = [
-            SELECT Id, Name, CaseOwner__c, CaseStatus__c, Account__c, IALastModifiedDate__c, IACreatedDate__c, KafkaId__c, KafkaHash__c
+            SELECT Id, Name, CaseOwnerNavIdent__c, CaseStatus__c, Account__c, IALastModifiedDate__c, IACreatedDate__c, KafkaId__c, KafkaHash__c
             FROM IACase__c WHERE IACase__c.Name = 'a240d1adtuasydt1'
         ];
         List<IACase__c> iacase2 = [
-            SELECT Id, Name, CaseOwner__c, CaseStatus__c, Account__c, IALastModifiedDate__c, IACreatedDate__c, KafkaId__c, KafkaHash__c
+            SELECT Id, Name, CaseOwnerNavIdent__c, CaseStatus__c, Account__c, IALastModifiedDate__c, IACreatedDate__c, KafkaId__c, KafkaHash__c
             FROM IACase__c WHERE IACase__c.Name = 'a240d1adtuasydt2'
         ];
 
         System.assertEquals('SLETTET', iacase1[0].CaseStatus__c,  'Status updated from vurderes to slettet');
         System.assertEquals('a240d1adtuasydt1', iacase1[0].Name, 'Correct Case Nr');
-        System.assertEquals('C156986', iacase1[0].CaseOwner__c, 'Correct Case Owner');
+        System.assertEquals('C156986', iacase1[0].CaseOwnerNavIdent__c, 'Correct Case Owner');
         System.assertEquals(iacase1[0].Account__c, iacase2[0].Account__c, 'expecting connected Account id to be the same for both iacases');
-      
         System.assertEquals('VURDERES', iacase2[0].CaseStatus__c,  'Status updated from slettet to vurderes');
         System.assertEquals('a240d1adtuasydt2', iacase2[0].Name, 'Correct Case Nr');
-        System.assertEquals('C156987', iacase2[0].CaseOwner__c, 'Correct Case Owner');
+        System.assertEquals('C156987', iacase2[0].CaseOwnerNavIdent__c, 'Correct Case Owner');
     } 
 
     @isTest
@@ -189,7 +194,7 @@ static void makeData(){
         Test.stopTest();
 
         List<IACase__c> iaCase = [
-            SELECT Id, Name, CaseOwner__c, CaseStatus__c, Account__c, IALastModifiedDate__c, IACreatedDate__c, KafkaId__c, KafkaHash__c
+            SELECT Id, Name, CaseOwnerNavIdent__c, CaseStatus__c, Account__c, IALastModifiedDate__c, IACreatedDate__c, KafkaId__c, KafkaHash__c
             FROM IACase__c WHERE IACase__c.Name = 'a240d1adtuasydt5'
         ];
         System.assertEquals('Error', msg[0].CRM_Status__c, 'Expecting CRM_Status__c = Error as org nr is null');

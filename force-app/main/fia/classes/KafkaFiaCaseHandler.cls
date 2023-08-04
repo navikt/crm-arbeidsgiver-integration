@@ -54,7 +54,7 @@ private List<IACase__c> convertToSObject() {
         } 
         IACase__c ic = new IACase__c();
         ic.Name = model.saksnummer;
-        ic.CaseOwner__c = model.eierAvSak;
+        ic.CaseOwnerNavIdent__c = model.eierAvSak;
         ic.CaseStatus__c = model.status;
         ic.IACreatedDate__c = dateTimeValue(model.opprettetTidspunkt);
         ic.IALastModifiedDate__c = dateTimeValue(model.endretTidspunkt);
@@ -62,11 +62,12 @@ private List<IACase__c> convertToSObject() {
         ic.KafkaHash__c = model.hash;
         ic.JsonPayload__c = model.jsonPayload;
         ic.Account__c = accountMap.get(model.orgnr).Id;              
-/*         if (navIdentMap.containsKey(model.eierAvSak)) {
+
+        if (navIdentMap.containsKey(model.eierAvSak)) {
             User us = navIdentMap.get(model.eierAvSak);
-            ic.CreatedById = us.id;  
+            ic.CaseOwner__c = us.id;  
         }
- */
+
         fiaCases.add(ic);  
     }
     return fiaCases;
