@@ -1,8 +1,8 @@
 public with sharing class KafkaFiaDelivery_Model implements IKafkaMessageParser{
-    public String leveranseId { get; set; }
     public String id { get; set; }
     public String saksnummer { get; set; }
     public String modul { get; set; }
+    public String iaTjeneste { get; set; }
     public String frist { get; set; }
     public String status { get; set; }
     public String opprettetAv { get; set; }
@@ -11,7 +11,7 @@ public with sharing class KafkaFiaDelivery_Model implements IKafkaMessageParser{
     public String sistEndretAvRolle { get; set; }
     public String fullfort { get; set; }
     public String enhetsnummer { get; set; }
-    public String  enhetsnavn{ get; set; }
+    public String enhetsnavn{ get; set; }
 
     public String jsonPayload { get; set; }
     public String hash { get; set; }
