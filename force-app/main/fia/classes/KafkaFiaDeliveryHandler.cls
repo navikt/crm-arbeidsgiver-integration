@@ -1,16 +1,17 @@
 public without sharing class KafkaFiaDeliveryHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer{
     Map<String, KafkaFiaDelivery_Model> keyToFiaDelivery = new Map<String, KafkaFiaDelivery_Model>();
-  public Set<String> saksNumbers;
+  public Set<String> CaseNumbers;
 
-  public KafkaMessageProcessor(){
-    this.saksNumbers = new Set<String>();
+  public KafkaFiaDeliveryHandler(){
+    this.CaseNumbers = new Set<String>();
   }
+
     public void processMessages(List<KafkaMessage__c> messages) {
         for (KafkaMessage__c msg : messages) {
             try {
                 KafkaFiaDelivery_Model ia = (KafkaFiaDelivery_Model) parse(KafkaFiaDelivery_Model.class, msg);
                 mapFiaDelivery(ia);
-                addSaksNumber(ia?.saksnummer);
+                addCaseNumber(ia?.saksnummer);
                 addNavIdent(ia?.opprettetAv);
                 addNavUnit(ia?.enhetsnummer);
                 msg.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
@@ -24,20 +25,19 @@ public without sharing class KafkaFiaDeliveryHandler extends KafkaMessageProcess
         logger.publish();
     } 
 
-    public KafkaMessageProcessor addSaksNumber(String saksNumber) {
-        if (saksNumber != null) {
-            saksNumbers.add(saksNumber);
+    public KafkaMessageProcessor addCaseNumber(String caseNumber) {
+        if (caseNumber != null) {
+            caseNumbers.add(caseNumber);
         }
         return this;
     }
-    public Map<String, IACase__c> getSaksNumberIACaseMap() {
+    public Map<String, IACase__c> getCaseNumberIACaseMap() {
         Map<String, IACase__c> IACaseMap = new Map<String, IACase__c>();
 
-        // Kanskje? hentet fra kafkamessageprocessor linje 76-88. konvertert fra account it il iacase.
         List<IACase__c> IACases = [
             SELECT Id, Name
             FROM IACase__c
-
+            WHERE Name IN :CaseNumbers
         ]; 
 
         for (IACase__c a : IACases) {
@@ -72,7 +72,7 @@ public without sharing class KafkaFiaDeliveryHandler extends KafkaMessageProcess
 
 private List<IADelivery__c> convertToSObject() {
     Map<String, String> lastSaved = getLastSaved(IADelivery__c.class, keyToFiaDelivery.keyset());
-    Map<String, IACase__c> iaCaseMap = getSaksNumberIACaseMap();
+    Map<String, IACase__c> iaCaseMap = getCaseNumberIACaseMap();
     Map<String, User> navIdentMap = getNavIdentMap();
     List<IADelivery__c> FiaDeliveries = new List<IADelivery__c>();
 
@@ -88,8 +88,7 @@ private List<IADelivery__c> convertToSObject() {
         id.Deadline__c = dateTimeValue(model.frist);
         id.Status__c = model.status;
         id.DeliveryCreatedBy__c = model.opprettetAv;
-
-        id.IALastModifiedDate__c = dateTimeValue(model.frist); 
+        id.IALastModifiedDate__c = dateTimeValue(model.frist);
         id.DeliveryLastModifiedBy__c = model.sistEndretAv;
         id.DeliveryLastModifiedByRole__c = model.sistEndretAvRolle;
         id.CompletedDate__c = dateTimeValue(model.fullfort);
@@ -108,7 +107,6 @@ private List<IADelivery__c> convertToSObject() {
         id.KafkaHash__c = model.hash;
         id.JsonPayload__c = model.jsonPayload;
     
-
         FiaDeliveries.add(id);  
     }
     return FiaDeliveries;
