@@ -1,5 +1,5 @@
-public without sharing class KafkaFiaDeliveryHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer{
-    Map<String, KafkaFiaDelivery_Model> keyToFiaDelivery = new Map<String, KafkaFiaDelivery_Model>();
+ public without sharing class KafkaFiaDeliveryHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer{
+   Map<String, KafkaFiaDelivery_Model> keyToFiaDelivery = new Map<String, KafkaFiaDelivery_Model>();
   public Set<String> CaseNumbers;
 
   public KafkaFiaDeliveryHandler(){
@@ -31,6 +31,7 @@ public without sharing class KafkaFiaDeliveryHandler extends KafkaMessageProcess
         }
         return this;
     }
+ 
     public Map<String, IACase__c> getCaseNumberIACaseMap() {
         Map<String, IACase__c> IACaseMap = new Map<String, IACase__c>();
 
@@ -72,11 +73,12 @@ public without sharing class KafkaFiaDeliveryHandler extends KafkaMessageProcess
 
 private List<IADelivery__c> convertToSObject() {
     Map<String, String> lastSaved = getLastSaved(IADelivery__c.class, keyToFiaDelivery.keyset());
+    Map<String, NavUnit__c> navUnitMap = getNavUnitsMap();
     Map<String, IACase__c> iaCaseMap = getCaseNumberIACaseMap();
     Map<String, User> navIdentMap = getNavIdentMap();
     List<IADelivery__c> FiaDeliveries = new List<IADelivery__c>();
-
-    for (KafkaFiaCase_Model model : keyToFiaDelivery.values()) {
+ 
+    for (KafkaFiaDelivery_Model model : keyToFiaDelivery.values()) {
         if (!isNewOrChanged(model.key, model.hash, lastSaved)) {
             continue;
         } 
@@ -85,10 +87,10 @@ private List<IADelivery__c> convertToSObject() {
         id.IACase__c = model.saksnummer;
         id.Module__c = model.modul;
         id.IAService__c = model.iaTjeneste;
-        id.Deadline__c = dateTimeValue(model.frist);
+        id.Deadline__c = dateTimeValue(model.frist).date();
         id.Status__c = model.status;
         id.DeliveryCreatedBy__c = model.opprettetAv;
-        id.IALastModifiedDate__c = dateTimeValue(model.frist);
+        id.DeliveryLastModifiedDate__c = dateTimeValue(model.frist);
         id.DeliveryLastModifiedBy__c = model.sistEndretAv;
         id.DeliveryLastModifiedByRole__c = model.sistEndretAvRolle;
         id.CompletedDate__c = dateTimeValue(model.fullfort);
@@ -107,8 +109,9 @@ private List<IADelivery__c> convertToSObject() {
         id.KafkaHash__c = model.hash;
         id.JsonPayload__c = model.jsonPayload;
     
-        FiaDeliveries.add(id);  
+        FiaDeliveries.add(id); 
     }
+     
     return FiaDeliveries;
-}
-}
+} 
+} 
