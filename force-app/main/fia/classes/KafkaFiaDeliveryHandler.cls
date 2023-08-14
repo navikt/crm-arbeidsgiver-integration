@@ -11,7 +11,7 @@
             try {
                 KafkaFiaDelivery_Model ia = (KafkaFiaDelivery_Model) parse(KafkaFiaDelivery_Model.class, msg);
                 mapFiaDelivery(ia);
-                addCaseNumber(ia?.saksnummer);
+                addCaseNumber(ia?.id);
                 addNavIdent(ia?.opprettetAv);
                 addNavUnit(ia?.enhetsnummer);
                 msg.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;

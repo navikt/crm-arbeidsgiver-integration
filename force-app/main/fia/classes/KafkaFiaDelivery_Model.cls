@@ -18,6 +18,7 @@ public with sharing class KafkaFiaDelivery_Model implements IKafkaMessageParser{
     public String key { get; set; }
 
     public static KafkaFiaDelivery_Model parse(String json, String key, String hash) {
+        //meldingen er jsona her. så det failer på det under. 
         KafkaFiaDelivery_Model model = (KafkaFiaDelivery_Model) System.JSON.deserialize(
             json, 
             KafkaFiaDelivery_Model.class
@@ -27,5 +28,8 @@ public with sharing class KafkaFiaDelivery_Model implements IKafkaMessageParser{
         model.key = key;
 
         return model;
+        //jeg lurer på om det failer her. mulig min testkode er feil. mest sannsynlig
+        //keytoexistinghash er null
+        //så den failer på getlastsaved? linje 75 i handler 
     }
 }
