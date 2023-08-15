@@ -2,9 +2,20 @@
 public with sharing class KafkaFiaDeliveryHandlerTEST {    
 @TestSetup
     static void makeData(){
-      //mulig noen av dataen er feil, særlig enhetsnavn og enhetsnummer ,datoene og modul, og sistendretavrolle.
+        
+        IaCase__c ic1 = new IaCase__c(Name = '01H5MKC3T0G5Z81K7YE50J138T');
+        insert ic1;
+
+        NAVUnit__c nu1 = new NAVUnit__c(INT_UnitNumber__c = '2970');
+        insert nu1;
+
+        List<User> use = TestDataFactory.getUsers(2, 'Standard User', false, false);
+        use[0].CRM_NAV_Ident__c = 'Z994537';
+        use[1].CRM_NAV_Ident__c = 'C156987';
+        insert use;
+        
         String json1 = 
-        '{"id":, "21", "saksnummer": "01H40FVWVQVWQA15T5AAP41A89", "modul": "{"id": "1", "iaTjeneste": "{"id": "11", "navn": "Redusere sykefravær", "deaktivert": "false"}", "navn": "Oppfølgingssamtalen", "deaktivert": "false"}""frist": "2023-08-18", "status": "Vi bistår", "opprettetAv": "Z994948", "sistEndret": "2022-02-18T07:07:07.064711" ,"sistEndretAv": "Z991098","sistEndretAvRolle": "Veileder","fullfort": "false","enhetsnummer": "315826853","enhetsnavn": "Privat og offentlig næringsvirksomhet",}';
+        '{"id":139,"saksnummer":"01H5MKC3T0G5Z81K7YE50J138T","modul":{"id":10,"iaTjeneste":{"id":2,"navn":"Forebyggende arbeidsmiljøarbeid","deaktivert":false},"navn":"Livsfaseorientert personalpolitikk","deaktivert":false},"frist":"2023-08-31","status":"UNDER_ARBEID","opprettetAv":"Z994537","sistEndret":"2023-07-18T15:35:27.485670","sistEndretAv":"Z994537","sistEndretAvRolle":"SUPERBRUKER","fullfort":"2023-07-27T15:35:27.485670","enhetsnummer":"2970","enhetsnavn":"Ukjent"}';
 
         String encodedValue1 = EncodingUtil.base64Encode(Blob.valueOf(json1));
 
@@ -12,25 +23,20 @@ public with sharing class KafkaFiaDeliveryHandlerTEST {
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
         msg1.CRM_Topic__c = 'pia.ia-sak-leveranse-v1';
-        msg1.CRM_Key__c = 'a240d1adtuasydt1';
+        msg1.CRM_Key__c = '139';
         msg1.CRM_Value__c = encodedValue1;
         
         messages.add(msg1);
         insert messages;
-
-        IaCase__c ic1 = new IaCase__c();
-        ic1.Name = '01H40FVWVQVWQA15T5AAP41A89';
-
-        insert ic1;
-
     }
+    
     @IsTest
     static void testProcessSingleMessage() {
 
         System.debug('test start');
         List<KafkaMessage__c> msg = [
             SELECT CRM_Topic__c, CRM_Value__c, CRM_Key__c
-            FROM KafkaMessage__c WHERE CRM_Key__c = 'a240d1adtuasydt1'
+            FROM KafkaMessage__c WHERE CRM_Key__c = '139'
         ];
         System.debug( 'funker msg? tester for antall msg in kafkamessage list');
         System.debug(msg.size());
@@ -40,21 +46,49 @@ public with sharing class KafkaFiaDeliveryHandlerTEST {
         Test.stopTest();
 
         List<IADelivery__c> iaDelivery = [
-            SELECT Id, Name, DeliveryCreatedBy__c, Status__c, KafkaId__c, KafkaHash__c, IACase__c, Deadline__c
-            FROM IADelivery__c //WHERE IADelivery__c.Name = '01H40FVWVQVWQA15T5AAP41A89'
+            SELECT Id, Name, IACase__c, NAVUnit__c, DeliveryCreatedByUser__c, Module__c, IAService__c, Status__c, DeliveryCreatedBy__c, DeliveryLastModifiedDate__c, DeliveryLastModifiedBy__c, DeliveryLastModifiedByRole__c, CompletedDate__c, KafkaId__c, KafkaHash__c, JsonPayload__c, Deadline__c
+            FROM IADelivery__c WHERE Name = '139'
         ];
+
+        List<User> us = [
+            SELECT Id
+            FROM User WHERE CRM_NAV_Ident__c = 'Z994537'
+        ];
+
+        List<NAVUnit__c> nu = [
+            SELECT Id
+            FROM NAVUnit__c WHERE INT_UnitNumber__c = '2970'
+        ];
+
+        List<IACase__c> ic = [
+            SELECT Id
+            FROM IACase__c WHERE Name = '01H5MKC3T0G5Z81K7YE50J138T'
+        ];
+
 
         System.debug('Hva er str på iadelivery?');
         System.debug(iaDelivery.Size());
+
+
         String deadlineDate = string.valueOf(iaDelivery[0].Deadline__c);
+        String deliveryLastModifiedDate = string.valueOf(iaDelivery[0].DeliveryLastModifiedDate__c);
+        String completedDate = string.valueOf(iaDelivery[0].CompletedDate__c);
 
         System.assertEquals(msg[0].CRM_Key__c, iaDelivery[0].KafkaId__c, 'Correct KafkaId');
         System.assertEquals(msg[0].CRM_Value__c, iaDelivery[0].KafkaHash__c, 'Correct KafkaHash');
-        System.assertEquals('a240d1adtuasydt1', iaDelivery[0].Name, 'Correct Case Nr');
-        System.assertEquals('Z994948', iaDelivery[0].DeliveryCreatedBy__c, 'Correct Case Owner NAV Ident');
-        System.assertEquals('Vi bistår', iaDelivery[0].Status__c, 'Correct Status');
-        System.assertEquals('22023-08-18', deadlineDate, 'Correct deadline date');
-        System.assertEquals('01H40FVWVQVWQA15T5AAP41A89', iaDelivery[0].IACase__c);
+        System.assertEquals('139', iaDelivery[0].Name, 'Correct Delivery Id');
+      //  System.assertEquals('Livsfaseorientert personalpolitikk', iaDelivery[0].Module__c, 'Correct Module');
+      //  System.assertEquals('Forebyggende arbeidsmiljøarbeid', iaDelivery[0].IAService__c,  'Correct IA Service');
+        System.assertEquals('2023-08-31', deadlineDate, 'Correct Deadline');
+        System.assertEquals('UNDER_ARBEID', iaDelivery[0].Status__C, 'Correct Status');
+        System.assertEquals('Z994537', iaDelivery[0].DeliveryCreatedBy__c, 'Correct created by user nav ident');
+        System.assertEquals('2023-07-18 15:35:27', deliveryLastModifiedDate, 'Correct last modified date');
+        System.assertEquals('Z994537', iaDelivery[0].DeliveryLastModifiedBy__c, 'Correct last modified by user');
+        System.assertEquals('SUPERBRUKER', iaDelivery[0].DeliveryLastModifiedByRole__c, 'Correct last modified by role');
+        System.assertEquals('2023-07-27 15:35:27', completedDate, 'Correct completed date');
+        System.assertEquals(us[0].id, iaDelivery[0].DeliveryCreatedByUser__c, 'Correct User linked');
+        System.assertEquals(nu[0].id, iaDelivery[0].NAVUnit__c, 'Correct NAV unit linked');
+        System.assertEquals(ic[0].id, iaDelivery[0].IACase__c, 'Correct IA Case linked');
 
     } 
 

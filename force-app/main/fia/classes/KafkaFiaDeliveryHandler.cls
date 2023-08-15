@@ -61,13 +61,10 @@
         List<IADelivery__c> FiaDeliveries = new List<IADelivery__c>();
         try {
             FiaDeliveries = convertToSObject(); 
-
-            Schema.SObjectField f = IADelivery__c.Fields.KafkaId__c;
-            Database.UpsertResult [] cr = Database.upsert(FiaDeliveries , f, false);
-
+            upsert FiaDeliveries IADelivery__c.KafkaId__c;
         } catch (Exception e) {
             String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
-            logger.setMessageErrors(messages, errorRef);
+            logger.setMessageErrors(messages, errorRef);  
         }
     }
 
@@ -82,34 +79,35 @@
         if (!isNewOrChanged(model.key, model.hash, lastSaved)) {
             continue;
         } 
-        IADelivery__c id = new IADelivery__c();
-        id.Name = model.id;
-        id.IACase__c = iaCaseMap.get(model.saksnummer).id;
-        id.Module__c = model.modul;
-        id.IAService__c = model.iaTjeneste;
-        id.Deadline__c = dateTimeValue(model.frist).date();
-        id.Status__c = model.status;
-        id.DeliveryCreatedBy__c = model.opprettetAv;
-        id.DeliveryLastModifiedDate__c = dateTimeValue(model.frist);
-        id.DeliveryLastModifiedBy__c = model.sistEndretAv;
-        id.DeliveryLastModifiedByRole__c = model.sistEndretAvRolle;
-        id.CompletedDate__c = dateTimeValue(model.fullfort);
+        IADelivery__c iad = new IADelivery__c();
+        iad.Name = String.valueOf(model.id);
+        iad.IACase__c = iaCaseMap.get(model.saksnummer).id;
+     //   iad.Module__c = model.getModuleName();
+     //   iad.IAService__c = model.modul.iaTjeneste.navn;
+        iad.Deadline__c = Date.valueOf(model.frist);
+        iad.Status__c = model.status;
+        iad.DeliveryCreatedBy__c = model.opprettetAv;
+        iad.DeliveryLastModifiedDate__c = dateTimeValue(model.sistEndret);
+        iad.DeliveryLastModifiedBy__c = model.sistEndretAv;
+        iad.DeliveryLastModifiedByRole__c = model.sistEndretAvRolle;
+        
+        if (model.fullfort != null) {
+            iad.CompletedDate__c = dateTimeValue(model.fullfort);
+        }
        
         if (navIdentMap.containsKey(model.opprettetAv)) {
-            User us = navIdentMap.get(model.opprettetAv);
-            id.DeliveryCreatedByUser__c = us.id;  
+            iad.DeliveryCreatedByUser__c = navIdentMap.get(model.opprettetAv).Id; 
         }
 
         if (navUnitMap.containsKey(model.enhetsnummer)) {
-          //  id.NAVUnit__c = model.enhetsnummer;
-            id.NAVUnit__c = navUnitMap.get(model.enhetsnummer).Id;
+            iad.NAVUnit__c = navUnitMap.get(model.enhetsnummer).Id;
         }
 
-        id.KafkaId__c = model.key;
-        id.KafkaHash__c = model.hash;
-        id.JsonPayload__c = model.jsonPayload;
+        iad.KafkaId__c = model.key;
+        iad.KafkaHash__c = model.hash;
+        iad.JsonPayload__c = model.jsonPayload;
     
-        FiaDeliveries.add(id); 
+        FiaDeliveries.add(iad);
     }
      
     return FiaDeliveries;

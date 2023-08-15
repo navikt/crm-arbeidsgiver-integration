@@ -1,8 +1,10 @@
 public with sharing class KafkaFiaDelivery_Model implements IKafkaMessageParser{
-    public String id { get; set; }
+    public List<Modul> modules { get; set; }
+    public List<IaTjeneste> iaservices { get; set; }
+    
+    public Integer id { get; set; }
     public String saksnummer { get; set; }
-    public String modul { get; set; }
-    public String iaTjeneste { get; set; }
+    //public Modul modul { get; set; }
     public String frist { get; set; }
     public String status { get; set; }
     public String opprettetAv { get; set; }
@@ -13,9 +15,37 @@ public with sharing class KafkaFiaDelivery_Model implements IKafkaMessageParser{
     public String enhetsnummer { get; set; }
     public String enhetsnavn{ get; set; }
 
+    public class Modul {
+        public Integer id;
+        public IaTjeneste iaTjeneste { get; set; }
+        public String navn;
+        public Boolean deaktivert;
+    }
+
+    public class IaTjeneste {
+        public Integer id { get; set; }
+        public String navn { get; set; }
+        public Boolean deaktivert { get; set; }
+    }
+
     public String jsonPayload { get; set; }
     public String hash { get; set; }
     public String key { get; set; }
+
+    public String getModuleName() {
+        String names = '';
+
+        if (modules == null) {
+            return names;
+        }
+
+        for (Modul m : modules) {
+            if (m.navn != null) {
+                names += m.navn + ', ';
+            }
+        }
+        return names.trim().removeEnd(',');
+    }
 
     public static KafkaFiaDelivery_Model parse(String json, String key, String hash) {
         //meldingen er jsona her. så det failer på det under. 
