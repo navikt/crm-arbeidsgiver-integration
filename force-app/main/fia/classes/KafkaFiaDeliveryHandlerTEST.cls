@@ -17,6 +17,12 @@ public with sharing class KafkaFiaDeliveryHandlerTEST {
         
         messages.add(msg1);
         insert messages;
+
+        IaCase__c ic1 = new IaCase__c();
+        ic1.Name = '01H40FVWVQVWQA15T5AAP41A89';
+
+        insert ic1;
+
     }
     @IsTest
     static void testProcessSingleMessage() {
@@ -35,7 +41,7 @@ public with sharing class KafkaFiaDeliveryHandlerTEST {
 
         List<IADelivery__c> iaDelivery = [
             SELECT Id, Name, DeliveryCreatedBy__c, Status__c, KafkaId__c, KafkaHash__c, IACase__c, Deadline__c
-            FROM IADelivery__c //WHERE IADelivery__c.Name = '21'
+            FROM IADelivery__c //WHERE IADelivery__c.Name = '01H40FVWVQVWQA15T5AAP41A89'
         ];
 
         System.debug('Hva er str på iadelivery?');

@@ -11,7 +11,7 @@
             try {
                 KafkaFiaDelivery_Model ia = (KafkaFiaDelivery_Model) parse(KafkaFiaDelivery_Model.class, msg);
                 mapFiaDelivery(ia);
-                addCaseNumber(ia?.id);
+                addCaseNumber(ia?.saksnummer);
                 addNavIdent(ia?.opprettetAv);
                 addNavUnit(ia?.enhetsnummer);
                 msg.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
@@ -71,7 +71,7 @@
         }
     }
 
-private List<IADelivery__c> convertToSObject() {
+    private List<IADelivery__c> convertToSObject() {
     Map<String, String> lastSaved = getLastSaved(IADelivery__c.class, keyToFiaDelivery.keyset());
     Map<String, NavUnit__c> navUnitMap = getNavUnitsMap();
     Map<String, IACase__c> iaCaseMap = getCaseNumberIACaseMap();
@@ -84,7 +84,7 @@ private List<IADelivery__c> convertToSObject() {
         } 
         IADelivery__c id = new IADelivery__c();
         id.Name = model.id;
-        id.IACase__c = model.saksnummer;
+        id.IACase__c = iaCaseMap.get(model.saksnummer).id;
         id.Module__c = model.modul;
         id.IAService__c = model.iaTjeneste;
         id.Deadline__c = dateTimeValue(model.frist).date();
