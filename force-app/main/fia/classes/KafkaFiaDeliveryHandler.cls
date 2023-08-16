@@ -82,7 +82,7 @@
         IADelivery__c iad = new IADelivery__c();
         iad.Name = String.valueOf(model.id);
         iad.IACase__c = iaCaseMap.get(model.saksnummer).id;
-        //denne gir list out of bound, så det betyr at når vi har denne aktiv så failer det. 
+       
     //  iad.Module__c = String.valueOf(model.modul.id);  funker gir 10
     //  iad.Module__c = String.valueOf(model.modul.deaktivert); funker gir false
     //  iad.Module__c = String.valueOf(model.modul.iaTjeneste.navn); funker, gir riktig 
