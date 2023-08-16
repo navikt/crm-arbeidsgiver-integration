@@ -9,10 +9,10 @@ public with sharing class KafkaFiaDeliveryHandlerTEST {
         NAVUnit__c nu1 = new NAVUnit__c(INT_UnitNumber__c = '2970');
         insert nu1;
 
-        List<User> use = TestDataFactory.getUsers(2, 'Standard User', false, false);
-        use[0].CRM_NAV_Ident__c = 'Z994537';
-        use[1].CRM_NAV_Ident__c = 'C156987';
-        insert use;
+        List<User> users = TestDataFactory.getUsers(2, 'Standard User', false, false);
+        users[0].CRM_NAV_Ident__c = 'Z994537';
+        users[1].CRM_NAV_Ident__c = 'C156987';
+        insert users;
         
         String json1 = 
         '{"id":139,"saksnummer":"01H5MKC3T0G5Z81K7YE50J138T","modul":{"id":10,"iaTjeneste":{"id":2,"navn":"Forebyggende arbeidsmiljøarbeid","deaktivert":false},"navn":"Livsfaseorientert personalpolitikk","deaktivert":false},"frist":"2023-08-31","status":"UNDER_ARBEID","opprettetAv":"Z994537","sistEndret":"2023-07-18T15:35:27.485670","sistEndretAv":"Z994537","sistEndretAvRolle":"SUPERBRUKER","fullfort":"2023-07-27T15:35:27.485670","enhetsnummer":"2970","enhetsnavn":"Ukjent"}';

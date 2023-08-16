@@ -3,7 +3,7 @@
 public with sharing class KafkaFiaDelivery_ModelTEST {
     private static final String JSON =
         '{\n' +
-        '   "id": "139",\n' +
+        '   "id": 139,\n' +
         '   "saksnummer": "01H5MKC3T0G5Z81K7YE50J138T",\n' +
         '   "modul": {\n' +
         '       "id":10,\n' +  
