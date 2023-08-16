@@ -82,8 +82,13 @@
         IADelivery__c iad = new IADelivery__c();
         iad.Name = String.valueOf(model.id);
         iad.IACase__c = iaCaseMap.get(model.saksnummer).id;
-     //   iad.Module__c = model.getModuleName();
-     //   iad.IAService__c = model.modul.iaTjeneste.navn;
+        //denne gir list out of bound, så det betyr at når vi har denne aktiv så failer det. 
+    //  iad.Module__c = String.valueOf(model.modul.id);  funker gir 10
+    //  iad.Module__c = String.valueOf(model.modul.deaktivert); funker gir false
+    //  iad.Module__c = String.valueOf(model.modul.iaTjeneste.navn); funker, gir riktig 
+      iad.Module__c = String.valueOf(model.modul.navn); //funker ikke, gir list out of bounds
+     //  iad.Module__c = model.getModuleName();
+        iad.IAService__c = model.modul.iaTjeneste.navn;
         iad.Deadline__c = Date.valueOf(model.frist);
         iad.Status__c = model.status;
         iad.DeliveryCreatedBy__c = model.opprettetAv;

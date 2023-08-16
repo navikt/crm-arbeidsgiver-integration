@@ -4,7 +4,7 @@ public with sharing class KafkaFiaDelivery_Model implements IKafkaMessageParser{
     
     public Integer id { get; set; }
     public String saksnummer { get; set; }
-    //public Modul modul { get; set; }
+    public Modul modul { get; set; }
     public String frist { get; set; }
     public String status { get; set; }
     public String opprettetAv { get; set; }
@@ -20,10 +20,10 @@ public with sharing class KafkaFiaDelivery_Model implements IKafkaMessageParser{
     public String key { get; set; }
 
     public class Modul {
-        public Integer id;
+        public Integer id { get; set; }
         public IaTjeneste iaTjeneste { get; set; }
-        public String navn;
-        public Boolean deaktivert;
+        public String navn1 { get; set; }
+        public Boolean deaktivert { get; set; }
     }
 
     public class IaTjeneste {
@@ -34,7 +34,6 @@ public with sharing class KafkaFiaDelivery_Model implements IKafkaMessageParser{
 
     public static KafkaFiaDelivery_Model parse(String json, String key, String hash) {
         String formattedJSON = json.replaceAll('"fullført":', '"fullfort":');
-        //meldingen er jsona her. så det failer på det under. 
         KafkaFiaDelivery_Model model = (KafkaFiaDelivery_Model) System.JSON.deserialize(
             formattedJSON, 
             KafkaFiaDelivery_Model.class
@@ -44,8 +43,6 @@ public with sharing class KafkaFiaDelivery_Model implements IKafkaMessageParser{
         model.key = key;
 
         return model;
-        //jeg lurer på om det failer her. mulig min testkode er feil. mest sannsynlig
-        //keytoexistinghash er null
-        //så den failer på getlastsaved? linje 75 i handler 
+         
     }
 }
