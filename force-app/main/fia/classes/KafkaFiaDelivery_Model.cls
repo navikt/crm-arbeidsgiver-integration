@@ -15,6 +15,10 @@ public with sharing class KafkaFiaDelivery_Model implements IKafkaMessageParser{
     public String enhetsnummer { get; set; }
     public String enhetsnavn{ get; set; }
 
+    public String jsonPayload { get; set; }
+    public String hash { get; set; }
+    public String key { get; set; }
+
     public class Modul {
         public Integer id;
         public IaTjeneste iaTjeneste { get; set; }
@@ -28,29 +32,11 @@ public with sharing class KafkaFiaDelivery_Model implements IKafkaMessageParser{
         public Boolean deaktivert { get; set; }
     }
 
-    public String jsonPayload { get; set; }
-    public String hash { get; set; }
-    public String key { get; set; }
-
-    public String getModuleName() {
-        String names = '';
-
-        if (modules == null) {
-            return names;
-        }
-
-        for (Modul m : modules) {
-            if (m.navn != null) {
-                names += m.navn + ', ';
-            }
-        }
-        return names.trim().removeEnd(',');
-    }
-
     public static KafkaFiaDelivery_Model parse(String json, String key, String hash) {
+        String formattedJSON = json.replaceAll('"fullført":', '"fullfort":');
         //meldingen er jsona her. så det failer på det under. 
         KafkaFiaDelivery_Model model = (KafkaFiaDelivery_Model) System.JSON.deserialize(
-            json, 
+            formattedJSON, 
             KafkaFiaDelivery_Model.class
         );
         model.jsonPayload = json;
