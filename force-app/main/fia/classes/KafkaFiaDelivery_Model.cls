@@ -1,6 +1,4 @@
 public with sharing class KafkaFiaDelivery_Model implements IKafkaMessageParser{
-    public List<Modul> modules { get; set; }
-    public List<IaTjeneste> iaservices { get; set; }
     
     public Integer id { get; set; }
     public String saksnummer { get; set; }

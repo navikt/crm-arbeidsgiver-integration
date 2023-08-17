@@ -1,4 +1,4 @@
-@isTest
+@IsTest
 public with sharing class KafkaFiaCase_ModelTEST {
     private static final String JSON =
         '{\n' +
@@ -11,7 +11,7 @@ public with sharing class KafkaFiaCase_ModelTEST {
         '   "endretTidspunkt": "2022-02-18T07:19:21.575794"\n' +
         '}';
 
-    @isTest
+    @IsTest
     static void parse() {
         KafkaFiaCase_Model model = KafkaFiaCase_Model.parse(JSON, null, null);
 

@@ -86,7 +86,7 @@
         IADelivery__c iad = new IADelivery__c();
         iad.Name = String.valueOf(model.id);
         iad.IACase__c = iaCaseMap.get(model.saksnummer).id;
-        iad.Module__c = String.valueOf(model.modul); 
+        iad.Module__c = model.modul.navn; 
         iad.IAService__c = model.modul.iaTjeneste.navn;
         iad.Deadline__c = Date.valueOf(model.frist);
         iad.Status__c = model.status;

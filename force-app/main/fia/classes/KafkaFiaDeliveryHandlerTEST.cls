@@ -81,6 +81,7 @@ public with sharing class KafkaFiaDeliveryHandlerTEST {
     
     @IsTest
     static void testProcessSingleMessage() {
+
         List<KafkaMessage__c> msg = [
             SELECT 
             CRM_Topic__c, CRM_Value__c, CRM_Key__c
@@ -119,7 +120,7 @@ public with sharing class KafkaFiaDeliveryHandlerTEST {
         System.assertEquals(msg[0].CRM_Key__c, iaDelivery[0].KafkaId__c, 'Correct KafkaId');
         System.assertEquals(msg[0].CRM_Value__c, iaDelivery[0].KafkaHash__c, 'Correct KafkaHash');
         System.assertEquals('139', iaDelivery[0].Name, 'Correct Delivery Id');
-        System.assertEquals('Modul:[deaktivert=false, iaTjeneste=IaTjeneste:[deaktivert=false, id=2, navn=Forebyggende arbeidsmiljøarbeid], id=10, navn=Livsfaseorientert personalpolitikk]', iaDelivery[0].Module__c, 'Correct Module');
+        System.assertEquals('Livsfaseorientert personalpolitikk', iaDelivery[0].Module__c, 'Correct Module');
         System.assertEquals('Forebyggende arbeidsmiljøarbeid', iaDelivery[0].IAService__c,  'Correct IA Service');
         System.assertEquals('2023-08-31', deadlineDate, 'Correct Deadline');
         System.assertEquals('UNDER_ARBEID', iaDelivery[0].Status__c, 'Correct Status');
@@ -160,13 +161,13 @@ public with sharing class KafkaFiaDeliveryHandlerTEST {
         '   "frist": "2023-08-31",\n' +
         '   "status": "LEVERT",\n' +
         '   "opprettetAv": "Z994537",\n' +
-        '   "sistEndret": "2023-07-18T15:35:27.485670",\n' +
+        '   "sistEndret": "2023-08-18T15:35:27.485670",\n' +
         '   "sistEndretAv": "Z994537",\n' +
         '   "sistEndretAvRolle": "SAKSBEHANDLER",\n' +
         '   "fullført": "2023-07-20T15:35:27.485670",\n' +
         '   "enhetsnummer": "2970",\n' +
         '   "enhetsnavn": "Ukjent"\n' +
-        '}';
+        '}'; 
 
         String encodedValueChanged = EncodingUtil.base64Encode(Blob.valueOf(changedJson));
         msg[0].CRM_Value__c = encodedValueChanged;
@@ -179,21 +180,20 @@ public with sharing class KafkaFiaDeliveryHandlerTEST {
             SELECT Id, Name, Status__c, DeliveryLastModifiedByRole__c, CompletedDate__c, KafkaId__c, KafkaHash__c, JsonPayload__c, Deadline__c
             FROM IADelivery__c WHERE Name = '139'
         ];
-
+        
         String finishedDate = string.valueOf(iaDelivery[0].CompletedDate__c);
-        System.assertEquals('2023-08-08 12:28:41',finishedDate, 'finishedDate set from null til date');
+        System.assertEquals('SAKSBEHANDLER', iaDelivery[0].DeliveryLastModifiedByRole__c, 'Role changed from SUPERBRUKER to SAKSBEHANDLER');
+        System.assertEquals('2023-07-20 15:35:27',finishedDate, 'finishedDate set from null til date');
         System.assertEquals(1, iaDelivery.size(), 'iaDelivery Size'); 
         System.assertEquals('139', iaDelivery[0].Name, 'Correct Name');
-        System.assertEquals('SAKSBEHANDLER', iaDelivery[0].DeliveryLastModifiedByRole__c, 'Role changed from SUPERBRUKER to SAKSBEHANDLER');
         System.assertEquals('LEVERT', iaDelivery[0].Status__c,  'Status updated from UNDER_ABEID to LEVERT');
-       
-
         System.assertEquals(msg[0].CRM_Key__c, iaDelivery[0].KafkaId__c, 'Correct KafkaId');
         System.assertEquals(msg[0].CRM_Value__c, iaDelivery[0].KafkaHash__c, 'Correct KafkaHash');
     }
 
     @IsTest
     static void testProcessMultipleMessages() {
+
         List<KafkaMessage__c> msg = [
             SELECT CRM_Topic__c, CRM_Value__c, CRM_Key__c
             FROM KafkaMessage__c
@@ -215,7 +215,6 @@ public with sharing class KafkaFiaDeliveryHandlerTEST {
         ];
 
         System.assertEquals(2, iaDelivery.size(), 'expecting iaDelivery size 2');
-
         System.assertEquals(ic[0].id, iaDelivery[0].IACase__c, 'Correct IA Case linked for [0]');
         System.assertEquals(msg[0].CRM_Key__c, iaDelivery[0].KafkaId__c, 'Correct KafkaId for [0]');
         System.assertEquals(msg[0].CRM_Value__c, iaDelivery[0].KafkaHash__c, 'Correct KafkaHash for [0]');
@@ -231,9 +230,8 @@ public with sharing class KafkaFiaDeliveryHandlerTEST {
     
         String invalid_json = '{"id": "139","saksnummer": "01H5MKC3T0G5Z81K7YE50J138T", "opprettetAv": "Z994537", "enhetsnummer": "2970"';
         String invalidEncodedValue = EncodingUtil.base64Encode(Blob.valueOf(invalid_json));
-    
+        
         List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
-
         KafkaMessage__c invalidMsg = new KafkaMessage__c();
         invalidMsg.CRM_Topic__c = 'pia.ia-sak-leveranse-v1';
         invalidMsg.CRM_Key__c = '139';
@@ -253,6 +251,63 @@ public with sharing class KafkaFiaDeliveryHandlerTEST {
         Test.stopTest();
 
         System.assertEquals(KafkaMessageService.STATUS_ERROR, msg[0].CRM_Status__c);
+        System.assertEquals('Error', msg[0].CRM_Status__c, 'Expecting CRM_Status__c = Error as org nr is null');
         System.assert(String.isNotBlank(msg[0].CRM_ErrorMessage__c));
     }
+
+    @IsTest
+    static void testInvalidMessageNoCaseNr() {
+
+        String invalid_jsonNoCaseNr =
+        '{\n' +
+        '   "id": 139,\n' +
+        '   "saksnummer": null,\n' +
+        '   "modul": {\n' +
+        '       "id":10,\n' +  
+        '       "iaTjeneste": {\n' +
+        '           "id":2,\n' +
+        '           "navn":"Forebyggende arbeidsmiljøarbeid",\n' +
+        '           "deaktivert":false},\n' +
+        '       "navn":"Livsfaseorientert personalpolitikk",\n' +
+        '       "deaktivert":false},\n' +
+        '   "frist": "2023-08-31",\n' +
+        '   "status": "UNDER_ARBEID",\n' +
+        '   "opprettetAv": "Z994537",\n' +
+        '   "sistEndret": "2023-07-18T15:35:27.485670",\n' +
+        '   "sistEndretAv": "Z994537",\n' +
+        '   "sistEndretAvRolle": "SUPERBRUKER",\n' +
+        '   "fullført": null,\n' +
+        '   "enhetsnummer": "2970",\n' +
+        '   "enhetsnavn": "Ukjent"\n' +
+        '}'; 
+
+        String invalidEncodedValueNoOrgNr = EncodingUtil.base64Encode(Blob.valueOf(invalid_jsonNoCaseNr));
+       
+        List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
+        KafkaMessage__c invalidNoOrgNr = new KafkaMessage__c();
+        invalidNoOrgNr.CRM_Topic__c = 'pia.ia-sak-leveranse-v1';
+        invalidNoOrgNr.CRM_Key__c = '141';
+        invalidNoOrgNr.CRM_Value__c = invalidEncodedValueNoOrgNr;
+        messages.add(invalidNoOrgNr);
+        insert messages;
+
+        List<KafkaMessage__c> msg = [
+            SELECT CRM_Topic__c, CRM_Value__c, CRM_Key__c
+            FROM KafkaMessage__c WHERE CRM_Key__c = '141'
+        ];
+
+        Test.startTest();
+        KafkaFiaCaseHandler handler = new KafkaFiaCaseHandler();
+        handler.processMessages(msg);
+        Test.stopTest();
+
+        List<IADelivery__c> iaDelivery = [
+            SELECT Id, Name, Status__c, DeliveryLastModifiedByRole__c, CompletedDate__c, KafkaId__c, KafkaHash__c, JsonPayload__c, Deadline__c
+            FROM IADelivery__c WHERE Name = '139'
+        ];
+    
+        System.assertEquals('Error', msg[0].CRM_Status__c, 'Expecting CRM_Status__c = Error as case nr is null');
+        System.assertEquals(0, iaDelivery.size(), 'Expectiong iaDelivery-list to be empty(0) as the Casenr is null');
+    }
+
 }

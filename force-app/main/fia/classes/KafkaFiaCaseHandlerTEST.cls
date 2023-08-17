@@ -1,4 +1,4 @@
-@isTest
+@IsTest
 public with sharing class KafkaFiaCaseHandlerTEST {
 @TestSetup
 static void makeData(){
@@ -52,7 +52,7 @@ static void makeData(){
         insert messages;
 }
 
-    @isTest
+    @IsTest
     static void testProcessSingleMessage() {
         List<KafkaMessage__c> msg = [
             SELECT CRM_Topic__c, CRM_Value__c, CRM_Key__c
@@ -87,7 +87,7 @@ static void makeData(){
         System.assertEquals(us[0].id, iacase[0].CaseOwner__c);
     }
 
-    @isTest
+    @IsTest
     static void testSingleMessageChanged() {
 
         List<KafkaMessage__c> msg = [
@@ -120,7 +120,7 @@ static void makeData(){
         System.assertEquals('2023-07-18 09:20:21',lastModified, 'Last Modified date updated');
     }
 
-    @isTest
+    @IsTest
     static void testSeveralMessageChangedOnSameAccount() {
         List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
 
@@ -168,7 +168,7 @@ static void makeData(){
         System.assertEquals('C156987', iacase2[0].CaseOwnerNavIdent__c, 'Correct Case Owner');
     } 
 
-    @isTest
+    @IsTest
     static void testInvalidMessageNoOrgNr() {
 
         String invalid_jsonNoOrgNr = '{"saksnummer": "a240d1adtuasydt5", "orgnr": null, "eierAvSak": "C156986", "endretAvHendelseId": "sdfhoisdyfio49856", "status": "Kartlegges", "opprettetTidspunkt": "2022-02-18T07:07:07.064711", "endretTidspunkt": "2022-02-18T07:19:21.575794"}';
