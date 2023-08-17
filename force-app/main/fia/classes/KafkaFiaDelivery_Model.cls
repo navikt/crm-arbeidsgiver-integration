@@ -22,7 +22,7 @@ public with sharing class KafkaFiaDelivery_Model implements IKafkaMessageParser{
     public class Modul {
         public Integer id { get; set; }
         public IaTjeneste iaTjeneste { get; set; }
-        public String navn1 { get; set; }
+        public String navn { get; set; }
         public Boolean deaktivert { get; set; }
     }
 

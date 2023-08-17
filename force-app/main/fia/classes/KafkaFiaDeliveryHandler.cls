@@ -61,7 +61,11 @@
         List<IADelivery__c> FiaDeliveries = new List<IADelivery__c>();
         try {
             FiaDeliveries = convertToSObject(); 
-            upsert FiaDeliveries IADelivery__c.KafkaId__c;
+           // upsert FiaDeliveries IADelivery__c.KafkaId__c;
+
+           Schema.SObjectField f = IADelivery__c.Fields.KafkaId__c;
+           Database.UpsertResult [] cr = Database.upsert(FiaDeliveries , f, false);
+
         } catch (Exception e) {
             String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
             logger.setMessageErrors(messages, errorRef);  
@@ -82,12 +86,7 @@
         IADelivery__c iad = new IADelivery__c();
         iad.Name = String.valueOf(model.id);
         iad.IACase__c = iaCaseMap.get(model.saksnummer).id;
-       
-    //  iad.Module__c = String.valueOf(model.modul.id);  funker gir 10
-    //  iad.Module__c = String.valueOf(model.modul.deaktivert); funker gir false
-    //  iad.Module__c = String.valueOf(model.modul.iaTjeneste.navn); funker, gir riktig 
-      //  iad.Module__c = String.valueOf(model.modul.navn); //funker ikke, gir list out of bounds
-     //  iad.Module__c = model.getModuleName();
+        iad.Module__c = String.valueOf(model.modul); 
         iad.IAService__c = model.modul.iaTjeneste.navn;
         iad.Deadline__c = Date.valueOf(model.frist);
         iad.Status__c = model.status;
@@ -95,26 +94,21 @@
         iad.DeliveryLastModifiedDate__c = dateTimeValue(model.sistEndret);
         iad.DeliveryLastModifiedBy__c = model.sistEndretAv;
         iad.DeliveryLastModifiedByRole__c = model.sistEndretAvRolle;
-        
         if (model.fullfort != null) {
             iad.CompletedDate__c = dateTimeValue(model.fullfort);
         }
-       
         if (navIdentMap.containsKey(model.opprettetAv)) {
             iad.DeliveryCreatedByUser__c = navIdentMap.get(model.opprettetAv).Id; 
         }
-
         if (navUnitMap.containsKey(model.enhetsnummer)) {
             iad.NAVUnit__c = navUnitMap.get(model.enhetsnummer).Id;
         }
-
         iad.KafkaId__c = model.key;
         iad.KafkaHash__c = model.hash;
         iad.JsonPayload__c = model.jsonPayload;
     
         FiaDeliveries.add(iad);
-    }
-     
+    } 
     return FiaDeliveries;
 } 
 } 

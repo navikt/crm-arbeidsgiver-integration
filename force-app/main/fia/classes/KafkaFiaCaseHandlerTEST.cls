@@ -89,7 +89,6 @@ static void makeData(){
 
     @isTest
     static void testSingleMessageChanged() {
-        List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
 
         List<KafkaMessage__c> msg = [
             SELECT CRM_Topic__c, CRM_Value__c, CRM_Key__c
