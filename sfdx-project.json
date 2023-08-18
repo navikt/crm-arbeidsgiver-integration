@@ -52,7 +52,7 @@
                 },
                 {
                     "package": "crm-arbeidsgiver-base",
-                    "versionNumber": "1.319.0.LATEST"
+                    "versionNumber": "1.323.0.LATEST"
                 }
             ]
         }
@@ -61,7 +61,7 @@
     "sfdcLoginUrl": "https://login.salesforce.com",
     "sourceApiVersion": "56.0",
     "packageAliases": {
-        "crm-platform-base": "0Ho2o0000008ORmCAM",
+        "crm-platform-base": "04t7U000000LP6rQAG",
         "crm-platform-email-scheduling": "0Ho2o000000fxWwCAI",
         "crm-platform-access-control": "0Ho2o0000008OR3CAM",
         "crm-henvendelse-base": "0Ho7U000000000kSAA",
