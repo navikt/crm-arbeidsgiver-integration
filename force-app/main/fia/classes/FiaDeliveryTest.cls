@@ -27,7 +27,6 @@ public with sharing class FiaDeliveryTest {
     @IsTest
     static void parse() {
         FiaDelivery model = FiaDelivery.parse(JSON, null, null);
-
         System.assertEquals(139, model.id);
         System.assertEquals('01H5MKC3T0G5Z81K7YE50J138T', model.saksnummer);
         System.assertEquals('Livsfaseorientert personalpolitikk', model.modul.navn);
