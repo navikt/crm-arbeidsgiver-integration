@@ -6,7 +6,7 @@
     <protected>false</protected>
     <values>
         <field>ApexClass__c</field>
-        <value xsi:type="xsd:string">KafkaFiaDeliveryHandler</value>
+        <value xsi:type="xsd:string">FiaDeliveryHandler</value>
     </values>
     <values>
         <field>ApexJobType__c</field>
