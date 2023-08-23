@@ -61,10 +61,9 @@
         List<IADelivery__c> FiaDeliveries = new List<IADelivery__c>();
         try {
             FiaDeliveries = convertToSObject(); 
-           // upsert FiaDeliveries IADelivery__c.KafkaId__c;
 
-           Schema.SObjectField f = IADelivery__c.Fields.KafkaId__c;
-           Database.UpsertResult [] cr = Database.upsert(FiaDeliveries , f, false);
+            Schema.SObjectField f = IADelivery__c.Fields.KafkaId__c;
+            Database.UpsertResult [] cr = Database.upsert(FiaDeliveries , f, false);
 
         } catch (Exception e) {
             String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
@@ -94,6 +93,7 @@
         iad.DeliveryLastModifiedDate__c = dateTimeValue(model.sistEndret);
         iad.DeliveryLastModifiedBy__c = model.sistEndretAv;
         iad.DeliveryLastModifiedByRole__c = model.sistEndretAvRolle;
+
         if (model.fullfort != null) {
             iad.CompletedDate__c = dateTimeValue(model.fullfort);
         }
@@ -103,6 +103,7 @@
         if (navUnitMap.containsKey(model.enhetsnummer)) {
             iad.NAVUnit__c = navUnitMap.get(model.enhetsnummer).Id;
         }
+
         iad.KafkaId__c = model.key;
         iad.KafkaHash__c = model.hash;
         iad.JsonPayload__c = model.jsonPayload;
