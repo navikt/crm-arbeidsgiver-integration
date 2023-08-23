@@ -7,10 +7,10 @@ static void makeData(){
     Account acc2 = new Account(Name = 'Test Employer 2', INT_OrganizationNumber__c = '973113632');
         insert acc2;
 
-        List<User> use = TestDataFactory.getUsers(2, 'Standard User', false, false);
-        use[0].CRM_NAV_Ident__c = 'C156986';
-        use[1].CRM_NAV_Ident__c = 'C156987';
-        insert use;
+        List<User> users = TestDataFactory.getUsers(2, 'Standard User', false, false);
+        users[0].CRM_NAV_Ident__c = 'C156986';
+        users[1].CRM_NAV_Ident__c = 'C156987';
+        insert users;
 
         String json1 = '{"saksnummer": "a240d1adtuasydt1", "orgnr": "973113631", "eierAvSak": "C156986", "endretAvHendelseId": "sdfhoisdyfio49856", "status": "Vurderes", "opprettetTidspunkt": "2022-02-18T07:07:07.064711", "endretTidspunkt": "2022-02-18T07:19:21.575794"}';
         String json2 = '{"saksnummer": "a240d1adtuasydt2", "orgnr": "973113631", "eierAvSak": "C156987", "endretAvHendelseId": "sdfhoisdyfio49856", "status": "SLETTET", "opprettetTidspunkt": "2022-02-18T07:07:07.064711", "endretTidspunkt": "2022-02-18T07:19:21.575794"}';
@@ -53,7 +53,7 @@ static void makeData(){
 }
 
     @IsTest
-    static void testProcessSingleMessage() {
+    static void testProcessSingleMessagePositive() {
         List<KafkaMessage__c> msg = [
             SELECT CRM_Topic__c, CRM_Value__c, CRM_Key__c
             FROM KafkaMessage__c WHERE CRM_Key__c = 'a240d1adtuasydt1'
@@ -88,7 +88,7 @@ static void makeData(){
     }
 
     @IsTest
-    static void testSingleMessageChanged() {
+    static void testSingleMessageChangedPositive() {
 
         List<KafkaMessage__c> msg = [
             SELECT CRM_Topic__c, CRM_Value__c, CRM_Key__c

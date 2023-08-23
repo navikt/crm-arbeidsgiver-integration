@@ -1,15 +1,16 @@
 public with sharing class KafkaFiaCase_Model implements IKafkaMessageParser{
-    public String saksnummer { get; set; }
-    public String orgnr { get; set; }
-    public String eierAvSak { get; set; }
-    public String endretAvHendelseId { get; set; }
-    public String status { get; set; }
-    public String opprettetTidspunkt { get; set; }
-    public String endretTidspunkt { get; set; }
 
-    public String jsonPayload { get; set; }
-    public String hash { get; set; }
-    public String key { get; set; }
+    public String saksnummer;
+    public String orgnr;
+    public String eierAvSak;
+    public String endretAvHendelseId;
+    public String status;
+    public String opprettetTidspunkt;
+    public String endretTidspunkt;
+
+    public String jsonPayload;
+    public String hash;
+    public String key;
 
     public static KafkaFiaCase_Model parse(String json, String key, String hash) {
         KafkaFiaCase_Model model = (KafkaFiaCase_Model) System.JSON.deserialize(
@@ -22,4 +23,5 @@ public with sharing class KafkaFiaCase_Model implements IKafkaMessageParser{
 
         return model;
     }
+
 }

@@ -34,8 +34,8 @@ public without sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor i
         try {
             fiaCases = convertToSObject(); 
 
-            Schema.SObjectField f = IACase__c.Fields.KafkaId__c;
-            Database.UpsertResult [] cr = Database.upsert(fiaCases , f, false);
+            Schema.SObjectField field = IACase__c.Fields.KafkaId__c;
+            Database.UpsertResult [] results = Database.upsert(fiaCases, field, false);
 
         } catch (Exception e) {
             String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
@@ -43,35 +43,35 @@ public without sharing class KafkaFiaCaseHandler extends KafkaMessageProcessor i
         }
     }
 
-private List<IACase__c> convertToSObject() {
-    Map<String, String> lastSaved = getLastSaved(IACase__c.class, keyToFiaCase.keyset());
-    Map<String, Account> accountMap = getOrgNumberAccountMap();
-    Map<String, User> navIdentMap = getNavIdentMap();
-    List<IACase__c> fiaCases = new List<IACase__c>();
-    for (KafkaFiaCase_Model model : keyToFiaCase.values()) {
-        if (!isNewOrChanged(model.key, model.hash, lastSaved)) {
-            continue;
-        } 
-        IACase__c ic = new IACase__c();
-        ic.Name = model.saksnummer;
-        ic.CaseOwnerNavIdent__c = model.eierAvSak;
-        ic.CaseStatus__c = model.status;
-        ic.IACreatedDate__c = dateTimeValue(model.opprettetTidspunkt);
-        ic.IALastModifiedDate__c = dateTimeValue(model.endretTidspunkt);
-        ic.KafkaId__c = model.key;
-        ic.KafkaHash__c = model.hash;
-        ic.JsonPayload__c = model.jsonPayload;
-        ic.Account__c = accountMap.get(model.orgnr).Id;              
+    private List<IACase__c> convertToSObject() {
+        Map<String, String> lastSaved = getLastSaved(IACase__c.class, keyToFiaCase.keyset());
+        Map<String, Account> accountMap = getOrgNumberAccountMap();
+        Map<String, User> navIdentMap = getNavIdentMap();
+        List<IACase__c> fiaCases = new List<IACase__c>();
+        for (KafkaFiaCase_Model model : keyToFiaCase.values()) {
+            if (!isNewOrChanged(model.key, model.hash, lastSaved)) {
+                continue;
+            } 
+            IACase__c ic = new IACase__c();
+            ic.Name = model.saksnummer;
+            ic.CaseOwnerNavIdent__c = model.eierAvSak;
+            ic.CaseStatus__c = model.status;
+            ic.IACreatedDate__c = dateTimeValue(model.opprettetTidspunkt);
+            ic.IALastModifiedDate__c = dateTimeValue(model.endretTidspunkt);
+            ic.KafkaId__c = model.key;
+            ic.KafkaHash__c = model.hash;
+            ic.JsonPayload__c = model.jsonPayload;
+            ic.Account__c = accountMap.get(model.orgnr).Id;              
 
-        if (navIdentMap.containsKey(model.eierAvSak)) {
-            User us = navIdentMap.get(model.eierAvSak);
-            ic.CaseOwner__c = us.id;  
+            if (navIdentMap.containsKey(model.eierAvSak)) {
+                User us = navIdentMap.get(model.eierAvSak);
+                ic.CaseOwner__c = us.id;  
+            }
+
+            fiaCases.add(ic);  
         }
-
-        fiaCases.add(ic);  
+        return fiaCases;
     }
-    return fiaCases;
-}
 
 }
 
