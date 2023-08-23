@@ -1,4 +1,4 @@
-public with sharing class KafkaFiaDelivery_Model implements IKafkaMessageParser{
+public with sharing class FiaDelivery implements IKafkaMessageParser{
     
     public Integer id;
     public String saksnummer;
@@ -30,11 +30,11 @@ public with sharing class KafkaFiaDelivery_Model implements IKafkaMessageParser{
         public Boolean deaktivert;
     }
 
-    public static KafkaFiaDelivery_Model parse(String json, String key, String hash) {
+    public static FiaDelivery parse(String json, String key, String hash) {
         String formattedJSON = json.replaceAll('"fullført":', '"fullfort":');
-        KafkaFiaDelivery_Model model = (KafkaFiaDelivery_Model) System.JSON.deserialize(
+        FiaDelivery model = (FiaDelivery) System.JSON.deserialize(
             formattedJSON, 
-            KafkaFiaDelivery_Model.class
+            FiaDelivery.class
         );
         model.jsonPayload = json;
         model.hash = hash;

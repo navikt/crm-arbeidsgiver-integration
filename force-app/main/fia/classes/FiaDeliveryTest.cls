@@ -1,6 +1,6 @@
 
 @IsTest
-public with sharing class KafkaFiaDelivery_ModelTEST {
+public with sharing class FiaDeliveryTest {
     private static final String JSON =
         '{\n' +
         '   "id": 139,\n' +
@@ -26,7 +26,7 @@ public with sharing class KafkaFiaDelivery_ModelTEST {
 
     @IsTest
     static void parse() {
-        KafkaFiaDelivery_Model model = KafkaFiaDelivery_Model.parse(JSON, null, null);
+        FiaDelivery model = FiaDelivery.parse(JSON, null, null);
 
         System.assertEquals(139, model.id);
         System.assertEquals('01H5MKC3T0G5Z81K7YE50J138T', model.saksnummer);

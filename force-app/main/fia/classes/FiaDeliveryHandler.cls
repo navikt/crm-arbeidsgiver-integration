@@ -1,15 +1,15 @@
- public without sharing class KafkaFiaDeliveryHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer{
-   Map<String, KafkaFiaDelivery_Model> keyToFiaDelivery = new Map<String, KafkaFiaDelivery_Model>();
+ public without sharing class FiaDeliveryHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer{
+   Map<String, FiaDelivery> keyToFiaDelivery = new Map<String, FiaDelivery>();
   public Set<String> CaseNumbers;
 
-  public KafkaFiaDeliveryHandler(){
+  public FiaDeliveryHandler(){
     this.CaseNumbers = new Set<String>();
   }
 
     public void processMessages(List<KafkaMessage__c> messages) {
         for (KafkaMessage__c msg : messages) {
             try {
-                KafkaFiaDelivery_Model ia = (KafkaFiaDelivery_Model) parse(KafkaFiaDelivery_Model.class, msg);
+                FiaDelivery ia = (FiaDelivery) parse(FiaDelivery.class, msg);
                 mapFiaDelivery(ia);
                 addCaseNumber(ia?.saksnummer);
                 addNavIdent(ia?.opprettetAv);
@@ -47,7 +47,7 @@
         return IACaseMap;
     }
 
-    private void mapFiaDelivery(KafkaFiaDelivery_Model fiaDelivery) {
+    private void mapFiaDelivery(FiaDelivery fiaDelivery) {
         String key = fiaDelivery.key;
         if (!keyToFiaDelivery.containsKey(key)){
             keyToFiaDelivery.put(key, fiaDelivery);
@@ -78,7 +78,7 @@
     Map<String, User> navIdentMap = getNavIdentMap();
     List<IADelivery__c> FiaDeliveries = new List<IADelivery__c>();
  
-    for (KafkaFiaDelivery_Model model : keyToFiaDelivery.values()) {
+    for (FiaDelivery model : keyToFiaDelivery.values()) {
         if (!isNewOrChanged(model.key, model.hash, lastSaved)) {
             continue;
         } 

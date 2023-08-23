@@ -1,5 +1,5 @@
 @IsTest
-public with sharing class KafkaFiaDeliveryHandlerTEST {    
+public with sharing class FiaDeliveryHandlerTest {    
 @TestSetup
     static void makeData(){
         
@@ -89,7 +89,7 @@ public with sharing class KafkaFiaDeliveryHandlerTEST {
         ];
 
         Test.startTest();
-        KafkaFiaDeliveryHandler handler = new KafkaFiaDeliveryHandler();
+        FiaDeliveryHandler handler = new FiaDeliveryHandler();
         handler.processMessages(msg);
         Test.stopTest();
 
@@ -143,7 +143,7 @@ public with sharing class KafkaFiaDeliveryHandlerTEST {
             FROM KafkaMessage__c WHERE CRM_Key__c = '139'
         ];
 
-        KafkaFiaDeliveryHandler handler = new KafkaFiaDeliveryHandler();
+        FiaDeliveryHandler handler = new FiaDeliveryHandler();
         handler.processMessages(msg);
 
         String changedJson =
@@ -200,7 +200,7 @@ public with sharing class KafkaFiaDeliveryHandlerTEST {
         ];
 
         Test.startTest();
-        KafkaFiaDeliveryHandler handler = new KafkaFiaDeliveryHandler();
+        FiaDeliveryHandler handler = new FiaDeliveryHandler();
         handler.processMessages(msg);
         Test.stopTest();
 
@@ -246,7 +246,7 @@ public with sharing class KafkaFiaDeliveryHandlerTEST {
         ];
 
         Test.startTest();
-        KafkaFiaCaseHandler handler = new KafkaFiaCaseHandler();
+        FiaCaseHandler handler = new FiaCaseHandler();
         handler.processMessages(msg);
         Test.stopTest();
 
@@ -297,7 +297,7 @@ public with sharing class KafkaFiaDeliveryHandlerTEST {
         ];
 
         Test.startTest();
-        KafkaFiaCaseHandler handler = new KafkaFiaCaseHandler();
+        FiaCaseHandler handler = new FiaCaseHandler();
         handler.processMessages(msg);
         Test.stopTest();
 
