@@ -1,15 +1,24 @@
- public without sharing class FiaDeliveryHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer{
-   Map<String, FiaDelivery> keyToFiaDelivery = new Map<String, FiaDelivery>();
-  public Set<String> CaseNumbers;
+public without sharing class FiaDeliveryHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer{
+    Map<String, FiaDelivery> keyToFiaDelivery = new Map<String, FiaDelivery>();
+    public Set<String> CaseNumbers;
+    public Set<String> fiaDeliveriesToDelete;
 
-  public FiaDeliveryHandler(){
-    this.CaseNumbers = new Set<String>();
-  }
+    public FiaDeliveryHandler(){
+        this.CaseNumbers = new Set<String>();
+        this.fiaDeliveriesToDelete = new Set<String>();
+    }
 
     public void processMessages(List<KafkaMessage__c> messages) {
         for (KafkaMessage__c msg : messages) {
             try {
                 FiaDelivery ia = (FiaDelivery) parse(FiaDelivery.class, msg);
+
+                if (ia.status == 'SLETTET') {
+                    addFiaDeliveriesToDelete(ia.key);
+                    msg.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
+                    continue;
+                }
+
                 mapFiaDelivery(ia);
                 addCaseNumber(ia?.saksnummer);
                 addNavIdent(ia?.opprettetAv);
@@ -22,12 +31,24 @@
             }
         }
         convertAndUpsertFiaDeliveries(messages);
+
+        if (!fiaDeliveriesToDelete.isEmpty()) {
+            deleteFiaDeliveries(messages);
+        } 
+
         logger.publish();
     } 
 
-    public KafkaMessageProcessor addCaseNumber(String caseNumber) {
+    public FiaDeliveryHandler addCaseNumber(String caseNumber) {
         if (caseNumber != null) {
             caseNumbers.add(caseNumber);
+        }
+        return this;
+    }
+
+    public FiaDeliveryHandler addFiaDeliveriesToDelete(String fiaDeliveryToDelete) {
+        if (fiaDeliveryToDelete != null) {
+            fiaDeliveriesToDelete.add(fiaDeliveryToDelete);
         }
         return this;
     }
@@ -68,6 +89,21 @@
         } catch (Exception e) {
             String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
             logger.setMessageErrors(messages, errorRef);  
+        }
+    }
+
+    private void deleteFiaDeliveries(List<KafkaMessage__c> messages) {
+        Map<String, IADelivery__c> fiaDeliveryMap = getFiaDeliveriesToDelete();
+        List<IADelivery__c> fiaDeliveries = new List<IADelivery__c>();
+        try {
+            for (IADelivery__c iad : fiaDeliveryMap.values()) {
+                fiaDeliveries.add(iad);
+            }
+            Delete fiaDeliveries;
+
+        } catch (Exception e) {
+            String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
+            logger.setMessageErrors(messages, errorRef);
         }
     }
 
@@ -112,4 +148,19 @@
     } 
     return FiaDeliveries;
 } 
+
+private Map<String, IADelivery__c> getFiaDeliveriesToDelete() {
+    Map<String, IADelivery__c> fiaDeliveriesToDeleteMap = new Map<String, IADelivery__c>();
+    List<IADelivery__c> fiaDeliveries = [
+        SELECT Id, Name, KafkaId__c
+        FROM IADelivery__c
+        WHERE KafkaId__c IN :fiaDeliveriesToDelete
+    ];
+
+    for (IADelivery__c iad : fiaDeliveries) {
+        fiaDeliveriesToDeleteMap.put(iad.KafkaId__c, iad);
+    }
+    return fiaDeliveriesToDeleteMap;
+}
+
 } 
