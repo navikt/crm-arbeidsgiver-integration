@@ -60,8 +60,57 @@ public with sharing class FiaDeliveryHandlerTest {
             '   "enhetsnavn": "Ukjent"\n' +
             '}';
 
+            String json2 =
+            '{\n' +
+            '   "id": 141,\n' +
+            '   "saksnummer": "01H5MKC3T0G5Z81K7YE50J138T",\n' +
+            '   "modul": {\n' +
+            '       "id":13,\n' +  
+            '       "iaTjeneste": {\n' +
+            '           "id":2,\n' +
+            '           "navn":"HelseIArbeid",\n' +
+            '           "deaktivert":false},\n' +
+            '       "navn":"Psykisk helse",\n' +
+            '       "deaktivert":false},\n' +
+            '   "frist": "2023-08-10",\n' +
+            '   "status": "UNDER_ARBEID",\n' +
+            '   "opprettetAv": "Z991098",\n' +
+            '   "sistEndret": "2023-08-08T12:28:37.877598",\n' +
+            '   "sistEndretAv": "Z991098",\n' +
+            '   "sistEndretAvRolle": "SAKSBEHANDLER",\n' +
+            '   "fullført": null,\n' +
+            '   "enhetsnummer": "2970",\n' +
+            '   "enhetsnavn": "Ukjent"\n' +
+            '}';
+
+            String jsonStatusSlettet =
+            '{\n' +
+            '   "id": 141,\n' +
+            '   "saksnummer": "01H5MKC3T0G5Z81K7YE50J138T",\n' +
+            '   "modul": {\n' +
+            '       "id":13,\n' +  
+            '       "iaTjeneste": {\n' +
+            '           "id":2,\n' +
+            '           "navn":"HelseIArbeid",\n' +
+            '           "deaktivert":false},\n' +
+            '       "navn":"Psykisk helse",\n' +
+            '       "deaktivert":false},\n' +
+            '   "frist": "2023-08-10",\n' +
+            '   "status": "SLETTET",\n' +
+            '   "opprettetAv": "Z991098",\n' +
+            '   "sistEndret": "2023-08-08T12:28:37.877598",\n' +
+            '   "sistEndretAv": "Z991098",\n' +
+            '   "sistEndretAvRolle": "SAKSBEHANDLER",\n' +
+            '   "fullført": null,\n' +
+            '   "enhetsnummer": "2970",\n' +
+            '   "enhetsnavn": "Ukjent"\n' +
+            '}';
+
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
         String encodedValue1 = EncodingUtil.base64Encode(Blob.valueOf(json1));
+        String encodedValue2 = EncodingUtil.base64Encode(Blob.valueOf(json2));
+        String encodedValueSlettet = EncodingUtil.base64Encode(Blob.valueOf(jsonStatusSlettet));
+
         List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
 
         KafkaMessage__c msg = new KafkaMessage__c();
@@ -73,9 +122,22 @@ public with sharing class FiaDeliveryHandlerTest {
         msg1.CRM_Topic__c = 'pia.ia-sak-leveranse-v1';
         msg1.CRM_Key__c = '140';
         msg1.CRM_Value__c = encodedValue1;
+
+        KafkaMessage__c msg2 = new KafkaMessage__c();
+        msg2.CRM_Topic__c = 'pia.ia-sak-leveranse-v1';
+        msg2.CRM_Key__c = '141';
+        msg2.CRM_Value__c = encodedValue2;
+
+        KafkaMessage__c msg3 = new KafkaMessage__c();
+        msg3.CRM_Topic__c = 'pia.ia-sak-leveranse-v1';
+        msg3.CRM_Key__c = '141';
+        msg3.CRM_Value__c = encodedValueSlettet;
         
         messages.add(msg);
         messages.add(msg1);
+        messages.add(msg2);
+        messages.add(msg3);
+
         insert messages;
     }
     
@@ -310,4 +372,40 @@ public with sharing class FiaDeliveryHandlerTest {
         System.assertEquals(0, iaDelivery.size(), 'Expectiong iaDelivery-list to be empty(0) as the Casenr is null');
     }
 
+    @IsTest
+    static void testDeleteSingleMessagePositive() {
+
+        List<KafkaMessage__c> msg = [
+            SELECT 
+            CRM_Topic__c, CRM_Value__c, CRM_Key__c
+            FROM KafkaMessage__c
+        ];
+
+        System.assert(msg.size() == 4);
+
+        Test.startTest();
+        FiaDeliveryHandler handler = new FiaDeliveryHandler();
+        handler.processMessages(msg);
+        Test.stopTest();
+
+        List<IADelivery__c> iaDelivery = [
+            SELECT 
+            Id, Name, IACase__c, NAVUnit__c, DeliveryCreatedByUser__c, Module__c, IAService__c,
+            Status__c, DeliveryCreatedBy__c, DeliveryLastModifiedDate__c, DeliveryLastModifiedBy__c, 
+            DeliveryLastModifiedByRole__c, CompletedDate__c, KafkaId__c, KafkaHash__c, JsonPayload__c, Deadline__c
+            FROM IADelivery__c WHERE Name = '139'
+        ];
+
+        List<IADelivery__c> iaDeliveryDeleted = [
+            SELECT 
+            Id, Name, IACase__c, NAVUnit__c, DeliveryCreatedByUser__c, Module__c, IAService__c,
+            Status__c, DeliveryCreatedBy__c, DeliveryLastModifiedDate__c, DeliveryLastModifiedBy__c, 
+            DeliveryLastModifiedByRole__c, CompletedDate__c, KafkaId__c, KafkaHash__c, JsonPayload__c, Deadline__c
+            FROM IADelivery__c WHERE Name = '141'
+        ];
+
+        System.assert(!iaDelivery.isEmpty());
+        System.assert(iaDeliveryDeleted.isEmpty());
+
+    } 
 }

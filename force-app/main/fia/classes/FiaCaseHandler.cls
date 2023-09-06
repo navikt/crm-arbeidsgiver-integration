@@ -1,10 +1,22 @@
 public without sharing class FiaCaseHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer {
     Map<String,FiaCase> keyToFiaCase = new Map<String,FiaCase>();
+    public Set<String> fiaCasesToDelete;
+
+    public FiaCaseHandler(){
+        this.fiaCasesToDelete = new Set<String>();
+    }
 
     public void processMessages(List<KafkaMessage__c> messages) {
         for (KafkaMessage__c msg : messages) {
             try {
-               FiaCase fia = (FiaCase) parse(FiaCase.class, msg);
+                FiaCase fia = (FiaCase) parse(FiaCase.class, msg);
+
+                if (fia.status == 'SLETTET') {
+                    addFiaCasesToDelete(fia.key);
+                    msg.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
+                    continue;
+                }
+
                 mapFiaCase(fia);
                 addOrgNumber(fia?.orgnr);
                 addNavIdent(fia?.eierAvSak);
@@ -16,6 +28,11 @@ public without sharing class FiaCaseHandler extends KafkaMessageProcessor implem
             }
         }
         convertAndUpsertFiaCases(messages);
+
+        if (!fiaCasesToDelete.isEmpty()) {
+            deleteFiaCases(messages);
+        } 
+
         logger.publish();
     } 
 
@@ -27,6 +44,13 @@ public without sharing class FiaCaseHandler extends KafkaMessageProcessor implem
         } else if (isMostRecent(fiaCase.endretTidspunkt, keyToFiaCase.get(key).endretTidspunkt)) {
             keyToFiaCase.put(key, fiaCase);
         }
+    }
+
+    public FiaCaseHandler addFiaCasesToDelete(String fiaCaseToDelete) {
+        if (fiaCaseToDelete != null) {
+            fiaCasesToDelete.add(fiaCaseToDelete);
+        }
+        return this;
     }
 
     private void convertAndUpsertFiaCases(List<KafkaMessage__c> messages) {
@@ -43,15 +67,32 @@ public without sharing class FiaCaseHandler extends KafkaMessageProcessor implem
         }
     }
 
+    private void deleteFiaCases(List<KafkaMessage__c> messages) {
+        Map<String, IACase__c> fiaCaseMap = getFiaCasesToDelete();
+        List<IACase__c> fiaCases = new List<IACase__c>();
+        try {
+            for (IACase__c iac : fiaCaseMap.values()) {
+                fiaCases.add(iac);
+            }
+            Delete fiaCases;
+
+        } catch (Exception e) {
+            String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
+            logger.setMessageErrors(messages, errorRef);
+        }
+    }
+
     private List<IACase__c> convertToSObject() {
         Map<String, String> lastSaved = getLastSaved(IACase__c.class, keyToFiaCase.keyset());
         Map<String, Account> accountMap = getOrgNumberAccountMap();
         Map<String, User> navIdentMap = getNavIdentMap();
         List<IACase__c> fiaCases = new List<IACase__c>();
+
         for (FiaCase model : keyToFiaCase.values()) {
             if (!isNewOrChanged(model.key, model.hash, lastSaved)) {
                 continue;
-            } 
+            }
+
             IACase__c iaCase = new IACase__c();
             iaCase.Name = model.saksnummer;
             iaCase.CaseOwnerNavIdent__c = model.eierAvSak;
@@ -73,6 +114,19 @@ public without sharing class FiaCaseHandler extends KafkaMessageProcessor implem
         return fiaCases;
     }
 
+    private Map<String, IACase__c> getFiaCasesToDelete() {
+        Map<String, IACase__c> fiaCaseToDeleteMap = new Map<String, IACase__c>();
+        List<IACase__c> fiaCases = [
+            SELECT Id, Name, KafkaId__c
+            FROM IACase__c
+            WHERE KafkaId__c IN :fiaCasesToDelete
+        ];
+
+        for (IACase__c iac : fiaCases) {
+            fiaCaseToDeleteMap.put(iac.KafkaId__c, iac);
+        }
+        return fiaCaseToDeleteMap;
+    }
 }
 
     
