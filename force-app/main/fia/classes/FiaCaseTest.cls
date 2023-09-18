@@ -1,5 +1,5 @@
-@isTest
-public with sharing class KafkaFiaCase_ModelTEST {
+@IsTest
+public with sharing class FiaCaseTest {
     private static final String JSON =
         '{\n' +
         '   "saksnummer": "a240d1adtuasydt",\n' +
@@ -11,9 +11,9 @@ public with sharing class KafkaFiaCase_ModelTEST {
         '   "endretTidspunkt": "2022-02-18T07:19:21.575794"\n' +
         '}';
 
-    @isTest
+    @IsTest
     static void parse() {
-        KafkaFiaCase_Model model = KafkaFiaCase_Model.parse(JSON, null, null);
+        FiaCase model = FiaCase.parse(JSON, null, null);
 
         System.assertEquals('a240d1adtuasydt', model.saksnummer);
         System.assertEquals('197056333', model.orgnr);
