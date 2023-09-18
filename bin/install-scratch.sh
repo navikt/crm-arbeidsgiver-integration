@@ -140,7 +140,8 @@ command -v jq >/dev/null 2>&1 || {
 }
 
 ORG_ALIAS="arbeidsgiver-integration"
-secret=$npm_config_package_key 
+secret=$npm_config_package_key
+devHubAlias=$(sf config get target-dev-hub --json | jq -r '.result[0].value')
 
 if [[ -n $npm_config_org_alias ]]; then
     org_alias=$npm_config_org_alias
