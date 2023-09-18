@@ -1,36 +1,8 @@
 #!/bin/bash
 
-
 SCRIPT_PATH=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 cd $SCRIPT_PATH/..
 
-# Check exit code function
-error() {
-    echo ""
-    if [[ $1 -eq 0 ]]; then
-        echo "Installation completed."
-        echo ""
-        exit $1
-    else
-        if [[ -n $2 ]]; then
-            echo "$2"
-            echo ""
-        fi
-        
-        echo "Installation failed."
-        echo ""
-        exit $1
-    fi
-}
-
-cleaningPreviousScratchOrg() {
-    sf org delete scratch --no-prompt --target-org $org_alias &> /dev/null
-}
-
-creatingScratchOrg () {
-    echo ""
-    echo "Org Alias: $org_alias"
-    echo ""
 # Check exit code function
 error() {
     echo ""
