@@ -34,7 +34,8 @@ public with sharing class FiaDeliveryHandlerTest {
             '   "sistEndretAvRolle": "SUPERBRUKER",\n' +
             '   "fullført": null,\n' +
             '   "enhetsnummer": "2970",\n' +
-            '   "enhetsnavn": "Ukjent"\n' +
+            '   "enhetsnavn": "Ukjent",\n' +
+            '   "opprettetTidspunkt":"2023-07-10T15:35:27.485670"\n' +
             '}';
 
         String json1 =
@@ -57,7 +58,8 @@ public with sharing class FiaDeliveryHandlerTest {
             '   "sistEndretAvRolle": "SAKSBEHANDLER",\n' +
             '   "fullført": null,\n' +
             '   "enhetsnummer": "2970",\n' +
-            '   "enhetsnavn": "Ukjent"\n' +
+            '   "enhetsnavn": "Ukjent",\n' +
+            '   "opprettetTidspunkt":"2023-07-10T15:35:27.485670"\n' +
             '}';
 
             String json2 =
@@ -80,7 +82,8 @@ public with sharing class FiaDeliveryHandlerTest {
             '   "sistEndretAvRolle": "SAKSBEHANDLER",\n' +
             '   "fullført": null,\n' +
             '   "enhetsnummer": "2970",\n' +
-            '   "enhetsnavn": "Ukjent"\n' +
+            '   "enhetsnavn": "Ukjent",\n' +
+            '   "opprettetTidspunkt":"2023-07-10T15:35:27.485670"\n' +
             '}';
 
             String jsonStatusSlettet =
@@ -103,7 +106,8 @@ public with sharing class FiaDeliveryHandlerTest {
             '   "sistEndretAvRolle": "SAKSBEHANDLER",\n' +
             '   "fullført": null,\n' +
             '   "enhetsnummer": "2970",\n' +
-            '   "enhetsnavn": "Ukjent"\n' +
+            '   "enhetsnavn": "Ukjent",\n' +
+            '   "opprettetTidspunkt":"2023-07-10T15:35:27.485670"\n' +
             '}';
 
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
@@ -228,7 +232,8 @@ public with sharing class FiaDeliveryHandlerTest {
         '   "sistEndretAvRolle": "SAKSBEHANDLER",\n' +
         '   "fullført": "2023-07-20T15:35:27.485670",\n' +
         '   "enhetsnummer": "2970",\n' +
-        '   "enhetsnavn": "Ukjent"\n' +
+        '   "enhetsnavn": "Ukjent",\n' +
+        '   "opprettetTidspunkt":"2023-07-10T15:35:27.485670"\n' +
         '}'; 
 
         String encodedValueChanged = EncodingUtil.base64Encode(Blob.valueOf(changedJson));
@@ -340,7 +345,8 @@ public with sharing class FiaDeliveryHandlerTest {
         '   "sistEndretAvRolle": "SUPERBRUKER",\n' +
         '   "fullført": null,\n' +
         '   "enhetsnummer": "2970",\n' +
-        '   "enhetsnavn": "Ukjent"\n' +
+        '   "enhetsnavn": "Ukjent",\n' +
+        '   "opprettetTidspunkt":"2023-07-10T15:35:27.485670"\n' +
         '}'; 
 
         String invalidEncodedValueNoOrgNr = EncodingUtil.base64Encode(Blob.valueOf(invalid_jsonNoCaseNr));
