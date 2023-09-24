@@ -12,7 +12,6 @@ public with sharing class FiaDelivery implements IKafkaMessageParser{
     public String fullfort;
     public String enhetsnummer;
     public String enhetsnavn;
-    public String opprettetTidspunkt;
 
     public String jsonPayload;
     public String hash;
