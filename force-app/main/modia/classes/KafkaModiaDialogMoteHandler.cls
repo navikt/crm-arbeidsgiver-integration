@@ -34,7 +34,10 @@ public without sharing class KafkaModiaDialogMoteHandler extends KafkaMessagePro
     private void convertAndUpsertDialogMote(List<KafkaMessage__c> messages) {
         try {
             List<ArenaActivity__c> arenaActivities = toSObject();
-            upsert arenaActivities ArenaActivity__c.KafkaId__c;
+
+            Schema.SObjectField f = ArenaActivity__c.Fields.KafkaId__c;
+            Database.UpsertResult [] cr = Database.upsert(arenaActivities , f, false);
+
         } catch (Exception e) {
             String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
             logger.setMessageErrors(messages, errorRef);
