@@ -36,7 +36,10 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
         List<Contract__c> avtaler = new List<Contract__c>();
         try {
             avtaler = toSObjects();
-            upsert avtaler Contract__c.KafkaId__c;
+
+            Schema.SObjectField f = Contract__c.Fields.KafkaId__c;
+            Database.UpsertResult [] cr = Database.upsert(avtaler , f, false);
+
         } catch (Exception e) {
             String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
             logger.setMessageErrors(messages, errorRef);
@@ -47,7 +50,10 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
         List<ArenaActivity__c> activities = new List<ArenaActivity__c>();
         try {
             activities = toSObjectsActivity();
-            upsert activities ArenaActivity__c.KafkaId__c;
+
+            Schema.SObjectField f = ArenaActivity__c.Fields.KafkaId__c;
+            Database.UpsertResult [] cr = Database.upsert(activities , f, false);
+
         } catch (Exception e) {
             String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
             logger.setMessageErrors(messages, errorRef);
