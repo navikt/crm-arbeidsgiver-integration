@@ -1,4 +1,4 @@
-public with sharing class SykefravaerLand implements IKafkaMessageParser{
+ public with sharing class SykefravaerLand {
 
     public String kategori;
     public String kode;
@@ -22,7 +22,7 @@ public with sharing class SykefravaerLand implements IKafkaMessageParser{
         public Double muligeDagsverk;
         public Double antallPersoner;
         public Boolean erMaskert;
-        public Kvartaler Kvartaler;     
+        public List<Kvartaler> kvartaler;     
     }
 
     public class Kvartaler{
@@ -30,5 +30,21 @@ public with sharing class SykefravaerLand implements IKafkaMessageParser{
         public Integer kvartal;
        
     }
-    
-}
+
+    public String jsonPayload;
+    public String hash;
+    public String key;
+
+	public static SykefravaerLand parse(String JSON, String key , String hash){
+    String formattedJSON = json.replaceAll('"årstall":', '"arstall":');
+    SykefravaerLand model = (SykefravaerLand) System.JSON.deserialize(
+        formattedJSON, 
+        SykefravaerLand.class
+        );
+        model.jsonPayload = json;
+        model.hash = hash;
+        model.key = key;
+
+		return model;
+	} 
+} 

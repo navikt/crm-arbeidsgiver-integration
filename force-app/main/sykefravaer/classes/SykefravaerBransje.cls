@@ -1,5 +1,6 @@
-public with sharing class SykefravaerBransje implements IKafkaMessageParser{
 
+public with sharing class SykefravaerBransje{
+ 
     public String kategori;
     public String kode;
     public sistePubliserteKvartal sistePubliserteKvartal;
@@ -21,13 +22,13 @@ public with sharing class SykefravaerBransje implements IKafkaMessageParser{
         public Double muligeDagsverk;
         public Double antallPersoner;
         public Boolean erMaskert;
-        public Kvartaler Kvartaler;     
+        public List<Kvartaler> kvartaler;    
     }
 
     public class Kvartaler{
         public Integer arstall;
         public Integer kvartal;
        
-    }
+    } 
     
-}
+} 

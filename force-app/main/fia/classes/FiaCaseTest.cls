@@ -1,5 +1,4 @@
-@IsTest
-public with sharing class FiaCaseTest {
+@IsTest  public with sharing class FiaCaseTest {
     private static final String JSON =
         '{\n' +
         '   "saksnummer": "a240d1adtuasydt",\n' +
@@ -22,5 +21,5 @@ public with sharing class FiaCaseTest {
         System.assertEquals('ny', model.status);
         System.assertEquals('2022-02-18T07:07:07.064711', model.opprettetTidspunkt);
         System.assertEquals('2022-02-18T07:19:21.575794', model.endretTidspunkt);
-    }
+    } 
 }

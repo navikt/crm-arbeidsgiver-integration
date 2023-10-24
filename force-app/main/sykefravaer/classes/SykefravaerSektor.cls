@@ -1,4 +1,4 @@
-public with sharing class SykefravaerSektor implements IKafkaMessageParser{
+public with sharing class SykefravaerSektor{
 
     public String kategori;
     public String kode;
@@ -21,13 +21,13 @@ public with sharing class SykefravaerSektor implements IKafkaMessageParser{
         public Double muligeDagsverk;
         public Double antallPersoner;
         public Boolean erMaskert;
-        public Kvartaler Kvartaler;     
+        public List<Kvartaler> kvartaler;       
     }
 
     public class Kvartaler{
         public Integer arstall;
         public Integer kvartal;
        
-    }
+    } 
     
 }
