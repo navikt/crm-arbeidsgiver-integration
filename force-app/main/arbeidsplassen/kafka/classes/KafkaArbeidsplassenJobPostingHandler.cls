@@ -33,7 +33,10 @@ public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends Kafk
         List<JobPosting__c> jobPostings = new List<JobPosting__c>();
         try {
             jobPostings = getJobPostingSObjects();
-            upsert jobPostings JobPosting__c.KafkaId__c;
+
+            Schema.SObjectField f = JobPosting__c.Fields.KafkaId__c;
+            Database.UpsertResult [] cr = Database.upsert(jobPostings , f, false);
+
         } catch (Exception e) {
             String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
             logger.setMessageErrors(messages, errorRef);

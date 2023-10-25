@@ -93,7 +93,7 @@ openOrg() {
     fi
 }
 
-if [[ $npm_config_info ]]; then
+info() {
     echo "Usage: npm run mac:build [options]"
     echo ""
     echo "Options:"
@@ -111,6 +111,13 @@ if [[ $npm_config_info ]]; then
     echo "  --info                      Show this help"
     echo ""
     exit 0
+}
+if [[ $npm_config_info ]]; then
+    info
+elif [[ -z $npm_config_package_key ]]; then
+    echo "Package key is required."
+    echo ""
+    info
 fi
 
 sf plugins inspect @dxatscale/sfpowerscripts >/dev/null 2>&1 || { 
