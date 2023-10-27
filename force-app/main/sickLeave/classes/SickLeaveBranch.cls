@@ -1,4 +1,5 @@
- public with sharing class SykefravaerNaring{
+
+public with sharing class SickLeaveBranch{
  
     public String kategori;
     public String kode;
@@ -29,5 +30,21 @@
         public Integer kvartal;
        
     } 
-   
+    public String jsonPayload;
+    public String hash;
+    public String key;
+
+	public static SickLeaveBranch parse(String JSON, String key , String hash){
+    String formattedJSON = json.replaceAll('"årstall":', '"arstall":');
+    SickLeaveBranch model = (SickLeaveBranch) System.JSON.deserialize(
+        formattedJSON, 
+        SickLeaveBranch.class
+        );
+        model.jsonPayload = json;
+        model.hash = hash;
+        model.key = key;
+
+		return model;
+	} 
+    
 } 

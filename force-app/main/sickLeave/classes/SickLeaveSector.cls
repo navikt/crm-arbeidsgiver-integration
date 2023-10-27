@@ -1,11 +1,10 @@
- public with sharing class SykefravaerLand {
+public with sharing class SickLeaveSector{
 
     public String kategori;
     public String kode;
     public sistePubliserteKvartal sistePubliserteKvartal;
     public siste4Kvartal siste4Kvartal; 
 
-//Integer er hele tall, mens double tar med desimaltall. 
     public class sistePubliserteKvartal{
         public Integer arstall;
         public Integer kvartal;
@@ -22,29 +21,29 @@
         public Double muligeDagsverk;
         public Double antallPersoner;
         public Boolean erMaskert;
-        public List<Kvartaler> kvartaler;     
+        public List<Kvartaler> kvartaler;       
     }
 
     public class Kvartaler{
         public Integer arstall;
         public Integer kvartal;
        
-    }
-
+    } 
     public String jsonPayload;
     public String hash;
     public String key;
-
-	public static SykefravaerLand parse(String JSON, String key , String hash){
-    String formattedJSON = json.replaceAll('"årstall":', '"arstall":');
-    SykefravaerLand model = (SykefravaerLand) System.JSON.deserialize(
-        formattedJSON, 
-        SykefravaerLand.class
-        );
-        model.jsonPayload = json;
-        model.hash = hash;
-        model.key = key;
-
-		return model;
-	} 
-} 
+    
+    public static SickLeaveSector parse(String JSON, String key , String hash){
+        String formattedJSON = json.replaceAll('"årstall":', '"arstall":');
+        SickLeaveSector model = (SickLeaveSector) System.JSON.deserialize(
+            formattedJSON, 
+            SickLeaveSector.class
+            );
+            model.jsonPayload = json;
+            model.hash = hash;
+            model.key = key;
+    
+            return model;
+        } 
+    
+}

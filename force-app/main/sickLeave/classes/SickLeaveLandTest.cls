@@ -1,5 +1,5 @@
  @IsTest
-public with sharing class SykefravaerLandTest {
+public with sharing class SickLeaveLandTest {
     
     private static final string JSON = 
     '{\n' +
@@ -41,7 +41,7 @@ public with sharing class SykefravaerLandTest {
 
     @IsTest
     static void parse(){
-        SykefravaerLand model = SykefravaerLand.parse(JSON, null, null);
+        SickLeaveLand model = SickLeaveLand.parse(JSON, null, null);
         System.assertEquals('LAND', model.kategori);
         System.assertEquals('NO', model.kode);
         System.debug(model.kode + 'kode NO');

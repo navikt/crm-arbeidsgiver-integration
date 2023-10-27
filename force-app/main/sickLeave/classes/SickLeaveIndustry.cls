@@ -1,5 +1,4 @@
-
-public with sharing class SykefravaerBransje{
+ public with sharing class SickLeaveIndustry{
  
     public String kategori;
     public String kode;
@@ -27,8 +26,24 @@ public with sharing class SykefravaerBransje{
 
     public class Kvartaler{
         public Integer arstall;
-        public Integer kvartal;
-       
+        public Integer kvartal;   
     } 
-    
+
+    public String jsonPayload;
+    public String hash;
+    public String key;
+
+	public static SickLeaveIndustry parse(String JSON, String key , String hash){
+    String formattedJSON = json.replaceAll('"årstall":', '"arstall":');
+    SickLeaveIndustry model = (SickLeaveIndustry) System.JSON.deserialize(
+        formattedJSON, 
+        SickLeaveIndustry.class 
+        );
+        model.jsonPayload = json;
+        model.hash = hash;
+        model.key = key;
+
+		return model;
+	} 
+   
 } 
