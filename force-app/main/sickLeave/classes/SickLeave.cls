@@ -1,4 +1,4 @@
- public with sharing class SickLeaveLand {
+ public with sharing class SickLeave {
 
     public String kategori;
     public String kode;
@@ -34,14 +34,15 @@
     public String hash;
     public String key;
 
-	public static SickLeaveLand parse(String JSON, String key , String hash){
+	public static SickLeave parse(String JSON, String key//, String hash fjerner denne for å få sickleavehelper linje 8 til å funke. 
+    ){
     String formattedJSON = json.replaceAll('"årstall":', '"arstall":');
-    SickLeaveLand model = (SickLeaveLand) System.JSON.deserialize(
+    SickLeave model = (SickLeave) System.JSON.deserialize(
         formattedJSON, 
-        SickLeaveLand.class
+        SickLeave.class
         );
         model.jsonPayload = json;
-        model.hash = hash;
+       // model.hash = hash; tipper denne må tilbake, men må da endre koden slik at den er riktig i parsinga. 
         model.key = key;
 
 		return model;
