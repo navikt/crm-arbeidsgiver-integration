@@ -120,14 +120,20 @@ public without sharing class FiaDeliveryHandler extends KafkaMessageProcessor im
         } 
         IADelivery__c iad = new IADelivery__c();
         iad.Name = String.valueOf(model.id);
-        iad.IACase__c = iaCaseMap.get(model.saksnummer).id;
-        iad.Module__c = model.modul.navn; 
-        iad.IAService__c = model.modul.iaTjeneste.navn;
+        iad.IACase__c = iaCaseMap.get(model.saksnummer).id; 
         iad.Deadline__c = Date.valueOf(model.frist);
         iad.Status__c = model.status;
         iad.DeliveryCreatedBy__c = model.opprettetAv;
         iad.DeliveryLastModifiedBy__c = model.sistEndretAv;
         iad.DeliveryLastModifiedByRole__c = model.sistEndretAvRolle;
+
+        if (model.modul.navn != null) {
+            iad.Module__c = model.modul.navn;
+        }
+
+        if (model.modul.iaTjeneste.navn != null) {
+            iad.IAService__c = model.modul.iaTjeneste.navn;
+        }
 
         if (model.fullfort != null) {
             iad.CompletedDate__c = dateTimeValue(model.fullfort);
