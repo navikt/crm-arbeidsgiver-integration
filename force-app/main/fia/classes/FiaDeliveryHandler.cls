@@ -135,6 +135,10 @@ public without sharing class FiaDeliveryHandler extends KafkaMessageProcessor im
             iad.IAService__c = model.modul.iaTjeneste.navn;
         }
 
+        if (model.iaTjenesteNavn != null) {
+            iad.IAService__c = model.iaTjenesteNavn;
+        }
+
         if (model.fullfort != null) {
             iad.CompletedDate__c = dateTimeValue(model.fullfort);
         }
