@@ -36,11 +36,11 @@ public with sharing class SickLeaveHelper {
     }
 
 
-    //ALt over her er ferdig tror jeg, men  alt under er copy pasted fra kafksyeffravaerhandlerhleper. 
+    //ALt over her er ferdig tror jeg, men  alt under er copy pasted fra kafkasykefravaerhandlerhleper. 
    public static Absence__c jsonToAbsence(SickLeave s, Map<String, Account> accountMap) {
     Absence__c a = new Absence__c();
  /*     
-        //Her må jeg legge inn sjekk for om det er kategori virkosmhet, og kode orgnummer. 
+        //Her må jeg legge inn sjekk for om det er kategori virksomhet, og kode orgnummer. 
         if (accountMap.containsKey(s.orgnr)) {
             a.CRM_Account__c = accountMap.get(s.orgnr).Id;
 
@@ -85,7 +85,7 @@ public with sharing class SickLeaveHelper {
     }
 
 
-    // hva gjør denne? henter ut kontoer basert på org nummer i en liste?
+    // Denne henter ut kontoer basert på org nummer i en liste som vi oppretter i organisationsnumbers-funksjonen
     public static Map<String, Account> fetchAccounts(List<String> organisationNumbers) {
         List<Account> accounts = [
             SELECT Id, INT_OrganizationNumber__c, INT_MunicipalityNumber__c, INT_IndustryCode__c

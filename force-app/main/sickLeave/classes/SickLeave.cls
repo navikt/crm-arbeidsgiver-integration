@@ -34,7 +34,7 @@
     public String hash;
     public String key;
 
-	public static SickLeave parse(String JSON, String key//, String hash fjerner denne for å få sickleavehelper linje 8 til å funke. 
+	public static SickLeave parse(String JSON, String key//, String hash ){ fjerner denne for å få sickleavehelper linje 8 til å funke. 
     ){
     String formattedJSON = json.replaceAll('"årstall":', '"arstall":');
     SickLeave model = (SickLeave) System.JSON.deserialize(
