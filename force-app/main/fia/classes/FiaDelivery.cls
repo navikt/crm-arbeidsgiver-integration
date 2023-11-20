@@ -5,6 +5,8 @@ public with sharing class FiaDelivery implements IKafkaMessageParser{
     public Modul modul;
     public String iaTjenesteId;
     public String iaTjenesteNavn;
+    public String iaModulId;
+    public String iaModulNavn;
     public String frist;
     public String status;
     public String opprettetAv;

@@ -131,6 +131,10 @@ public without sharing class FiaDeliveryHandler extends KafkaMessageProcessor im
             iad.Module__c = model.modul.navn;
         }
 
+        if (model.iaModulNavn != null) {
+            iad.Module__c = model.iaModulNavn;
+        }
+
         if (model.modul.iaTjeneste.navn != null) {
             iad.IAService__c = model.modul.iaTjeneste.navn;
         }
