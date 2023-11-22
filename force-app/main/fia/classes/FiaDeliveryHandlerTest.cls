@@ -18,14 +18,10 @@ public with sharing class FiaDeliveryHandlerTest {
             '{\n' +
             '   "id": 139,\n' +
             '   "saksnummer": "01H5MKC3T0G5Z81K7YE50J138T",\n' +
-            '   "modul": {\n' +
-            '       "id":10,\n' +  
-            '       "iaTjeneste": {\n' +
-            '           "id":2,\n' +
-            '           "navn":"Forebyggende arbeidsmiljøarbeid",\n' +
-            '           "deaktivert":false},\n' +
-            '       "navn":"Livsfaseorientert personalpolitikk",\n' +
-            '       "deaktivert":false},\n' +
+            '   "iaTjenesteId": 2,\n' +
+            '   "iaTjenesteNavn": "Forebyggende arbeidsmiljøarbeid",\n' +
+            '   "iaModulId": 16,\n' +
+            '   "iaModulNavn": "Forebyggende arbeidsmiljøarbeid",\n' +
             '   "frist": "2023-08-31",\n' +
             '   "status": "UNDER_ARBEID",\n' +
             '   "opprettetAv": "Z994537",\n' +
@@ -42,14 +38,10 @@ public with sharing class FiaDeliveryHandlerTest {
             '{\n' +
             '   "id": 140,\n' +
             '   "saksnummer": "01H5MKC3T0G5Z81K7YE50J138T",\n' +
-            '   "modul": {\n' +
-            '       "id":13,\n' +  
-            '       "iaTjeneste": {\n' +
-            '           "id":2,\n' +
-            '           "navn":"HelseIArbeid",\n' +
-            '           "deaktivert":false},\n' +
-            '       "navn":"Psykisk helse",\n' +
-            '       "deaktivert":false},\n' +
+            '   "iaTjenesteId": 2,\n' +
+            '   "iaTjenesteNavn": "Forebyggende arbeidsmiljøarbeid",\n' +
+            '   "iaModulId": 16,\n' +
+            '   "iaModulNavn": "Forebyggende arbeidsmiljøarbeid",\n' +
             '   "frist": "2023-08-10",\n' +
             '   "status": "UNDER_ARBEID",\n' +
             '   "opprettetAv": "Z991098",\n' +
@@ -66,14 +58,10 @@ public with sharing class FiaDeliveryHandlerTest {
             '{\n' +
             '   "id": 141,\n' +
             '   "saksnummer": "01H5MKC3T0G5Z81K7YE50J138T",\n' +
-            '   "modul": {\n' +
-            '       "id":13,\n' +  
-            '       "iaTjeneste": {\n' +
-            '           "id":2,\n' +
-            '           "navn":"HelseIArbeid",\n' +
-            '           "deaktivert":false},\n' +
-            '       "navn":"Psykisk helse",\n' +
-            '       "deaktivert":false},\n' +
+            '   "iaTjenesteId": 2,\n' +
+            '   "iaTjenesteNavn": "Forebyggende arbeidsmiljøarbeid",\n' +
+            '   "iaModulId": 16,\n' +
+            '   "iaModulNavn": "Forebyggende arbeidsmiljøarbeid",\n' +
             '   "frist": "2023-08-10",\n' +
             '   "status": "UNDER_ARBEID",\n' +
             '   "opprettetAv": "Z991098",\n' +
@@ -90,14 +78,10 @@ public with sharing class FiaDeliveryHandlerTest {
             '{\n' +
             '   "id": 141,\n' +
             '   "saksnummer": "01H5MKC3T0G5Z81K7YE50J138T",\n' +
-            '   "modul": {\n' +
-            '       "id":13,\n' +  
-            '       "iaTjeneste": {\n' +
-            '           "id":2,\n' +
-            '           "navn":"HelseIArbeid",\n' +
-            '           "deaktivert":false},\n' +
-            '       "navn":"Psykisk helse",\n' +
-            '       "deaktivert":false},\n' +
+            '   "iaTjenesteId": 2,\n' +
+            '   "iaTjenesteNavn": "Forebyggende arbeidsmiljøarbeid",\n' +
+            '   "iaModulId": 16,\n' +
+            '   "iaModulNavn": "Forebyggende arbeidsmiljøarbeid",\n' +
             '   "frist": "2023-08-10",\n' +
             '   "status": "SLETTET",\n' +
             '   "opprettetAv": "Z991098",\n' +
@@ -186,7 +170,6 @@ public with sharing class FiaDeliveryHandlerTest {
         System.assertEquals(msg[0].CRM_Key__c, iaDelivery[0].KafkaId__c, 'Correct KafkaId');
         System.assertEquals(msg[0].CRM_Value__c, iaDelivery[0].KafkaHash__c, 'Correct KafkaHash');
         System.assertEquals('139', iaDelivery[0].Name, 'Correct Delivery Id');
-        System.assertEquals('Livsfaseorientert personalpolitikk', iaDelivery[0].Module__c, 'Correct Module');
         System.assertEquals('Forebyggende arbeidsmiljøarbeid', iaDelivery[0].IAService__c,  'Correct IA Service');
         System.assertEquals('2023-08-31', deadlineDate, 'Correct Deadline');
         System.assertEquals('UNDER_ARBEID', iaDelivery[0].Status__c, 'Correct Status');
@@ -216,14 +199,6 @@ public with sharing class FiaDeliveryHandlerTest {
         '{\n' +
         '   "id": 139,\n' +
         '   "saksnummer": "01H5MKC3T0G5Z81K7YE50J138T",\n' +
-        '   "modul": {\n' +
-        '       "id":10,\n' +  
-        '       "iaTjeneste": {\n' +
-        '           "id":2,\n' +
-        '           "navn":"Forebyggende arbeidsmiljøarbeid",\n' +
-        '           "deaktivert":false},\n' +
-        '       "navn":"Livsfaseorientert personalpolitikk",\n' +
-        '       "deaktivert":false},\n' +
         '   "frist": "2023-08-31",\n' +
         '   "status": "LEVERT",\n' +
         '   "opprettetAv": "Z994537",\n' +
@@ -329,14 +304,6 @@ public with sharing class FiaDeliveryHandlerTest {
         '{\n' +
         '   "id": 139,\n' +
         '   "saksnummer": null,\n' +
-        '   "modul": {\n' +
-        '       "id":10,\n' +  
-        '       "iaTjeneste": {\n' +
-        '           "id":2,\n' +
-        '           "navn":"Forebyggende arbeidsmiljøarbeid",\n' +
-        '           "deaktivert":false},\n' +
-        '       "navn":"Livsfaseorientert personalpolitikk",\n' +
-        '       "deaktivert":false},\n' +
         '   "frist": "2023-08-31",\n' +
         '   "status": "UNDER_ARBEID",\n' +
         '   "opprettetAv": "Z994537",\n' +

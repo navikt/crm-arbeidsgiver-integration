@@ -2,10 +2,10 @@ public with sharing class FiaDelivery implements IKafkaMessageParser{
     
     public Integer id;
     public String saksnummer;
-    public Modul modul;
-    public String iaTjenesteId;
+    //public Modul modul;
+    public Integer iaTjenesteId;
     public String iaTjenesteNavn;
-    public String iaModulId;
+    public Integer iaModulId;
     public String iaModulNavn;
     public String frist;
     public String status;
@@ -22,7 +22,7 @@ public with sharing class FiaDelivery implements IKafkaMessageParser{
     public String hash;
     public String key;
 
-    public class Modul {
+    /*public class Modul {
         public Integer id;
         public IaTjeneste iaTjeneste;
         public String navn;
@@ -33,7 +33,7 @@ public with sharing class FiaDelivery implements IKafkaMessageParser{
         public Integer id;
         public String navn;
         public Boolean deaktivert;
-    }
+    }*/
 
     public static FiaDelivery parse(String json, String key, String hash) {
         String formattedJSON = json.replaceAll('"fullført":', '"fullfort":');
