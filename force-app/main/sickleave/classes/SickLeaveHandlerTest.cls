@@ -45,7 +45,7 @@ public class SickLeaveHandlerTest {
         System.assertEquals(2, result[0].CRM_Quarter__c);
         System.assertEquals(2023, result[0].CRM_Year__c);
         System.assertEquals(false, result[0].CRM_IsHidden__c);
-        System.assertEquals('Branch', result[0].CRM_AbsenceCategory__c);
+        System.assertEquals('BRANSJE', result[0].CRM_AbsenceCategory__c);
         System.assertEquals('ewogICJrYXRlZ29yaSI6ICJCUkFOU0pFIiwKICAia29kZSI6ICJTWUtFSFVTIiwKICAia3ZhcnRhbCI6ICIyIiwKICAiw6Vyc3RhbGwiOiAiMjAyMyIKfQ==', result[0].CRM_Key__c);
         System.assertEquals(2500000, result[0].CRM_NumberOfPeople__c);
         System.assertEquals(500000000.0, result[0].CRM_PossibleDaysWork__c);

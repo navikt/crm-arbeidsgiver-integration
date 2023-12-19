@@ -50,7 +50,7 @@ public without sharing class SickLeaveEmployerHandler extends KafkaMessageProces
 
             Absence__c a = new Absence__c(
                 CRM_Key__c = model.kode + String.valueOf(model.sistePubliserteKvartal.arstall) + String.valueOf(model.sistePubliserteKvartal.kvartal),
-                CRM_AbsenceCategory__c = 'Employer',
+                CRM_AbsenceCategory__c = model.kategori,
                 CRM_Code__c = model.kode,
                 CRM_Year__c = model.sistePubliserteKvartal.arstall,
                 CRM_Quarter__c = model.sistePubliserteKvartal.kvartal,

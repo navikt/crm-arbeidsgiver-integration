@@ -244,13 +244,13 @@ public class SickLeaveMetadataHandlerTest {
                 CRM_SectorCode__c,
                 CRM_AbsenceCountry__c
             FROM Absence__c
-            WHERE CRM_AbsenceCategory__c = 'Employer'
+            WHERE CRM_AbsenceCategory__c = 'VIRKSOMHET'
         ];
         List<Absence__c> resultCOuntry = [
             SELECT
                 Id
             FROM Absence__c
-            WHERE CRM_AbsenceCategory__c = 'Country'
+            WHERE CRM_AbsenceCategory__c = 'LAND'
         ];
 
         System.assertEquals(1, result.size());
@@ -360,37 +360,37 @@ public class SickLeaveMetadataHandlerTest {
                 CRM_AbsenceIndustryCode__c,
                 CRM_AbsenceIndustry__c
             FROM Absence__c
-            WHERE CRM_AbsenceCategory__c = 'Employer'
+            WHERE CRM_AbsenceCategory__c = 'VIRKSOMHET'
         ];
         List<Absence__c> resultCountry = [
             SELECT
                 Id
             FROM Absence__c
-            WHERE CRM_AbsenceCategory__c = 'Country'
+            WHERE CRM_AbsenceCategory__c = 'LAND'
         ];
         List<Absence__c> resultIndustryCode = [
             SELECT
                 Id
             FROM Absence__c
-            WHERE CRM_AbsenceCategory__c = 'Industry code'
+            WHERE CRM_AbsenceCategory__c = 'NÆRINGSKODE'
         ];
         List<Absence__c> resultIndustry = [
             SELECT
                 Id
             FROM Absence__c
-            WHERE CRM_AbsenceCategory__c = 'Industry'
+            WHERE CRM_AbsenceCategory__c = 'NÆRING'
         ];
         List<Absence__c> resultBranch = [
             SELECT
                 Id
             FROM Absence__c
-            WHERE CRM_AbsenceCategory__c = 'Branch'
+            WHERE CRM_AbsenceCategory__c = 'BRANSJE'
         ];
         List<Absence__c> resultSector = [
             SELECT
                 Id
             FROM Absence__c
-            WHERE CRM_AbsenceCategory__c = 'Sector'
+            WHERE CRM_AbsenceCategory__c = 'SEKTOR'
         ];
         List<Absence__c> results = [
             SELECT

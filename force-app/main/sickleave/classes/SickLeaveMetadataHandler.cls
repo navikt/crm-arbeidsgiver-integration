@@ -60,7 +60,7 @@ public without sharing class SickLeaveMetadataHandler extends KafkaMessageProces
 
             Absence__c a = new Absence__c(
                 CRM_Key__c = model.orgnr + model.arstall + model.kvartal,
-                CRM_AbsenceCategory__c = 'Employer',
+                CRM_AbsenceCategory__c = 'VIRKSOMHET',
                 CRM_Year__c = integer.valueOf(model.arstall),
                 CRM_Quarter__c = integer.valueOf(model.kvartal),
                 CRM_OrganizationNumber__c = model.orgnr,
@@ -101,7 +101,7 @@ public without sharing class SickLeaveMetadataHandler extends KafkaMessageProces
         List<Absence__c> absences = [
             SELECT Id, CRM_Year__c, CRM_Quarter__c, CRM_Code__c, CRM_AbsenceCategory__c
             FROM Absence__c
-            WHERE CRM_AbsenceCategory__c = 'Industry code' AND CRM_Year__c = :Year AND CRM_Quarter__c = :Quarter 
+            WHERE CRM_AbsenceCategory__c = 'NÆRINGSKODE' AND CRM_Year__c = :Year AND CRM_Quarter__c = :Quarter 
         ];
         if(absences.size() >0) {
             for (Absence__c a : absences) {
@@ -116,7 +116,7 @@ public without sharing class SickLeaveMetadataHandler extends KafkaMessageProces
         List<Absence__c> absences = [
             SELECT Id, CRM_Year__c, CRM_Quarter__c, CRM_Code__c, CRM_AbsenceCategory__c
             FROM Absence__c
-            WHERE CRM_AbsenceCategory__c = 'Industry' AND CRM_Year__c = :Year AND CRM_Quarter__c = :Quarter 
+            WHERE CRM_AbsenceCategory__c = 'NÆRING' AND CRM_Year__c = :Year AND CRM_Quarter__c = :Quarter 
         ];
 
         if(absences.size() >0) {
@@ -132,7 +132,7 @@ public without sharing class SickLeaveMetadataHandler extends KafkaMessageProces
         List<Absence__c> absences = [
             SELECT Id, CRM_Year__c, CRM_Quarter__c, CRM_Code__c, CRM_AbsenceCategory__c
             FROM Absence__c
-            WHERE CRM_AbsenceCategory__c = 'Branch' AND CRM_Year__c = :Year AND CRM_Quarter__c = :Quarter 
+            WHERE CRM_AbsenceCategory__c = 'BRANSJE' AND CRM_Year__c = :Year AND CRM_Quarter__c = :Quarter 
         ];
         if(absences.size() >0) {
             for (Absence__c a : absences) {
@@ -147,7 +147,7 @@ public without sharing class SickLeaveMetadataHandler extends KafkaMessageProces
         List<Absence__c> absences = [
             SELECT Id, CRM_Year__c, CRM_Quarter__c, CRM_Code__c, CRM_AbsenceCategory__c
             FROM Absence__c
-            WHERE CRM_AbsenceCategory__c = 'Sector' AND CRM_Year__c = :Year AND CRM_Quarter__c = :Quarter 
+            WHERE CRM_AbsenceCategory__c = 'SEKTOR' AND CRM_Year__c = :Year AND CRM_Quarter__c = :Quarter 
         ];
         if(absences.size() >0) {
             for (Absence__c a : absences) {
@@ -162,7 +162,7 @@ public without sharing class SickLeaveMetadataHandler extends KafkaMessageProces
         List<Absence__c> absences = [
             SELECT Id, CRM_Year__c, CRM_Quarter__c, CRM_AbsenceCategory__c
             FROM Absence__c
-            WHERE CRM_AbsenceCategory__c = 'Country' AND CRM_Year__c = :Year AND CRM_Quarter__c = :Quarter 
+            WHERE CRM_AbsenceCategory__c = 'LAND' AND CRM_Year__c = :Year AND CRM_Quarter__c = :Quarter 
         ];
         if(absences.size() > 0) {
             absenceCountryId = absences[0].Id;
