@@ -47,29 +47,9 @@ public without sharing class SickLeaveHandler extends KafkaMessageProcessor impl
         List<Absence__c> absences = new List<Absence__c>();
 
         for (SickLeaveModel model : keyToSickLeave.values()) {
-            //Choose correct category for Absence
-            String category;
-            switch on model.kategori {
-                when 'NÆRINGSKODE' {
-                    category = 'Industry code';
-                }
-                when 'NÆRING' {
-                    category = 'Industry';
-                }
-                when 'BRANSJE' {
-                    category = 'Branch';
-                }
-                when 'SEKTOR' {
-                    category = 'Sector';
-                }
-                when 'LAND' {
-                    category = 'Country';
-                }    
-            }
-
             Absence__c a = new Absence__c(
                 CRM_Key__c = model.key,
-                CRM_AbsenceCategory__c = category,
+                CRM_AbsenceCategory__c = model.kategori,
                 CRM_Code__c = model.kode,
                 CRM_Year__c = model.sistePubliserteKvartal.arstall,
                 CRM_Quarter__c = model.sistePubliserteKvartal.kvartal,
