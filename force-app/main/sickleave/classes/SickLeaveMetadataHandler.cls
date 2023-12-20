@@ -64,10 +64,10 @@ public without sharing class SickLeaveMetadataHandler extends KafkaMessageProces
                 CRM_Year__c = integer.valueOf(model.arstall),
                 CRM_Quarter__c = integer.valueOf(model.kvartal),
                 CRM_OrganizationNumber__c = model.orgnr,
-                CRM_IndustryCode__c = model.naringskode,
-                CRM_IndustryMainCode__c = model.naring,
-                CRM_BranchCode__c = model.bransje,
-                CRM_SectorCode__c = model.sektor,
+                CRM_IndustryCode__c = model?.naringskode,
+                CRM_IndustryMainCode__c = model?.naring,
+                CRM_BranchCode__c = model?.bransje,
+                CRM_SectorCode__c = model?.sektor,
                 JsonPayload__c = model.jsonPayload
             );
 
