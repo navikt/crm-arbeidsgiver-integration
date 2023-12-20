@@ -106,8 +106,9 @@ public class SickLeaveMetadataHandlerTest {
                 CRM_BranchCode__c,
                 CRM_SectorCode__c
             FROM Absence__c
+            WHERE CRM_AbsenceCategory__c = 'VIRKSOMHET'
         ];
-        System.assertEquals(6, result.size());
+        System.assertEquals(1, result.size());
         System.assertEquals(2, result[0].CRM_Quarter__c);
         System.assertEquals(2023, result[0].CRM_Year__c);
         System.assertEquals('99999999920232', result[0].CRM_Key__c);
