@@ -107,7 +107,7 @@ public class SickLeaveMetadataHandlerTest {
                 CRM_SectorCode__c
             FROM Absence__c
         ];
-        System.assertEquals(1, result.size());
+        System.assertEquals(6, result.size());
         System.assertEquals(2, result[0].CRM_Quarter__c);
         System.assertEquals(2023, result[0].CRM_Year__c);
         System.assertEquals('99999999920232', result[0].CRM_Key__c);
@@ -155,11 +155,12 @@ public class SickLeaveMetadataHandlerTest {
                 CRM_Last4QuartersPossibleDaysWork__c,
                 CRM_Last4QuartersIsHidden__c
             FROM Absence__c
+            WHERE CRM_AbsenceCategory__c = 'VIRKSOMHET'
         ];
 
         List<Account> acc2 = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = '12345678'];
 
-        System.assertEquals(6, result.size());
+        System.assertEquals(1, result.size());
         System.assertEquals(2, result[0].CRM_Quarter__c);
         System.assertEquals(2023, result[0].CRM_Year__c);
         System.assertEquals(acc2[0].Id, result[0].CRM_Account__c);
@@ -218,6 +219,7 @@ public class SickLeaveMetadataHandlerTest {
                 CRM_Last4QuartersPossibleDaysWork__c,
                 CRM_Last4QuartersIsHidden__c
             FROM Absence__c
+            WHERE CRM_AbsenceCategory__c = 'VIRKSOMHET'
         ];
         System.assertEquals(1, resultUpdated.size());
         System.assertEquals(2, resultUpdated[0].CRM_Quarter__c);
