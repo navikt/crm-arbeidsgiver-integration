@@ -379,7 +379,6 @@ public class SickLeaveMetadataHandlerTest {
                 Id
             FROM Absence__c
         ];
-
         
         System.assertEquals(6, results.size());
         System.assertEquals(1, result.size());
@@ -395,7 +394,6 @@ public class SickLeaveMetadataHandlerTest {
         System.assertEquals(resultIndustry[0].Id, result[0].CRM_AbsenceIndustry__c);
         System.assertEquals(resultBranch[0].Id, result[0].CRM_AbsenceBranch__c);
         System.assertEquals(resultSector[0].Id, result[0].CRM_AbsenceSector__c);
-
     }
 
     @IsTest
@@ -443,5 +441,46 @@ public class SickLeaveMetadataHandlerTest {
         System.assertEquals('86101', result[0].CRM_IndustryCode__c);
         System.assertEquals(null, result[0].CRM_BranchCode__c);
         System.assertEquals(null, result[0].CRM_SectorCode__c);  
+    }
+
+    @IsTest
+    public static void testHandleMessageWithNullsNegative() {
+        List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
+
+        String json = '{"orgnr":"919300760","arstall":null,"kvartal":"2","naring":"86","naringskode":"86101","bransje":null,"sektor":null}';
+        String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
+
+        KafkaMessage__c msg1 = new KafkaMessage__c();
+        msg1.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-metadata-virksomhet-v1';
+        msg1.CRM_Key__c = '{"orgnr":"919300760","arstall":"2023","kvartal":"2"}';
+        msg1.CRM_Value__c = encodedValue;
+        messages.add(msg1);
+
+        insert messages;
+
+        Test.startTest();
+        SickLeaveMetadataHandler handler = new SickLeaveMetadataHandler();
+        handler.processMessages(messages);        
+        Test.stopTest();
+
+        List<Absence__c> result = [
+            SELECT
+                Id,
+                CRM_Key__c,
+                CRM_AbsenceCategory__c,
+                CRM_Code__c,
+                CRM_Year__c,
+                CRM_Quarter__c,
+                CRM_OrganizationNumber__c,
+                CRM_IndustryMainCode__c,
+                CRM_IndustryCode__c,
+                CRM_BranchCode__c,
+                CRM_SectorCode__c
+            FROM Absence__c
+            WHERE CRM_AbsenceCategory__c = 'VIRKSOMHET'
+        ];
+
+        System.assertEquals('Error', messages[0].CRM_Status__c, 'Expecting CRM_Status__c = Error as arstall is null');
+        System.assertEquals(0, result.size(), 'Expecting list to be empty(0) as the arstall is null');
     }
 }
