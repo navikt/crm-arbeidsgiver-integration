@@ -14,6 +14,10 @@ public with sharing class TAG_DeleteKafkaMessagesBatchJobTest {
         KafkaMessage__c kafkaMessageEreg2 = new KafkaMessage__c(CRM_Status__c = 'Processed', CRM_Topic__c = 'public-ereg-cache-org-tombstones', CRM_Key__c = '1236');
         KafkaMessage__c kafkaMessageEregError = new KafkaMessage__c(CRM_Status__c = 'Error', CRM_Topic__c = 'public-ereg-cache-org-tombstones', CRM_Key__c = '1236');
 
+        KafkaMessage__c kafkaMessageNks1 = new KafkaMessage__c(CRM_Status__c = 'Processed', CRM_Topic__c = 'teamnks.nks-sf-pdl-v3', CRM_Key__c = '1236');
+        KafkaMessage__c kafkaMessageNks2 = new KafkaMessage__c(CRM_Status__c = 'Processed', CRM_Topic__c = 'teamnks.nks-sf-pdl-v3', CRM_Key__c = '1236');
+        KafkaMessage__c kafkaMessageNksError = new KafkaMessage__c(CRM_Status__c = 'Error', CRM_Topic__c = 'teamnks.nks-sf-pdl-v3', CRM_Key__c = '1236');
+
 
         List<KafkaMessage__c> kafkaMessageList = new List<KafkaMessage__c>{
             kafkaMessageKontaktskjema1,
@@ -24,7 +28,10 @@ public with sharing class TAG_DeleteKafkaMessagesBatchJobTest {
             kafkaMessageStillingPending,
             kafkaMessageEreg1,
             kafkaMessageEreg2,
-            kafkaMessageEregError
+            kafkaMessageEregError,
+            kafkaMessageNks1,
+            kafkaMessageNks2,
+            kafkaMessageNksError
         };
 
         insert kafkaMessageList;
@@ -36,6 +43,6 @@ public with sharing class TAG_DeleteKafkaMessagesBatchJobTest {
 
         List<KafkaMessage__c> kafkaMessagesNotDeleted = [SELECT Id FROM KafkaMessage__c];
 
-        System.assertEquals(3, kafkaMessagesNotDeleted.size(), 'Should be 3 kafka messages that are not deleted');
+        System.assertEquals(6, kafkaMessagesNotDeleted.size(), 'Should be 6 kafka messages that are not deleted');
     }
 }
