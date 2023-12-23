@@ -38,7 +38,7 @@ public with sharing class TAG_DeleteKafkaMessagesBatchJobTest {
 
         Test.startTest();
         TAG_DeleteKafkaMessagesBatchJob btch = new TAG_DeleteKafkaMessagesBatchJob();
-        Database.executeBatch(btch, 200);
+        Database.executeBatch(btch, 10000);
         Test.stopTest();
 
         List<KafkaMessage__c> kafkaMessagesNotDeleted = [SELECT Id FROM KafkaMessage__c];
