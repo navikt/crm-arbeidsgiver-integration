@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <description>Kafka og Async-tilgang</description>
+     <classAccesses>
+        <apexClass>TAG_DeleteKafkaMessagesBatchJob</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+     <classAccesses>
+        <apexClass>TAG_DeleteKafkaMessagesScheduler</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
     <fieldPermissions>
         <editable>false</editable>
         <field>AsyncRequest__c.CRM_ErrorMessage__c</field>
