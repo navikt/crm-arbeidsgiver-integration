@@ -10,9 +10,9 @@ public with sharing class TAG_DeleteKafkaMessagesBatchJobTest {
         KafkaMessage__c kafkaMessageStilling2 = new KafkaMessage__c(CRM_Status__c = 'Processed', CRM_Topic__c = 'teampam.stilling-ekstern-1', CRM_Key__c = '1235');
         KafkaMessage__c kafkaMessageStillingPending = new KafkaMessage__c(CRM_Status__c = 'Pending', CRM_Topic__c = 'teampam.stilling-ekstern-1', CRM_Key__c = '1235');
 
-        KafkaMessage__c kafkaMessageEreg1 = new KafkaMessage__c(CRM_Status__c = 'Processed', CRM_Topic__c = 'public-ereg-cache-org-tombstones', CRM_Key__c = '1236');
-        KafkaMessage__c kafkaMessageEreg2 = new KafkaMessage__c(CRM_Status__c = 'Processed', CRM_Topic__c = 'public-ereg-cache-org-tombstones', CRM_Key__c = '1236');
-        KafkaMessage__c kafkaMessageEregError = new KafkaMessage__c(CRM_Status__c = 'Error', CRM_Topic__c = 'public-ereg-cache-org-tombstones', CRM_Key__c = '1236');
+        KafkaMessage__c kafkaMessagePiaSak1 = new KafkaMessage__c(CRM_Status__c = 'Processed', CRM_Topic__c = 'pia.ia-sak-v1', CRM_Key__c = '1236');
+        KafkaMessage__c kafkaMessagePiaSak2 = new KafkaMessage__c(CRM_Status__c = 'Processed', CRM_Topic__c = 'pia.ia-sak-v1', CRM_Key__c = '1236');
+        KafkaMessage__c kafkaMessagePiaSakError = new KafkaMessage__c(CRM_Status__c = 'Error', CRM_Topic__c = 'pia.ia-sak-v1', CRM_Key__c = '1236');
 
         KafkaMessage__c kafkaMessageNks1 = new KafkaMessage__c(CRM_Status__c = 'Processed', CRM_Topic__c = 'teamnks.nks-sf-pdl-v3', CRM_Key__c = '1236');
         KafkaMessage__c kafkaMessageNks2 = new KafkaMessage__c(CRM_Status__c = 'Processed', CRM_Topic__c = 'teamnks.nks-sf-pdl-v3', CRM_Key__c = '1236');
@@ -26,9 +26,9 @@ public with sharing class TAG_DeleteKafkaMessagesBatchJobTest {
             kafkaMessageStilling1,
             kafkaMessageStilling2,
             kafkaMessageStillingPending,
-            kafkaMessageEreg1,
-            kafkaMessageEreg2,
-            kafkaMessageEregError,
+            kafkaMessagePiaSak1,
+            kafkaMessagePiaSak2,
+            kafkaMessagePiaSakError,
             kafkaMessageNks1,
             kafkaMessageNks2,
             kafkaMessageNksError
