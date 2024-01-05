@@ -43,6 +43,7 @@
 **/AsyncRequest__c*
 **/INT_*
 
+**/force-app/main/default/permissionsets/sfdcInternalInt__sfdc_scrt2.permissionset-meta.xml
 
 # # community classes
 # # ----------------------------------------------------------------------------------------
