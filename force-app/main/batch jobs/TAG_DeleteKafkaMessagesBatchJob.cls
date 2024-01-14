@@ -1,5 +1,5 @@
 public class TAG_DeleteKafkaMessagesBatchJob implements Database.Batchable<sObject> {
-    private static final String KAFKA_MESSAGE_QUERY = 'SELECT Id FROM KafkaMessage__c WHERE CreatedDate > 2022-07-01T00:00:00Z AND CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-v1\'';
+    private static final String KAFKA_MESSAGE_QUERY = 'SELECT Id FROM KafkaMessage__c WHERE CreatedDate > 2022-09-01T00:00:00Z AND CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-v1\'';
     /*private static final String KAFKA_MESSAGE_QUERY = 'SELECT Id FROM KafkaMessage__c WHERE (CRM_Status__c = \'Processed\' AND CreatedDate > 2022-01-01T00:00:00Z) AND'
         + ' (CRM_Topic__c = \'team-innhold.arbeidsgiver-kontaktskjema\' OR'
         + ' CRM_Topic__c = \'teampam.stilling-ekstern-1\' OR'
