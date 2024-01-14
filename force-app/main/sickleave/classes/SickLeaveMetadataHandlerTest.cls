@@ -284,7 +284,7 @@ public class SickLeaveMetadataHandlerTest {
             FROM Absence__c
             WHERE CRM_AbsenceCategory__c = 'VIRKSOMHET'
         ];
-        List<Absence__c> resultCOuntry = [
+        List<Absence__c> resultCountry = [
             SELECT
                 Id
             FROM Absence__c
@@ -299,7 +299,8 @@ public class SickLeaveMetadataHandlerTest {
         System.assertEquals('86101', result[0].CRM_IndustryCode__c);
         System.assertEquals('SYKEHUS', result[0].CRM_BranchCode__c);
         System.assertEquals('STAT', result[0].CRM_SectorCode__c);
-        System.assertEquals(resultCOuntry[0].Id, result[0].CRM_AbsenceCountry__c);
+        System.assertEquals(1, resultCountry.size());
+        System.assertEquals(resultCountry[0].Id, result[0].CRM_AbsenceCountry__c);
     }
 
     @IsTest
@@ -482,5 +483,214 @@ public class SickLeaveMetadataHandlerTest {
 
         System.assertEquals('Error', messages[0].CRM_Status__c, 'Expecting CRM_Status__c = Error as arstall is null');
         System.assertEquals(0, result.size(), 'Expecting list to be empty(0) as the arstall is null');
+    }
+
+    @IsTest
+    public static void testHandleMessageInsertWithMultipleCountry() {
+        List<KafkaMessage__c> messages2 = new List<KafkaMessage__c>();
+
+        String jsonC = '{"kategori":"LAND","kode":"NO","sistePubliserteKvartal":{"årstall":2023,"kvartal":3,"prosent":2.0,"tapteDagsverk":10000000.0,"muligeDagsverk":500000000.0,"antallPersoner":2500000,"erMaskert":false},"siste4Kvartal":{"prosent":1.9,"tapteDagsverk":38000000.0,"muligeDagsverk":2000000000.0,"erMaskert":true,"kvartaler":[{"årstall":2020,"kvartal": 2},{"årstall":2020,"kvartal":1},{"årstall":2019,"kvartal":4},{"årstall":2019,"kvartal":3}]}}';
+        String encodedValueC = EncodingUtil.base64Encode(Blob.valueOf(jsonC));
+
+        KafkaMessage__c msgC = new KafkaMessage__c();
+        msgC.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-land-v1';
+        msgC.CRM_Key__c = 'ewogICJrYXRlZ29yaSICJCUkFOU0pFIiwKICAia29kZSI6ICJTWUtFSFVTIiwKICAia3ZhcnRhbCI6ICIyIiwKICAiw6Vyc3RhbGwiOiAiMjAyMyIKfQ==';
+        msgC.CRM_Value__c = encodedValueC;
+
+        messages2.add(msgC);
+
+        String jsonC2 = '{"kategori":"LAND","kode":"NO","sistePubliserteKvartal":{"årstall":2023,"kvartal":1,"prosent":2.0,"tapteDagsverk":10000000.0,"muligeDagsverk":500000000.0,"antallPersoner":2500000,"erMaskert":false},"siste4Kvartal":{"prosent":1.9,"tapteDagsverk":38000000.0,"muligeDagsverk":2000000000.0,"erMaskert":true,"kvartaler":[{"årstall":2020,"kvartal": 2},{"årstall":2020,"kvartal":1},{"årstall":2019,"kvartal":4},{"årstall":2019,"kvartal":3}]}}';
+        String encodedValueC2 = EncodingUtil.base64Encode(Blob.valueOf(jsonC2));
+
+        KafkaMessage__c msgC2 = new KafkaMessage__c();
+        msgC2.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-land-v1';
+        msgC2.CRM_Key__c = 'ewogICJrYXRlZ29yaSI6ICJkFOU0pFIiwKICAia29kZSI6ICJTWtFSFVTIiwKICAia3ZhcnRhbCI6ICIyIiwKICAiw6Vyc3RhbGwiOiAiMjAyMyIKfQ==';
+        msgC2.CRM_Value__c = encodedValueC2;
+
+        messages2.add(msgC2);
+
+        insert messages2;
+
+        SickLeaveHandler handler2 = new SickLeaveHandler();
+        handler2.processMessages(messages2); 
+
+        List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
+
+        String json3 = '{"orgnr":"999999999","arstall":"2021","kvartal":"3","naring":"01","naringskode":"01001","bransje":"SYKEHUS","sektor":"STAT"}';
+        String encodedValue3 = EncodingUtil.base64Encode(Blob.valueOf(json3));
+
+        KafkaMessage__c msg3 = new KafkaMessage__c();
+        msg3.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-metadata-virksomhet-v1';
+        msg3.CRM_Key__c = '{"orgnr":"999999999","arstall":"2021","kvartal":"3"}';
+        msg3.CRM_Value__c = encodedValue3;
+
+        messages.add(msg3);
+
+        String json = '{"orgnr":"999999999","arstall":"2023","kvartal":"2","naring":"01","naringskode":"01001","bransje":"SYKEHUS","sektor":"STAT"}';
+        String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
+
+        KafkaMessage__c msg1 = new KafkaMessage__c();
+        msg1.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-metadata-virksomhet-v1';
+        msg1.CRM_Key__c = '{"orgnr":"999999999","arstall":"2023","kvartal":"2"}';
+        msg1.CRM_Value__c = encodedValue;
+
+        messages.add(msg1);
+
+        String json2 = '{"orgnr":"999999999","arstall":"2022","kvartal":"3","naring":"01","naringskode":"01001","bransje":"SYKEHUS","sektor":"STAT"}';
+        String encodedValue2 = EncodingUtil.base64Encode(Blob.valueOf(json2));
+
+        KafkaMessage__c msg2 = new KafkaMessage__c();
+        msg2.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-metadata-virksomhet-v1';
+        msg2.CRM_Key__c = '{"orgnr":"999999999","arstall":"2022","kvartal":"3"}';
+        msg2.CRM_Value__c = encodedValue2;
+
+        messages.add(msg2);
+
+        insert messages;
+
+        Test.startTest();
+        SickLeaveMetadataHandler handler = new SickLeaveMetadataHandler();
+        handler.processMessages(messages);        
+        Test.stopTest();
+
+        List<Absence__c> result = [
+            SELECT
+                Id,
+                CRM_Key__c,
+                CRM_AbsenceCategory__c,
+                CRM_Code__c,
+                CRM_Year__c,
+                CRM_Quarter__c,
+                CRM_OrganizationNumber__c,
+                CRM_IndustryMainCode__c,
+                CRM_IndustryCode__c,
+                CRM_BranchCode__c,
+                CRM_SectorCode__c,
+                CRM_AbsenceCountry__c
+            FROM Absence__c
+            WHERE CRM_AbsenceCategory__c = 'VIRKSOMHET' AND CRM_Year__c = 2023 AND CRM_Quarter__c = 2
+        ];
+        List<Absence__c> resultCountry = [
+            SELECT
+                Id
+            FROM Absence__c
+            WHERE CRM_AbsenceCategory__c = 'LAND' AND CRM_Year__c = 2023 AND CRM_Quarter__c = 2
+        ];
+
+        System.assertEquals(1, result.size());
+        System.assertEquals(2, result[0].CRM_Quarter__c);
+        System.assertEquals(2023, result[0].CRM_Year__c);
+        System.assertEquals('99999999920232', result[0].CRM_Key__c);
+        System.assertEquals('01', result[0].CRM_IndustryMainCode__c);
+        System.assertEquals('01001', result[0].CRM_IndustryCode__c);
+        System.assertEquals('SYKEHUS', result[0].CRM_BranchCode__c);
+        System.assertEquals('STAT', result[0].CRM_SectorCode__c);
+        System.assertEquals(1, resultCountry.size());
+        System.assertEquals(resultCountry[0].Id, result[0].CRM_AbsenceCountry__c);
+    }
+
+    @IsTest
+    public static void testHandleMessageInsertWithMultipleSector() {
+        List<KafkaMessage__c> messages2 = new List<KafkaMessage__c>();
+
+        String jsonC = '{"kategori":"SEKTOR","kode":"STAT","sistePubliserteKvartal":{"årstall":2022,"kvartal":3,"prosent":2.0,"tapteDagsverk":10000000.0,"muligeDagsverk":500000000.0,"antallPersoner":2500000,"erMaskert":false},"siste4Kvartal":{"prosent":1.9,"tapteDagsverk":38000000.0,"muligeDagsverk":2000000000.0,"erMaskert":true,"kvartaler":[{"årstall":2020,"kvartal": 2},{"årstall":2020,"kvartal":1},{"årstall":2019,"kvartal":4},{"årstall":2019,"kvartal":3}]}}';
+        String encodedValueC = EncodingUtil.base64Encode(Blob.valueOf(jsonC));
+
+        KafkaMessage__c msgC = new KafkaMessage__c();
+        msgC.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-sektor-v1';
+        msgC.CRM_Key__c = 'ewogICJrYXRlZ29yaSICJCUkFOU0pFIiwKICAia29kZSI6ICJTWUtFSFVTIiwKICAia3ZhcnRhbCI6ICIyIiwKICAiw6Vyc3RhbGwiOiAiMjAyMyIKfQ==';
+        msgC.CRM_Value__c = encodedValueC;
+
+        messages2.add(msgC);
+
+        String jsonC2 = '{"kategori":"SEKTOR","kode":"STAT","sistePubliserteKvartal":{"årstall":2022,"kvartal":2,"prosent":2.0,"tapteDagsverk":10000000.0,"muligeDagsverk":500000000.0,"antallPersoner":2500000,"erMaskert":false},"siste4Kvartal":{"prosent":1.9,"tapteDagsverk":38000000.0,"muligeDagsverk":2000000000.0,"erMaskert":true,"kvartaler":[{"årstall":2020,"kvartal": 2},{"årstall":2020,"kvartal":1},{"årstall":2019,"kvartal":4},{"årstall":2019,"kvartal":3}]}}';
+        String encodedValueC2 = EncodingUtil.base64Encode(Blob.valueOf(jsonC2));
+
+        KafkaMessage__c msgC2 = new KafkaMessage__c();
+        msgC2.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-sektor-v1';
+        msgC2.CRM_Key__c = 'ewogICJrYXRlZ29yaSI6ICJkFOU0pFIiwKICAia29kZSI6ICJTWtFSFVTIiwKICAia3ZhcnRhbCI6ICIyIiwKICAiw6Vyc3RhbGwiOiAiMjAyMyIKfQ==';
+        msgC2.CRM_Value__c = encodedValueC2;
+
+        messages2.add(msgC2);
+
+        insert messages2;
+
+        SickLeaveHandler handler2 = new SickLeaveHandler();
+        handler2.processMessages(messages2); 
+
+        List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
+
+        String json3 = '{"orgnr":"999999999","arstall":"2021","kvartal":"3","naring":"01","naringskode":"01001","bransje":"SYKEHUS","sektor":"STAT"}';
+        String encodedValue3 = EncodingUtil.base64Encode(Blob.valueOf(json3));
+
+        KafkaMessage__c msg3 = new KafkaMessage__c();
+        msg3.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-metadata-virksomhet-v1';
+        msg3.CRM_Key__c = '{"orgnr":"999999999","arstall":"2021","kvartal":"3"}';
+        msg3.CRM_Value__c = encodedValue3;
+
+        messages.add(msg3);
+
+        String json = '{"orgnr":"999999999","arstall":"2023","kvartal":"2","naring":"01","naringskode":"01001","bransje":"SYKEHUS","sektor":"STAT"}';
+        String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
+
+        KafkaMessage__c msg1 = new KafkaMessage__c();
+        msg1.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-metadata-virksomhet-v1';
+        msg1.CRM_Key__c = '{"orgnr":"999999999","arstall":"2023","kvartal":"2"}';
+        msg1.CRM_Value__c = encodedValue;
+
+        messages.add(msg1);
+
+        String json2 = '{"orgnr":"999999999","arstall":"2022","kvartal":"3","naring":"01","naringskode":"01001","bransje":"SYKEHUS","sektor":"STAT"}';
+        String encodedValue2 = EncodingUtil.base64Encode(Blob.valueOf(json2));
+
+        KafkaMessage__c msg2 = new KafkaMessage__c();
+        msg2.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-metadata-virksomhet-v1';
+        msg2.CRM_Key__c = '{"orgnr":"999999999","arstall":"2022","kvartal":"3"}';
+        msg2.CRM_Value__c = encodedValue2;
+
+        messages.add(msg2);
+
+        insert messages;
+
+        Test.startTest();
+        SickLeaveMetadataHandler handler = new SickLeaveMetadataHandler();
+        handler.processMessages(messages);        
+        Test.stopTest();
+
+        List<Absence__c> result = [
+            SELECT
+                Id,
+                CRM_Key__c,
+                CRM_AbsenceCategory__c,
+                CRM_Code__c,
+                CRM_Year__c,
+                CRM_Quarter__c,
+                CRM_OrganizationNumber__c,
+                CRM_IndustryMainCode__c,
+                CRM_IndustryCode__c,
+                CRM_BranchCode__c,
+                CRM_SectorCode__c,
+                CRM_AbsenceCountry__c,
+                CRM_AbsenceSector__c
+            FROM Absence__c
+            WHERE CRM_AbsenceCategory__c = 'VIRKSOMHET' AND CRM_Year__c = 2023 AND CRM_Quarter__c = 2
+        ];
+        List<Absence__c> resultSector = [
+            SELECT
+                Id
+            FROM Absence__c
+            WHERE CRM_AbsenceCategory__c = 'SEKTOR' AND CRM_Year__c = 2023 AND CRM_Quarter__c = 2
+        ];
+
+        System.assertEquals(1, result.size());
+        System.assertEquals(2, result[0].CRM_Quarter__c);
+        System.assertEquals(2023, result[0].CRM_Year__c);
+        System.assertEquals('99999999920232', result[0].CRM_Key__c);
+        System.assertEquals('01', result[0].CRM_IndustryMainCode__c);
+        System.assertEquals('01001', result[0].CRM_IndustryCode__c);
+        System.assertEquals('SYKEHUS', result[0].CRM_BranchCode__c);
+        System.assertEquals('STAT', result[0].CRM_SectorCode__c);
+        System.assertEquals(1, resultSector.size());
+        System.assertEquals(resultSector[0].Id, result[0].CRM_AbsenceSector__c);
     }
 }
