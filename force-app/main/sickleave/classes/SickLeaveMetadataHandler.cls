@@ -6,10 +6,7 @@ public without sharing class SickLeaveMetadataHandler extends KafkaMessageProces
     public void processMessages(List<KafkaMessage__c> messages) {
         for (KafkaMessage__c msg : messages) {
             try {
-                SickLeaveMetadataModel sickLeave = (SickLeaveMetadataModel) parse(
-                    SickLeaveMetadataModel.class,
-                    msg
-                );
+                SickLeaveMetadataModel sickLeave = (SickLeaveMetadataModel) parse(SickLeaveMetadataModel.class, msg);
                 mapSickLeave(sickLeave);
                 Years.add(Integer.valueOf(sickLeave.arstall));
                 Quarters.add(Integer.valueOf(sickLeave.kvartal));
@@ -24,7 +21,7 @@ public without sharing class SickLeaveMetadataHandler extends KafkaMessageProces
         logger.publish();
     }
 
-   private void mapSickLeave(SickLeaveMetadataModel sickLeave) {
+    private void mapSickLeave(SickLeaveMetadataModel sickLeave) {
         String key = sickLeave.key;
 
         if (!keyToSickLeave.containsKey(key)) {
@@ -32,16 +29,15 @@ public without sharing class SickLeaveMetadataHandler extends KafkaMessageProces
         }
     }
 
-   private void convertAndUpsertSickLeave(List<KafkaMessage__c> messages) {
-    try {
-        List<Absence__c> absences = toSObject();
+    private void convertAndUpsertSickLeave(List<KafkaMessage__c> messages) {
+        try {
+            List<Absence__c> absences = toSObject();
 
-        Schema.SObjectField f = Absence__c.Fields.CRM_Key__c;
-        Database.UpsertResult [] cr = Database.upsert(absences , f, false);
-
-    } catch (Exception e) {
-        String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
-        logger.setMessageErrors(messages, errorRef);
+            Schema.SObjectField f = Absence__c.Fields.CRM_Key__c;
+            Database.UpsertResult[] cr = Database.upsert(absences, f, false);
+        } catch (Exception e) {
+            String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
+            logger.setMessageErrors(messages, errorRef);
         }
     }
 
@@ -55,7 +51,6 @@ public without sharing class SickLeaveMetadataHandler extends KafkaMessageProces
         List<Absence__c> absences = new List<Absence__c>();
 
         for (SickLeaveMetadataModel model : keyToSickLeave.values()) {
-
             Absence__c a = new Absence__c(
                 CRM_Key__c = model.orgnr + model.arstall + model.kvartal,
                 CRM_AbsenceCategory__c = 'VIRKSOMHET',
@@ -66,17 +61,23 @@ public without sharing class SickLeaveMetadataHandler extends KafkaMessageProces
                 CRM_IndustryMainCode__c = model?.naring,
                 CRM_BranchCode__c = model?.bransje,
                 CRM_SectorCode__c = model?.sektor,
-                JsonPayload__c = model.jsonPayload
+                JsonPayloadMetadata__c = model.jsonPayload
             );
             if (!landMap.isEmpty() && landMap.containsKey(model.arstall + model.kvartal)) {
                 a.CRM_AbsenceCountry__c = landMap.get(model.arstall + model.kvartal).Id;
             }
 
-            if (!industryCodeMap.isEmpty() && industryCodeMap.containsKey(model.naringskode + model.arstall + model.kvartal)) {
-                a.CRM_AbsenceIndustryCode__c = industryCodeMap.get(model.naringskode + model.arstall + model.kvartal).Id;
+            if (
+                !industryCodeMap.isEmpty() &&
+                industryCodeMap.containsKey(model.naringskode + model.arstall + model.kvartal)
+            ) {
+                a.CRM_AbsenceIndustryCode__c = industryCodeMap.get(model.naringskode + model.arstall + model.kvartal)
+                    .Id;
             }
 
-            if (!industryMainMap.isEmpty() && industryMainMap.containsKey(model.naring + model.arstall + model.kvartal)) {
+            if (
+                !industryMainMap.isEmpty() && industryMainMap.containsKey(model.naring + model.arstall + model.kvartal)
+            ) {
                 a.CRM_AbsenceIndustry__c = industryMainMap.get(model.naring + model.arstall + model.kvartal).Id;
             }
 
@@ -86,7 +87,7 @@ public without sharing class SickLeaveMetadataHandler extends KafkaMessageProces
 
             if (!sectorMap.isEmpty() && sectorMap.containsKey(model.sektor + model.arstall + model.kvartal)) {
                 a.CRM_AbsenceSector__c = sectorMap.get(model.sektor + model.arstall + model.kvartal).Id;
-            } 
+            }
 
             absences.add(a);
         }
@@ -98,11 +99,16 @@ public without sharing class SickLeaveMetadataHandler extends KafkaMessageProces
         List<Absence__c> absences = [
             SELECT Id, CRM_Year__c, CRM_Quarter__c, CRM_Code__c, CRM_AbsenceCategory__c
             FROM Absence__c
-            WHERE CRM_AbsenceCategory__c = 'NÆRINGSKODE' AND CRM_Year__c IN :Years AND CRM_Quarter__c IN :Quarters 
+            WHERE CRM_AbsenceCategory__c = 'NÆRINGSKODE' AND CRM_Year__c IN :Years AND CRM_Quarter__c IN :Quarters
         ];
-        if(absences.size() >0) {
+        if (absences.size() > 0) {
             for (Absence__c a : absences) {
-                industryCodeMap.put(a.CRM_Code__c + string.valueOf(a.CRM_Year__c) + string.valueOf(a.CRM_Quarter__c), a);
+                industryCodeMap.put(
+                    a.CRM_Code__c +
+                    string.valueOf(a.CRM_Year__c) +
+                    string.valueOf(a.CRM_Quarter__c),
+                    a
+                );
             }
         }
         return industryCodeMap;
@@ -113,12 +119,17 @@ public without sharing class SickLeaveMetadataHandler extends KafkaMessageProces
         List<Absence__c> absences = [
             SELECT Id, CRM_Year__c, CRM_Quarter__c, CRM_Code__c, CRM_AbsenceCategory__c
             FROM Absence__c
-            WHERE CRM_AbsenceCategory__c = 'NÆRING' AND CRM_Year__c IN :Years AND CRM_Quarter__c IN :Quarters 
+            WHERE CRM_AbsenceCategory__c = 'NÆRING' AND CRM_Year__c IN :Years AND CRM_Quarter__c IN :Quarters
         ];
 
-        if(absences.size() >0) {
+        if (absences.size() > 0) {
             for (Absence__c a : absences) {
-                industryMainMap.put(a.CRM_Code__c + string.valueOf(a.CRM_Year__c) + string.valueOf(a.CRM_Quarter__c), a);
+                industryMainMap.put(
+                    a.CRM_Code__c +
+                    string.valueOf(a.CRM_Year__c) +
+                    string.valueOf(a.CRM_Quarter__c),
+                    a
+                );
             }
         }
         return industryMainMap;
@@ -129,9 +140,9 @@ public without sharing class SickLeaveMetadataHandler extends KafkaMessageProces
         List<Absence__c> absences = [
             SELECT Id, CRM_Year__c, CRM_Quarter__c, CRM_Code__c, CRM_AbsenceCategory__c
             FROM Absence__c
-            WHERE CRM_AbsenceCategory__c = 'BRANSJE' AND CRM_Year__c IN :Years AND CRM_Quarter__c IN :Quarters 
+            WHERE CRM_AbsenceCategory__c = 'BRANSJE' AND CRM_Year__c IN :Years AND CRM_Quarter__c IN :Quarters
         ];
-        if(absences.size() >0) {
+        if (absences.size() > 0) {
             for (Absence__c a : absences) {
                 branchMap.put(a.CRM_Code__c + string.valueOf(a.CRM_Year__c) + string.valueOf(a.CRM_Quarter__c), a);
             }
@@ -144,9 +155,9 @@ public without sharing class SickLeaveMetadataHandler extends KafkaMessageProces
         List<Absence__c> absences = [
             SELECT Id, CRM_Year__c, CRM_Quarter__c, CRM_Code__c, CRM_AbsenceCategory__c
             FROM Absence__c
-            WHERE CRM_AbsenceCategory__c = 'SEKTOR' AND CRM_Year__c IN :Years AND CRM_Quarter__c IN :Quarters 
+            WHERE CRM_AbsenceCategory__c = 'SEKTOR' AND CRM_Year__c IN :Years AND CRM_Quarter__c IN :Quarters
         ];
-        if(absences.size() >0) {
+        if (absences.size() > 0) {
             for (Absence__c a : absences) {
                 sectorMap.put(a.CRM_Code__c + string.valueOf(a.CRM_Year__c) + string.valueOf(a.CRM_Quarter__c), a);
             }
@@ -159,11 +170,11 @@ public without sharing class SickLeaveMetadataHandler extends KafkaMessageProces
         List<Absence__c> absences = [
             SELECT Id, CRM_Year__c, CRM_Quarter__c, CRM_AbsenceCategory__c, CRM_YearQuarter__c
             FROM Absence__c
-            WHERE CRM_AbsenceCategory__c = 'LAND' AND CRM_Year__c IN :Years AND CRM_Quarter__c IN :Quarters 
+            WHERE CRM_AbsenceCategory__c = 'LAND' AND CRM_Year__c IN :Years AND CRM_Quarter__c IN :Quarters
         ];
-        if(absences.size() > 0) {
+        if (absences.size() > 0) {
             for (Absence__c a : absences) {
-            landMap.put(string.valueOf(a.CRM_Year__c) + string.valueOf(a.CRM_Quarter__c), a);
+                landMap.put(string.valueOf(a.CRM_Year__c) + string.valueOf(a.CRM_Quarter__c), a);
             }
         }
         return landMap;
