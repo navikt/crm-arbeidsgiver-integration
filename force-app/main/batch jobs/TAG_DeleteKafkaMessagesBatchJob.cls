@@ -1,11 +1,11 @@
 public class TAG_DeleteKafkaMessagesBatchJob implements Database.Batchable<sObject> {
-    private static final String KAFKA_MESSAGE_QUERY = 'SELECT Id FROM KafkaMessage__c WHERE CreatedDate > 2022-12-01T00:00:00Z AND CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-v1\'';
-    /*private static final String KAFKA_MESSAGE_QUERY = 'SELECT Id FROM KafkaMessage__c WHERE (CRM_Status__c = \'Processed\' AND CreatedDate > 2022-01-01T00:00:00Z) AND'
+    //private static final String KAFKA_MESSAGE_QUERY = 'SELECT Id FROM KafkaMessage__c WHERE CreatedDate > 2022-12-01T00:00:00Z AND CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-v1\'';
+    private static final String KAFKA_MESSAGE_QUERY = 'SELECT Id FROM KafkaMessage__c WHERE (CRM_Status__c = \'Processed\' AND CreatedDate > 2022-01-01T00:00:00Z) AND'
         + ' (CRM_Topic__c = \'team-innhold.arbeidsgiver-kontaktskjema\' OR'
         + ' CRM_Topic__c = \'teampam.stilling-ekstern-1\' OR'
         + ' CRM_Topic__c = \'teamarenanais.aapen-arena-arbeidsgiveraktivitetendret-v1\' OR'
-    //    + ' CRM_Topic__c = \'privat-arbeidsgiver-aktivitet-crm\' OR'
-    //    + ' CRM_Topic__c = \'gg-arbeidsgiver-aktivitet-v1-p\' OR'
+        + ' CRM_Topic__c = \'privat-arbeidsgiver-aktivitet-crm\' OR'
+        + ' CRM_Topic__c = \'gg-arbeidsgiver-aktivitet-v1-p\' OR'
         + ' CRM_Topic__c = \'arbeidsgiver.tiltak-avtale-hendelse\' OR'
     //    + ' CRM_Topic__c = \'public-ereg-cache-org-json\' OR'
         + ' CRM_Topic__c = \'pia.ia-sak-v1\' OR'
@@ -22,7 +22,7 @@ public class TAG_DeleteKafkaMessagesBatchJob implements Database.Batchable<sObje
         + ' CRM_Topic__c = \'team-dialog.crm-kafka-activity-oppgaver\' OR'
     //    + ' CRM_Topic__c = \'public-ereg-cache-org-tombstones\' OR'
     //    + ' CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-v1\' OR'
-        + ' CRM_Topic__c = \'teamsykefravr.isdialogmote-dialogmote-statusendring\')';*/
+        + ' CRM_Topic__c = \'teamsykefravr.isdialogmote-dialogmote-statusendring\')';
 
     public Database.QueryLocator start(Database.BatchableContext BC) {
         return Database.getQueryLocator(KAFKA_MESSAGE_QUERY);
