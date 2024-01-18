@@ -20,7 +20,7 @@ public class TAG_DeleteKafkaMessagesBatchJob implements Database.Batchable<sObje
     //    + ' CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-sektor-v1\' OR'
         + ' CRM_Topic__c = \'team-dialog.crm-kafka-activity-events\' OR'
         + ' CRM_Topic__c = \'team-dialog.crm-kafka-activity-oppgaver\' OR'
-    //    + ' CRM_Topic__c = \'public-ereg-cache-org-tombstones\' OR'
+        + ' CRM_Topic__c = \'public-ereg-cache-org-tombstones\' OR'
     //    + ' CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-v1\' OR'
         + ' CRM_Topic__c = \'teamsykefravr.isdialogmote-dialogmote-statusendring\')';
 
