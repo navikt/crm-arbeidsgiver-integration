@@ -2,9 +2,9 @@
 public with sharing class TAG_DeleteKafkaMessagesBatchJobTest {
     @isTest
     static void executeBatch() {
-        KafkaMessage__c kafkaMessageTiltak1 = new KafkaMessage__c(CRM_Status__c = 'Processed', CRM_Topic__c = 'public-ereg-cache-org-tombstones', CRM_Key__c = '1234');
-        KafkaMessage__c kafkaMessageTiltak2 = new KafkaMessage__c(CRM_Status__c = 'Processed', CRM_Topic__c = 'public-ereg-cache-org-tombstones', CRM_Key__c = '1234');
-        KafkaMessage__c kafkaMessageTiltakPending = new KafkaMessage__c(CRM_Status__c = 'Pending', CRM_Topic__c = 'public-ereg-cache-org-tombstones', CRM_Key__c = '1234');
+        KafkaMessage__c kafkaMessageTiltak1 = new KafkaMessage__c(CRM_Status__c = 'Processed', CRM_Topic__c = 'arbeidsgiver.tiltak-avtale-hendelse', CRM_Key__c = '1234');
+        KafkaMessage__c kafkaMessageTiltak2 = new KafkaMessage__c(CRM_Status__c = 'Processed', CRM_Topic__c = 'arbeidsgiver.tiltak-avtale-hendelse', CRM_Key__c = '1234');
+        KafkaMessage__c kafkaMessageTiltakPending = new KafkaMessage__c(CRM_Status__c = 'Pending', CRM_Topic__c = 'arbeidsgiver.tiltak-avtale-hendelse', CRM_Key__c = '1234');
 
         KafkaMessage__c kafkaMessageStilling1 = new KafkaMessage__c(CRM_Status__c = 'Processed', CRM_Topic__c = 'teampam.stilling-ekstern-1', CRM_Key__c = '1235');
         KafkaMessage__c kafkaMessageStilling2 = new KafkaMessage__c(CRM_Status__c = 'Processed', CRM_Topic__c = 'teampam.stilling-ekstern-1', CRM_Key__c = '1235');
@@ -43,6 +43,6 @@ public with sharing class TAG_DeleteKafkaMessagesBatchJobTest {
 
         List<KafkaMessage__c> kafkaMessagesNotDeleted = [SELECT Id FROM KafkaMessage__c];
 
-        System.assertEquals(10, kafkaMessagesNotDeleted.size(), 'Should be 6 kafka messages that are not deleted');
+        System.assertEquals(6, kafkaMessagesNotDeleted.size(), 'Should be 6 kafka messages that are not deleted');
     }
 }
