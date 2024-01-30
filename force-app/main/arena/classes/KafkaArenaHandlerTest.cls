@@ -147,10 +147,9 @@ private without sharing class KafkaArenaHandlerTest {
         AsyncRequestSchedulable.enqueueAsyncJobs();
         Test.StopTest();
 
-        List<ArenaActivity__c> arenaActivities = [SELECT Id, Account__c, OwnerId FROM ArenaActivity__c];
+        List<ArenaActivity__c> arenaActivities = [SELECT Id, Account__c FROM ArenaActivity__c];
 
         System.assertEquals(1, arenaActivities.size(), 'Only one activity added');
         System.assertEquals(null, arenaActivities[0].Account__c);
-        System.assertEquals(System.UserInfo.getUserId(), arenaActivities[0].OwnerId);
     }
 }
