@@ -32,7 +32,7 @@ public class TAG_DeleteKafkaMessagesBatchJob implements Database.Batchable<sObje
     public void execute(Database.BatchableContext BC, List<KafkaMessage__c> records) {
             try {
                 delete records;
-                Database.emptyRecycleBin(records);
+                //Database.emptyRecycleBin(records);
             } catch (Exception e) {
                 System.debug('Error during record deletion: ' + e.getMessage());
             }
