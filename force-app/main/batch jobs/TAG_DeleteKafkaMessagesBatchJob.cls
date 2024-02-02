@@ -5,7 +5,7 @@ public class TAG_DeleteKafkaMessagesBatchJob implements Database.Batchable<sObje
         + ' (CRM_Topic__c = \'teampam.stilling-ekstern-1\' OR'
         + ' CRM_Topic__c = \'teamarenanais.aapen-arena-arbeidsgiveraktivitetendret-v1\' OR'
         + ' CRM_Topic__c = \'arbeidsgiver.tiltak-avtale-hendelse\' OR'
-    //    + ' CRM_Topic__c = \'public-ereg-cache-org-json\' OR'
+        + ' CRM_Topic__c = \'public-ereg-cache-org-json\' OR'
         + ' CRM_Topic__c = \'pia.ia-sak-v1\' OR'
         + ' CRM_Topic__c = \'pia.ia-sak-leveranse-v1\' OR'
         + ' CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-bransje-v1\' OR'
@@ -17,7 +17,7 @@ public class TAG_DeleteKafkaMessagesBatchJob implements Database.Batchable<sObje
         + ' CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-sektor-v1\' OR'
         + ' CRM_Topic__c = \'public-ereg-cache-org-tombstones\' OR'
     //    + ' CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-v1\' OR'
-        + ' CRM_Topic__c = \'teamsykefravr.isdialogmote-dialogmote-statusendring\')';
+        + ' CRM_Topic__c = \'teamsykefravr.isdialogmote-dialogmote-statusendring\') LIMIT 3000000';
 
     public Database.QueryLocator start(Database.BatchableContext BC) {
         return Database.getQueryLocator(KAFKA_MESSAGE_QUERY);
