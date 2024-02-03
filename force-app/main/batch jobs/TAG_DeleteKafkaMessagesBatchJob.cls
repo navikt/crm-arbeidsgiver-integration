@@ -17,7 +17,7 @@ public class TAG_DeleteKafkaMessagesBatchJob implements Database.Batchable<sObje
         + ' CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-sektor-v1\' OR'
         + ' CRM_Topic__c = \'public-ereg-cache-org-tombstones\' OR'
     //    + ' CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-v1\' OR'
-        + ' CRM_Topic__c = \'teamsykefravr.isdialogmote-dialogmote-statusendring\') LIMIT 3000000';
+        + ' CRM_Topic__c = \'teamsykefravr.isdialogmote-dialogmote-statusendring\') LIMIT 500000';
 
     public Database.QueryLocator start(Database.BatchableContext BC) {
         return Database.getQueryLocator(KAFKA_MESSAGE_QUERY);
