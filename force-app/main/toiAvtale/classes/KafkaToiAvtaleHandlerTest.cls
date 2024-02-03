@@ -66,7 +66,7 @@ public with sharing class KafkaToiAvtaleHandlerTest {
         ];
 
         List<ArenaActivity__c> aktiviteter = [
-            SELECT Id, DateFrom__c, DateTo__c, DateTimeRegistered__c, DateTimeFrom__c, Aktivitetsgruppekode__c, TAG_Source__c, AktivitetStatuskode__c, AktivitetsKode__c, KafkaId__c, NAVIdent__c, Account__c, NAV_Kontor__c, CaseWorker__c, OwnerId
+            SELECT Id, DateFrom__c, DateTo__c, DateTimeRegistered__c, DateTimeFrom__c, Aktivitetsgruppekode__c, TAG_Source__c, AktivitetStatuskode__c, AktivitetsKode__c, KafkaId__c, NAVIdent__c, Account__c, NAV_Kontor__c, CaseWorker__c
             FROM ArenaActivity__c
         ];
 
@@ -365,7 +365,7 @@ public with sharing class KafkaToiAvtaleHandlerTest {
         ];
 
         List<ArenaActivity__c> aktiviteter = [
-            SELECT Id, DateFrom__c, DateTo__c, DateTimeRegistered__c, DateTimeFrom__c, Aktivitetsgruppekode__c, TAG_Source__c, AktivitetStatuskode__c, AktivitetsKode__c, KafkaId__c, NAVIdent__c, Account__c, NAV_Kontor__c, CaseWorker__c, OwnerId
+            SELECT Id, DateFrom__c, DateTo__c, DateTimeRegistered__c, DateTimeFrom__c, Aktivitetsgruppekode__c, TAG_Source__c, AktivitetStatuskode__c, AktivitetsKode__c, KafkaId__c, NAVIdent__c, Account__c, NAV_Kontor__c, CaseWorker__c
             FROM ArenaActivity__c
         ];
 
@@ -463,7 +463,7 @@ public with sharing class KafkaToiAvtaleHandlerTest {
         ];
     
         List<ArenaActivity__c> aktiviteter = [
-            SELECT Id, DateFrom__c, DateTo__c, DateTimeRegistered__c, DateTimeFrom__c, Aktivitetsgruppekode__c, TAG_Source__c, AktivitetStatuskode__c, AktivitetsKode__c, KafkaId__c, NAVIdent__c, Account__c, NAV_Kontor__c, CaseWorker__c, OwnerId
+            SELECT Id, DateFrom__c, DateTo__c, DateTimeRegistered__c, DateTimeFrom__c, Aktivitetsgruppekode__c, TAG_Source__c, AktivitetStatuskode__c, AktivitetsKode__c, KafkaId__c, NAVIdent__c, Account__c, NAV_Kontor__c, CaseWorker__c
             FROM ArenaActivity__c
         ];
 
@@ -584,7 +584,7 @@ public with sharing class KafkaToiAvtaleHandlerTest {
         ];
     
         List<ArenaActivity__c> aktiviteter = [
-            SELECT Id, DateFrom__c, DateTo__c, DateTimeRegistered__c, DateTimeFrom__c, Aktivitetsgruppekode__c, TAG_Source__c, AktivitetStatuskode__c, AktivitetsKode__c, KafkaId__c, NAVIdent__c, Account__c, NAV_Kontor__c, CaseWorker__c, OwnerId
+            SELECT Id, DateFrom__c, DateTo__c, DateTimeRegistered__c, DateTimeFrom__c, Aktivitetsgruppekode__c, TAG_Source__c, AktivitetStatuskode__c, AktivitetsKode__c, KafkaId__c, NAVIdent__c, Account__c, NAV_Kontor__c, CaseWorker__c
             FROM ArenaActivity__c
         ];
 
@@ -667,7 +667,7 @@ public with sharing class KafkaToiAvtaleHandlerTest {
         ];
 
         List<ArenaActivity__c> aktiviteter = [
-            SELECT Id, DateFrom__c, DateTo__c, DateTimeRegistered__c, DateTimeFrom__c, Aktivitetsgruppekode__c, TAG_Source__c, AktivitetStatuskode__c, AktivitetsKode__c, KafkaId__c, NAVIdent__c, Account__c, NAV_Kontor__c, CaseWorker__c, OwnerId
+            SELECT Id, DateFrom__c, DateTo__c, DateTimeRegistered__c, DateTimeFrom__c, Aktivitetsgruppekode__c, TAG_Source__c, AktivitetStatuskode__c, AktivitetsKode__c, KafkaId__c, NAVIdent__c, Account__c, NAV_Kontor__c, CaseWorker__c
             FROM ArenaActivity__c
         ];
 
@@ -768,7 +768,7 @@ public with sharing class KafkaToiAvtaleHandlerTest {
         ];
 
         List<ArenaActivity__c> aktiviteter = [
-            SELECT Id, DateFrom__c, DateTo__c, DateTimeRegistered__c, DateTimeFrom__c, Aktivitetsgruppekode__c, TAG_Source__c, AktivitetStatuskode__c, AktivitetsKode__c, KafkaId__c, NAVIdent__c, Account__c, NAV_Kontor__c, CaseWorker__c, OwnerId
+            SELECT Id, DateFrom__c, DateTo__c, DateTimeRegistered__c, DateTimeFrom__c, Aktivitetsgruppekode__c, TAG_Source__c, AktivitetStatuskode__c, AktivitetsKode__c, KafkaId__c, NAVIdent__c, Account__c, NAV_Kontor__c, CaseWorker__c
             FROM ArenaActivity__c
         ];
 
@@ -843,7 +843,7 @@ public with sharing class KafkaToiAvtaleHandlerTest {
         ];
 
         List<ArenaActivity__c> aktiviteter = [
-            SELECT Id, DateFrom__c, DateTo__c, DateTimeRegistered__c, DateTimeFrom__c, Aktivitetsgruppekode__c, TAG_Source__c, AktivitetStatuskode__c, AktivitetsKode__c, KafkaId__c, NAVIdent__c, Account__c, NAV_Kontor__c, CaseWorker__c, OwnerId
+            SELECT Id, DateFrom__c, DateTo__c, DateTimeRegistered__c, DateTimeFrom__c, Aktivitetsgruppekode__c, TAG_Source__c, AktivitetStatuskode__c, AktivitetsKode__c, KafkaId__c, NAVIdent__c, Account__c, NAV_Kontor__c, CaseWorker__c
             FROM ArenaActivity__c
         ];
 
