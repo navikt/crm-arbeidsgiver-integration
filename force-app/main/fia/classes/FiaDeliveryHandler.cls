@@ -1,9 +1,9 @@
-public without sharing class FiaDeliveryHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer{
+public without sharing class FiaDeliveryHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer {
     Map<String, FiaDelivery> keyToFiaDelivery = new Map<String, FiaDelivery>();
     public Set<String> CaseNumbers;
     public Set<String> fiaDeliveriesToDelete;
 
-    public FiaDeliveryHandler(){
+    public FiaDeliveryHandler() {
         this.CaseNumbers = new Set<String>();
         this.fiaDeliveriesToDelete = new Set<String>();
     }
@@ -34,10 +34,10 @@ public without sharing class FiaDeliveryHandler extends KafkaMessageProcessor im
 
         if (!fiaDeliveriesToDelete.isEmpty()) {
             deleteFiaDeliveries(messages);
-        } 
+        }
 
         logger.publish();
-    } 
+    }
 
     public FiaDeliveryHandler addCaseNumber(String caseNumber) {
         if (caseNumber != null) {
@@ -52,27 +52,22 @@ public without sharing class FiaDeliveryHandler extends KafkaMessageProcessor im
         }
         return this;
     }
- 
+
     public Map<String, IACase__c> getCaseNumberIACaseMap() {
         Map<String, IACase__c> IACaseMap = new Map<String, IACase__c>();
 
-        List<IACase__c> IACases = [
-            SELECT Id, Name
-            FROM IACase__c
-            WHERE Name IN :CaseNumbers
-        ]; 
+        List<IACase__c> IACases = [SELECT Id, Name FROM IACase__c WHERE Name IN :CaseNumbers];
 
         for (IACase__c a : IACases) {
-          IACaseMap.put(a.Name, a);
+            IACaseMap.put(a.Name, a);
         }
         return IACaseMap;
     }
 
     private void mapFiaDelivery(FiaDelivery fiaDelivery) {
         String key = fiaDelivery.key;
-        if (!keyToFiaDelivery.containsKey(key)){
+        if (!keyToFiaDelivery.containsKey(key)) {
             keyToFiaDelivery.put(key, fiaDelivery);
-
         } else if (isMostRecent(fiaDelivery.sistEndret, keyToFiaDelivery.get(key).sistEndret)) {
             keyToFiaDelivery.put(key, fiaDelivery);
         }
@@ -81,14 +76,29 @@ public without sharing class FiaDeliveryHandler extends KafkaMessageProcessor im
     private void convertAndUpsertFiaDeliveries(List<KafkaMessage__c> messages) {
         List<IADelivery__c> FiaDeliveries = new List<IADelivery__c>();
         try {
-            FiaDeliveries = convertToSObject(); 
+            FiaDeliveries = convertToSObject();
 
+            //upsert FiaDeliveries IADelivery__c.KafkaId__c;
             Schema.SObjectField f = IADelivery__c.Fields.KafkaId__c;
-            Database.UpsertResult [] cr = Database.upsert(FiaDeliveries , f, false);
+            Database.UpsertResult[] upsertResults = Database.upsert(FiaDeliveries, f, false);
+            Map<String, KafkaMessage__c> messageMap = new Map<String, KafkaMessage__c>();
 
+            for (KafkaMessage__c message : messages) {
+                messageMap.put(message.CRM_Key__c, message);
+            }
+
+            for (Integer i = 0; i < upsertResults.size(); i++) {
+                if (!upsertResults[i].isSuccess()) {
+                    Database.Error error = upsertResults[i].getErrors()[0];
+                    String errorMessage = error.getMessage();
+                    String errorRef = logger.logError(errorMessage);
+                    KafkaMessage__c failedMessage = messageMap.get(FiaDeliveries[i].KafkaId__c);
+                    logger.setMessageErrors(new List<KafkaMessage__c>{ failedMessage }, errorRef);
+                }
+            }
         } catch (Exception e) {
             String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
-            logger.setMessageErrors(messages, errorRef);  
+            logger.setMessageErrors(messages, errorRef);
         }
     }
 
@@ -99,8 +109,7 @@ public without sharing class FiaDeliveryHandler extends KafkaMessageProcessor im
             for (IADelivery__c iad : fiaDeliveryMap.values()) {
                 fiaDeliveries.add(iad);
             }
-            Delete fiaDeliveries;
-
+            delete fiaDeliveries;
         } catch (Exception e) {
             String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
             logger.setMessageErrors(messages, errorRef);
@@ -108,26 +117,26 @@ public without sharing class FiaDeliveryHandler extends KafkaMessageProcessor im
     }
 
     private List<IADelivery__c> convertToSObject() {
-    Map<String, String> lastSaved = getLastSaved(IADelivery__c.class, keyToFiaDelivery.keyset());
-    Map<String, NavUnit__c> navUnitMap = getNavUnitsMap();
-    Map<String, IACase__c> iaCaseMap = getCaseNumberIACaseMap();
-    Map<String, User> navIdentMap = getNavIdentMap();
-    List<IADelivery__c> FiaDeliveries = new List<IADelivery__c>();
- 
-    for (FiaDelivery model : keyToFiaDelivery.values()) {
-        if (!isNewOrChanged(model.key, model.hash, lastSaved)) {
-            continue;
-        } 
-        IADelivery__c iad = new IADelivery__c();
-        iad.Name = String.valueOf(model.id);
-        iad.IACase__c = iaCaseMap.get(model.saksnummer).id; 
-        iad.Deadline__c = Date.valueOf(model.frist);
-        iad.Status__c = model.status;
-        iad.DeliveryCreatedBy__c = model.opprettetAv;
-        iad.DeliveryLastModifiedBy__c = model.sistEndretAv;
-        iad.DeliveryLastModifiedByRole__c = model.sistEndretAvRolle;
+        Map<String, String> lastSaved = getLastSaved(IADelivery__c.class, keyToFiaDelivery.keyset());
+        Map<String, NavUnit__c> navUnitMap = getNavUnitsMap();
+        Map<String, IACase__c> iaCaseMap = getCaseNumberIACaseMap();
+        Map<String, User> navIdentMap = getNavIdentMap();
+        List<IADelivery__c> FiaDeliveries = new List<IADelivery__c>();
 
-        /*if (model.modul.navn != null) {
+        for (FiaDelivery model : keyToFiaDelivery.values()) {
+            if (!isNewOrChanged(model.key, model.hash, lastSaved)) {
+                continue;
+            }
+            IADelivery__c iad = new IADelivery__c();
+            iad.Name = String.valueOf(model.id);
+            iad.IACase__c = iaCaseMap.get(model.saksnummer).id;
+            iad.Deadline__c = Date.valueOf(model.frist);
+            iad.Status__c = model.status;
+            iad.DeliveryCreatedBy__c = model.opprettetAv;
+            iad.DeliveryLastModifiedBy__c = model.sistEndretAv;
+            iad.DeliveryLastModifiedByRole__c = model.sistEndretAvRolle;
+
+            /*if (model.modul.navn != null) {
             iad.Module__c = model.modul.navn;
         }
 
@@ -135,51 +144,50 @@ public without sharing class FiaDeliveryHandler extends KafkaMessageProcessor im
             iad.IAService__c = model.modul.iaTjeneste.navn;
         }*/
 
-        if (model.iaModulNavn != null) {
-            iad.Module__c = model.iaModulNavn;
-        }
+            if (model.iaModulNavn != null) {
+                iad.Module__c = model.iaModulNavn;
+            }
 
-        if (model.iaTjenesteNavn != null) {
-            iad.IAService__c = model.iaTjenesteNavn;
-        }
+            if (model.iaTjenesteNavn != null) {
+                iad.IAService__c = model.iaTjenesteNavn;
+            }
 
-        if (model.fullfort != null) {
-            iad.CompletedDate__c = dateTimeValue(model.fullfort);
-        }
-        if (model.sistEndret != null) {
-            iad.DeliveryLastModifiedDate__c = dateTimeValue(model.sistEndret);
-        }
-        if (model.opprettetTidspunkt != null) {
-            iad.CreatedDate__c = dateTimeValue(model.opprettetTidspunkt);
-        }
-        if (navIdentMap.containsKey(model.opprettetAv)) {
-            iad.DeliveryCreatedByUser__c = navIdentMap.get(model.opprettetAv).Id; 
-        }
-        if (navUnitMap.containsKey(model.enhetsnummer)) {
-            iad.NAVUnit__c = navUnitMap.get(model.enhetsnummer).Id;
-        }
+            if (model.fullfort != null) {
+                iad.CompletedDate__c = dateTimeValue(model.fullfort);
+            }
+            if (model.sistEndret != null) {
+                iad.DeliveryLastModifiedDate__c = dateTimeValue(model.sistEndret);
+            }
+            if (model.opprettetTidspunkt != null) {
+                iad.CreatedDate__c = dateTimeValue(model.opprettetTidspunkt);
+            }
+            if (navIdentMap.containsKey(model.opprettetAv)) {
+                iad.DeliveryCreatedByUser__c = navIdentMap.get(model.opprettetAv).Id;
+            }
+            if (navUnitMap.containsKey(model.enhetsnummer)) {
+                iad.NAVUnit__c = navUnitMap.get(model.enhetsnummer).Id;
+            }
 
-        iad.KafkaId__c = model.key;
-        iad.KafkaHash__c = model.hash;
-        iad.JsonPayload__c = model.jsonPayload;
-    
-        FiaDeliveries.add(iad);
-    } 
-    return FiaDeliveries;
-} 
+            iad.KafkaId__c = model.key;
+            iad.KafkaHash__c = model.hash;
+            iad.JsonPayload__c = model.jsonPayload;
 
-private Map<String, IADelivery__c> getFiaDeliveriesToDelete() {
-    Map<String, IADelivery__c> fiaDeliveriesToDeleteMap = new Map<String, IADelivery__c>();
-    List<IADelivery__c> fiaDeliveries = [
-        SELECT Id, Name, KafkaId__c
-        FROM IADelivery__c
-        WHERE KafkaId__c IN :fiaDeliveriesToDelete
-    ];
-
-    for (IADelivery__c iad : fiaDeliveries) {
-        fiaDeliveriesToDeleteMap.put(iad.KafkaId__c, iad);
+            FiaDeliveries.add(iad);
+        }
+        return FiaDeliveries;
     }
-    return fiaDeliveriesToDeleteMap;
-}
 
-} 
+    private Map<String, IADelivery__c> getFiaDeliveriesToDelete() {
+        Map<String, IADelivery__c> fiaDeliveriesToDeleteMap = new Map<String, IADelivery__c>();
+        List<IADelivery__c> fiaDeliveries = [
+            SELECT Id, Name, KafkaId__c
+            FROM IADelivery__c
+            WHERE KafkaId__c IN :fiaDeliveriesToDelete
+        ];
+
+        for (IADelivery__c iad : fiaDeliveries) {
+            fiaDeliveriesToDeleteMap.put(iad.KafkaId__c, iad);
+        }
+        return fiaDeliveriesToDeleteMap;
+    }
+}
