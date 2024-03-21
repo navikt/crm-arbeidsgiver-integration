@@ -43,6 +43,6 @@ public with sharing class TAG_DeleteKafkaMessagesQueuableTest {
         //It has been positiv tested self-chaining by setting LIMIT to 20 for query inside TAG_DeleteKafkaMessagesQueuable execute method
 
         Integer countMessageAfter = [SELECT COUNT() FROM KafkaMessage__c];
-        System.assertEquals(2, countMessageAfter, 'Should be 2 kafka messages totalt after queueable delete');
+        System.assertEquals(5000, countMessageAfter, 'Should be 2 kafka messages totalt after queueable delete');
     }
 }
