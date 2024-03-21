@@ -2,7 +2,7 @@ public class TAG_DeleteKafkaMessagesBatchJob implements Database.Batchable<sObje
     //private static final String KAFKA_MESSAGE_QUERY = 'SELECT Id FROM KafkaMessage__c WHERE CRM_Status__c = \'Processed\' AND CRM_Topic__c = \'public-ereg-cache-org-tombstones\'';
     //private static final String KAFKA_MESSAGE_QUERY = 'SELECT Id FROM KafkaMessage__c WHERE CreatedDate > 2022-09-01T00:00:00Z AND CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-v1\'';
     private static final String KAFKA_MESSAGE_QUERY =
-        'SELECT Id FROM KafkaMessage__c WHERE CreatedDate < N_DAYS_AGO:7 AND CRM_Status__c = \'Processed\' AND' +
+        'SELECT Id FROM KafkaMessage__c WHERE CreatedDate < N_DAYS_AGO:7 AND CreatedDate > N_DAYS_AGO:700 AND CRM_Status__c = \'Processed\' AND' +
         ' (CRM_Topic__c = \'teampam.stilling-ekstern-1\' OR' +
         ' CRM_Topic__c = \'teamarenanais.aapen-arena-arbeidsgiveraktivitetendret-v1\' OR' +
         ' CRM_Topic__c = \'arbeidsgiver.tiltak-avtale-hendelse\' OR' +

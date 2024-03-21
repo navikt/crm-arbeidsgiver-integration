@@ -1,9 +1,13 @@
 public without sharing class TAG_DeleteKafkaMessagesQueuable implements Queueable {
-    public static void execute(QueueableContext contect) {
+    public static void execute(QueueableContext context) {
         List<KafkaMessage__c> messagesToDelete = [
             SELECT Id
             FROM KafkaMessage__c
-            WHERE CRM_Status__c = 'Processed' AND CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-v1'
+            WHERE
+                CreatedDate < N_DAYS_AGO:200
+                AND CreatedDate > N_DAYS_AGO:700
+                AND CRM_Status__c = 'Processed'
+                AND CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-v1'
             LIMIT 10000
         ];
 
