@@ -36,8 +36,22 @@ public without sharing class KafkaModiaDialogMoteHandler extends KafkaMessagePro
             List<ArenaActivity__c> arenaActivities = toSObject();
 
             Schema.SObjectField f = ArenaActivity__c.Fields.KafkaId__c;
-            Database.UpsertResult [] cr = Database.upsert(arenaActivities , f, false);
+            Database.UpsertResult[] upsertResults = Database.upsert(arenaActivities, f, false);
+            Map<String, KafkaMessage__c> messageMap = new Map<String, KafkaMessage__c>();
 
+            for (KafkaMessage__c message : messages) {
+                messageMap.put(message.CRM_Key__c, message);
+            }
+
+            for (Integer i = 0; i < upsertResults.size(); i++) {
+                if (!upsertResults[i].isSuccess()) {
+                    Database.Error error = upsertResults[i].getErrors()[0];
+                    String errorMessage = error.getMessage();
+                    String errorRef = logger.logError(errorMessage);
+                    KafkaMessage__c failedMessage = messageMap.get(arenaActivities[i].KafkaId__c);
+                    logger.setMessageErrors(new List<KafkaMessage__c>{ failedMessage }, errorRef);
+                }
+            }
         } catch (Exception e) {
             String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
             logger.setMessageErrors(messages, errorRef);
