@@ -11,10 +11,10 @@ public class TAG_DeleteKafkaMessagesBatchJob implements Database.Batchable<sObje
         ' CRM_Topic__c = \'pia.ia-sak-leveranse-v1\' OR' +
         ' CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-bransje-v1\' OR' +
         ' CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-land-v1\' OR' +
-        //    + ' CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-virksomhet-v1\' OR'
+        ' CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-virksomhet-v1\' OR' +
         ' CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-naring-v1\' OR' +
         ' CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-naringskode-v1\' OR' +
-        ' CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-metadata-virksomhet-v1\' OR' +
+        //' CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-metadata-virksomhet-v1\' OR' +
         ' CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-sektor-v1\' OR' +
         ' CRM_Topic__c = \'public-ereg-cache-org-tombstones\' OR' +
         //    + ' CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-v1\' OR'
