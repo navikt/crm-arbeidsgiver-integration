@@ -78,7 +78,6 @@ public without sharing class FiaDeliveryHandler extends KafkaMessageProcessor im
         try {
             FiaDeliveries = convertToSObject();
 
-            //upsert FiaDeliveries IADelivery__c.KafkaId__c;
             Schema.SObjectField f = IADelivery__c.Fields.KafkaId__c;
             Database.UpsertResult[] upsertResults = Database.upsert(FiaDeliveries, f, false);
             Map<String, KafkaMessage__c> messageMap = new Map<String, KafkaMessage__c>();

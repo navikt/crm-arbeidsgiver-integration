@@ -1,14 +1,10 @@
 public without sharing class SickLeaveHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer {
     private Map<String, SickLeaveModel> keyToSickLeave = new Map<String, SickLeaveModel>();
 
-
     public void processMessages(List<KafkaMessage__c> messages) {
         for (KafkaMessage__c msg : messages) {
             try {
-                SickLeaveModel sickLeave = (SickLeaveModel) parse(
-                    SickLeaveModel.class,
-                    msg
-                );
+                SickLeaveModel sickLeave = (SickLeaveModel) parse(SickLeaveModel.class, msg);
                 mapSickLeave(sickLeave);
                 msg.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
             } catch (Exception e) {
@@ -35,13 +31,27 @@ public without sharing class SickLeaveHandler extends KafkaMessageProcessor impl
             absences = toSObject();
 
             Schema.SObjectField f = Absence__c.Fields.CRM_Key__c;
-            Database.UpsertResult [] cr = Database.upsert(absences , f, false);
+            Database.UpsertResult[] upsertResults = Database.upsert(absences, f, false);
+            Map<String, KafkaMessage__c> messageMap = new Map<String, KafkaMessage__c>();
 
+            for (KafkaMessage__c message : messages) {
+                messageMap.put(message.CRM_Key__c, message);
+            }
+
+            for (Integer i = 0; i < upsertResults.size(); i++) {
+                if (!upsertResults[i].isSuccess()) {
+                    Database.Error error = upsertResults[i].getErrors()[0];
+                    String errorMessage = error.getMessage();
+                    String errorRef = logger.logError(errorMessage);
+                    KafkaMessage__c failedMessage = messageMap.get(absences[i].CRM_Code__c);
+                    logger.setMessageErrors(new List<KafkaMessage__c>{ failedMessage }, errorRef);
+                }
+            }
         } catch (Exception e) {
             String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
             logger.setMessageErrors(messages, errorRef);
-            }
         }
+    }
 
     private List<Absence__c> toSObject() {
         List<Absence__c> absences = new List<Absence__c>();
@@ -63,7 +73,6 @@ public without sharing class SickLeaveHandler extends KafkaMessageProcessor impl
                 CRM_Last4QuartersPossibleDaysWork__c = model.siste4Kvartal.muligeDagsverk,
                 CRM_Last4QuartersIsHidden__c = model.siste4Kvartal.erMaskert,
                 JsonPayload__c = model.jsonPayload
-
             );
 
             absences.add(a);
