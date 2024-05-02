@@ -1,4 +1,4 @@
-public class TAG_DeleteKafkaMessagesBatchJob implements Database.Batchable<sObject> {
+public class TAG_DeleteKafkaMessagesBatchJob extends KafkaMessageProcessor implements Database.Batchable<sObject> {
     private static final String KAFKA_MESSAGE_QUERY =
         'SELECT Id FROM KafkaMessage__c WHERE CreatedDate < N_DAYS_AGO:7 AND CreatedDate > N_DAYS_AGO:15 AND IsDeleted = false AND CRM_Status__c = \'Processed\' AND' +
         ' (CRM_Topic__c = \'teampam.stilling-ekstern-1\' OR' +
@@ -18,7 +18,12 @@ public class TAG_DeleteKafkaMessagesBatchJob implements Database.Batchable<sObje
         ' CRM_Topic__c = \'teamsykefravr.isdialogmote-dialogmote-statusendring\')';
 
     public Database.QueryLocator start(Database.BatchableContext BC) {
-        return Database.getQueryLocator(KAFKA_MESSAGE_QUERY);
+        try {
+            return Database.getQueryLocator(KAFKA_MESSAGE_QUERY);
+        } catch (Exception e) {
+            msg.CRM_ErrorMessage__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
+            logger.addError();
+        }
     }
 
     public void execute(Database.BatchableContext BC, List<KafkaMessage__c> records) {
@@ -27,6 +32,8 @@ public class TAG_DeleteKafkaMessagesBatchJob implements Database.Batchable<sObje
             //Database.emptyRecycleBin(records);
         } catch (Exception e) {
             System.debug('Error during record deletion: ' + e.getMessage());
+            msg.CRM_ErrorMessage__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
+            logger.addError();
         }
     }
 
