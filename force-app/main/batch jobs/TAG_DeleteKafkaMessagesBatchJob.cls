@@ -21,9 +21,9 @@ public class TAG_DeleteKafkaMessagesBatchJob extends KafkaMessageProcessor imple
         try {
             return Database.getQueryLocator(KAFKA_MESSAGE_QUERY);
         } catch (Exception e) {
-            msg.CRM_ErrorMessage__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
             logger.addError();
         }
+        logger.publish();
     }
 
     public void execute(Database.BatchableContext BC, List<KafkaMessage__c> records) {
@@ -32,9 +32,9 @@ public class TAG_DeleteKafkaMessagesBatchJob extends KafkaMessageProcessor imple
             //Database.emptyRecycleBin(records);
         } catch (Exception e) {
             System.debug('Error during record deletion: ' + e.getMessage());
-            msg.CRM_ErrorMessage__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
             logger.addError();
         }
+        logger.publish();
     }
 
     public void finish(Database.BatchableContext BC) {
