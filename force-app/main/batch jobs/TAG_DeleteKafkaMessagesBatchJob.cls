@@ -18,7 +18,7 @@ public class TAG_DeleteKafkaMessagesBatchJob extends KafkaMessageProcessor imple
         ' CRM_Topic__c = \'teamsykefravr.isdialogmote-dialogmote-statusendring\')';
 
     public Database.QueryLocator start(Database.BatchableContext BC) {
-            return Database.getQueryLocator(KAFKA_MESSAGE_QUERY);
+        return Database.getQueryLocator(KAFKA_MESSAGE_QUERY);
     }
 
     public void execute(Database.BatchableContext BC, List<KafkaMessage__c> records) {
