@@ -3,6 +3,7 @@
  * Contains functions to parse data from messages, create IADelivery__c records and upsert them.
  */
 public without sharing class FiaAssessmentHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer {
+    private static final string IA_DELIVERY_TYPE = 'Assessment';
     /**
      * @description Implementation of processMessages-method from IKafkaMessageConsumer
      * @param messages List of kafka message records
@@ -108,6 +109,7 @@ public without sharing class FiaAssessmentHandler extends KafkaMessageProcessor 
         if (!String.isBlank(fiaAssessment.fullfortTidspunkt)) {
             iad.CompletedDate__c = dateTimeValue(fiaAssessment.fullfortTidspunkt);
         }
+        iad.Type__c = IA_DELIVERY_TYPE;
         iad.KafkaId__c = fiaAssessment.key;
         iad.KafkaHash__c = fiaAssessment.hash;
         iad.JsonPayload__c = fiaAssessment.jsonPayload;
