@@ -2,7 +2,7 @@ public without sharing class FiaDeliveryHandler extends KafkaMessageProcessor im
     Map<String, FiaDelivery> keyToFiaDelivery = new Map<String, FiaDelivery>();
     public Set<String> CaseNumbers;
     public Set<String> fiaDeliveriesToDelete;
-
+    private static final string IA_DELIVERY_TYPE = 'Delivery';
     public FiaDeliveryHandler() {
         this.CaseNumbers = new Set<String>();
         this.fiaDeliveriesToDelete = new Set<String>();
@@ -134,7 +134,7 @@ public without sharing class FiaDeliveryHandler extends KafkaMessageProcessor im
             iad.DeliveryCreatedBy__c = model.opprettetAv;
             iad.DeliveryLastModifiedBy__c = model.sistEndretAv;
             iad.DeliveryLastModifiedByRole__c = model.sistEndretAvRolle;
-
+            iad.Type__c = IA_DELIVERY_TYPE;
             /*if (model.modul.navn != null) {
             iad.Module__c = model.modul.navn;
         }
