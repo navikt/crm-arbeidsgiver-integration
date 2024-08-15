@@ -57,7 +57,7 @@ public without sharing class FiaAssessmentHandler extends KafkaMessageProcessor 
 
         for (FiaAssessment fa : keyToFiaAssessmentMap.values()) {
             try {
-                IADelivery__c iad = createIADeliveryRecord(fa, caseNumberMap.get(fa.saksnummer)?.id);
+                IADelivery__c iad = createIADeliveryRecord(fa, caseNumberMap.get(fa.saksnummer).id);
                 iaDeliveryRecords.add(iad);
             } catch (Exception e) {
                 String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
@@ -102,7 +102,7 @@ public without sharing class FiaAssessmentHandler extends KafkaMessageProcessor 
      * @param caseId Related IACase__c ID
      * @return IADelivery__c record
      */
-    private IADelivery__c createIADeliveryRecord(FiaAssessment fiaAssessment, String caseId) {
+    private IADelivery__c createIADeliveryRecord(FiaAssessment fiaAssessment, Id caseId) {
         IADelivery__c iad = new IADelivery__c();
         iad.Name = String.valueOf(fiaAssessment.behovsvurderingId);
         iad.IACase__c = caseId;
