@@ -117,8 +117,8 @@ public without sharing class FiaAssessmentHandler extends KafkaMessageProcessor 
     }
 
     /**
-     * @description Creates a map of IACase__c records based on case numbers.
-     * @param caseNumbers Set of case numbers
+     * @description Query existing IACase__c records from database and return new map with case numbers and IACase__c records.
+     * @param keyToFiaAssessmentMap Map with fia assessments objects
      * @return Map of case number to IACase__c records
      */
     private Map<String, IACase__c> mapCaseNumbersToIACases(Map<String, FiaAssessment> keyToFiaAssessmentMap) {
