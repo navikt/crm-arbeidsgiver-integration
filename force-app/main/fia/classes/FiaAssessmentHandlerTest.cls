@@ -24,6 +24,7 @@ public with sharing class FiaAssessmentHandlerTest {
         '   "saksnummer": "' +
         CASE_NAME_2 +
         '",\n' +
+        '   "prosessId": "PHdhVfikOUk",\n' +
         '   "fullførtTidspunkt": "2022-02-18T07:07:07.064711"\n' +
         '}';
 
