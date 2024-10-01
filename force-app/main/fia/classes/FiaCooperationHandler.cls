@@ -75,9 +75,12 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             Database.UpsertResult[] upsertResults = Database.upsert(records, externalId, false);
             for (Integer i = 0; i < upsertResults.size(); i++) {
                 if (!upsertResults[i].isSuccess()) {
-                    // coverage
-                    String errorRef = logger.logError(upsertResults[i].getErrors()[0].getMessage());
                     String kafkaKey = (String) records[i].get('KafkaId__c');
+                    String errorRef = logger.logError(
+                        upsertResults[i].getErrors()[0].getMessage() +
+                        '/nFiaCooperationHandler.upsertRecords() could not upsert record. Key: ' +
+                        kafkaKey
+                    );
                     logger.setMessageErrors(new List<KafkaMessage__c>{ keyToKafkaMessageMap.get(kafkaKey) }, errorRef);
                 }
             }
