@@ -1,31 +1,5 @@
 @isTest
 private class FiaCooperationHandlerTest {
-    // Status på samarbeid?
-
-    private static final String JSON =
-        '{ "orgnr": "987654321", ' +
-        '"saksnummer": "01HNA9BAQFBN660D8TDCNV1R77", ' +
-        '"samarbeid": { "id": 12345678, "navn": "Fysio", "status": "AKTIV" }, ' +
-        '"plan": { "id": "c3e1ee3b-a9b4-420c-8ec8-def50e83d054", ' +
-        '"sistEndret": "2024-09-17T10:17:59.054765", ' +
-        '"sistPublisert": "2024-09-18", ' +
-        '"temaer": [ { "id": 9847, "rekkefølge": 1, "navn": "Partssamarbeid", ' +
-        '"planlagt": false, "undertemaer": [ { "id": 345, "rekkefølge": 1, ' +
-        '"navn": "Utvikle partssamarbeidet", ' +
-        '"målsetning": "Styrke og strukturere samarbeidet mellom leder, tillitsvalgt og verneombud, ' +
-        'samt øke kunnskap og ferdigheter for å jobbe systematisk og forebyggende med sykefravær og arbeidsmiljø.", ' +
-        '"planlagt": false, "status": null, "startDato": null, "sluttDato": null } ] }, ' +
-        '{ "id": 6576, "rekkefølge": 2, "navn": "Sykefraværsarbeid", ' +
-        '"planlagt": true, "undertemaer": [ { "id": 76576, "rekkefølge": 1, ' +
-        '"navn": "Sykefraværsrutiner", ' +
-        '"målsetning": "Jobbe systematisk og forebyggende med sykefravær, samt forbedre rutiner og oppfølging av ansatte ' +
-        'som er sykmeldte eller står i fare for å bli det.", ' +
-        '"planlagt": true, "status": "PLANLAGT", "startDato": "2010-01-01", "sluttDato": "2025-02-02" }, ' +
-        '{ "id": 65765, "rekkefølge": 2, "navn": "Oppfølgingssamtaler", ' +
-        '"målsetning": "Øke kompetanse og ferdigheter for hvordan man gjennomfører gode oppfølgingssamtaler, ' +
-        'både gjennom teori og praksis.", ' +
-        '"planlagt": true, "status": "PLANLAGT", "startDato": "2010-01-01", "sluttDato": "2025-02-02" } ] } ] } }';
-
     private static final String TOPIC = 'pia.temp-topic';
     private static final String TEST_CASE_NUMBER_1 = '01HNA9BAQFBN660D8TDCNV1R77';
     private static final String ORG_NR = '987654321';
@@ -33,23 +7,42 @@ private class FiaCooperationHandlerTest {
 
     @TestSetup
     static void setupTestData() {
-        insert new List<Account>{ new Account(Name = 'Allsidig Produksjon AS', INT_OrganizationNumber__c = ORG_NR) };
-
-        Account accountReference = new Account(INT_OrganizationNumber__c = ORG_NR);
-        insert new List<IaCase__c>{ new IaCase__c(Name = TEST_CASE_NUMBER_1, Account__r = accountReference) };
-
         List<KafkaMessage__c> testMessages = new List<KafkaMessage__c>();
 
         // Record with representative json
+        String sampleJson =
+            '{ "orgnr": "987654321", ' +
+            '"saksnummer": "01HNA9BAQFBN660D8TDCNV1R77", ' +
+            '"samarbeid": { "id": 12345678, "navn": "Fysio", "status": "AKTIV" }, ' +
+            '"plan": { "id": "c3e1ee3b-a9b4-420c-8ec8-def50e83d054", ' +
+            '"sistEndret": "2024-09-17T10:17:59.054765", ' +
+            '"sistPublisert": "2024-09-18", ' +
+            '"temaer": [ { "id": 9847, "rekkefølge": 1, "navn": "Partssamarbeid", ' +
+            '"planlagt": false, "undertemaer": [ { "id": 345, "rekkefølge": 1, ' +
+            '"navn": "Utvikle partssamarbeidet", ' +
+            '"målsetning": "Styrke og strukturere samarbeidet mellom leder, tillitsvalgt og verneombud, ' +
+            'samt øke kunnskap og ferdigheter for å jobbe systematisk og forebyggende med sykefravær og arbeidsmiljø.", ' +
+            '"planlagt": false, "status": null, "startDato": null, "sluttDato": null } ] }, ' +
+            '{ "id": 6576, "rekkefølge": 2, "navn": "Sykefraværsarbeid", ' +
+            '"planlagt": true, "undertemaer": [ { "id": 76576, "rekkefølge": 1, ' +
+            '"navn": "Sykefraværsrutiner", ' +
+            '"målsetning": "Jobbe systematisk og forebyggende med sykefravær, samt forbedre rutiner og oppfølging av ansatte ' +
+            'som er sykmeldte eller står i fare for å bli det.", ' +
+            '"planlagt": true, "status": "PLANLAGT", "startDato": "2010-01-01", "sluttDato": "2025-02-02" }, ' +
+            '{ "id": 65765, "rekkefølge": 2, "navn": "Oppfølgingssamtaler", ' +
+            '"målsetning": "Øke kompetanse og ferdigheter for hvordan man gjennomfører gode oppfølgingssamtaler, ' +
+            'både gjennom teori og praksis.", ' +
+            '"planlagt": true, "status": "PLANLAGT", "startDato": "2010-01-01", "sluttDato": "2025-02-02" } ] } ] } }';
+
         testMessages.add(
             new KafkaMessage__c(
                 CRM_Topic__c = TOPIC,
                 CRM_Key__c = KEY_1,
-                CRM_Value__c = EncodingUtil.base64Encode(Blob.valueOf(JSON))
+                CRM_Value__c = EncodingUtil.base64Encode(Blob.valueOf(sampleJson))
             )
         );
 
-        // Record with bad hash for verifying error handling
+        //Record with bad hash for verifying error handling
         testMessages.add(
             new KafkaMessage__c(CRM_Topic__c = TOPIC, CRM_Key__c = '999901', CRM_Value__c = 'bad data...')
         );
@@ -116,6 +109,10 @@ private class FiaCooperationHandlerTest {
         }
 
         insert testMessages;
+        insert new List<Account>{ new Account(Name = 'Allsidig Produksjon AS', INT_OrganizationNumber__c = ORG_NR) };
+        insert new List<IaCase__c>{
+            new IaCase__c(Name = TEST_CASE_NUMBER_1, Account__r = new Account(INT_OrganizationNumber__c = ORG_NR))
+        };
     }
 
     @IsTest
