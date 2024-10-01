@@ -33,8 +33,10 @@ private class FiaCooperationHandlerTest {
 
     @TestSetup
     static void setupTestData() {
-        insert new List<IaCase__c>{ new IaCase__c(Name = TEST_CASE_NUMBER_1) };
         insert new List<Account>{ new Account(Name = 'Allsidig Produksjon AS', INT_OrganizationNumber__c = ORG_NR) };
+
+        Account accountReference = new Account(INT_OrganizationNumber__c = ORG_NR);
+        insert new List<IaCase__c>{ new IaCase__c(Name = TEST_CASE_NUMBER_1, Account__r = accountReference) };
 
         List<KafkaMessage__c> testMessages = new List<KafkaMessage__c>();
 
@@ -249,7 +251,11 @@ private class FiaCooperationHandlerTest {
         );
 
         for (KafkaMessage__c k : messages) {
-            Assert.areNotEqual('Error', k.CRM_Status__c, 'Message should not have error status: ' + k);
+            Assert.areNotEqual(
+                KafkaMessageService.STATUS_ERROR,
+                k.CRM_Status__c,
+                'Message should not have error status: ' + k
+            );
         }
     }
 
@@ -268,7 +274,11 @@ private class FiaCooperationHandlerTest {
         handler.processMessages(messages);
         Test.stopTest();
 
-        Assert.areEqual('Error', messages[0].CRM_Status__c, 'Message status should be updated to Error');
+        Assert.areEqual(
+            KafkaMessageService.STATUS_ERROR,
+            messages[0].CRM_Status__c,
+            'Message status should be updated to Error'
+        );
     }
 
     @IsTest
@@ -284,7 +294,11 @@ private class FiaCooperationHandlerTest {
         handler.processMessages(messages);
         Test.stopTest();
 
-        Assert.areEqual('Error', messages[0].CRM_Status__c, 'Message status should be updated to Error');
+        Assert.areEqual(
+            KafkaMessageService.STATUS_ERROR,
+            messages[0].CRM_Status__c,
+            'Message status should be updated to Error'
+        );
     }
 
     @IsTest
@@ -300,6 +314,10 @@ private class FiaCooperationHandlerTest {
         handler.processMessages(messages);
         Test.stopTest();
 
-        Assert.areEqual('Error', messages[0].CRM_Status__c, 'Message status should be updated to Error');
+        Assert.areEqual(
+            KafkaMessageService.STATUS_ERROR,
+            messages[0].CRM_Status__c,
+            'Message status should be updated to Error'
+        );
     }
 }
