@@ -12,7 +12,7 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
     public String key;
 
     public class Samarbeid {
-        public String id; // Key
+        public String id;
         public String navn;
         public String status;
     }

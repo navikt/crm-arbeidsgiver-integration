@@ -1,9 +1,8 @@
 @isTest
 private class FiaCooperationHandlerTest {
     private static final String TOPIC = 'pia.temp-topic';
-    private static final String TEST_CASE_NUMBER_1 = '01HNA9BAQFBN660D8TDCNV1R77';
-    private static final String ORG_NR = '987654321';
-    private static final String KEY_1 = '12345678';
+    private static final String TEST_CASE_NUMBER_1 = 'X6mPvf2qYP7r42I';
+    private static final String ORG_NR = '987654001';
 
     @TestSetup
     static void setupTestData() {
@@ -11,8 +10,12 @@ private class FiaCooperationHandlerTest {
 
         // Record with representative json
         String sampleJson =
-            '{ "orgnr": "987654321", ' +
-            '"saksnummer": "01HNA9BAQFBN660D8TDCNV1R77", ' +
+            '{ "orgnr": "' +
+            ORG_NR +
+            '", ' +
+            '"saksnummer": "' +
+            TEST_CASE_NUMBER_1 +
+            '", ' +
             '"samarbeid": { "id": 12345678, "navn": "Fysio", "status": "AKTIV" }, ' +
             '"plan": { "id": "c3e1ee3b-a9b4-420c-8ec8-def50e83d054", ' +
             '"sistEndret": "2024-09-17T10:17:59.054765", ' +
@@ -37,25 +40,33 @@ private class FiaCooperationHandlerTest {
         testMessages.add(
             new KafkaMessage__c(
                 CRM_Topic__c = TOPIC,
-                CRM_Key__c = KEY_1,
+                CRM_Key__c = 'X6mPvf2qYP7r42I-12345678',
                 CRM_Value__c = EncodingUtil.base64Encode(Blob.valueOf(sampleJson))
             )
         );
 
         //Record with bad hash for verifying error handling
         testMessages.add(
-            new KafkaMessage__c(CRM_Topic__c = TOPIC, CRM_Key__c = '999901', CRM_Value__c = 'bad data...')
+            new KafkaMessage__c(
+                CRM_Topic__c = TOPIC,
+                CRM_Key__c = 'X6mPvf2qYP7r42I-999901',
+                CRM_Value__c = 'bad data...'
+            )
         );
 
         //Record with missing ids for verifying error handling
         testMessages.add(
             new KafkaMessage__c(
                 CRM_Topic__c = TOPIC,
-                CRM_Key__c = '999902',
+                CRM_Key__c = 'X6mPvf2qYP7r42I-999902',
                 CRM_Value__c = EncodingUtil.base64Encode(
                     Blob.valueOf(
-                        '{ "orgnr": "987654321", ' +
-                        '"saksnummer": "01HNA9BAQFBN660D8TDCNV1R77", ' +
+                        '{ "orgnr": "' +
+                        ORG_NR +
+                        '", ' +
+                        '"saksnummer": "' +
+                        TEST_CASE_NUMBER_1 +
+                        '", ' +
                         '"samarbeid": { "id": 999902, "navn": "Fysio", "status": "AKTIV" }, ' +
                         '"plan": { "id": "4963ebe2-90be-5b40-a821-3ad0abcfd570", ' +
                         '"sistEndret": "2024-09-17T10:17:59.054765", ' +
@@ -79,11 +90,15 @@ private class FiaCooperationHandlerTest {
             testMessages.add(
                 new KafkaMessage__c(
                     CRM_Topic__c = TOPIC,
-                    CRM_Key__c = s,
+                    CRM_Key__c = 'X6mPvf2qYP7r42I-' + s,
                     CRM_Value__c = EncodingUtil.base64Encode(
                         Blob.valueOf(
-                            '{ "orgnr": "987654321", ' +
-                            '"saksnummer": "01HNA9BAQFBN660D8TDCNV1R77", ' +
+                            '{ "orgnr": "' +
+                            ORG_NR +
+                            '", ' +
+                            '"saksnummer": "' +
+                            TEST_CASE_NUMBER_1 +
+                            '", ' +
                             '"samarbeid": { "id": ' +
                             s +
                             ', "navn": "Fysio", "status": "AKTIV" }, ' +
@@ -120,7 +135,7 @@ private class FiaCooperationHandlerTest {
         List<KafkaMessage__c> messages = [
             SELECT CRM_Topic__c, CRM_Value__c, CRM_Key__c
             FROM KafkaMessage__c
-            WHERE CRM_Key__c = :KEY_1
+            WHERE CRM_Key__c = 'X6mPvf2qYP7r42I-12345678'
         ];
 
         Test.startTest();
@@ -161,7 +176,7 @@ private class FiaCooperationHandlerTest {
                     ORDER BY Order__c
                 )
             FROM IACooperation__c
-            WHERE CooperationId__c = :KEY_1
+            WHERE CooperationId__c = '12345678'
         ];
 
         IACooperation__c cooperationRecord = cooperationRecords[0];
@@ -221,7 +236,7 @@ private class FiaCooperationHandlerTest {
         List<KafkaMessage__c> messages = [
             SELECT CRM_Topic__c, CRM_Value__c, CRM_Key__c
             FROM KafkaMessage__c
-            WHERE CRM_Key__c LIKE '1000%'
+            WHERE CRM_Key__c LIKE 'X6mPvf2qYP7r42I-1000%'
         ];
 
         System.debug(messages.size());
@@ -261,7 +276,7 @@ private class FiaCooperationHandlerTest {
         List<KafkaMessage__c> messages = [
             SELECT CRM_Topic__c, CRM_Value__c, CRM_Key__c
             FROM KafkaMessage__c
-            WHERE CRM_Key__c = :KEY_1
+            WHERE CRM_Key__c = 'X6mPvf2qYP7r42I-12345678'
         ];
 
         delete [SELECT Id FROM IaCase__c WHERE Name = :TEST_CASE_NUMBER_1];
@@ -283,7 +298,7 @@ private class FiaCooperationHandlerTest {
         List<KafkaMessage__c> messages = [
             SELECT CRM_Topic__c, CRM_Value__c, CRM_Key__c
             FROM KafkaMessage__c
-            WHERE CRM_Key__c LIKE '999901'
+            WHERE CRM_Key__c = 'X6mPvf2qYP7r42I-999901'
         ];
 
         Test.startTest();
@@ -303,7 +318,7 @@ private class FiaCooperationHandlerTest {
         List<KafkaMessage__c> messages = [
             SELECT CRM_Topic__c, CRM_Value__c, CRM_Key__c
             FROM KafkaMessage__c
-            WHERE CRM_Key__c LIKE '999902'
+            WHERE CRM_Key__c = 'X6mPvf2qYP7r42I-999902'
         ];
 
         Test.startTest();
