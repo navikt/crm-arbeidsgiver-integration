@@ -109,11 +109,11 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
                 iaCooperationsToUpsert.add(iaCooperation);
 
                 for (FiaCooperation.Tema tema : fiaCooperation.plan.temaer) {
-                    IATheme__c iaTheme = createTheme(tema, fiaCooperation.samarbeid.id);
+                    IATheme__c iaTheme = createTheme(tema, fiaCooperation.key);
                     iaThemesToUpsert.add(iaTheme);
 
                     for (FiaCooperation.Undertema undertema : tema.undertemaer) {
-                        IA_Subtheme__c iaSubtheme = createSubtheme(undertema, tema.id, fiaCooperation.samarbeid.id);
+                        IA_Subtheme__c iaSubtheme = createSubtheme(undertema, tema.id, fiaCooperation.key);
                         iaSubthemesToUpsert.add(iaSubtheme);
                     }
                 }
@@ -146,7 +146,7 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
     }
 
     private IATheme__c createTheme(FiaCooperation.Tema tema, String fiaCooperationReference) {
-        IACooperation__c cooperationReference = new IACooperation__c(CooperationId__c = fiaCooperationReference);
+        IACooperation__c cooperationReference = new IACooperation__c(KafkaId__c = fiaCooperationReference);
         IATheme__c iaTheme = new IATheme__c(
             ThemeId__c = tema.id,
             Order__c = tema.rekkefolge,
@@ -164,7 +164,7 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
         String iaCooperationReference
     ) {
         IATheme__c themeReference = new IATheme__c(ThemeId__c = iaThemeReference);
-        IACooperation__c cooperationReference = new IACooperation__c(CooperationId__c = iaCooperationReference);
+        IACooperation__c cooperationReference = new IACooperation__c(KafkaId__c = iaCooperationReference);
         IA_Subtheme__c iaSubtheme = new IA_Subtheme__c(
             SubthemeId__c = undertema.id,
             Order__c = undertema.rekkefolge,
