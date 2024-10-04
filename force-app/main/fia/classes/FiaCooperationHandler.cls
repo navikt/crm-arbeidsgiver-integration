@@ -136,6 +136,7 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             IACase__r = caseReference,
             Account__r = accountReference,
             PlanId__c = fiaCooperation.plan.id,
+            Status__c = fiaCooperation.samarbeid.status,
             PlanLastModified__c = fiaCooperation.plan.sistEndret,
             PlanLastPublished__c = fiaCooperation.plan.sistPublisert,
             KafkaId__c = fiaCooperation.key,

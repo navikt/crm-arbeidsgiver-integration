@@ -150,6 +150,7 @@ private class FiaCooperationHandlerTest {
                 IACase__r.Name,
                 Account__r.INT_OrganizationNumber__c,
                 PlanId__c,
+                Status__c,
                 PlanLastModified__c,
                 PlanLastPublished__c,
                 (
@@ -183,6 +184,7 @@ private class FiaCooperationHandlerTest {
         Assert.areEqual('12345678', cooperationRecord.CooperationId__c, 'Id on record should match.');
         Assert.areEqual('Fysio', cooperationRecord.Name, 'Name on record should match.');
         Assert.areEqual('c3e1ee3b-a9b4-420c-8ec8-def50e83d054', cooperationRecord.PlanId__c, 'Plan Id should match.');
+        Assert.areEqual('AKTIV', cooperationRecord.Status__c, 'Status should match.');
         Assert.areEqual(TEST_CASE_NUMBER_1, cooperationRecord.IACase__r.Name, 'Should be related to test case.');
         Assert.areEqual(
             ORG_NR,
