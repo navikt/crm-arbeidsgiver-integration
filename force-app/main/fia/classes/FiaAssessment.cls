@@ -4,7 +4,7 @@
 public with sharing class FiaAssessment implements IKafkaMessageParser {
     public String behovsvurderingId;
     public String saksnummer;
-    //public String prosessId;
+    public String prosessId;
     public String fullfortTidspunkt;
 
     public String jsonPayload;
