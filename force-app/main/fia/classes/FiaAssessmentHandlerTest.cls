@@ -10,90 +10,110 @@ public with sharing class FiaAssessmentHandlerTest {
     private static final String KEY_5 = 'e910d6ff-5c0d-56fd-9a9d-f897c2484105';
     private static final String KEY_6 = '6b6df882-ff60-527b-92fb-6535d683fa4e';
 
-    private static final String JSON_1 =
-        '{"behovsvurderingId": "' +
-        KEY_1 +
-        '", "saksnummer": "' +
-        CASE_NAME_1 +
-        '", "fullførtTidspunkt": "2022-02-18T07:07:07.064711"}';
-    private static final String JSON_2 =
-        '{\n' +
-        '   "behovsvurderingId": "' +
-        KEY_2 +
-        '",\n' +
-        '   "saksnummer": "' +
-        CASE_NAME_2 +
-        '",\n' +
-        '   "prosessId": "PHdhVfikOUk",\n' +
-        '   "fullførtTidspunkt": "2022-02-18T07:07:07.064711"\n' +
-        '}';
-
-    // Invalid date value
-    private static final String JSON_BAD_DATA_1 =
-        '{\n' +
-        '   "behovsvurderingId": "' +
-        KEY_4 +
-        '",\n' +
-        '   "saksnummer": "' +
-        CASE_NAME_2 +
-        '",\n' +
-        '   "fullførtTidspunkt": "INVALID"\n' +
-        '}';
-    // Blank case value
-    private static final String JSON_BAD_DATA_2 =
-        '{\n' +
-        '   "behovsvurderingId": "' +
-        KEY_5 +
-        '",\n' +
-        '   "saksnummer": "",\n' +
-        '   "fullførtTidspunkt": "2022-02-18T07:07:07.064711"\n' +
-        '}';
-    // Case value provided but does not exist
-    private static final String JSON_BAD_DATA_3 =
-        '{\n' +
-        '   "behovsvurderingId": "' +
-        KEY_6 +
-        '",\n' +
-        '   "saksnummer": "fvaU5xumsudoS",\n' +
-        '   "fullførtTidspunkt": "2022-02-18T07:07:07.064711"\n' +
-        '}';
+    private static final String ORG_NR = '987654001';
 
     @TestSetup
     static void setupTestData() {
-        insert new List<IaCase__c>{ new IaCase__c(Name = CASE_NAME_1), new IaCase__c(Name = CASE_NAME_2) };
+        IACase__c caseReference1 = new IACase__c(Name = CASE_NAME_1);
+        IACase__c caseReference2 = new IACase__c(Name = CASE_NAME_2);
+        Account accountReference = new Account(INT_OrganizationNumber__c = ORG_NR);
 
-        insert new List<KafkaMessage__c>{
+        List<KafkaMessage__c> testMessages = new List<KafkaMessage__c>();
+
+        //Record in old format (without prosessId)
+        testMessages.add(
             new KafkaMessage__c(
                 CRM_Topic__c = TOPIC,
-                CRM_Key__c = KEY_1,
-                CRM_Value__c = EncodingUtil.base64Encode(Blob.valueOf(JSON_1))
+                CRM_Key__c = '2c4c1a34-7e86-49de-8144-f7c5f48ce31a',
+                CRM_Value__c = EncodingUtil.base64Encode(
+                    Blob.valueOf(
+                        '{"behovsvurderingId":"2c4c1a34-7e86-49de-8144-f7c5f48ce31a","saksnummer":"01H40FRVDM11FD1C8Z43BW1YDQ","fullførtTidspunkt":"2024-10-09T20:31:54.220825"}'
+                    )
+                )
+            )
+        );
+
+        //Record in new format (with prosessId)
+        testMessages.add(
+            new KafkaMessage__c(
+                CRM_Topic__c = TOPIC,
+                CRM_Key__c = '9eeb344c-13bd-5e2f-869e-b99f77d6f898',
+                CRM_Value__c = EncodingUtil.base64Encode(
+                    Blob.valueOf(
+                        '{"behovsvurderingId":"9eeb344c-13bd-5e2f-869e-b99f77d6f898","saksnummer":"01H40FRVDM11FD1C8Z43BW1YDQ","prosessId":"253","fullførtTidspunkt":"2024-10-09T20:31:54.220825"}'
+                    )
+                )
+            )
+        );
+
+        //Record with no IA Case or IA Cooperationin SF
+        testMessages.add(
+            new KafkaMessage__c(
+                CRM_Topic__c = TOPIC,
+                CRM_Key__c = '983c6763-0908-5955-ace8-14b581cfc714',
+                CRM_Value__c = EncodingUtil.base64Encode(
+                    Blob.valueOf(
+                        '{"behovsvurderingId":"983c6763-0908-5955-ace8-14b581cfc714","saksnummer":"yohoho","prosessId":"hmhmhm","fullførtTidspunkt":"2024-10-09T20:31:54.220825"}'
+                    )
+                )
+            )
+        );
+
+        //Record with corrupted hash
+        testMessages.add(
+            new KafkaMessage__c(
+                CRM_Topic__c = TOPIC,
+                CRM_Key__c = 'cb6ae4ef-ef53-5f3b-9c7e-2bda786d28b7',
+                CRM_Value__c = 'corrupted'
+            )
+        );
+
+        // Mass generate records for bulk testing
+        for (Integer i = 0; i < 20; i++) {
+            String s = 'test' + i;
+            testMessages.add(
+                new KafkaMessage__c(
+                    CRM_Topic__c = TOPIC,
+                    CRM_Key__c = s,
+                    CRM_Value__c = EncodingUtil.base64Encode(
+                        Blob.valueOf(
+                            '{"behovsvurderingId":"' +
+                            s +
+                            '","saksnummer":"01H40FRVDM11FD1C8Z43BW1YDQ","fullførtTidspunkt":"2024-10-09T20:31:54.220825"}'
+                        )
+                    )
+                )
+            );
+        }
+
+        insert new List<Account>{ new Account(Name = 'Allsidig Produksjon AS', INT_OrganizationNumber__c = ORG_NR) };
+        insert new List<IaCase__c>{
+            new IaCase__c(Name = CASE_NAME_1, Account__r = new Account(INT_OrganizationNumber__c = ORG_NR)),
+            new IaCase__c(Name = CASE_NAME_2, Account__r = new Account(INT_OrganizationNumber__c = ORG_NR))
+        };
+
+        insert new List<IACooperation__c>{
+            new IACooperation__c(
+                CooperationId__c = '55',
+                Name = 'mysterious',
+                Status__c = 'AKTIV',
+                IACase__r = caseReference1,
+                Account__r = accountReference
             ),
-            new KafkaMessage__c(
-                CRM_Topic__c = TOPIC,
-                CRM_Key__c = KEY_2,
-                CRM_Value__c = EncodingUtil.base64Encode(Blob.valueOf(JSON_2))
-            ),
-            new KafkaMessage__c(CRM_Topic__c = TOPIC, CRM_Key__c = KEY_3, CRM_Value__c = 'CORRUPTED_HASH'),
-            new KafkaMessage__c(
-                CRM_Topic__c = TOPIC,
-                CRM_Key__c = KEY_4,
-                CRM_Value__c = EncodingUtil.base64Encode(Blob.valueOf(JSON_BAD_DATA_1))
-            ),
-            new KafkaMessage__c(
-                CRM_Topic__c = TOPIC,
-                CRM_Key__c = KEY_5,
-                CRM_Value__c = EncodingUtil.base64Encode(Blob.valueOf(JSON_BAD_DATA_2))
-            ),
-            new KafkaMessage__c(
-                CRM_Topic__c = TOPIC,
-                CRM_Key__c = KEY_6,
-                CRM_Value__c = EncodingUtil.base64Encode(Blob.valueOf(JSON_BAD_DATA_3))
+            new IACooperation__c(
+                CooperationId__c = '19',
+                Name = 'trade',
+                Status__c = 'PLANLAGT',
+                IACase__r = caseReference1,
+                Account__r = accountReference
             )
         };
+
+        insert testMessages;
     }
 
     @IsTest
-    static void Should_Create_New_Assessment() {
+    static void Should_Create_New_Assessment_When_Processed() {
         List<KafkaMessage__c> messages = [
             SELECT CRM_Topic__c, CRM_Value__c, CRM_Key__c
             FROM KafkaMessage__c
@@ -123,7 +143,19 @@ public with sharing class FiaAssessmentHandlerTest {
     }
 
     @IsTest
-    static void testProcessMultipleMessages() {
+    static void Should_Fail_If_No_Related_IA_Record_In_SF() {
+    }
+
+    @IsTest
+    static void Should_Relate_To_IA_Records_In_SF() {
+    }
+
+    @IsTest
+    static void should_Log_Error_When_Processing_Corrupted_Message_Hash() {
+    }
+
+    @IsTest
+    static void should_Handle_Multiple_Messages() {
         List<KafkaMessage__c> messages = [SELECT CRM_Topic__c, CRM_Value__c, CRM_Key__c FROM KafkaMessage__c];
 
         Test.startTest();
@@ -175,7 +207,7 @@ public with sharing class FiaAssessmentHandlerTest {
     }
 
     @IsTest
-    static void testExceptionOnUpsertIADeliveryRecord() {
+    static void Should_Catch_Errors_During_Upsert() {
         List<KafkaMessage__c> messages = [SELECT CRM_Topic__c, CRM_Value__c, CRM_Key__c FROM KafkaMessage__c];
         List<IaCase__c> iaCases = [SELECT id FROM IaCase__c WHERE Name = :CASE_NAME_1];
 
