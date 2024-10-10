@@ -93,7 +93,7 @@ public with sharing class FiaAssessmentHandlerTest {
     }
 
     @IsTest
-    static void testProcessSingleMessage() {
+    static void Should_Create_New_Assessment() {
         List<KafkaMessage__c> messages = [
             SELECT CRM_Topic__c, CRM_Value__c, CRM_Key__c
             FROM KafkaMessage__c
