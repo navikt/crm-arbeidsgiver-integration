@@ -1,5 +1,9 @@
 @IsTest
 public with sharing class FiaAssessmentTest {
+    /*
+{"behovsvurderingId":"2c4c1a34-7e86-49de-8144-f7c5f48ce31a","saksnummer":"01H40FRVDM11FD1C8Z43BW1YDQ","prosessId":"253","fullførtTidspunkt":"2024-10-09T20:31:54.220825"}
+*/
+
     private static final String JSON =
         '{\n' +
         '   "behovsvurderingId": "4cce71a2-ffba-4d4a-865d-fca20b482598",\n' +
