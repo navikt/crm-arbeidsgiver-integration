@@ -28,5 +28,6 @@
         "**/.sfdx": true,
         "**/.vscode": true,
         "**/.idea": true
-    }
+    },
+    "editor.guides.bracketPairs": true
 }
