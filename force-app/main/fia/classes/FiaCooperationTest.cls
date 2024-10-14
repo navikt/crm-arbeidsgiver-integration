@@ -7,22 +7,22 @@ public with sharing class FiaCooperationTest {
         '"plan": { "id": "c3e1ee3b-a9b4-420c-8ec8-def50e83d054", ' +
         '"sistEndret": "2024-09-17T10:17:59.054765", ' +
         '"sistPublisert": "2024-09-18", ' +
-        '"temaer": [ { "id": 9847, "rekkefølge": 1, "navn": "Partssamarbeid", ' +
-        '"planlagt": false, "undertemaer": [ { "id": 345, "rekkefølge": 1, ' +
+        '"temaer": [ { "id": 9847, "navn": "Partssamarbeid", ' +
+        '"inkludert": false, "undertemaer": [ { "id": 345, ' +
         '"navn": "Utvikle partssamarbeidet", ' +
         '"målsetning": "Styrke og strukturere samarbeidet mellom leder, tillitsvalgt og verneombud, ' +
         'samt øke kunnskap og ferdigheter for å jobbe systematisk og forebyggende med sykefravær og arbeidsmiljø.", ' +
-        '"planlagt": false, "status": null, "startDato": null, "sluttDato": null } ] }, ' +
-        '{ "id": 6576, "rekkefølge": 2, "navn": "Sykefraværsarbeid", ' +
-        '"planlagt": true, "undertemaer": [ { "id": 76576, "rekkefølge": 1, ' +
+        '"inkludert": false, "status": null, "startDato": null, "sluttDato": null } ] }, ' +
+        '{ "id": 6576, "navn": "Sykefraværsarbeid", ' +
+        '"inkludert": true, "undertemaer": [ { "id": 76576, ' +
         '"navn": "Sykefraværsrutiner", ' +
         '"målsetning": "Jobbe systematisk og forebyggende med sykefravær, samt forbedre rutiner og oppfølging av ansatte ' +
         'som er sykmeldte eller står i fare for å bli det.", ' +
-        '"planlagt": true, "status": "PLANLAGT", "startDato": "2010-01-01", "sluttDato": "2025-02-02" }, ' +
-        '{ "id": 65765, "rekkefølge": 2, "navn": "Oppfølgingssamtaler", ' +
+        '"inkludert": true, "status": "PLANLAGT", "startDato": "2010-01-01", "sluttDato": "2025-02-02" }, ' +
+        '{ "id": 65765, "navn": "Oppfølgingssamtaler", ' +
         '"målsetning": "Øke kompetanse og ferdigheter for hvordan man gjennomfører gode oppfølgingssamtaler, ' +
         'både gjennom teori og praksis.", ' +
-        '"planlagt": true, "status": "PLANLAGT", "startDato": "2010-01-01", "sluttDato": "2025-02-02" } ] } ] } }';
+        '"inkludert": true, "status": "PLANLAGT", "startDato": "2010-01-01", "sluttDato": "2025-02-02" } ] } ] } }';
 
     @IsTest
     static void json_Should_Be_Parsed_To_Model() {
@@ -61,16 +61,14 @@ public with sharing class FiaCooperationTest {
         );
         //Tema
         Assert.areEqual('9847', model.plan.temaer[0].id, 'Shoud be parsed to model: "id": 9847');
-        Assert.areEqual(1, model.plan.temaer[0].rekkefolge, 'Shoud be parsed to model: "rekkefølge": 1');
         Assert.areEqual(
             'Partssamarbeid',
             model.plan.temaer[0].navn,
             'Shoud be parsed to model: "navn": "Partssamarbeid"'
         );
-        Assert.areEqual(false, model.plan.temaer[0].planlagt, 'Shoud be parsed to model: "planlagt": false');
+        Assert.areEqual(false, model.plan.temaer[0].inkludert, 'Shoud be parsed to model: "inkludert": false');
         //Undertema
         Assert.areEqual('345', model.plan.temaer[0].undertemaer[0].id, 'Shoud be parsed to model: "id": 345');
-        Assert.areEqual(1, model.plan.temaer[0].undertemaer[0].rekkefolge, 'Shoud be parsed to model: "rekkefølge": 1');
         Assert.areEqual(
             'Utvikle partssamarbeidet',
             model.plan.temaer[0].undertemaer[0].navn,
@@ -83,12 +81,11 @@ public with sharing class FiaCooperationTest {
         );
         Assert.areEqual(
             false,
-            model.plan.temaer[0].undertemaer[0].planlagt,
-            'Shoud be parsed to model: "planlagt": false'
+            model.plan.temaer[0].undertemaer[0].inkludert,
+            'Shoud be parsed to model: "inkludert": false'
         );
         //Tema
         Assert.areEqual('6576', model.plan.temaer[1].id, 'Shoud be parsed to model: "id": 6576');
-        Assert.areEqual(2, model.plan.temaer[1].rekkefolge, 'Shoud be parsed to model: "rekkefølge": 2');
         Assert.areEqual(
             'Sykefraværsarbeid',
             model.plan.temaer[1].navn,
@@ -96,7 +93,6 @@ public with sharing class FiaCooperationTest {
         );
         //Undertema
         Assert.areEqual('76576', model.plan.temaer[1].undertemaer[0].id, 'Shoud be parsed to model: "id": 76576');
-        Assert.areEqual(1, model.plan.temaer[1].undertemaer[0].rekkefolge, 'Shoud be parsed to model: "rekkefølge": 1');
         Assert.areEqual(
             'Sykefraværsrutiner',
             model.plan.temaer[1].undertemaer[0].navn,
@@ -109,8 +105,8 @@ public with sharing class FiaCooperationTest {
         );
         Assert.areEqual(
             true,
-            model.plan.temaer[1].undertemaer[0].planlagt,
-            'Shoud be parsed to model: "planlagt": true'
+            model.plan.temaer[1].undertemaer[0].inkludert,
+            'Shoud be parsed to model: "inkludert": true'
         );
         Assert.areEqual(
             'PLANLAGT',
@@ -129,7 +125,6 @@ public with sharing class FiaCooperationTest {
         );
 
         Assert.areEqual('65765', model.plan.temaer[1].undertemaer[1].id, 'Shoud be parsed to model: "id": 65765');
-        Assert.areEqual(2, model.plan.temaer[1].undertemaer[1].rekkefolge, 'Shoud be parsed to model: "rekkefølge": 2');
         Assert.areEqual(
             'Oppfølgingssamtaler',
             model.plan.temaer[1].undertemaer[1].navn,
