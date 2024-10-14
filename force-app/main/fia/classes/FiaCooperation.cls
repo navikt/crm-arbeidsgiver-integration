@@ -28,8 +28,7 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
         public String id;
         public Integer rekkefolge;
         public String navn;
-        public Boolean planlagt; // planlagt på tema og undertema endres til inkludert - Betyr at den ikke er en del av planen. Ikke lenger synlig i fia. Må legge til logikk for å tolke inkludert
-        public Boolean inkludert; // inkludert
+        public Boolean inkludert;
         public List<Undertema> undertemaer;
     }
 
@@ -38,8 +37,7 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
         public Integer rekkefolge;
         public String navn;
         public String malsetning;
-        public Boolean planlagt; // endres til inkludert
-        public Boolean inkludert; // inkludert
+        public Boolean inkludert;
         public String status;
         public Date startDato;
         public Date sluttDato;
@@ -54,5 +52,26 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
         model.key = key;
 
         return model;
+    }
+
+    public Boolean includesArbeidsmiljo() {
+        return includesTema('Arbeidsmiljø');
+    }
+    public Boolean includesSykefravaersarbeid() {
+        return includesTema('Sykefraværsarbeid');
+    }
+    public Boolean includesPartssamarbeid() {
+        return includesTema('Partssamarbeid');
+    }
+
+    private Boolean includesTema(String name) {
+        boolean isIncluded = false;
+        for (Tema t : plan.temaer) {
+            if (t.navn == name && t.inkludert) {
+                isIncluded = true;
+                break;
+            }
+        }
+        return isIncluded;
     }
 }

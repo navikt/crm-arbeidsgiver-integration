@@ -17,25 +17,29 @@ private class FiaCooperationHandlerTest {
             TEST_CASE_NUMBER_1 +
             '", ' +
             '"samarbeid": { "id": 12345678, "navn": "Fysio", "status": "AKTIV" }, ' +
-            '"plan": { "id": "c3e1ee3b-a9b4-420c-8ec8-def50e83d054", ' +
+            '"plan": {' +
+            ' "id": "c3e1ee3b-a9b4-420c-8ec8-def50e83d054", ' +
             '"sistEndret": "2024-09-17T10:17:59.054765", ' +
             '"sistPublisert": "2024-09-18", ' +
-            '"temaer": [ { "id": 9847, "rekkefølge": 1, "navn": "Partssamarbeid", ' +
-            '"planlagt": false, "undertemaer": [ { "id": 345, "rekkefølge": 1, ' +
+            '"temaer": ' +
+            '[ ' +
+            '{ "id": 9847, "rekkefølge": 1, "navn": "Partssamarbeid", ' +
+            '"inkludert": false, "undertemaer": [ { "id": 345, "rekkefølge": 1, ' +
             '"navn": "Utvikle partssamarbeidet", ' +
             '"målsetning": "Styrke og strukturere samarbeidet mellom leder, tillitsvalgt og verneombud, ' +
             'samt øke kunnskap og ferdigheter for å jobbe systematisk og forebyggende med sykefravær og arbeidsmiljø.", ' +
-            '"planlagt": false, "status": null, "startDato": null, "sluttDato": null } ] }, ' +
+            '"inkludert": false, "status": null, "startDato": null, "sluttDato": null } ] ' +
+            '}, ' +
             '{ "id": 6576, "rekkefølge": 2, "navn": "Sykefraværsarbeid", ' +
-            '"planlagt": true, "undertemaer": [ { "id": 76576, "rekkefølge": 1, ' +
+            '"inkludert": true, "undertemaer": [ { "id": 76576, "rekkefølge": 1, ' +
             '"navn": "Sykefraværsrutiner", ' +
             '"målsetning": "Jobbe systematisk og forebyggende med sykefravær, samt forbedre rutiner og oppfølging av ansatte ' +
             'som er sykmeldte eller står i fare for å bli det.", ' +
-            '"planlagt": true, "status": "PLANLAGT", "startDato": "2010-01-01", "sluttDato": "2025-02-02" }, ' +
+            '"inkludert": true, "status": "PLANLAGT", "startDato": "2010-01-01", "sluttDato": "2025-02-02" }, ' +
             '{ "id": 65765, "rekkefølge": 2, "navn": "Oppfølgingssamtaler", ' +
             '"målsetning": "Øke kompetanse og ferdigheter for hvordan man gjennomfører gode oppfølgingssamtaler, ' +
             'både gjennom teori og praksis.", ' +
-            '"planlagt": true, "status": "PLANLAGT", "startDato": "2010-01-01", "sluttDato": "2025-02-02" } ] } ] } }';
+            '"inkludert": true, "status": "PLANLAGT", "startDato": "2010-01-01", "sluttDato": "2025-02-02" } ] } ] } }';
 
         testMessages.add(
             new KafkaMessage__c(
@@ -73,11 +77,11 @@ private class FiaCooperationHandlerTest {
                         '"sistPublisert": "2024-09-18", ' +
                         '"temaer": [' +
                         '{ "id": null, "rekkefølge": 1, "navn": "Sykefraværsarbeid", ' +
-                        '"planlagt": true, "undertemaer": [ { "id": null, "rekkefølge": 1, ' +
+                        '"inkludert": true, "undertemaer": [ { "id": null, "rekkefølge": 1, ' +
                         '"navn": "Sykefraværsrutiner", ' +
                         '"målsetning": "Jobbe systematisk og forebyggende med sykefravær, samt forbedre rutiner og oppfølging av ansatte ' +
                         'som er sykmeldte eller står i fare for å bli det.", ' +
-                        '"planlagt": true, "status": "PLANLAGT", "startDato": "2010-01-01", "sluttDato": "2025-02-02" } ' +
+                        '"inkludert": true, "status": "PLANLAGT", "startDato": "2010-01-01", "sluttDato": "2025-02-02" } ' +
                         ' ] } ] } }'
                     )
                 )
@@ -109,13 +113,13 @@ private class FiaCooperationHandlerTest {
                             '{ "id": ' +
                             s +
                             '01, "rekkefølge": 1, "navn": "Sykefraværsarbeid", ' +
-                            '"planlagt": true, "undertemaer": [ { "id": ' +
+                            '"inkludert": true, "undertemaer": [ { "id": ' +
                             s +
                             '0101, "rekkefølge": 1, ' +
                             '"navn": "Sykefraværsrutiner", ' +
                             '"målsetning": "Jobbe systematisk og forebyggende med sykefravær, samt forbedre rutiner og oppfølging av ansatte ' +
                             'som er sykmeldte eller står i fare for å bli det.", ' +
-                            '"planlagt": true, "status": "PLANLAGT", "startDato": "2010-01-01", "sluttDato": "2025-02-02" } ' +
+                            '"inkludert": true, "status": "PLANLAGT", "startDato": "2010-01-01", "sluttDato": "2025-02-02" } ' +
                             ' ] } ] } }'
                         )
                     )
@@ -330,6 +334,48 @@ private class FiaCooperationHandlerTest {
             KafkaMessageService.STATUS_ERROR,
             messages[0].CRM_Status__c,
             'Message status should be updated to Error'
+        );
+    }
+
+    @IsTest
+    static void Should_Update_Included_Themes_On_IACooperation_When_Processing_Kafka_Message() {
+        List<KafkaMessage__c> messages = [
+            SELECT CRM_Topic__c, CRM_Value__c, CRM_Key__c
+            FROM KafkaMessage__c
+            WHERE CRM_Key__c = 'X6mPvf2qYP7r42I-12345678'
+        ];
+
+        Test.startTest();
+        FiaCooperationHandler handler = new FiaCooperationHandler();
+        handler.processMessages(messages);
+        Test.stopTest();
+
+        IACooperation__c iaCooperation = [
+            SELECT
+                CooperationId__c,
+                Name,
+                IncludedArbeidsmiljo__c,
+                IncludedPartssamarbeid__c,
+                IncludedSykefravaersarbeid__c
+            FROM IACooperation__c
+            WHERE CooperationId__c = '12345678'
+            LIMIT 1
+        ];
+
+        Assert.areEqual(
+            false,
+            iaCooperation.IncludedPartssamarbeid__c,
+            'Should be false since marked as not included in json'
+        );
+        Assert.areEqual(
+            true,
+            iaCooperation.IncludedSykefravaersarbeid__c,
+            'Should be true since marked as included in json'
+        );
+        Assert.areEqual(
+            false,
+            iaCooperation.IncludedArbeidsmiljo__c,
+            'Should be false since theme name not present in json'
         );
     }
 }

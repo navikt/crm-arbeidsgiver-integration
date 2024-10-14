@@ -141,7 +141,10 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             PlanLastPublished__c = fiaCooperation.plan.sistPublisert,
             KafkaId__c = fiaCooperation.key,
             KafkaHash__c = fiaCooperation.hash,
-            JsonPayload__c = fiaCooperation.jsonPayload
+            JsonPayload__c = fiaCooperation.jsonPayload,
+            IncludedArbeidsmiljo__c = fiaCooperation.includesArbeidsmiljo(),
+            IncludedPartssamarbeid__c = fiaCooperation.includesPartssamarbeid(),
+            IncludedSykefravaersarbeid__c = fiaCooperation.includesSykefravaersarbeid()
         );
         return iaCooperation;
     }
@@ -152,7 +155,7 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             ThemeId__c = tema.id,
             Order__c = tema.rekkefolge,
             Name = tema.navn,
-            IsPlanned__c = tema.planlagt,
+            IsPlanned__c = tema.inkludert,
             IACooperation__r = cooperationReference,
             KafkaId__c = fiaCooperationReference
         );
@@ -171,7 +174,7 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             Order__c = undertema.rekkefolge,
             Name = undertema.navn,
             Goal__c = undertema.malsetning,
-            IsPlanned__c = undertema.planlagt,
+            IsPlanned__c = undertema.inkludert,
             Status__c = undertema.status,
             StartDate__c = undertema.startDato,
             EndDate__c = undertema.sluttDato,
