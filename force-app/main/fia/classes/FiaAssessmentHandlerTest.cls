@@ -3,7 +3,7 @@ public with sharing class FiaAssessmentHandlerTest {
     @TestSetup
     static void setupTestData() {
         String topic = 'pia.fullfort-behovsvurdering-v1';
-        String ORG_NR = '987654001';
+        String orgnr = '987654001';
         List<KafkaMessage__c> testMessages = new List<KafkaMessage__c>();
 
         //Record in old format (without prosessId)
@@ -86,17 +86,17 @@ public with sharing class FiaAssessmentHandlerTest {
         }
 
         insert testMessages;
-        insert new Account(Name = 'Allsidig Produksjon AS', INT_OrganizationNumber__c = ORG_NR);
+        insert new Account(Name = 'Allsidig Produksjon AS', INT_OrganizationNumber__c = orgnr);
         insert new List<IaCase__c>{
-            new IaCase__c(Name = 'GUrnf', Account__r = new Account(INT_OrganizationNumber__c = ORG_NR)),
-            new IaCase__c(Name = 'l8pYDNoLtPCKb', Account__r = new Account(INT_OrganizationNumber__c = ORG_NR))
+            new IaCase__c(Name = 'GUrnf', Account__r = new Account(INT_OrganizationNumber__c = orgnr)),
+            new IaCase__c(Name = 'l8pYDNoLtPCKb', Account__r = new Account(INT_OrganizationNumber__c = orgnr))
         };
         insert new IACooperation__c(
             CooperationId__c = '253',
             Name = 'mysterious',
             Status__c = 'AKTIV',
             IACase__r = new IACase__c(Name = 'GUrnf'),
-            Account__r = new Account(INT_OrganizationNumber__c = ORG_NR)
+            Account__r = new Account(INT_OrganizationNumber__c = orgnr)
         );
 
         insert new IADelivery__c(
