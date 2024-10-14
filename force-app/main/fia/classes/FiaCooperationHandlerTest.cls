@@ -23,20 +23,20 @@ private class FiaCooperationHandlerTest {
             '"sistPublisert": "2024-09-18", ' +
             '"temaer": ' +
             '[ ' +
-            '{ "id": 9847, "rekkefølge": 1, "navn": "Partssamarbeid", ' +
-            '"inkludert": false, "undertemaer": [ { "id": 345, "rekkefølge": 1, ' +
+            '{ "id": 9847, "navn": "Partssamarbeid", ' +
+            '"inkludert": false, "undertemaer": [ { "id": 345, ' +
             '"navn": "Utvikle partssamarbeidet", ' +
             '"målsetning": "Styrke og strukturere samarbeidet mellom leder, tillitsvalgt og verneombud, ' +
             'samt øke kunnskap og ferdigheter for å jobbe systematisk og forebyggende med sykefravær og arbeidsmiljø.", ' +
             '"inkludert": false, "status": null, "startDato": null, "sluttDato": null } ] ' +
             '}, ' +
-            '{ "id": 6576, "rekkefølge": 2, "navn": "Sykefraværsarbeid", ' +
-            '"inkludert": true, "undertemaer": [ { "id": 76576, "rekkefølge": 1, ' +
+            '{ "id": 6576, "navn": "Sykefraværsarbeid", ' +
+            '"inkludert": true, "undertemaer": [ { "id": 76576, ' +
             '"navn": "Sykefraværsrutiner", ' +
             '"målsetning": "Jobbe systematisk og forebyggende med sykefravær, samt forbedre rutiner og oppfølging av ansatte ' +
             'som er sykmeldte eller står i fare for å bli det.", ' +
             '"inkludert": true, "status": "PLANLAGT", "startDato": "2010-01-01", "sluttDato": "2025-02-02" }, ' +
-            '{ "id": 65765, "rekkefølge": 2, "navn": "Oppfølgingssamtaler", ' +
+            '{ "id": 65765, "navn": "Oppfølgingssamtaler", ' +
             '"målsetning": "Øke kompetanse og ferdigheter for hvordan man gjennomfører gode oppfølgingssamtaler, ' +
             'både gjennom teori og praksis.", ' +
             '"inkludert": true, "status": "PLANLAGT", "startDato": "2010-01-01", "sluttDato": "2025-02-02" } ] } ] } }';
@@ -76,8 +76,8 @@ private class FiaCooperationHandlerTest {
                         '"sistEndret": "2024-09-17T10:17:59.054765", ' +
                         '"sistPublisert": "2024-09-18", ' +
                         '"temaer": [' +
-                        '{ "id": null, "rekkefølge": 1, "navn": "Sykefraværsarbeid", ' +
-                        '"inkludert": true, "undertemaer": [ { "id": null, "rekkefølge": 1, ' +
+                        '{ "id": null, "navn": "Sykefraværsarbeid", ' +
+                        '"inkludert": true, "undertemaer": [ { "id": null, ' +
                         '"navn": "Sykefraværsrutiner", ' +
                         '"målsetning": "Jobbe systematisk og forebyggende med sykefravær, samt forbedre rutiner og oppfølging av ansatte ' +
                         'som er sykmeldte eller står i fare for å bli det.", ' +
@@ -112,10 +112,10 @@ private class FiaCooperationHandlerTest {
                             '"temaer": [' +
                             '{ "id": ' +
                             s +
-                            '01, "rekkefølge": 1, "navn": "Sykefraværsarbeid", ' +
+                            '01, "navn": "Sykefraværsarbeid", ' +
                             '"inkludert": true, "undertemaer": [ { "id": ' +
                             s +
-                            '0101, "rekkefølge": 1, ' +
+                            '0101, ' +
                             '"navn": "Sykefraværsrutiner", ' +
                             '"målsetning": "Jobbe systematisk og forebyggende med sykefravær, samt forbedre rutiner og oppfølging av ansatte ' +
                             'som er sykmeldte eller står i fare for å bli det.", ' +

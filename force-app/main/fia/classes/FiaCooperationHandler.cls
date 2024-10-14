@@ -153,7 +153,6 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
         IACooperation__c cooperationReference = new IACooperation__c(KafkaId__c = fiaCooperationReference);
         IATheme__c iaTheme = new IATheme__c(
             ThemeId__c = tema.id,
-            Order__c = tema.rekkefolge,
             Name = tema.navn,
             IsPlanned__c = tema.inkludert,
             IACooperation__r = cooperationReference,
@@ -171,7 +170,6 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
         IACooperation__c cooperationReference = new IACooperation__c(KafkaId__c = iaCooperationReference);
         IA_Subtheme__c iaSubtheme = new IA_Subtheme__c(
             SubthemeId__c = undertema.id,
-            Order__c = undertema.rekkefolge,
             Name = undertema.navn,
             Goal__c = undertema.malsetning,
             IsPlanned__c = undertema.inkludert,

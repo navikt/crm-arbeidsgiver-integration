@@ -26,7 +26,6 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
 
     public class Tema {
         public String id;
-        public Integer rekkefolge;
         public String navn;
         public Boolean inkludert;
         public List<Undertema> undertemaer;
@@ -34,7 +33,6 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
 
     public class Undertema {
         public String id;
-        public Integer rekkefolge;
         public String navn;
         public String malsetning;
         public Boolean inkludert;
@@ -44,8 +42,7 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
     }
 
     public static FiaCooperation parse(String json, String key, String hash) {
-        String formattedJSON = json.replaceAll('"rekkefølge":', '"rekkefolge":');
-        formattedJSON = formattedJSON.replaceAll('"målsetning":', '"malsetning":');
+        String formattedJSON = json.replaceAll('"målsetning":', '"malsetning":');
         FiaCooperation model = (FiaCooperation) System.JSON.deserialize(formattedJSON, FiaCooperation.class);
         model.jsonPayload = json;
         model.hash = hash;
