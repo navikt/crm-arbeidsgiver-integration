@@ -23,7 +23,7 @@ private class FiaCooperationHandlerTest {
             '"sistPublisert": "2024-09-18", ' +
             '"temaer": ' +
             '[ ' +
-            '{ "id": 9847, "navn": "Partssamarbeid", ' +
+            '{ "id": 1847, "navn": "Partssamarbeid", ' +
             '"inkludert": false, "undertemaer": [ { "id": 345, ' +
             '"navn": "Utvikle partssamarbeidet", ' +
             '"målsetning": "Styrke og strukturere samarbeidet mellom leder, tillitsvalgt og verneombud, ' +
@@ -31,7 +31,7 @@ private class FiaCooperationHandlerTest {
             '"inkludert": false, "status": null, "startDato": null, "sluttDato": null } ] ' +
             '}, ' +
             '{ "id": 6576, "navn": "Sykefraværsarbeid", ' +
-            '"inkludert": true, "undertemaer": [ { "id": 76576, ' +
+            '"inkludert": true, "undertemaer": [ { "id": 16576, ' +
             '"navn": "Sykefraværsrutiner", ' +
             '"målsetning": "Jobbe systematisk og forebyggende med sykefravær, samt forbedre rutiner og oppfølging av ansatte ' +
             'som er sykmeldte eller står i fare for å bli det.", ' +
@@ -161,23 +161,21 @@ private class FiaCooperationHandlerTest {
                         ThemeId__c,
                         Name,
                         IsPlanned__c,
-                        Order__c,
                         (
                             SELECT
                                 SubthemeId__c,
                                 Name,
                                 IsPlanned__c,
-                                Order__c,
                                 Goal__c,
                                 StartDate__c,
                                 EndDate__c,
                                 Status__c,
                                 IA_CooperationTheme__r.PlanId__c
                             FROM IA_Subthemes__r
-                            ORDER BY Order__c
+                            ORDER BY SubthemeId__c
                         )
                     FROM IA_Themes__r
-                    ORDER BY Order__c
+                    ORDER BY ThemeId__c
                 )
             FROM IACooperation__c
             WHERE CooperationId__c = '12345678'
@@ -207,7 +205,7 @@ private class FiaCooperationHandlerTest {
 
         IATheme__c theme1 = cooperationRecord.IA_Themes__r[0];
         IATheme__c theme2 = cooperationRecord.IA_Themes__r[1];
-        Assert.areEqual('9847', theme1.ThemeId__c, 'Field should match value from json');
+        Assert.areEqual('1847', theme1.ThemeId__c, 'Field should match value from json');
         Assert.areEqual('6576', theme2.ThemeId__c, 'Field should match value from json');
         Assert.areEqual(1, theme1.IA_Subthemes__r.size(), 'Should have 1 subtheme');
         Assert.areEqual(2, theme2.IA_Subthemes__r.size(), 'Should have 2 subthemes');
@@ -216,7 +214,7 @@ private class FiaCooperationHandlerTest {
         IA_Subtheme__c theme2Subtheme1 = theme2.IA_Subthemes__r[0];
         IA_Subtheme__c theme2Subtheme2 = theme2.IA_Subthemes__r[1];
         Assert.areEqual('345', theme1Subtheme1.SubthemeId__c, 'Field should match value from json');
-        Assert.areEqual('76576', theme2Subtheme1.SubthemeId__c, 'Field should match value from json');
+        Assert.areEqual('16576', theme2Subtheme1.SubthemeId__c, 'Field should match value from json');
         Assert.areEqual('65765', theme2Subtheme2.SubthemeId__c, 'Field should match value from json');
         Assert.areEqual(
             'c3e1ee3b-a9b4-420c-8ec8-def50e83d054',
