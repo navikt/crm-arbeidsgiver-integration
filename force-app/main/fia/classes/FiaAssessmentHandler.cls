@@ -4,14 +4,16 @@
  */
 public without sharing class FiaAssessmentHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer {
     private static final string IA_DELIVERY_TYPE = 'Assessment';
+
     /**
      * @description Implementation of processMessages-method from IKafkaMessageConsumer
      * @param messages List of kafka message records
      */
     public void processMessages(List<KafkaMessage__c> messages) {
         Map<String, FiaAssessment> keyToFiaAssessmentMap = extractFiaAssessmentData(messages);
+
         List<IADelivery__c> iaDeliveryRecords = createIADeliveryRecords(keyToFiaAssessmentMap, messages);
-        // Perform database operations on records
+
         upsertIADeliveryRecords(iaDeliveryRecords, messages);
         logger.publish();
     }
@@ -21,7 +23,6 @@ public without sharing class FiaAssessmentHandler extends KafkaMessageProcessor 
      * @param messages List of Kafka message records
      * @return New map with extracted FiaAssessments
      */
-    @TestVisible
     private Map<String, FiaAssessment> extractFiaAssessmentData(List<KafkaMessage__c> messages) {
         Map<String, FiaAssessment> keyToFiaAssessmentMap = new Map<String, FiaAssessment>();
 
@@ -39,32 +40,39 @@ public without sharing class FiaAssessmentHandler extends KafkaMessageProcessor 
     }
 
     /**
-     * @description Creates IADelivery__c records from parsed FiaAssessment data.
+     * @description Creates IADelivery__c records from parsed FiaAssessment data. Method verifies that at least one of either processId or saksnummer is provided and exists in SF.
      * @param keyToFiaAssessmentMap Map of FiaAssessment objects
      * @param kafkaMessages List of Kafka message records
      * @return List of IADelivery__c records
      */
-    @TestVisible
     private List<IADelivery__c> createIADeliveryRecords(
         Map<String, FiaAssessment> keyToFiaAssessmentMap,
         List<KafkaMessage__c> kafkaMessages
     ) {
         List<IADelivery__c> iaDeliveryRecords = new List<IADelivery__c>();
-
         Map<String, KafkaMessage__c> keyToKafkaMessageMap = mapKeyToKafkaMessages(kafkaMessages);
-
-        Map<String, IACase__c> caseNumberMap = mapCaseNumbersToIACases(keyToFiaAssessmentMap);
+        Set<String> existingCooperations = getExistingCooperations(keyToFiaAssessmentMap.values());
+        Set<String> existingCasenumbers = getExistingCases(keyToFiaAssessmentMap.values());
 
         for (FiaAssessment fa : keyToFiaAssessmentMap.values()) {
             try {
-                IADelivery__c iad = createIADeliveryRecord(fa, caseNumberMap.get(fa.saksnummer).id);
+                IACooperation__c cooperationReference = existingCooperations.Contains(fa.prosessId)
+                    ? new IACooperation__c(CooperationId__c = fa.prosessId)
+                    : null;
+                IACase__c caseReference = existingCasenumbers.Contains(fa.saksnummer)
+                    ? new IACase__c(Name = fa.saksnummer)
+                    : null;
+                //Check if either processId or saksnummer is provided and exists in set. If not, throw error.
+                if (cooperationReference == null && caseReference == null) {
+                    throw new FiaAssessmentHandlerException('No related records not found in Salesforce');
+                }
+                IADelivery__c iad = createIADeliveryRecord(fa, cooperationReference, caseReference);
                 iaDeliveryRecords.add(iad);
             } catch (Exception e) {
                 String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
                 logger.setMessageErrors(new List<KafkaMessage__c>{ keyToKafkaMessageMap.get(fa.key) }, errorRef);
             }
         }
-
         return iaDeliveryRecords;
     }
 
@@ -96,44 +104,34 @@ public without sharing class FiaAssessmentHandler extends KafkaMessageProcessor 
         }
     }
 
-    /**
-     * @description Creates a single IADelivery__c record from a FiaAssessment object.
+    /** @description Creates a single IADelivery__c record from a FiaAssessment object.
      * @param fiaAssessment FiaAssessment object
-     * @param caseId Related IACase__c ID
-     * @return IADelivery__c record
+     * @param iaCooperationReference Record referencing related IA Cooperation
+     * @param iaCaseReference Record referencing related IA Case
+     * @return New IADelivery__c record
      */
-    private IADelivery__c createIADeliveryRecord(FiaAssessment fiaAssessment, Id caseId) {
-        IADelivery__c iad = new IADelivery__c();
-        iad.Name = String.valueOf(fiaAssessment.behovsvurderingId);
-        iad.IACase__c = caseId;
+    private IADelivery__c createIADeliveryRecord(
+        FiaAssessment fiaAssessment,
+        IACooperation__c iaCooperationReference,
+        IACase__c iaCaseReference
+    ) {
+        IADelivery__c iad = new IADelivery__c(
+            Name = fiaAssessment.behovsvurderingId,
+            Type__c = IA_DELIVERY_TYPE,
+            KafkaId__c = fiaAssessment.key,
+            KafkaHash__c = fiaAssessment.hash,
+            JsonPayload__c = fiaAssessment.jsonPayload
+        );
         if (!String.isBlank(fiaAssessment.fullfortTidspunkt)) {
             iad.CompletedDate__c = dateTimeValue(fiaAssessment.fullfortTidspunkt);
         }
-        iad.Type__c = IA_DELIVERY_TYPE;
-        iad.KafkaId__c = fiaAssessment.key;
-        iad.KafkaHash__c = fiaAssessment.hash;
-        iad.JsonPayload__c = fiaAssessment.jsonPayload;
+        if (iaCooperationReference != null) {
+            iad.IA_Cooperation__r = iaCooperationReference;
+        }
+        if (iaCaseReference != null) {
+            iad.IACase__r = iaCaseReference;
+        }
         return iad;
-    }
-
-    /**
-     * @description Query existing IACase__c records from database and return new map with case numbers and IACase__c records.
-     * @param keyToFiaAssessmentMap Map with fia assessments objects
-     * @return Map of case number to IACase__c records
-     */
-    private Map<String, IACase__c> mapCaseNumbersToIACases(Map<String, FiaAssessment> keyToFiaAssessmentMap) {
-        Map<String, IACase__c> caseNumberToIACaseMap = new Map<String, IACase__c>();
-        Set<String> caseNumbers = new Set<String>();
-
-        for (FiaAssessment fa : keyToFiaAssessmentMap.values()) {
-            caseNumbers.add(fa.saksnummer);
-        }
-
-        for (IACase__c iaCase : [SELECT Id, Name FROM IACase__c WHERE Name IN :caseNumbers]) {
-            caseNumberToIACaseMap.put(iaCase.Name, iaCase);
-        }
-
-        return caseNumberToIACaseMap;
     }
 
     /**
@@ -147,5 +145,50 @@ public without sharing class FiaAssessmentHandler extends KafkaMessageProcessor 
             keyToKafkaMessageMap.put(kafkaMessage.CRM_Key__c, kafkaMessage);
         }
         return keyToKafkaMessageMap;
+    }
+
+    /**
+     * @description Queries existing IACooperation__c records based on provided objects.
+     * @param fiaAssessment List with fia assessments objects to check
+     * @return Set with FiaAssessment.prosessId that exists in Salesforce
+     */
+    private Set<String> getExistingCooperations(List<FiaAssessment> fiaAssessment) {
+        Set<String> prosessIds = new Set<String>();
+        for (FiaAssessment fa : fiaAssessment) {
+            prosessIds.add(fa.prosessId);
+        }
+        Set<String> existingCooperationIds = new Set<String>();
+        for (IACooperation__c iaCooperation : [
+            SELECT CooperationId__c
+            FROM IACooperation__c
+            WHERE CooperationId__c IN :prosessIds
+            WITH SECURITY_ENFORCED
+        ]) {
+            existingCooperationIds.add(iaCooperation.CooperationId__c);
+        }
+        return existingCooperationIds;
+    }
+
+    /**
+     * @description Queries existing IACase__c records based on provided objects.
+     * @param fiaAssessment List with fia assessments objects to check
+     * @return Set with FiaAssessment.saksnummer that exists in Salesforce
+     */
+    private Set<String> getExistingCases(List<FiaAssessment> fiaAssessment) {
+        Set<String> caseNumbers = new Set<String>();
+        for (FiaAssessment fa : fiaAssessment) {
+            caseNumbers.add(fa.saksnummer);
+        }
+        Set<String> existingCaseNumbers = new Set<String>();
+        for (IACase__c iaCase : [SELECT Name FROM IACase__c WHERE Name IN :caseNumbers WITH SECURITY_ENFORCED]) {
+            existingCaseNumbers.add(iaCase.Name);
+        }
+        return existingCaseNumbers;
+    }
+
+    /**
+     * @description Custom exception class for FiaAssessmentHandler. Created so exceptions can be manually thrown in code.
+     */
+    public class FiaAssessmentHandlerException extends Exception {
     }
 }
