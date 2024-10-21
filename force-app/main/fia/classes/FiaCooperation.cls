@@ -15,6 +15,8 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
         public String id;
         public String navn;
         public String status;
+        public Date startDato;
+        public Date sluttDato;
     }
 
     public class Plan {

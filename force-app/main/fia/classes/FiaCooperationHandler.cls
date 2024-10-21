@@ -139,6 +139,8 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             Status__c = fiaCooperation.samarbeid.status,
             PlanLastModified__c = fiaCooperation.plan.sistEndret,
             PlanLastPublished__c = fiaCooperation.plan.sistPublisert,
+            StartDate__c = fiaCooperation.samarbeid.startDato,
+            EndDate__c = fiaCooperation.samarbeid.sluttDato,
             KafkaId__c = fiaCooperation.key,
             KafkaHash__c = fiaCooperation.hash,
             JsonPayload__c = fiaCooperation.jsonPayload,

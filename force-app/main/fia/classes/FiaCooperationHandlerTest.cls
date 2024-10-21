@@ -16,7 +16,7 @@ private class FiaCooperationHandlerTest {
             '"saksnummer": "' +
             TEST_CASE_NUMBER_1 +
             '", ' +
-            '"samarbeid": { "id": 12345678, "navn": "Fysio", "status": "AKTIV" }, ' +
+            '"samarbeid": { "id": 12345678, "navn": "Fysio", "status": "AKTIV", "startDato": "2024-08-01", "sluttDato": "2025-05-02" }, ' +
             '"plan": {' +
             ' "id": "c3e1ee3b-a9b4-420c-8ec8-def50e83d054", ' +
             '"sistEndret": "2024-09-17T10:17:59.054765", ' +
