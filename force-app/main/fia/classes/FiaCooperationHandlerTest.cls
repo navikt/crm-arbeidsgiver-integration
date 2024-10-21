@@ -66,23 +66,23 @@ private class FiaCooperationHandlerTest {
                 CRM_Value__c = EncodingUtil.base64Encode(
                     Blob.valueOf(
                         '{ "orgnr": "' +
-                        ORG_NR +
-                        '", ' +
-                        '"saksnummer": "' +
-                        TEST_CASE_NUMBER_1 +
-                        '", ' +
-                        '"samarbeid": { "id": 999902, "navn": "Fysio", "status": "AKTIV" }, ' +
-                        '"plan": { "id": "4963ebe2-90be-5b40-a821-3ad0abcfd570", ' +
-                        '"sistEndret": "2024-09-17T10:17:59.054765", ' +
-                        '"sistPublisert": "2024-09-18", ' +
-                        '"temaer": [' +
-                        '{ "id": null, "navn": "Sykefraværsarbeid", ' +
-                        '"inkludert": true, "undertemaer": [ { "id": null, ' +
-                        '"navn": "Sykefraværsrutiner", ' +
-                        '"målsetning": "Jobbe systematisk og forebyggende med sykefravær, samt forbedre rutiner og oppfølging av ansatte ' +
-                        'som er sykmeldte eller står i fare for å bli det.", ' +
-                        '"inkludert": true, "status": "PLANLAGT", "startDato": "2010-01-01", "sluttDato": "2025-02-02" } ' +
-                        ' ] } ] } }'
+                            ORG_NR +
+                            '", ' +
+                            '"saksnummer": "' +
+                            TEST_CASE_NUMBER_1 +
+                            '", ' +
+                            '"samarbeid": { "id": 999902, "navn": "Fysio", "status": "AKTIV" }, ' +
+                            '"plan": { "id": "4963ebe2-90be-5b40-a821-3ad0abcfd570", ' +
+                            '"sistEndret": "2024-09-17T10:17:59.054765", ' +
+                            '"sistPublisert": "2024-09-18", ' +
+                            '"temaer": [' +
+                            '{ "id": null, "navn": "Sykefraværsarbeid", ' +
+                            '"inkludert": true, "undertemaer": [ { "id": null, ' +
+                            '"navn": "Sykefraværsrutiner", ' +
+                            '"målsetning": "Jobbe systematisk og forebyggende med sykefravær, samt forbedre rutiner og oppfølging av ansatte ' +
+                            'som er sykmeldte eller står i fare for å bli det.", ' +
+                            '"inkludert": true, "status": "PLANLAGT", "startDato": "2010-01-01", "sluttDato": "2025-02-02" } ' +
+                            ' ] } ] } }'
                     )
                 )
             )
@@ -98,29 +98,29 @@ private class FiaCooperationHandlerTest {
                     CRM_Value__c = EncodingUtil.base64Encode(
                         Blob.valueOf(
                             '{ "orgnr": "' +
-                            ORG_NR +
-                            '", ' +
-                            '"saksnummer": "' +
-                            TEST_CASE_NUMBER_1 +
-                            '", ' +
-                            '"samarbeid": { "id": ' +
-                            s +
-                            ', "navn": "Fysio", "status": "AKTIV" }, ' +
-                            '"plan": { "id": "4963ebe2-90be-5b40-a821-3ad0abcfd570", ' +
-                            '"sistEndret": "2024-09-17T10:17:59.054765", ' +
-                            '"sistPublisert": "2024-09-18", ' +
-                            '"temaer": [' +
-                            '{ "id": ' +
-                            s +
-                            '01, "navn": "Sykefraværsarbeid", ' +
-                            '"inkludert": true, "undertemaer": [ { "id": ' +
-                            s +
-                            '0101, ' +
-                            '"navn": "Sykefraværsrutiner", ' +
-                            '"målsetning": "Jobbe systematisk og forebyggende med sykefravær, samt forbedre rutiner og oppfølging av ansatte ' +
-                            'som er sykmeldte eller står i fare for å bli det.", ' +
-                            '"inkludert": true, "status": "PLANLAGT", "startDato": "2010-01-01", "sluttDato": "2025-02-02" } ' +
-                            ' ] } ] } }'
+                                ORG_NR +
+                                '", ' +
+                                '"saksnummer": "' +
+                                TEST_CASE_NUMBER_1 +
+                                '", ' +
+                                '"samarbeid": { "id": ' +
+                                s +
+                                ', "navn": "Fysio", "status": "AKTIV" }, ' +
+                                '"plan": { "id": "4963ebe2-90be-5b40-a821-3ad0abcfd570", ' +
+                                '"sistEndret": "2024-09-17T10:17:59.054765", ' +
+                                '"sistPublisert": "2024-09-18", ' +
+                                '"temaer": [' +
+                                '{ "id": ' +
+                                s +
+                                '01, "navn": "Sykefraværsarbeid", ' +
+                                '"inkludert": true, "undertemaer": [ { "id": ' +
+                                s +
+                                '0101, ' +
+                                '"navn": "Sykefraværsrutiner", ' +
+                                '"målsetning": "Jobbe systematisk og forebyggende med sykefravær, samt forbedre rutiner og oppfølging av ansatte ' +
+                                'som er sykmeldte eller står i fare for å bli det.", ' +
+                                '"inkludert": true, "status": "PLANLAGT", "startDato": "2010-01-01", "sluttDato": "2025-02-02" } ' +
+                                ' ] } ] } }'
                         )
                     )
                 )
