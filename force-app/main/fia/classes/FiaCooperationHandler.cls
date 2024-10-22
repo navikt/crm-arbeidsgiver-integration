@@ -78,8 +78,8 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
                     String kafkaKey = (String) records[i].get('KafkaId__c');
                     String errorRef = logger.logError(
                         upsertResults[i].getErrors()[0].getMessage() +
-                        '/nFiaCooperationHandler.upsertRecords() could not upsert record. Key: ' +
-                        kafkaKey
+                            '/nFiaCooperationHandler.upsertRecords() could not upsert record. Key: ' +
+                            kafkaKey
                     );
                     logger.setMessageErrors(new List<KafkaMessage__c>{ keyToKafkaMessageMap.get(kafkaKey) }, errorRef);
                 }
@@ -139,6 +139,8 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             Status__c = fiaCooperation.samarbeid.status,
             PlanLastModified__c = fiaCooperation.plan.sistEndret,
             PlanLastPublished__c = fiaCooperation.plan.sistPublisert,
+            StartDate__c = fiaCooperation.samarbeid.startDato,
+            EndDate__c = fiaCooperation.samarbeid.sluttDato,
             KafkaId__c = fiaCooperation.key,
             KafkaHash__c = fiaCooperation.hash,
             JsonPayload__c = fiaCooperation.jsonPayload,
