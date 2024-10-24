@@ -49,15 +49,6 @@ private class FiaCooperationHandlerTest {
             )
         );
 
-        //Record with bad hash for verifying error handling
-        testMessages.add(
-            new KafkaMessage__c(
-                CRM_Topic__c = TOPIC,
-                CRM_Key__c = 'X6mPvf2qYP7r42I-999901',
-                CRM_Value__c = 'bad data...'
-            )
-        );
-
         //Record with missing ids for verifying error handling
         testMessages.add(
             new KafkaMessage__c(
@@ -297,11 +288,15 @@ private class FiaCooperationHandlerTest {
 
     @IsTest
     static void should_Log_Error_When_Processing_Corrupted_Message_Hash() {
-        List<KafkaMessage__c> messages = [
-            SELECT CRM_Topic__c, CRM_Value__c, CRM_Key__c
-            FROM KafkaMessage__c
-            WHERE CRM_Key__c = 'X6mPvf2qYP7r42I-999901'
-        ];
+        List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
+        //Record with bad hash for verifying error handling
+        messages.add(
+            new KafkaMessage__c(
+                CRM_Topic__c = TOPIC,
+                CRM_Key__c = 'X6mPvf2qYP7r42I-999901',
+                CRM_Value__c = 'bad data...'
+            )
+        );
 
         Test.startTest();
         FiaCooperationHandler handler = new FiaCooperationHandler();
@@ -375,5 +370,190 @@ private class FiaCooperationHandlerTest {
             iaCooperation.IncludedArbeidsmiljo__c,
             'Should be false since theme name not present in json'
         );
+    }
+
+    @IsTest
+    static void should_Process_Message_With_Newest_Content_When_Messages_Have_Same_Key() {
+        List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
+        //Records to test multiple updates on same key
+        messages.add(
+            new KafkaMessage__c(
+                CRM_Topic__c = TOPIC + '-new',
+                CRM_Key__c = TEST_CASE_NUMBER_1 + '-142-4a7a8477-719f-5d7b-b375-0048e5ce7e53',
+                CRM_Value__c = EncodingUtil.base64Encode(
+                    Blob.valueOf(
+                        '{ "orgnr": "' +
+                            ORG_NR +
+                            '", ' +
+                            '"saksnummer": "' +
+                            TEST_CASE_NUMBER_1 +
+                            '", ' +
+                            '"samarbeid": { "id": 142, "navn": "Fysio", "status": "AKTIV" }, ' +
+                            '"plan": { "id": "39555a36-797c-5285-bf80-012cedd35d77", ' +
+                            '"sistEndret": "2024-09-17T10:17:58.054765", ' +
+                            '"sistPublisert": null, ' +
+                            '"temaer": [' +
+                            '{ "id": 1421, "navn": "Sykefraværsarbeid", ' +
+                            '"inkludert": false, "undertemaer": [ { "id": 14211, ' +
+                            '"navn": "Sykefraværsrutiner", ' +
+                            '"målsetning": "Jobbe systematisk og forebyggende med sykefravær, samt forbedre rutiner og oppfølging av ansatte ' +
+                            'som er sykmeldte eller står i fare for å bli det.", ' +
+                            '"inkludert": false, "status": null, "startDato": null, "sluttDato": null } ' +
+                            ' ] } ] } }'
+                    )
+                )
+            )
+        );
+        messages.add(
+            new KafkaMessage__c(
+                CRM_Topic__c = TOPIC + '-old',
+                CRM_Key__c = TEST_CASE_NUMBER_1 + '-142-4a7a8477-719f-5d7b-b375-0048e5ce7e53',
+                CRM_Value__c = EncodingUtil.base64Encode(
+                    Blob.valueOf(
+                        '{ "orgnr": "' +
+                            ORG_NR +
+                            '", ' +
+                            '"saksnummer": "' +
+                            TEST_CASE_NUMBER_1 +
+                            '", ' +
+                            '"samarbeid": { "id": 142, "navn": "Fysio", "status": "AKTIV" }, ' +
+                            '"plan": { "id": "39555a36-797c-5285-bf80-012cedd35d77", ' +
+                            '"sistEndret": "2024-09-17T10:17:57.054765", ' +
+                            '"sistPublisert": null, ' +
+                            '"temaer": [' +
+                            '{ "id": 1421, "navn": "Sykefraværsarbeid", ' +
+                            '"inkludert": false, "undertemaer": [ { "id": 14211, ' +
+                            '"navn": "Sykefraværsrutiner", ' +
+                            '"målsetning": "Jobbe systematisk og forebyggende med sykefravær, samt forbedre rutiner og oppfølging av ansatte ' +
+                            'som er sykmeldte eller står i fare for å bli det.", ' +
+                            '"inkludert": false, "status": null, "startDato": null, "sluttDato": null } ' +
+                            ' ] } ] } }'
+                    )
+                )
+            )
+        );
+
+        Test.startTest();
+        FiaCooperationHandler handler = new FiaCooperationHandler();
+        handler.processMessages(messages);
+        Test.stopTest();
+
+        Assert.areEqual(
+            KafkaMessageService.STATUS_PROCESSED,
+            messages[0].CRM_Status__c,
+            'Message status should be updated to Processed'
+        );
+        Assert.areEqual(
+            KafkaMessageService.STATUS_PROCESSED,
+            messages[1].CRM_Status__c,
+            'Message status should be updated to Processed'
+        );
+
+        List<IACooperation__c> cooperationRecords = [
+            SELECT PlanLastModified__c
+            FROM IACooperation__c
+            WHERE KafkaId__c = 'X6mPvf2qYP7r42I-142-4a7a8477-719f-5d7b-b375-0048e5ce7e53'
+        ];
+
+        Assert.areEqual(1, cooperationRecords.size(), 'Only one Ia Cooperation record should be created');
+        Assert.areEqual(
+            Datetime.newInstanceGMT(2024, 9, 17, 10, 17, 58),
+            cooperationRecords[0].PlanLastModified__c,
+            'Shoud match datetime 2024-09-17T10:17:58.054765'
+        );
+    }
+
+    @IsTest
+    static void failed_Status_Should_Only_Be_Set_On_Message_With_Most_Resent_Content() {
+        List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
+        //Records to test multiple updates on same key
+        messages.add(
+            new KafkaMessage__c(
+                CRM_Topic__c = TOPIC + '-new',
+                CRM_Key__c = TEST_CASE_NUMBER_1 + '-142-4a7a8477-719f-5d7b-b375-0048e5ce7e53',
+                CRM_Value__c = EncodingUtil.base64Encode(
+                    Blob.valueOf(
+                        '{ "orgnr": "' +
+                            ORG_NR +
+                            '", ' +
+                            '"saksnummer": "' +
+                            TEST_CASE_NUMBER_1 +
+                            '", ' +
+                            '"samarbeid": { "id": 142, "navn": "Fysio", "status": "AKTIV" }, ' +
+                            '"plan": { "id": "39555a36-797c-5285-bf80-012cedd35d77", ' +
+                            '"sistEndret": "2024-09-17T10:17:58.054765", ' +
+                            '"sistPublisert": null, ' +
+                            '"temaer": [' +
+                            '{ "id": 1421, "navn": "Sykefraværsarbeid", ' +
+                            '"inkludert": false, "undertemaer": [ { "id": 14211, ' +
+                            '"navn": "Sykefraværsrutiner", ' +
+                            '"målsetning": "Jobbe systematisk og forebyggende med sykefravær, samt forbedre rutiner og oppfølging av ansatte ' +
+                            'som er sykmeldte eller står i fare for å bli det.", ' +
+                            '"inkludert": false, "status": null, "startDato": null, "sluttDato": null } ' +
+                            ' ] } ] } }'
+                    )
+                )
+            )
+        );
+        messages.add(
+            new KafkaMessage__c(
+                CRM_Topic__c = TOPIC + '-old',
+                CRM_Key__c = TEST_CASE_NUMBER_1 + '-142-4a7a8477-719f-5d7b-b375-0048e5ce7e53',
+                CRM_Value__c = EncodingUtil.base64Encode(
+                    Blob.valueOf(
+                        '{ "orgnr": "' +
+                            ORG_NR +
+                            '", ' +
+                            '"saksnummer": "' +
+                            TEST_CASE_NUMBER_1 +
+                            '", ' +
+                            '"samarbeid": { "id": 142, "navn": "Fysio", "status": "AKTIV" }, ' +
+                            '"plan": { "id": "39555a36-797c-5285-bf80-012cedd35d77", ' +
+                            '"sistEndret": "2024-09-17T10:17:57.054765", ' +
+                            '"sistPublisert": null, ' +
+                            '"temaer": [' +
+                            '{ "id": 1421, "navn": "Sykefraværsarbeid", ' +
+                            '"inkludert": false, "undertemaer": [ { "id": 14211, ' +
+                            '"navn": "Sykefraværsrutiner", ' +
+                            '"målsetning": "Jobbe systematisk og forebyggende med sykefravær, samt forbedre rutiner og oppfølging av ansatte ' +
+                            'som er sykmeldte eller står i fare for å bli det.", ' +
+                            '"inkludert": false, "status": null, "startDato": null, "sluttDato": null } ' +
+                            ' ] } ] } }'
+                    )
+                )
+            )
+        );
+
+        delete [SELECT Id FROM IaCase__c WHERE Name = :TEST_CASE_NUMBER_1];
+
+        Test.startTest();
+        FiaCooperationHandler handler = new FiaCooperationHandler();
+        handler.processMessages(messages);
+        Test.stopTest();
+
+        KafkaMessage__c olderMessage;
+        KafkaMessage__c newerMessage;
+        if (messages[0].CRM_Topic__c == TOPIC + '-old') {
+            olderMessage = messages[0];
+            newerMessage = messages[1];
+        } else {
+            olderMessage = messages[1];
+            newerMessage = messages[0];
+        }
+
+        FiaCooperation fiaCooperation = (FiaCooperation) handler.parse(FiaCooperation.class, newerMessage);
+        Assert.areEqual(
+            Datetime.newInstanceGMT(2024, 9, 17, 10, 17, 58),
+            fiaCooperation.plan.sistEndret,
+            'The most recent message should be marked as failed'
+        );
+
+        List<IACooperation__c> cooperationRecords = [
+            SELECT PlanLastModified__c
+            FROM IACooperation__c
+            WHERE kafkaId__c = 'X6mPvf2qYP7r42I-142-4a7a8477-719f-5d7b-b375-0048e5ce7e53'
+        ];
+
+        Assert.areEqual(0, cooperationRecords.size(), 'No Ia Cooperation record should be created');
     }
 }
