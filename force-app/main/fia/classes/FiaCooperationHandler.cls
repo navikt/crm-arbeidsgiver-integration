@@ -138,22 +138,20 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
     }
 
     private IACooperation__c createIACooperation(FiaCooperation fiaCooperation) {
-        IACase__c caseReference = new IACase__c(Name = fiaCooperation.saksnummer);
-        Account accountReference = new Account(INT_OrganizationNumber__c = fiaCooperation.orgnr);
         IACooperation__c iaCooperation = new IACooperation__c(
-            CooperationId__c = fiaCooperation.samarbeid.id,
             Name = fiaCooperation.samarbeid.navn,
-            IACase__r = caseReference,
-            Account__r = accountReference,
-            PlanId__c = fiaCooperation.plan.id,
+            CooperationId__c = fiaCooperation.samarbeid.id,
             Status__c = fiaCooperation.samarbeid.status,
-            PlanLastModified__c = fiaCooperation.plan.sistEndret,
-            PlanLastPublished__c = fiaCooperation.plan.sistPublisert,
             StartDate__c = fiaCooperation.samarbeid.startDato,
             EndDate__c = fiaCooperation.samarbeid.sluttDato,
+            PlanId__c = fiaCooperation.plan.id,
+            PlanLastModified__c = fiaCooperation.plan.sistEndret,
+            PlanLastPublished__c = fiaCooperation.plan.sistPublisert,
             KafkaId__c = fiaCooperation.key,
             KafkaHash__c = fiaCooperation.hash,
             JsonPayload__c = fiaCooperation.jsonPayload,
+            IACase__r = new IACase__c(Name = fiaCooperation.saksnummer),
+            Account__r = new Account(INT_OrganizationNumber__c = fiaCooperation.orgnr),
             IncludedArbeidsmiljo__c = fiaCooperation.includesArbeidsmiljo(),
             IncludedPartssamarbeid__c = fiaCooperation.includesPartssamarbeid(),
             IncludedSykefravaersarbeid__c = fiaCooperation.includesSykefravaersarbeid()
