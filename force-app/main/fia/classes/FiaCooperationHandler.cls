@@ -119,11 +119,11 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
                 iaCooperationsToUpsert.add(iaCooperation);
 
                 for (FiaCooperation.Tema tema : fiaCooperation.plan.temaer) {
-                    IATheme__c iaTheme = createTheme(tema, fiaCooperation.key);
+                    IATheme__c iaTheme = createTheme(tema, fiaCooperation);
                     iaThemesToUpsert.add(iaTheme);
 
                     for (FiaCooperation.Undertema undertema : tema.undertemaer) {
-                        IA_Subtheme__c iaSubtheme = createSubtheme(undertema, tema.id, fiaCooperation.key);
+                        IA_Subtheme__c iaSubtheme = createSubtheme(undertema, tema.id, fiaCooperation);
                         iaSubthemesToUpsert.add(iaSubtheme);
                     }
                 }
@@ -161,14 +161,13 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
         return iaCooperation;
     }
 
-    private IATheme__c createTheme(FiaCooperation.Tema tema, String fiaCooperationReference) {
-        IACooperation__c cooperationReference = new IACooperation__c(KafkaId__c = fiaCooperationReference);
+    private IATheme__c createTheme(FiaCooperation.Tema tema, FiaCooperation fiaCooperation) {
         IATheme__c iaTheme = new IATheme__c(
             ThemeId__c = tema.id,
             Name = tema.navn,
             IsPlanned__c = tema.inkludert,
-            IACooperation__r = cooperationReference,
-            KafkaId__c = fiaCooperationReference
+            KafkaId__c = fiaCooperation.key,
+            IACooperation__r = new IACooperation__c(CooperationId__c = fiaCooperation.samarbeid.id)
         );
         return iaTheme;
     }
@@ -176,10 +175,8 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
     private IA_Subtheme__c createSubtheme(
         FiaCooperation.Undertema undertema,
         String iaThemeReference,
-        String iaCooperationReference
+        FiaCooperation fiaCooperation
     ) {
-        IATheme__c themeReference = new IATheme__c(ThemeId__c = iaThemeReference);
-        IACooperation__c cooperationReference = new IACooperation__c(KafkaId__c = iaCooperationReference);
         IA_Subtheme__c iaSubtheme = new IA_Subtheme__c(
             SubthemeId__c = undertema.id,
             Name = undertema.navn,
@@ -188,9 +185,9 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             Status__c = undertema.status,
             StartDate__c = undertema.startDato,
             EndDate__c = undertema.sluttDato,
-            IATheme__r = themeReference,
-            IA_CooperationTheme__r = cooperationReference,
-            KafkaId__c = iaCooperationReference
+            KafkaId__c = fiaCooperation.key,
+            IATheme__r = new IATheme__c(ThemeId__c = iaThemeReference),
+            IA_CooperationTheme__r = new IACooperation__c(CooperationId__c = fiaCooperation.samarbeid.id)
         );
         return iaSubtheme;
     }
