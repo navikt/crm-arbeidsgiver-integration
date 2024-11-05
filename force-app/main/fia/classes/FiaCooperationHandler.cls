@@ -46,7 +46,7 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             try {
                 FiaCooperation fiaCooperation = (FiaCooperation) parse(FiaCooperation.class, kafkaMessage);
                 // Check if a object with a newer date already exists
-                if (fiaCooperationMap.get(fiaCooperation.key)?.plan.sistEndret > fiaCooperation.plan.sistEndret) {
+                if (!fiaCooperation.isNewer(fiaCooperationMap.get(fiaCooperation.key))) {
                     kafkaMessage.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
                 } else {
                     // Either no record exists, or the existing record is older
@@ -144,9 +144,9 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             Status__c = fiaCooperation.samarbeid.status,
             StartDate__c = fiaCooperation.samarbeid.startDato,
             EndDate__c = fiaCooperation.samarbeid.sluttDato,
-            PlanId__c = fiaCooperation.plan.id,
-            PlanLastModified__c = fiaCooperation.plan.sistEndret,
-            PlanLastPublished__c = fiaCooperation.plan.sistPublisert,
+            PlanId__c = fiaCooperation.plan?.id,
+            PlanLastModified__c = fiaCooperation.plan?.sistEndret,
+            PlanLastPublished__c = fiaCooperation.plan?.sistPublisert,
             KafkaId__c = fiaCooperation.key,
             KafkaHash__c = fiaCooperation.hash,
             JsonPayload__c = fiaCooperation.jsonPayload,

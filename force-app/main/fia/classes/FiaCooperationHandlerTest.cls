@@ -570,4 +570,50 @@ private class FiaCooperationHandlerTest {
 
         Assert.areEqual(0, cooperationRecords.size(), 'No Ia Cooperation record should be created');
     }
+
+    @IsTest
+    static void should_Process_Message_With_Deleted_Plan() {
+        List<KafkaMessage__c> messages = new List<KafkaMessage__c>{
+            new KafkaMessage__c(
+                CRM_Topic__c = 'test',
+                CRM_Key__c = 'HOehxSbJ5WM-142',
+                CRM_Value__c = EncodingUtil.base64Encode(
+                    Blob.valueOf(
+                        '{ "orgnr": "' +
+                            ORG_NR +
+                            '", ' +
+                            '"saksnummer": "' +
+                            TEST_CASE_NUMBER_1 +
+                            '", ' +
+                            '"samarbeid": { "id": 142, "navn": "Fysio", "status": "AKTIV", "sistEndret": "2024-09-17T10:17:58.054765" }, ' +
+                            '"plan": null' +
+                            ' }'
+                    )
+                )
+            )
+        };
+
+        Test.startTest();
+        FiaCooperationHandler handler = new FiaCooperationHandler();
+        handler.processMessages(messages);
+        Test.stopTest();
+
+        List<IACooperation__c> cooperationRecords = [
+            SELECT
+                PlanLastModified__c,
+                CooperationId__c,
+                Name,
+                PlanId__c,
+                KafkaId__c,
+                IncludedArbeidsmiljo__c,
+                IncludedPartssamarbeid__c,
+                IncludedSykefravaersarbeid__c
+            FROM IACooperation__c
+            WHERE CooperationId__c = '142'
+        ];
+
+        Assert.areEqual(1, cooperationRecords.size(), 'One Ia Cooperation record should be created');
+        Assert.areEqual('HOehxSbJ5WM-142', cooperationRecords[0].KafkaId__c, 'KafkaId should be set');
+        Assert.areEqual(null, cooperationRecords[0].PlanId__c, 'Plan Id should be blank');
+    }
 }

@@ -8,6 +8,7 @@ public with sharing class FiaCooperationTest {
         '        "id": 12345678,' +
         '        "navn": "FYSIO-avdeling",' +
         '        "status": "AKTIV",' +
+        '        "sistEndret": "2024-09-20T11:37:35.150172",' +
         '        "startDato": "2024-09-01",' +
         '        "sluttDato": "2024-12-01"' +
         '    },' +
@@ -231,5 +232,39 @@ public with sharing class FiaCooperationTest {
         Assert.isTrue(model.includesSykefravaersarbeid());
         Assert.isFalse(model.includesArbeidsmiljo());
         Assert.isTrue(model.includesPartssamarbeid());
+    }
+
+    @IsTest
+    static void should_Identify_Newest_Message_By_Available_Timestamps() {
+        String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(JSON));
+        FiaCooperation model = FiaCooperation.parse(JSON, '12345678', encodedValue);
+        FiaCooperation modelToCompare = FiaCooperation.parse(JSON, '12345678', encodedValue);
+
+        model.samarbeid.sistEndret = Datetime.newInstanceGMT(2023, 9, 20, 11, 37, 35);
+        model.plan.sistEndret = Datetime.newInstanceGMT(2024, 9, 20, 11, 37, 35);
+        modelToCompare.samarbeid.sistEndret = Datetime.newInstanceGMT(2023, 9, 20, 11, 37, 35);
+        modelToCompare.plan.sistEndret = Datetime.newInstanceGMT(2023, 9, 20, 11, 37, 35);
+        Assert.isTrue(model.isNewer(modelToCompare));
+
+        model.samarbeid.sistEndret = Datetime.newInstanceGMT(2023, 9, 20, 11, 37, 35);
+        model.plan.sistEndret = Datetime.newInstanceGMT(2023, 9, 20, 11, 37, 35);
+        modelToCompare.samarbeid.sistEndret = Datetime.newInstanceGMT(2024, 9, 20, 11, 37, 35);
+        modelToCompare.plan.sistEndret = Datetime.newInstanceGMT(2023, 9, 20, 11, 37, 35);
+        Assert.isFalse(model.isNewer(modelToCompare));
+
+        model.samarbeid.sistEndret = Datetime.newInstanceGMT(2023, 9, 20, 11, 37, 35);
+        model.plan.sistEndret = Datetime.newInstanceGMT(2023, 9, 20, 11, 37, 35);
+        modelToCompare.samarbeid.sistEndret = Datetime.newInstanceGMT(2024, 9, 20, 11, 37, 35);
+        modelToCompare.plan = null;
+        Assert.isFalse(model.isNewer(modelToCompare));
+
+        model.samarbeid.sistEndret = null;
+        model.plan.sistEndret = Datetime.newInstanceGMT(2024, 9, 20, 11, 37, 35);
+        modelToCompare.samarbeid.sistEndret = null;
+        modelToCompare.plan = null;
+        Assert.isTrue(model.isNewer(modelToCompare));
+
+        modelToCompare = null;
+        Assert.isTrue(model.isNewer(modelToCompare), 'Is newer when compared to nothing');
     }
 }

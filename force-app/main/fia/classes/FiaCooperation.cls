@@ -17,6 +17,7 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
         public String status;
         public Date startDato;
         public Date sluttDato;
+        public Datetime sistEndret;
     }
 
     public class Plan {
@@ -65,6 +66,9 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
 
     private Boolean includesTema(String name) {
         boolean isIncluded = false;
+        if (plan == null || plan.temaer == null) {
+            return isIncluded;
+        }
         for (Tema t : plan.temaer) {
             if (t.navn == name && t.inkludert) {
                 isIncluded = true;
@@ -72,5 +76,23 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
             }
         }
         return isIncluded;
+    }
+
+    public Datetime getLastModifiedDatetime() {
+        if (plan == null || plan.sistEndret == null || plan.sistEndret < samarbeid.sistEndret) {
+            return samarbeid.sistEndret;
+        } else {
+            return plan.sistEndret;
+        }
+    }
+
+    public Boolean isNewer(FiaCooperation ojectToCompare) {
+        if (ojectToCompare == null || ojectToCompare.getLastModifiedDatetime() == null) {
+            return true;
+        } else if (this.getLastModifiedDatetime() >= ojectToCompare.getLastModifiedDatetime()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
