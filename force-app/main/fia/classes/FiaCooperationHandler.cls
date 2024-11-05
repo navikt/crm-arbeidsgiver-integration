@@ -123,8 +123,10 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
                     iaThemesToUpsert.add(iaTheme);
 
                     for (FiaCooperation.Undertema undertema : tema.undertemaer) {
-                        IA_Subtheme__c iaSubtheme = createSubtheme(undertema, tema.id, fiaCooperation.key);
-                        iaSubthemesToUpsert.add(iaSubtheme);
+                        if (undertema.inkludert == true) {
+                            IA_Subtheme__c iaSubtheme = createSubtheme(undertema, tema.id, fiaCooperation.key);
+                            iaSubthemesToUpsert.add(iaSubtheme);
+                        }
                     }
                 }
             } catch (Exception e) {
