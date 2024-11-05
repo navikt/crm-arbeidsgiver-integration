@@ -46,11 +46,11 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             try {
                 FiaCooperation fiaCooperation = (FiaCooperation) parse(FiaCooperation.class, kafkaMessage);
                 // Check if a object with a newer date already exists
-                if (!fiaCooperation.isNewer(fiaCooperationMap.get(fiaCooperation.key))) {
+                if (!fiaCooperation.isNewer(fiaCooperationMap.get(fiaCooperation.samarbeid.id))) {
                     kafkaMessage.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
                 } else {
                     // Either no record exists, or the existing record is older
-                    fiaCooperationMap.put(fiaCooperation.key, fiaCooperation);
+                    fiaCooperationMap.put(fiaCooperation.samarbeid.id, fiaCooperation);
 
                     // Add the message to keyToKafkaMessageMap to handle later exceptions
                     keyToKafkaMessageMap.put(kafkaMessage.CRM_Key__c, kafkaMessage);
