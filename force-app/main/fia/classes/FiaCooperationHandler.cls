@@ -181,7 +181,7 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
                             // ToDo: Legg til logikk for fjernede undertema
                             //Ikke opprettet: inkludert false og status blank,
                             //Opprettet og fjernet: inkludert false og status SLETTET
-                            IA_Subtheme__c iaSubtheme = createSubtheme(undertema, tema.id, fiaCooperation);
+                            IA_Subtheme__c iaSubtheme = createSubtheme(undertema, tema.id, fiaCooperation.key);
                             iaSubthemesToUpsert.add(iaSubtheme);
                         }
                     }
