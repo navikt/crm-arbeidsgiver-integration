@@ -17,50 +17,10 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
      */
     public void processMessages(List<KafkaMessage__c> messages) {
         List<FiaCooperation> fiaCooperations = extractData(messages);
-        //traverse kafka messages
-        //parse json to object
-        //mark kafka message as prosessed
-        //track kafka messages that that involves further handling
-        keyToKafkaMessageMap = mapKeyToKafkaMessages(messages);
-
-        //determine handling for objects
-        for (FiaCooperation fiaCooperation : fiaCooperations) {
-            System.debug('Prosessing ' + fiaCooperation.samarbeid.navn);
-            if (!fiaSamarbeidMap.containsKey(fiaCooperation.samarbeid.id)) {
-                fiaSamarbeidMap.put(fiaCooperation.samarbeid.id, fiaCooperation);
-                System.debug('added in fiaSamarbeidMap: ' + fiaCooperation.samarbeid.navn);
-            } else if (fiaCooperation.samarbeid.endretTidspunkt != null) {
-                if (
-                    !(fiaSamarbeidMap.get(fiaCooperation.samarbeid.id)?.samarbeid?.endretTidspunkt >
-                    fiaCooperation.samarbeid.endretTidspunkt)
-                ) {
-                    fiaSamarbeidMap.put(fiaCooperation.samarbeid.id, fiaCooperation);
-                    System.debug('replaced in fiaSamarbeidMap: ' + fiaCooperation.samarbeid.navn);
-                }
-            }
-
-            if (fiaCooperation.plan != null) {
-                if (!fiaPlanMap.containsKey(fiaCooperation.samarbeid.id)) {
-                    fiaPlanMap.put(fiaCooperation.samarbeid.id, fiaCooperation.plan);
-                    System.debug('added in fiaPlanMap: ' + fiaCooperation.samarbeid.navn);
-                } else if (
-                    !(fiaPlanMap.get(fiaCooperation.samarbeid.id)?.sistEndret > fiaCooperation.plan.sistEndret)
-                ) {
-                    fiaPlanMap.put(fiaCooperation.samarbeid.id, fiaCooperation.plan);
-                    System.debug('replaced to fiaPlanMap: ' + fiaCooperation.samarbeid.navn);
-                }
-            }
-        }
-        //have map with most recent of each type, now combine to one list.
-        for (String cooperationId : fiaSamarbeidMap.keySet()) {
-            if (fiaPlanMap.containsKey(cooperationId)) {
-                fiaSamarbeidMap.get(cooperationId).plan = fiaPlanMap.get(cooperationId);
-            }
-        }
 
         //handle objects
-        if (!fiaSamarbeidMap.isEmpty()) {
-            createRecords(fiaSamarbeidMap.values());
+        if (!fiaCooperations.isEmpty()) {
+            createRecords(fiaCooperations);
         }
         System.debug('iaCooperationsToUpsert: ' + iaCooperationsToUpsert);
         //do upserts
@@ -91,7 +51,7 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
     /**
      * @description Processes a list of Kafka Message records and extracts FiaCooperation objects, organizing them
      *  into a map keyed by their unique identifier. Each message is parsed into a FiaCooperation object, and only
-     *  the most recent entry (based on the 'sistEndret' timestamp) is stored in the map. If an object with a newer
+     *  the most recent entry (based on the 'sistEndret' or 'endretTidspunkt' timestamp) is stored in the map. If an object with a newer
      *  timestamp already exists in the map, the message is marked as processed but not added to the map.
      * The corresponding Kafka Message is also added to a secondary map to allow for status updates in case of
      *  exceptions during subsequent sObject creation. All messages that are successfully parsed, regardless of
@@ -101,18 +61,59 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
      * @return A map containing FiaCooperation objects keyed by their unique identifier.
      */
     private List<FiaCooperation> extractData(List<KafkaMessage__c> kafkaMessages) {
-        List<FiaCooperation> fiaCooperations = new List<FiaCooperation>();
+        //traverse kafka messages
         for (KafkaMessage__c kafkaMessage : kafkaMessages) {
             try {
+                //parse json to object
                 FiaCooperation fiaCooperation = (FiaCooperation) parse(FiaCooperation.class, kafkaMessage);
-                fiaCooperations.add(fiaCooperation);
+                System.debug('Prosessing ' + fiaCooperation.samarbeid.navn);
+                //determine handling for objects
+                String cooperationId = fiaCooperation.samarbeid.id;
+                // Add or replace entry in the cooperation map
+                if (!fiaSamarbeidMap.containsKey(cooperationId) || isNewerCooperation(fiaCooperation)) {
+                    fiaSamarbeidMap.put(cooperationId, fiaCooperation);
+                    keyToKafkaMessageMap.put(kafkaMessage.CRM_Key__c, kafkaMessage);
+                    System.debug('Updated fiaSamarbeidMap with: ' + fiaCooperation.samarbeid.navn);
+                }
+
+                if (fiaCooperation.plan != null) {
+                    // Add or replace entry in the plan map
+                    if (!fiaPlanMap.containsKey(cooperationId) || isNewerPlan(fiaCooperation)) {
+                        fiaPlanMap.put(cooperationId, fiaCooperation.plan);
+                        keyToKafkaMessageMap.put(kafkaMessage.CRM_Key__c, kafkaMessage);
+                        System.debug('Updated fiaPlanMap with: ' + fiaCooperation.samarbeid.navn);
+                    }
+                }
+                //mark kafka message as prosessed
                 kafkaMessage.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
             } catch (Exception e) {
-                String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
-                logger.setMessageErrors(new List<KafkaMessage__c>{ kafkaMessage }, errorRef);
+                handleException(e, kafkaMessage);
             }
         }
-        return fiaCooperations;
+
+        //have map with most recent of each type, now combine in one map and return it as list.
+        for (String cooperationId : fiaSamarbeidMap.keySet()) {
+            if (fiaPlanMap.containsKey(cooperationId)) {
+                fiaSamarbeidMap.get(cooperationId).plan = fiaPlanMap.get(cooperationId);
+            }
+        }
+        return fiaSamarbeidMap.values();
+    }
+
+    // Helper method to check if the cooperation is more recent
+    private Boolean isNewerCooperation(FiaCooperation fiaCooperation) {
+        FiaCooperation existing = fiaSamarbeidMap.get(fiaCooperation.samarbeid.id);
+        return existing == null || existing.samarbeid.endretTidspunkt < fiaCooperation.samarbeid.endretTidspunkt;
+    }
+    // Helper method to check if the plan is more recent
+    private Boolean isNewerPlan(FiaCooperation fiaCooperation) {
+        FiaCooperation.Plan existingPlan = fiaPlanMap.get(fiaCooperation.samarbeid.id);
+        return existingPlan == null || existingPlan.sistEndret < fiaCooperation.plan.sistEndret;
+    }
+    // Helper method to handle exceptions
+    private void handleException(Exception e, KafkaMessage__c kafkaMessage) {
+        String errorRef = logger.logError(e.getMessage() + '\n' + e.getStackTraceString());
+        logger.setMessageErrors(new List<KafkaMessage__c>{ kafkaMessage }, errorRef);
     }
 
     /**
