@@ -5,11 +5,10 @@
 public without sharing class FiaCooperationHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer {
     private Map<String, KafkaMessage__c> keyToKafkaMessageMap = new Map<String, KafkaMessage__c>();
     private List<IACooperation__c> iaCooperationsToUpsert = new List<IACooperation__c>();
-    private List<IACooperation__c> iaPlansToUpsert = new List<IACooperation__c>();
     private List<IATheme__c> iaThemesToUpsert = new List<IATheme__c>();
     private List<IA_Subtheme__c> iaSubthemesToUpsert = new List<IA_Subtheme__c>();
-    Map<String, FiaCooperation> fiaSamarbeidMap = new Map<String, FiaCooperation>();
-    Map<String, FiaCooperation.Plan> fiaPlanMap = new Map<String, FiaCooperation.Plan>();
+    private Map<String, FiaCooperation> fiaSamarbeidMap = new Map<String, FiaCooperation>();
+    private Map<String, FiaCooperation.Plan> fiaPlanMap = new Map<String, FiaCooperation.Plan>();
 
     /**
      * @description Implementation of processMessages-method from IKafkaMessageConsumer
@@ -17,12 +16,12 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
      */
     public void processMessages(List<KafkaMessage__c> messages) {
         List<FiaCooperation> fiaCooperations = extractData(messages);
-
-        //handle objects
-        if (!fiaCooperations.isEmpty()) {
-            createRecords(fiaCooperations);
+        if (fiaCooperations.isEmpty()) {
+            return;
         }
+        createRecords(fiaCooperations);
         System.debug('iaCooperationsToUpsert: ' + iaCooperationsToUpsert);
+
         //do upserts
         if (!iaCooperationsToUpsert.isEmpty()) {
             upsertRecords(iaCooperationsToUpsert, IACooperation__c.CooperationId__c);
@@ -33,19 +32,6 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
         }
 
         logger.publish();
-    }
-
-    /**
-     * @description Creates a map with provided list of records
-     * @param kafkaMessages List of Kafka messages
-     * @return New map with CRM Key and Kafka Message
-     */
-    private Map<String, KafkaMessage__c> mapKeyToKafkaMessages(List<KafkaMessage__c> kafkaMessages) {
-        Map<String, KafkaMessage__c> keyToKafkaMessageMap = new Map<String, KafkaMessage__c>();
-        for (KafkaMessage__c kafkaMessage : kafkaMessages) {
-            keyToKafkaMessageMap.put(kafkaMessage.CRM_Key__c, kafkaMessage);
-        }
-        return keyToKafkaMessageMap;
     }
 
     /**
@@ -61,13 +47,10 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
      * @return A map containing FiaCooperation objects keyed by their unique identifier.
      */
     private List<FiaCooperation> extractData(List<KafkaMessage__c> kafkaMessages) {
-        //traverse kafka messages
         for (KafkaMessage__c kafkaMessage : kafkaMessages) {
             try {
-                //parse json to object
                 FiaCooperation fiaCooperation = (FiaCooperation) parse(FiaCooperation.class, kafkaMessage);
-                System.debug('Prosessing ' + fiaCooperation.samarbeid.navn);
-                //determine handling for objects
+
                 String cooperationId = fiaCooperation.samarbeid.id;
                 // Add or replace entry in the cooperation map
                 if (!fiaSamarbeidMap.containsKey(cooperationId) || isNewerCooperation(fiaCooperation)) {
@@ -90,7 +73,6 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
                 handleException(e, kafkaMessage);
             }
         }
-
         //have map with most recent of each type, now combine in one map and return it as list.
         for (String cooperationId : fiaSamarbeidMap.keySet()) {
             if (fiaPlanMap.containsKey(cooperationId)) {
@@ -117,49 +99,11 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
     }
 
     /**
-     * @description Upserts records and handles errors.
-     * @param records List of records to upsert
-     * @param externalId Field to use as external id during upsert
-     */
-    private void upsertRecords(List<sObject> records, Schema.SObjectField externalId) {
-        try {
-            Database.UpsertResult[] upsertResults = Database.upsert(records, externalId, false);
-            for (Integer i = 0; i < upsertResults.size(); i++) {
-                if (!upsertResults[i].isSuccess()) {
-                    String kafkaKey = (String) records[i].get('KafkaId__c');
-                    String errorRef = logger.logError(
-                        upsertResults[i].getErrors()[0].getMessage() +
-                            ' - FiaCooperationHandler.upsertRecords() could not upsert record. Key: ' +
-                            kafkaKey
-                    );
-                    logger.setMessageErrors(new List<KafkaMessage__c>{ keyToKafkaMessageMap.get(kafkaKey) }, errorRef);
-                }
-            }
-        } catch (Exception e) {
-            String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
-            logger.setMessageErrors(keyToKafkaMessageMap.values(), errorRef);
-        }
-    }
-
-    private Set<String> getExistingCases(List<FiaCooperation> fiaCooperations) {
-        Set<String> caseNumbers = new Set<String>();
-        for (FiaCooperation fa : fiaCooperations) {
-            caseNumbers.add(fa.saksnummer);
-        }
-        Set<String> existingCaseNumbers = new Set<String>();
-        for (IACase__c iaCase : [SELECT Name FROM IACase__c WHERE Name IN :caseNumbers WITH SECURITY_ENFORCED]) {
-            existingCaseNumbers.add(iaCase.Name);
-        }
-        return existingCaseNumbers;
-    }
-
-    /**
      * @description Creates records from parsed FiaCooperation data.
      * @param fiaCooperations List with FiaCooperation objects
      */
     private void createRecords(List<FiaCooperation> fiaCooperations) {
         Set<String> existingCasenumbers = getExistingCases(fiaCooperations);
-
         for (FiaCooperation fiaCooperation : fiaCooperations) {
             System.debug('createRecords: ' + fiaCooperation.samarbeid.navn);
             try {
@@ -196,6 +140,20 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
         }
     }
 
+    // Helper method to get Case Id for existing IA Cases
+    private Set<String> getExistingCases(List<FiaCooperation> fiaCooperations) {
+        Set<String> caseNumbers = new Set<String>();
+        for (FiaCooperation fa : fiaCooperations) {
+            caseNumbers.add(fa.saksnummer);
+        }
+        Set<String> existingCaseNumbers = new Set<String>();
+        for (IACase__c iaCase : [SELECT Name FROM IACase__c WHERE Name IN :caseNumbers WITH SECURITY_ENFORCED]) {
+            existingCaseNumbers.add(iaCase.Name);
+        }
+        return existingCaseNumbers;
+    }
+
+    // Helper method to create new instance of an IACooperation__c sObject
     private IACooperation__c createIACooperation(FiaCooperation fiaCooperation) {
         IACooperation__c iaCooperation = new IACooperation__c(
             CooperationId__c = fiaCooperation.samarbeid.id,
@@ -221,27 +179,23 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             iaCooperation.PlanLastModified__c = fiaCooperation.plan.sistEndret;
             iaCooperation.PlanLastPublished__c = fiaCooperation.plan.sistPublisert;
             iaCooperation.PlanLastPublished__c = fiaCooperation.plan.sistPublisert;
+            //ToDo: Legg til plan.Status
         }
         return iaCooperation;
     }
 
     // Helper method to set a field only if the value is not blank
-    private void setFieldIfNotBlank(SObject obj, String fieldName, String value) {
-        if (!String.isBlank(value)) {
+    private void setFieldIfNotBlank(SObject obj, String fieldName, Object value) {
+        if (value instanceof String && !String.isBlank((String) value)) {
             obj.put(fieldName, value);
-        }
-    }
-    private void setFieldIfNotBlank(SObject obj, String fieldName, Date value) {
-        if (value != null) {
+        } else if (value instanceof Date && value != null) {
             obj.put(fieldName, value);
-        }
-    }
-    private void setFieldIfNotBlank(SObject obj, String fieldName, Datetime value) {
-        if (value != null) {
+        } else if (value instanceof Datetime && value != null) {
             obj.put(fieldName, value);
         }
     }
 
+    // Helper method to create new instance of a IATheme__c sObject
     private IATheme__c createTheme(FiaCooperation.Tema tema, FiaCooperation fiaCooperation) {
         IATheme__c iaTheme = new IATheme__c(
             ThemeId__c = tema.id,
@@ -252,7 +206,7 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
         );
         return iaTheme;
     }
-
+    // Helper method to create new instance of a IA_Subtheme__c sObject
     private IA_Subtheme__c createSubtheme(
         FiaCooperation.Undertema undertema,
         String iaThemeReference,
@@ -271,6 +225,31 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             IA_CooperationTheme__r = new IACooperation__c(CooperationId__c = fiaCooperation.samarbeid.id)
         );
         return iaSubtheme;
+    }
+
+    /**
+     * @description Upserts records and handles errors.
+     * @param records List of records to upsert
+     * @param externalId Field to use as external id during upsert
+     */
+    private void upsertRecords(List<sObject> records, Schema.SObjectField externalId) {
+        try {
+            Database.UpsertResult[] upsertResults = Database.upsert(records, externalId, false);
+            for (Integer i = 0; i < upsertResults.size(); i++) {
+                if (!upsertResults[i].isSuccess()) {
+                    String kafkaKey = (String) records[i].get('KafkaId__c');
+                    String errorRef = logger.logError(
+                        upsertResults[i].getErrors()[0].getMessage() +
+                            ' - FiaCooperationHandler.upsertRecords() could not upsert record. Key: ' +
+                            kafkaKey
+                    );
+                    logger.setMessageErrors(new List<KafkaMessage__c>{ keyToKafkaMessageMap.get(kafkaKey) }, errorRef);
+                }
+            }
+        } catch (Exception e) {
+            String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
+            logger.setMessageErrors(keyToKafkaMessageMap.values(), errorRef);
+        }
     }
 
     /**
