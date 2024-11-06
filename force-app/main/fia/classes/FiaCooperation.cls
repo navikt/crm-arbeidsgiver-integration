@@ -17,7 +17,7 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
         public String status;
         public Date startDato;
         public Date sluttDato;
-        public Datetime sistEndret;
+        public Datetime endretTidspunkt;
     }
 
     public class Plan {
@@ -79,8 +79,8 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
     }
 
     public Datetime getLastModifiedDatetime() {
-        if (plan == null || plan.sistEndret == null || plan.sistEndret < samarbeid.sistEndret) {
-            return samarbeid.sistEndret;
+        if (plan == null || plan.sistEndret == null || plan.sistEndret < samarbeid.endretTidspunkt) {
+            return samarbeid.endretTidspunkt;
         } else {
             return plan.sistEndret;
         }

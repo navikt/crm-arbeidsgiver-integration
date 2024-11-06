@@ -5,26 +5,87 @@
 public without sharing class FiaCooperationHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer {
     private Map<String, KafkaMessage__c> keyToKafkaMessageMap = new Map<String, KafkaMessage__c>();
     private List<IACooperation__c> iaCooperationsToUpsert = new List<IACooperation__c>();
+    private List<IACooperation__c> iaPlansToUpsert = new List<IACooperation__c>();
     private List<IATheme__c> iaThemesToUpsert = new List<IATheme__c>();
     private List<IA_Subtheme__c> iaSubthemesToUpsert = new List<IA_Subtheme__c>();
+    Map<String, FiaCooperation> fiaSamarbeidMap = new Map<String, FiaCooperation>();
+    Map<String, FiaCooperation.Plan> fiaPlanMap = new Map<String, FiaCooperation.Plan>();
 
     /**
      * @description Implementation of processMessages-method from IKafkaMessageConsumer
      * @param messages List of kafka message records
      */
     public void processMessages(List<KafkaMessage__c> messages) {
-        Map<String, FiaCooperation> keyToObjectMap = extractData(messages);
+        List<FiaCooperation> fiaCooperations = extractData(messages);
+        //traverse kafka messages
+        //parse json to object
+        //mark kafka message as prosessed
+        //track kafka messages that that involves further handling
+        keyToKafkaMessageMap = mapKeyToKafkaMessages(messages);
 
-        createRecords(keyToObjectMap.values());
+        //determine handling for objects
+        for (FiaCooperation fiaCooperation : fiaCooperations) {
+            System.debug('Prosessing ' + fiaCooperation.samarbeid.navn);
+            if (!fiaSamarbeidMap.containsKey(fiaCooperation.samarbeid.id)) {
+                fiaSamarbeidMap.put(fiaCooperation.samarbeid.id, fiaCooperation);
+                System.debug('added in fiaSamarbeidMap: ' + fiaCooperation.samarbeid.navn);
+            } else if (fiaCooperation.samarbeid.endretTidspunkt != null) {
+                if (
+                    !(fiaSamarbeidMap.get(fiaCooperation.samarbeid.id)?.samarbeid?.endretTidspunkt >
+                    fiaCooperation.samarbeid.endretTidspunkt)
+                ) {
+                    fiaSamarbeidMap.put(fiaCooperation.samarbeid.id, fiaCooperation);
+                    System.debug('replaced in fiaSamarbeidMap: ' + fiaCooperation.samarbeid.navn);
+                }
+            }
 
-        //Upsert cooperations
-        upsertRecords(iaCooperationsToUpsert, IACooperation__c.CooperationId__c);
-        //Upsert themes
-        upsertRecords(iaThemesToUpsert, IATheme__c.ThemeId__c);
-        //Upsert subthemes
-        upsertRecords(iaSubthemesToUpsert, IA_Subtheme__c.SubthemeId__c);
+            if (fiaCooperation.plan != null) {
+                if (!fiaPlanMap.containsKey(fiaCooperation.samarbeid.id)) {
+                    fiaPlanMap.put(fiaCooperation.samarbeid.id, fiaCooperation.plan);
+                    System.debug('added in fiaPlanMap: ' + fiaCooperation.samarbeid.navn);
+                } else if (
+                    !(fiaPlanMap.get(fiaCooperation.samarbeid.id)?.sistEndret > fiaCooperation.plan.sistEndret)
+                ) {
+                    fiaPlanMap.put(fiaCooperation.samarbeid.id, fiaCooperation.plan);
+                    System.debug('replaced to fiaPlanMap: ' + fiaCooperation.samarbeid.navn);
+                }
+            }
+        }
+        //have map with most recent of each type, now combine to one list.
+        for (String cooperationId : fiaSamarbeidMap.keySet()) {
+            if (fiaPlanMap.containsKey(cooperationId)) {
+                fiaSamarbeidMap.get(cooperationId).plan = fiaPlanMap.get(cooperationId);
+            }
+        }
+
+        //handle objects
+        if (!fiaSamarbeidMap.isEmpty()) {
+            createRecords(fiaSamarbeidMap.values());
+        }
+        System.debug('iaCooperationsToUpsert: ' + iaCooperationsToUpsert);
+        //do upserts
+        if (!iaCooperationsToUpsert.isEmpty()) {
+            upsertRecords(iaCooperationsToUpsert, IACooperation__c.CooperationId__c);
+        }
+        if (!iaThemesToUpsert.isEmpty()) {
+            upsertRecords(iaThemesToUpsert, IATheme__c.ThemeId__c);
+            upsertRecords(iaSubthemesToUpsert, IA_Subtheme__c.SubthemeId__c);
+        }
 
         logger.publish();
+    }
+
+    /**
+     * @description Creates a map with provided list of records
+     * @param kafkaMessages List of Kafka messages
+     * @return New map with CRM Key and Kafka Message
+     */
+    private Map<String, KafkaMessage__c> mapKeyToKafkaMessages(List<KafkaMessage__c> kafkaMessages) {
+        Map<String, KafkaMessage__c> keyToKafkaMessageMap = new Map<String, KafkaMessage__c>();
+        for (KafkaMessage__c kafkaMessage : kafkaMessages) {
+            keyToKafkaMessageMap.put(kafkaMessage.CRM_Key__c, kafkaMessage);
+        }
+        return keyToKafkaMessageMap;
     }
 
     /**
@@ -39,29 +100,19 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
      * @param kafkaMessages List of Kafka Message records to be processed.
      * @return A map containing FiaCooperation objects keyed by their unique identifier.
      */
-    private Map<String, FiaCooperation> extractData(List<KafkaMessage__c> kafkaMessages) {
-        Map<String, FiaCooperation> fiaCooperationMap = new Map<String, FiaCooperation>();
-
+    private List<FiaCooperation> extractData(List<KafkaMessage__c> kafkaMessages) {
+        List<FiaCooperation> fiaCooperations = new List<FiaCooperation>();
         for (KafkaMessage__c kafkaMessage : kafkaMessages) {
             try {
                 FiaCooperation fiaCooperation = (FiaCooperation) parse(FiaCooperation.class, kafkaMessage);
-                // Check if a object with a newer date already exists
-                if (!fiaCooperation.isNewer(fiaCooperationMap.get(fiaCooperation.samarbeid.id))) {
-                    kafkaMessage.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
-                } else {
-                    // Either no record exists, or the existing record is older
-                    fiaCooperationMap.put(fiaCooperation.samarbeid.id, fiaCooperation);
-
-                    // Add the message to keyToKafkaMessageMap to handle later exceptions
-                    keyToKafkaMessageMap.put(kafkaMessage.CRM_Key__c, kafkaMessage);
-                    kafkaMessage.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
-                }
+                fiaCooperations.add(fiaCooperation);
+                kafkaMessage.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
             } catch (Exception e) {
                 String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
                 logger.setMessageErrors(new List<KafkaMessage__c>{ kafkaMessage }, errorRef);
             }
         }
-        return fiaCooperationMap;
+        return fiaCooperations;
     }
 
     /**
@@ -109,22 +160,29 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
         Set<String> existingCasenumbers = getExistingCases(fiaCooperations);
 
         for (FiaCooperation fiaCooperation : fiaCooperations) {
+            System.debug('createRecords: ' + fiaCooperation.samarbeid.navn);
             try {
                 if (!existingCasenumbers.Contains(fiaCooperation.saksnummer)) {
                     throw new FiaCooperationHandlerException(
                         'IA Case not found in Salesforce: ' + fiaCooperation.saksnummer
                     );
                 }
+                //create samarbeid
                 IACooperation__c iaCooperation = createIACooperation(fiaCooperation);
                 iaCooperationsToUpsert.add(iaCooperation);
+                System.debug('createIACooperation: ' + iaCooperation.Name);
 
-                for (FiaCooperation.Tema tema : fiaCooperation.plan.temaer) {
+                for (FiaCooperation.Tema tema : fiaCooperation.plan?.temaer) {
                     IATheme__c iaTheme = createTheme(tema, fiaCooperation);
                     iaThemesToUpsert.add(iaTheme);
-
                     for (FiaCooperation.Undertema undertema : tema.undertemaer) {
-                        IA_Subtheme__c iaSubtheme = createSubtheme(undertema, tema.id, fiaCooperation);
-                        iaSubthemesToUpsert.add(iaSubtheme);
+                        if (undertema.inkludert == true) {
+                            // ToDo: Legg til logikk for fjernede undertema
+                            //Ikke opprettet: inkludert false og status blank,
+                            //Opprettet og fjernet: inkludert false og status SLETTET
+                            IA_Subtheme__c iaSubtheme = createSubtheme(undertema, tema.id, fiaCooperation);
+                            iaSubthemesToUpsert.add(iaSubtheme);
+                        }
                     }
                 }
             } catch (Exception e) {
@@ -139,24 +197,48 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
 
     private IACooperation__c createIACooperation(FiaCooperation fiaCooperation) {
         IACooperation__c iaCooperation = new IACooperation__c(
-            Name = fiaCooperation.samarbeid.navn,
             CooperationId__c = fiaCooperation.samarbeid.id,
-            Status__c = fiaCooperation.samarbeid.status,
-            StartDate__c = fiaCooperation.samarbeid.startDato,
-            EndDate__c = fiaCooperation.samarbeid.sluttDato,
-            PlanId__c = fiaCooperation.plan?.id,
-            PlanLastModified__c = fiaCooperation.plan?.sistEndret,
-            PlanLastPublished__c = fiaCooperation.plan?.sistPublisert,
             KafkaId__c = fiaCooperation.key,
             KafkaHash__c = fiaCooperation.hash,
-            JsonPayload__c = fiaCooperation.jsonPayload,
-            IACase__r = new IACase__c(Name = fiaCooperation.saksnummer),
-            Account__r = new Account(INT_OrganizationNumber__c = fiaCooperation.orgnr),
-            IncludedArbeidsmiljo__c = fiaCooperation.includesArbeidsmiljo(),
-            IncludedPartssamarbeid__c = fiaCooperation.includesPartssamarbeid(),
-            IncludedSykefravaersarbeid__c = fiaCooperation.includesSykefravaersarbeid()
+            JsonPayload__c = fiaCooperation.jsonPayload
         );
+        //Set reference for related sObjects
+        iaCooperation.IACase__r = new IACase__c(Name = fiaCooperation.saksnummer);
+        iaCooperation.Account__r = new Account(INT_OrganizationNumber__c = fiaCooperation.orgnr);
+
+        //Set values for samarbeid
+        setFieldIfNotBlank(iaCooperation, 'Name', fiaCooperation.samarbeid.navn);
+        setFieldIfNotBlank(iaCooperation, 'Status__c', fiaCooperation.samarbeid.status);
+        setFieldIfNotBlank(iaCooperation, 'StartDate__c', fiaCooperation.samarbeid.startDato);
+        setFieldIfNotBlank(iaCooperation, 'EndDate__c', fiaCooperation.samarbeid.sluttDato);
+        //Set values for plan
+        if (fiaCooperation.plan != null) {
+            iaCooperation.PlanId__c = fiaCooperation.plan.id;
+            iaCooperation.IncludedArbeidsmiljo__c = fiaCooperation.includesArbeidsmiljo();
+            iaCooperation.IncludedPartssamarbeid__c = fiaCooperation.includesPartssamarbeid();
+            iaCooperation.IncludedSykefravaersarbeid__c = fiaCooperation.includesSykefravaersarbeid();
+            iaCooperation.PlanLastModified__c = fiaCooperation.plan.sistEndret;
+            iaCooperation.PlanLastPublished__c = fiaCooperation.plan.sistPublisert;
+            iaCooperation.PlanLastPublished__c = fiaCooperation.plan.sistPublisert;
+        }
         return iaCooperation;
+    }
+
+    // Helper method to set a field only if the value is not blank
+    private void setFieldIfNotBlank(SObject obj, String fieldName, String value) {
+        if (!String.isBlank(value)) {
+            obj.put(fieldName, value);
+        }
+    }
+    private void setFieldIfNotBlank(SObject obj, String fieldName, Date value) {
+        if (value != null) {
+            obj.put(fieldName, value);
+        }
+    }
+    private void setFieldIfNotBlank(SObject obj, String fieldName, Datetime value) {
+        if (value != null) {
+            obj.put(fieldName, value);
+        }
     }
 
     private IATheme__c createTheme(FiaCooperation.Tema tema, FiaCooperation fiaCooperation) {
