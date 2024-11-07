@@ -41,6 +41,24 @@ public with sharing class AG_KafkaLogger {
         return errorRef;
     }
 
+    public String logError(String category, String referenceInfo, String message, String stacktrace) {
+        LoggerUtility.LogLevel logLevel = LoggerUtility.LogLevel.Error;
+        String errorRef = '';
+        logger.setCategory(category); //Category within application domain to allow for further filtering og logs. text(32)
+        logger.logMessage(
+            logLevel,
+            errorRef,
+            referenceInfo,
+            message,
+            stacktrace,
+            null,
+            CRM_ApplicationDomain.Domain.POAB
+        );
+        errorRef = logger.peek().UUID__c;
+
+        return errorRef;
+    }
+
     public List<KafkaMessage__c> setMessageErrors(List<KafkaMessage__c> messages, String errorRef) {
         for (KafkaMessage__c m : messages) {
             m.CRM_Status__c = KafkaMessageService.STATUS_ERROR;

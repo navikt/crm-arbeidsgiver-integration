@@ -25,6 +25,7 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
         public Datetime sistEndret;
         public Date sistPublisert;
         public List<Tema> temaer;
+        public string status;
     }
 
     public class Tema {
@@ -76,23 +77,5 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
             }
         }
         return isIncluded;
-    }
-
-    public Datetime getLastModifiedDatetime() {
-        if (plan == null || plan.sistEndret == null || plan.sistEndret < samarbeid.endretTidspunkt) {
-            return samarbeid.endretTidspunkt;
-        } else {
-            return plan.sistEndret;
-        }
-    }
-
-    public Boolean isNewer(FiaCooperation ojectToCompare) {
-        if (ojectToCompare == null || ojectToCompare.getLastModifiedDatetime() == null) {
-            return true;
-        } else if (this.getLastModifiedDatetime() >= ojectToCompare.getLastModifiedDatetime()) {
-            return true;
-        } else {
-            return false;
-        }
     }
 }

@@ -15,7 +15,8 @@ public with sharing class FiaCooperationTest {
         '    "plan": {' +
         '        "id": "9220e758-d84c-4d33-8375-c0e55b4b0f49",' +
         '        "sistEndret": "2024-09-20T11:37:35.150172",' +
-        '        "sistPublisert": null,' +
+        '        "sistPublisert": "2024-09-18",' +
+        '        "status": "AKTIV",' +
         '        "temaer": [' +
         '            {' +
         '                "id": 175,' +
@@ -70,7 +71,7 @@ public with sharing class FiaCooperationTest {
         '                        "navn": "Tilretteleggings- og medvirkningsplikt",' +
         '                        "målsetning": "Utvikle rutiner og kultur for tilrettelegging og medvirkning, samt kartlegging av tilretteleggingsmuligheter på arbeidsplassen.",' +
         '                        "inkludert": false,' +
-        '                        "status": null,' +
+        '                        "status": "SLETTET",' +
         '                        "startDato": null,' +
         '                        "sluttDato": null' +
         '                    }' +
@@ -232,39 +233,5 @@ public with sharing class FiaCooperationTest {
         Assert.isTrue(model.includesSykefravaersarbeid());
         Assert.isFalse(model.includesArbeidsmiljo());
         Assert.isTrue(model.includesPartssamarbeid());
-    }
-
-    @IsTest
-    static void should_Identify_Newest_Message_By_Available_Timestamps() {
-        String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(JSON));
-        FiaCooperation model = FiaCooperation.parse(JSON, '12345678', encodedValue);
-        FiaCooperation modelToCompare = FiaCooperation.parse(JSON, '12345678', encodedValue);
-
-        model.samarbeid.endretTidspunkt = Datetime.newInstanceGMT(2023, 9, 20, 11, 37, 35);
-        model.plan.sistEndret = Datetime.newInstanceGMT(2024, 9, 20, 11, 37, 35);
-        modelToCompare.samarbeid.endretTidspunkt = Datetime.newInstanceGMT(2023, 9, 20, 11, 37, 35);
-        modelToCompare.plan.sistEndret = Datetime.newInstanceGMT(2023, 9, 20, 11, 37, 35);
-        Assert.isTrue(model.isNewer(modelToCompare));
-
-        model.samarbeid.endretTidspunkt = Datetime.newInstanceGMT(2023, 9, 20, 11, 37, 35);
-        model.plan.sistEndret = Datetime.newInstanceGMT(2023, 9, 20, 11, 37, 35);
-        modelToCompare.samarbeid.endretTidspunkt = Datetime.newInstanceGMT(2024, 9, 20, 11, 37, 35);
-        modelToCompare.plan.sistEndret = Datetime.newInstanceGMT(2023, 9, 20, 11, 37, 35);
-        Assert.isFalse(model.isNewer(modelToCompare));
-
-        model.samarbeid.endretTidspunkt = Datetime.newInstanceGMT(2023, 9, 20, 11, 37, 35);
-        model.plan.sistEndret = Datetime.newInstanceGMT(2023, 9, 20, 11, 37, 35);
-        modelToCompare.samarbeid.endretTidspunkt = Datetime.newInstanceGMT(2024, 9, 20, 11, 37, 35);
-        modelToCompare.plan = null;
-        Assert.isFalse(model.isNewer(modelToCompare));
-
-        model.samarbeid.endretTidspunkt = null;
-        model.plan.sistEndret = Datetime.newInstanceGMT(2024, 9, 20, 11, 37, 35);
-        modelToCompare.samarbeid.endretTidspunkt = null;
-        modelToCompare.plan = null;
-        Assert.isTrue(model.isNewer(modelToCompare));
-
-        modelToCompare = null;
-        Assert.isTrue(model.isNewer(modelToCompare), 'Is newer when compared to nothing');
     }
 }

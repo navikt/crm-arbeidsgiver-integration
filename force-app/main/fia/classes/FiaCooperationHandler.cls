@@ -20,7 +20,6 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             return;
         }
         createRecords(fiaCooperations);
-        System.debug('iaCooperationsToUpsert: ' + iaCooperationsToUpsert);
 
         //do upserts
         if (!iaCooperationsToUpsert.isEmpty()) {
@@ -56,7 +55,6 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
                 if (!fiaSamarbeidMap.containsKey(cooperationId) || isNewerCooperation(fiaCooperation)) {
                     fiaSamarbeidMap.put(cooperationId, fiaCooperation);
                     keyToKafkaMessageMap.put(kafkaMessage.CRM_Key__c, kafkaMessage);
-                    System.debug('Updated fiaSamarbeidMap with: ' + fiaCooperation.samarbeid.navn);
                 }
 
                 if (fiaCooperation.plan != null) {
@@ -64,13 +62,12 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
                     if (!fiaPlanMap.containsKey(cooperationId) || isNewerPlan(fiaCooperation)) {
                         fiaPlanMap.put(cooperationId, fiaCooperation.plan);
                         keyToKafkaMessageMap.put(kafkaMessage.CRM_Key__c, kafkaMessage);
-                        System.debug('Updated fiaPlanMap with: ' + fiaCooperation.samarbeid.navn);
                     }
                 }
                 //mark kafka message as prosessed
                 kafkaMessage.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
             } catch (Exception e) {
-                handleException(e, kafkaMessage);
+                handleError(null, e.getMessage(), e.getStackTraceString(), kafkaMessage);
             }
         }
         //have map with most recent of each type, now combine in one map and return it as list.
@@ -92,11 +89,6 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
         FiaCooperation.Plan existingPlan = fiaPlanMap.get(fiaCooperation.samarbeid.id);
         return existingPlan == null || existingPlan.sistEndret < fiaCooperation.plan.sistEndret;
     }
-    // Helper method to handle exceptions
-    private void handleException(Exception e, KafkaMessage__c kafkaMessage) {
-        String errorRef = logger.logError(e.getMessage() + '\n' + e.getStackTraceString());
-        logger.setMessageErrors(new List<KafkaMessage__c>{ kafkaMessage }, errorRef);
-    }
 
     /**
      * @description Creates records from parsed FiaCooperation data.
@@ -105,36 +97,21 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
     private void createRecords(List<FiaCooperation> fiaCooperations) {
         Set<String> existingCasenumbers = getExistingCases(fiaCooperations);
         for (FiaCooperation fiaCooperation : fiaCooperations) {
-            System.debug('createRecords: ' + fiaCooperation.samarbeid.navn);
             try {
                 if (!existingCasenumbers.Contains(fiaCooperation.saksnummer)) {
                     throw new FiaCooperationHandlerException(
                         'IA Case not found in Salesforce: ' + fiaCooperation.saksnummer
                     );
                 }
-                //create samarbeid
                 IACooperation__c iaCooperation = createIACooperation(fiaCooperation);
                 iaCooperationsToUpsert.add(iaCooperation);
-                System.debug('createIACooperation: ' + iaCooperation.Name);
-
-                for (FiaCooperation.Tema tema : fiaCooperation.plan?.temaer) {
-                    IATheme__c iaTheme = createTheme(tema, fiaCooperation);
-                    iaThemesToUpsert.add(iaTheme);
-                    for (FiaCooperation.Undertema undertema : tema.undertemaer) {
-                        if (undertema.inkludert == true) {
-                            // ToDo: Legg til logikk for fjernede undertema
-                            //Ikke opprettet: inkludert false og status blank,
-                            //Opprettet og fjernet: inkludert false og status SLETTET
-                            IA_Subtheme__c iaSubtheme = createSubtheme(undertema, tema.id, fiaCooperation);
-                            iaSubthemesToUpsert.add(iaSubtheme);
-                        }
-                    }
-                }
+                createThemesAndSubthemes(fiaCooperation);
             } catch (Exception e) {
-                String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
-                logger.setMessageErrors(
-                    new List<KafkaMessage__c>{ keyToKafkaMessageMap.get(fiaCooperation.key) },
-                    errorRef
+                handleError(
+                    fiaCooperation.key,
+                    e.getMessage(),
+                    e.getStackTraceString(),
+                    keyToKafkaMessageMap.get(fiaCooperation.key)
                 );
             }
         }
@@ -151,6 +128,30 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             existingCaseNumbers.add(iaCase.Name);
         }
         return existingCaseNumbers;
+    }
+
+    // Helper method that creates themes and subthemes
+    private void createThemesAndSubthemes(FiaCooperation fiaCooperation) {
+        if (fiaCooperation.plan == null || fiaCooperation.plan.temaer == null) {
+            return;
+        }
+        for (FiaCooperation.Tema tema : fiaCooperation.plan.temaer) {
+            IATheme__c iaTheme = createTheme(tema, fiaCooperation);
+            iaThemesToUpsert.add(iaTheme);
+
+            //Continue to next iteration
+            if (tema.undertemaer == null) {
+                continue;
+            }
+
+            for (FiaCooperation.Undertema undertema : tema.undertemaer) {
+                // Update if included is true or if not included and status shows it was removed. Skip update if not included and status is blank
+                if (undertema.inkludert || (!undertema.inkludert && undertema.status == 'SLETTET')) {
+                    IA_Subtheme__c iaSubtheme = createSubtheme(undertema, tema.id, fiaCooperation);
+                    iaSubthemesToUpsert.add(iaSubtheme);
+                }
+            }
+        }
     }
 
     // Helper method to create new instance of an IACooperation__c sObject
@@ -182,17 +183,6 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             //ToDo: Legg til plan.Status
         }
         return iaCooperation;
-    }
-
-    // Helper method to set a field only if the value is not blank
-    private void setFieldIfNotBlank(SObject obj, String fieldName, Object value) {
-        if (value instanceof String && !String.isBlank((String) value)) {
-            obj.put(fieldName, value);
-        } else if (value instanceof Date && value != null) {
-            obj.put(fieldName, value);
-        } else if (value instanceof Datetime && value != null) {
-            obj.put(fieldName, value);
-        }
     }
 
     // Helper method to create new instance of a IATheme__c sObject
@@ -227,6 +217,17 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
         return iaSubtheme;
     }
 
+    // Helper method to set a field only if the value is not blank
+    private void setFieldIfNotBlank(SObject obj, String fieldName, Object value) {
+        if (value instanceof String && !String.isBlank((String) value)) {
+            obj.put(fieldName, value);
+        } else if (value instanceof Date && value != null) {
+            obj.put(fieldName, value);
+        } else if (value instanceof Datetime && value != null) {
+            obj.put(fieldName, value);
+        }
+    }
+
     /**
      * @description Upserts records and handles errors.
      * @param records List of records to upsert
@@ -238,18 +239,34 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             for (Integer i = 0; i < upsertResults.size(); i++) {
                 if (!upsertResults[i].isSuccess()) {
                     String kafkaKey = (String) records[i].get('KafkaId__c');
-                    String errorRef = logger.logError(
-                        upsertResults[i].getErrors()[0].getMessage() +
-                            ' - FiaCooperationHandler.upsertRecords() could not upsert record. Key: ' +
-                            kafkaKey
-                    );
-                    logger.setMessageErrors(new List<KafkaMessage__c>{ keyToKafkaMessageMap.get(kafkaKey) }, errorRef);
+                    Database.Error e = upsertResults[i].getErrors()[0];
+                    String stackTrace =
+                        'Class.FiaCooperationHandler.upsertRecords, ' +
+                        e.getStatusCode() +
+                        ', ' +
+                        e.getFields();
+                    handleError(kafkaKey, e.getMessage(), stackTrace, keyToKafkaMessageMap.get(kafkaKey));
                 }
             }
         } catch (Exception e) {
-            String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
-            logger.setMessageErrors(keyToKafkaMessageMap.values(), errorRef);
+            handleError(null, e.getMessage(), e.getStackTraceString(), keyToKafkaMessageMap.values());
         }
+    }
+
+    // Helper method to handle exceptions
+    private void handleError(String referenceInfo, String message, String stackTrace, KafkaMessage__c kafkaMessage) {
+        handleError(referenceInfo, message, stackTrace, new List<KafkaMessage__c>{ kafkaMessage });
+    }
+    // Helper method to handle exceptions
+    private void handleError(
+        String referenceInfo,
+        String message,
+        String stackTrace,
+        List<KafkaMessage__c> kafkaMessages
+    ) {
+        System.debug(stackTrace);
+        String errorRef = logger.logError('FiaCooperationHandler', referenceInfo, message, stackTrace);
+        logger.setMessageErrors(kafkaMessages, errorRef);
     }
 
     /**
