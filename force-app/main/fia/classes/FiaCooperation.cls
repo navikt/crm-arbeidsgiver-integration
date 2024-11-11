@@ -17,6 +17,7 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
         public String status;
         public Date startDato;
         public Date sluttDato;
+        public Datetime endretTidspunkt;
     }
 
     public class Plan {
@@ -24,6 +25,7 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
         public Datetime sistEndret;
         public Date sistPublisert;
         public List<Tema> temaer;
+        public string status;
     }
 
     public class Tema {
@@ -65,6 +67,9 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
 
     private Boolean includesTema(String name) {
         boolean isIncluded = false;
+        if (plan == null || plan.temaer == null) {
+            return isIncluded;
+        }
         for (Tema t : plan.temaer) {
             if (t.navn == name && t.inkludert) {
                 isIncluded = true;
