@@ -221,7 +221,7 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
         String iaThemeReference,
         FiaCooperation fiaCooperation
     ) {
-        IA_Subtheme__c iaSubtheme = createSubtheme(undertema, tema.id, fiaCooperation);
+        IA_Subtheme__c iaSubtheme = createSubtheme(undertema, iaThemeReference, fiaCooperation);
         iaSubthemesToUpsert.add(iaSubtheme);
     }
 
@@ -232,7 +232,7 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
     ) {
         // Update if included is true or if not included and status shows it was removed. Skip update if not included and status is blank
         if (undertema.inkludert || (!undertema.inkludert && undertema.status == 'SLETTET')) {
-            IA_Subtheme__c iaSubtheme = createSubtheme(undertema, tema.id, fiaCooperation);
+            IA_Subtheme__c iaSubtheme = createSubtheme(undertema, iaThemeReference, fiaCooperation);
             iaSubthemesToUpsert.add(iaSubtheme);
         }
     }
