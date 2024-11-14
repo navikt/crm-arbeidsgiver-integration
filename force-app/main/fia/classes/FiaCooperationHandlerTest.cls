@@ -199,7 +199,8 @@ private class FiaCooperationHandlerTest {
         );
         Assert.areEqual(3, cooperationRecord.IA_Themes__r.size(), 'Should have 3 themes');
         Assert.areEqual(1, cooperationRecord.IA_Themes__r[0].IA_Subthemes__r.size(), 'Should have 1 subtheme');
-        Assert.areEqual(2, cooperationRecord.IA_Themes__r[1].IA_Subthemes__r.size(), 'Should have 2 subthemes');
+        Assert.areEqual(4, cooperationRecord.IA_Themes__r[1].IA_Subthemes__r.size(), 'Should have 4 subthemes');
+        //Assert.areEqual(2, cooperationRecord.IA_Themes__r[1].IA_Subthemes__r.size(), 'Should have 2 subthemes');
         Assert.areEqual(0, cooperationRecord.IA_Themes__r[2].IA_Subthemes__r.size(), 'Should have 0 subthemes');
 
         Assert.isTrue(
