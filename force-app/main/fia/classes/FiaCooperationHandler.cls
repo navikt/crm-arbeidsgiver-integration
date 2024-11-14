@@ -139,17 +139,16 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             IATheme__c iaTheme = createTheme(tema, fiaCooperation);
             iaThemesToUpsert.add(iaTheme);
 
-            //Continue to next iteration
+            //Continue to next iteration if undertemaer is null
             if (tema.undertemaer == null) {
                 continue;
             }
 
             for (FiaCooperation.Undertema undertema : tema.undertemaer) {
-                // Update if included is true or if not included and status shows it was removed. Skip update if not included and status is blank
-                if (undertema.inkludert || (!undertema.inkludert && undertema.status == 'SLETTET')) {
-                    IA_Subtheme__c iaSubtheme = createSubtheme(undertema, tema.id, fiaCooperation);
-                    iaSubthemesToUpsert.add(iaSubtheme);
-                }
+                //Use handleSubthemeV1 before fia-changes
+                handleSubthemeV1(undertema, tema.id, fiaCooperation);
+                //Switch to handleSubthemeV2 when fia-changes goes live
+                //handleSubthemeV2(undertema, tema.id, fiaCooperation);
             }
         }
     }
@@ -180,7 +179,7 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             iaCooperation.PlanLastModified__c = fiaCooperation.plan.sistEndret;
             iaCooperation.PlanLastPublished__c = fiaCooperation.plan.sistPublisert;
             iaCooperation.PlanLastPublished__c = fiaCooperation.plan.sistPublisert;
-            //ToDo: Legg til plan.Status
+            iaCooperation.PlanStatus__c = fiaCooperation.plan.status;
         }
         return iaCooperation;
     }
@@ -215,6 +214,27 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             IA_CooperationTheme__r = new IACooperation__c(CooperationId__c = fiaCooperation.samarbeid.id)
         );
         return iaSubtheme;
+    }
+
+    private void handleSubthemeV1(
+        FiaCooperation.Undertema undertema,
+        String iaThemeReference,
+        FiaCooperation fiaCooperation
+    ) {
+        IA_Subtheme__c iaSubtheme = createSubtheme(undertema, tema.id, fiaCooperation);
+        iaSubthemesToUpsert.add(iaSubtheme);
+    }
+
+    private void handleSubthemeV2(
+        FiaCooperation.Undertema undertema,
+        String iaThemeReference,
+        FiaCooperation fiaCooperation
+    ) {
+        // Update if included is true or if not included and status shows it was removed. Skip update if not included and status is blank
+        if (undertema.inkludert || (!undertema.inkludert && undertema.status == 'SLETTET')) {
+            IA_Subtheme__c iaSubtheme = createSubtheme(undertema, tema.id, fiaCooperation);
+            iaSubthemesToUpsert.add(iaSubtheme);
+        }
     }
 
     // Helper method to set a field only if the value is not blank
