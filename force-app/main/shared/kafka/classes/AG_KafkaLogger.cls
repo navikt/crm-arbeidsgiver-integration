@@ -41,10 +41,9 @@ public with sharing class AG_KafkaLogger {
         return errorRef;
     }
 
-    public String logError(String category, String referenceInfo, String message, String stacktrace) {
+    public String logError(String referenceInfo, String message, String stacktrace) {
         LoggerUtility.LogLevel logLevel = LoggerUtility.LogLevel.Error;
         String errorRef = '';
-        logger.setCategory(category); //Category within application domain to allow for further filtering og logs. text(32)
         logger.logMessage(
             logLevel,
             errorRef,
