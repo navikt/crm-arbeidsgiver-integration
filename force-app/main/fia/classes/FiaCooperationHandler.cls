@@ -285,7 +285,7 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
         List<KafkaMessage__c> kafkaMessages
     ) {
         System.debug(stackTrace);
-        String errorRef = logger.logError('FiaCooperationHandler', referenceInfo, message, stackTrace);
+        String errorRef = logger.logError(referenceInfo, message, stackTrace);
         logger.setMessageErrors(kafkaMessages, errorRef);
     }
 
