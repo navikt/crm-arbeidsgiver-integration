@@ -7,6 +7,9 @@ public class TAG_DeleteKafkaMessagesBatchJob extends KafkaMessageProcessor imple
         ' CRM_Topic__c = \'public-ereg-cache-org-json\' OR' +
         ' CRM_Topic__c = \'pia.ia-sak-v1\' OR' +
         ' CRM_Topic__c = \'pia.ia-sak-leveranse-v1\' OR' +
+        ' CRM_Topic__c = \'pia.fullfort-behovsvurdering-v1\' OR' +
+        ' CRM_Topic__c = \'pia.ia-sak-v1\' OR' +
+        ' CRM_Topic__c = \'pia.samarbeidsplan-v1\' OR' +
         ' CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-bransje-v1\' OR' +
         ' CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-land-v1\' OR' +
         ' CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-virksomhet-v1\' OR' +
