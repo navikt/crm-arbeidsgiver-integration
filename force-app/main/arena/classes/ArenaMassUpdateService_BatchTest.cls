@@ -3,7 +3,7 @@ private class ArenaMassUpdateService_BatchTest {
     @TestSetup
     static void makeData() {
         ArenaActivity__C activity = new ArenaActivity__c();
-        activity.JsonPayload__c = '{"aktivitetStatuskode":"GJENN","bedriftsnr":611855940,"beskrivelse":null,"orgnrMorselskap":711728323,"saksbehandler":"BBA0412","aktivitetskode":"MENTOR","fraDato":"2020-07-10","tilDato":"2020-09-10","regDato":"2020-07-10","regUser":"CBB0512","aktivitetsgruppekode":"TLTAK","aktivitetstypebeskrivelse":null,"aktivitetstypenavn":"Arbeidstrening","fornavn":"Fornavn","etternavn":"Etternavn","navIdent":"F183722"}';
+        activity.JsonPayload__c = '{"aktivitetStatuskode":"GJENN","bedriftsnr":611855940,"beskrivelse":null,"orgnrMorselskap":711728323,"saksbehandler":"BBA0412","aktivitetskode":"ARBTREN","fraDato":"2020-07-10","tilDato":"2020-09-10","regDato":"2020-07-10","regUser":"CBB0512","aktivitetsgruppekode":"TLTAK","aktivitetstypebeskrivelse":null,"aktivitetstypenavn":"Arbeidstrening","fornavn":"Fornavn","etternavn":"Etternavn","navIdent":"F183722"}';
         insert activity;
     }
 
