@@ -98,7 +98,10 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
                 KafkaId__c = model.key,
                 TAG_Category__c = model.tiltakstype,
                 NavIdent__c = model?.veilederNavIdent,
-                TAG_EmployerContactPhone__c = model?.arbeidsgiverTlf
+                TAG_EmployerContactPhone__c = model?.arbeidsgiverTlf,
+                TAG_ActionType__c = model?.hendelseType,
+                TAG_ContentType__c = model?.innholdType,
+                TAG_ContractId__c = model.avtaleId
             );
 
             if (model.startDato != null && Date.valueof(model.startDato).year() > 1700) {
