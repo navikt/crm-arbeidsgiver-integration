@@ -68,7 +68,12 @@ public inherited sharing class KafkaArenaHandler_Helper {
                 shouldCreateOrUpdate = existingActivities.get(model.key).KafkaHash__c != model.hash;
             }
 
-            if (shouldCreateOrUpdate) {
+            if (
+                shouldCreateOrUpdate &&
+                !(model.AktivitetsKode == 'ARBTREN' ||
+                model.AktivitetsKode == 'VARLONTIL' ||
+                model.AktivitetsKode == 'MIDLONTIL')
+            ) {
                 ArenaActivity__c aa = new ArenaActivity__c(
                     AktivitetstypeBeskrivelse__c = model.AktivitetstypeBeskrivelse,
                     Aktivitetsgruppekode__c = model.Aktivitetsgruppekode,

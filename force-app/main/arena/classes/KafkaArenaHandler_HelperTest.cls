@@ -277,4 +277,29 @@ private without sharing class KafkaArenaHandler_HelperTest {
 
         System.assertEquals(null, res);
     }
+
+    @isTest
+    private static void testArenaActivityWithActivityCodeNotAllowed() {
+        Account acc = [SELECT Id FROM Account WHERE INT_OrganizationNumber__c = '973113631' LIMIT 1][0];
+
+        KafkaMessage__c msg1 = new KafkaMessage__c();
+        msg1.CRM_Topic__c = 'teamarenanais.aapen-arena-arbeidsgiveraktivitetendret-v1';
+        msg1.CRM_Key__c = 'd60gwew775ed-249f-49e6-bd15-ff790b56cc07';
+        msg1.CRM_Value__c = 'ewogICAgImFrdGl2aXRldFN0YXR1c2tvZGUiOiAiRlVMTEYiLAogICAgImJlZHJpZnRzbnIiOiA5NzMxMTM2MzEsCiAgICAiYmVza3JpdmVsc2UiOiAiQmVkcmlmdHPDuGtvbm9tc3R1ZGlldCAyMCB2dFxuSMO4Z3Nrb2xla2FuZGlkYXRzdHVkaWV0IG1lZCByZXRuaW5nIGZvciByZWduc2thcHNmw7hyZXJlLiAyMHZ0IiwKICAgICJvcmduck1vcnNlbHNrYXAiOiA5NzEyMjg4NjUsCiAgICAic2Frc2JlaGFuZGxlciI6ICJKRUkxODEyIiwKICAgICJha3Rpdml0ZXRza29kZSI6ICJBUkJUUkVOIiwKICAgICJmcmFEYXRvIjogIjIwMDMtMDEtMDEiLAogICAgInRpbERhdG8iOiAiMjAwNC0xMi0zMSIsCiAgICAicmVnRGF0byI6ICIyMDAzLTAzLTI1IiwKICAgICJyZWdVc2VyIjogIkdMMTgxMiIsCiAgICAiYWt0aXZpdGV0c2dydXBwZWtvZGUiOiAiVExUQUsiLAogICAgImFrdGl2aXRldHN0eXBlYmVza3JpdmVsc2UiOiBudWxsLAogICAgImFrdGl2aXRldHN0eXBlbmF2biI6ICJVdGRhbm5pbmciLAogICAgImZvcm5hdm4iOiAiSm9ubiBFZ2lsIiwKICAgICJldHRlcm5hdm4iOiAiSW5kcmV2b2xsIiwKICAgICJuYXZJZGVudCI6ICJJMTExMzQ1Igp9';
+
+        List<KafkaArenaHandler_Model> models = KafkaArenaHandler_Helper.convertKafkaToArenaModel(
+            new List<KafkaMessage__c>{ msg1 }
+        );
+        Map<String, Account> accountMap = SharedFunctions.fetchAccounts(new List<String>{ '973113631' });
+
+        Test.StartTest();
+        List<ArenaActivity__c> arenaActivities = KafkaArenaHandler_Helper.convertArenaModelToSObject(
+            models,
+            accountMap,
+            new Map<String, ArenaActivity__c>()
+        );
+        Test.StopTest();
+
+        System.assertEquals(0, arenaActivities.size(), 'No kafka message added');
+    }
 }
