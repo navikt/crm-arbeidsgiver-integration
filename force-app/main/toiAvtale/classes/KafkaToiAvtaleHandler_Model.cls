@@ -37,13 +37,13 @@ public class KafkaToiAvtaleHandler_Model implements IKafkaMessageParser {
     public String tilrettelegging { get; set; }
     public String startDato { get; set; }
     public String sluttDato { get; set; }
-    public Integer stillingprosent { get; set; }
+    public Double stillingprosent { get; set; }
     public String journalpostId { get; set; }
     public String arbeidsoppgaver { get; set; }
     public String stillingstittel { get; set; }
     public Integer stillingStyrk08 { get; set; }
     public Integer stillingKonseptId { get; set; }
-    public Integer antallDagerPerUke { get; set; }
+    public Double antallDagerPerUke { get; set; }
     public String mentorFornavn { get; set; }
     public String mentorEtternavn { get; set; }
     public String mentorOppgaver { get; set; }
