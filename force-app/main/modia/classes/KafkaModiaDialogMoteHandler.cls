@@ -10,6 +10,8 @@ public without sharing class KafkaModiaDialogMoteHandler extends KafkaMessagePro
                 );
                 mapDialogMote(dialogMote);
                 addOrgNumber(dialogMote?.virksomhetsnummer);
+                addNavUnit(dialogMote?.enhetNr);
+                addNavIdent(dialogMote?.navIdent);
                 msg.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
             } catch (Exception e) {
                 msg.CRM_Status__c = KafkaMessageService.STATUS_ERROR;
@@ -33,10 +35,10 @@ public without sharing class KafkaModiaDialogMoteHandler extends KafkaMessagePro
 
     private void convertAndUpsertDialogMote(List<KafkaMessage__c> messages) {
         try {
-            List<ArenaActivity__c> arenaActivities = toSObject();
+            List<DialogueMeeting__c> dmactivities = toSObject();
 
-            Schema.SObjectField f = ArenaActivity__c.Fields.KafkaId__c;
-            Database.UpsertResult[] upsertResults = Database.upsert(arenaActivities, f, false);
+            Schema.SObjectField f = DialogueMeeting__c.Fields.KafkaId__c;
+            Database.UpsertResult[] upsertResults = Database.upsert(dmactivities, f, false);
             Map<String, KafkaMessage__c> messageMap = new Map<String, KafkaMessage__c>();
 
             for (KafkaMessage__c message : messages) {
@@ -48,7 +50,7 @@ public without sharing class KafkaModiaDialogMoteHandler extends KafkaMessagePro
                     Database.Error error = upsertResults[i].getErrors()[0];
                     String errorMessage = error.getMessage();
                     String errorRef = logger.logError(errorMessage);
-                    KafkaMessage__c failedMessage = messageMap.get(arenaActivities[i].KafkaId__c);
+                    KafkaMessage__c failedMessage = messageMap.get(dmactivities[i].KafkaId__c);
                     logger.setMessageErrors(new List<KafkaMessage__c>{ failedMessage }, errorRef);
                 }
             }
@@ -58,40 +60,50 @@ public without sharing class KafkaModiaDialogMoteHandler extends KafkaMessagePro
         }
     }
 
-    private List<ArenaActivity__c> toSObject() {
-        Map<String, String> lastSaved = getLastSaved(ArenaActivity__c.class, keyToDialogMote.keyset());
+    private List<DialogueMeeting__c> toSObject() {
+        Map<String, String> lastSaved = getLastSaved(DialogueMeeting__c.class, keyToDialogMote.keyset());
         Map<String, Account> accountMap = getOrgNumberAccountMap();
-        List<ArenaActivity__c> activities = new List<ArenaActivity__c>();
+        Map<String, NavUnit__c> navUnitMap = getNavUnitsMap();
+        Map<String, User> navIdentMap = getNavIdentMap();
+        List<DialogueMeeting__c> activities = new List<DialogueMeeting__c>();
 
         for (KafkaModiaDialogMote_Model model : keyToDialogMote.values()) {
             if (!isNewOrChanged(model.key, model.hash, lastSaved)) {
                 continue;
             }
 
-            ArenaActivity__c aa = new ArenaActivity__c(
-                DateRegistered__c = dateTimeValue(model.statusEndringTidspunkt).date(),
-                DateFrom__c = dateTimeValue(model.dialogmoteTidspunkt).date(),
-                DateTimeRegistered__c = dateTimeValue(model.statusEndringTidspunkt),
-                DateTimeFrom__c = dateTimeValue(model.dialogmoteTidspunkt),
-                TilfelleStartdato__c = dateTimeValue(model.tilfelleStartdato),
-                Aktivitetstype__c = 'Dialogmøte',
-                NAVIdent__c = model.navIdent,
-                NAVenhet__c = model.enhetNr,
+            DialogueMeeting__c dm = new DialogueMeeting__c(
+                Name = model.dialogmoteUuid,
+                MeetingTime__c = dateTimeValue(model.dialogmoteTidspunkt),
+                StatusChangeTime__c = dateTimeValue(model.statusEndringTidspunkt),
+                CaseStartDate__c = dateTimeValue(model.tilfelleStartdato),
+                UserNavIdent__c = model.navIdent,
+                IsEmployeeParticipating__c = model.arbeidstaker,
+                IsEmployerParticipating__c = model.arbeidsgiver,
+                IsSickLeaveIssuerParticipating__c = model.sykmelder,
                 JsonPayload__c = model.jsonPayload,
                 KafkaHash__c = model.hash,
-                KafkaId__c = model.key,
-                TAG_Source__c = 'Modia'
+                KafkaId__c = model.key
             );
 
             if (model.statusEndringType != 'NYTT_TID_STED') {
-                aa.AktivitetStatuskode__c = model.statusEndringType;
+                dm.Status__c = model.statusEndringType;
             }
 
             if (accountMap.containsKey(model.virksomhetsnummer)) {
-                aa.Account__c = accountMap.get(model.virksomhetsnummer).Id;
+                dm.Account__c = accountMap.get(model.virksomhetsnummer).Id;
             }
 
-            activities.add(aa);
+            if (navUnitMap.containsKey(model.enhetNr)) {
+                dm.NavUnit__c = navUnitMap.get(model.enhetNr).Id;
+            }
+
+            if (navIdentMap.containsKey(model.navIdent)) {
+                User us = navIdentMap.get(model.navIdent);
+                dm.OwnerId = us.id;
+            }
+
+            activities.add(dm);
         }
         return activities;
     }
