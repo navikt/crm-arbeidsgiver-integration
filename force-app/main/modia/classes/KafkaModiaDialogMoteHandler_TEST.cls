@@ -1,5 +1,15 @@
 @isTest
 public with sharing class KafkaModiaDialogMoteHandler_TEST {
+    @TestSetup
+    static void makeData() {
+        NavUnit__c NavUnit = new NavUnit__c(Name = 'NAV Test', INT_UnitNumber__c = '1805');
+        insert NavUnit;
+
+        List<User> users = TestDataFactory.getUsers(1, 'Standard User', false, false);
+        users[0].CRM_NAV_Ident__c = 'Z994911';
+        insert users;
+    }
+    
     @isTest
     static void processSingleMessage() {
         Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '973113631');
@@ -16,9 +26,9 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         KafkaModiaDialogMoteHandler handler = new KafkaModiaDialogMoteHandler();
         handler.processMessages(new List<KafkaMessage__c>{ msg1 });
 
-        List<ArenaActivity__c> activities = [
+        List<DialogueMeeting__c> activities = [
             SELECT Id, Account__c, KafkaId__c, KafkaHash__c, JsonPayload__c
-            FROM ArenaActivity__c
+            FROM DialogueMeeting__c
         ];
 
         System.assertEquals(1, activities.size(), 'Activity Inserted');
@@ -32,27 +42,30 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         String json = '{"dialogmoteUuid": "a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e", "dialogmoteTidspunkt": 1970-01-19T18:55:30.540Z, "statusEndringType": "AVLYST", "statusEndringTidspunkt": 1970-01-19T18:46:52.748Z, "personIdent": "05087321470", "virksomhetsnummer": "973113631", "enhetNr": "1805", "navIdent": "Z994911", "tilfelleStartdato": 1970-01-01T00:00:18.779Z, "arbeidstaker": true, "arbeidsgiver": true, "sykmelder": false}';
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
+        List<User> owner = [SELECT Id FROM User WHERE CRM_NAV_Ident__c = 'Z994911'];
+
         KafkaMessage__c msg1 = new KafkaMessage__c();
         msg1.CRM_Topic__c = 'teamsykefravr.isdialogmote-dialogmote-statusendring';
         msg1.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
         msg1.CRM_Value__c = encodedValue;
 
-        ArenaActivity__c activity = new ArenaActivity__c(
+        DialogueMeeting__c activity = new DialogueMeeting__c(
             KafkaId__c = msg1.CRM_Key__c,
-            AktivitetStatuskode__c = 'INNKALT'
+            Status__c = 'INNKALT',
+            OwnerId = owner[0].id
         );
         insert activity;
 
         KafkaModiaDialogMoteHandler handler = new KafkaModiaDialogMoteHandler();
         handler.processMessages(new List<KafkaMessage__c>{ msg1 });
 
-        List<ArenaActivity__c> activities = [
-            SELECT Id, Account__c, KafkaId__c, KafkaHash__c, JsonPayload__c, AktivitetStatuskode__c
-            FROM ArenaActivity__c
+        List<DialogueMeeting__c> activities = [
+            SELECT Id, Account__c, KafkaId__c, KafkaHash__c, JsonPayload__c, Status__c
+            FROM DialogueMeeting__c
         ];
 
         System.assertEquals(1, activities.size(), 'Still only one activity');
-        System.assertEquals('AVLYST', activities[0].AktivitetStatuskode__c, 'Successful status updated');
+        System.assertEquals('AVLYST', activities[0].Status__c, 'Successful status updated');
         System.assertEquals(msg1.CRM_Key__c, activities[0].KafkaId__c, 'Correct KafkaId');
         System.assertEquals(msg1.CRM_Value__c, activities[0].KafkaHash__c, 'Correct KafkaId');
     }
@@ -67,22 +80,22 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         msg1.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
         msg1.CRM_Value__c = encodedValue;
 
-        ArenaActivity__c activity = new ArenaActivity__c(
+        DialogueMeeting__c activity = new DialogueMeeting__c(
             KafkaId__c = msg1.CRM_Key__c,
-            AktivitetStatuskode__c = 'INNKALT'
+            Status__c = 'INNKALT'
         );
         insert activity;
 
         KafkaModiaDialogMoteHandler handler = new KafkaModiaDialogMoteHandler();
         handler.processMessages(new List<KafkaMessage__c>{ msg1 });
 
-        List<ArenaActivity__c> activities = [
-            SELECT Id, Account__c, KafkaId__c, KafkaHash__c, JsonPayload__c, AktivitetStatuskode__c
-            FROM ArenaActivity__c
+        List<DialogueMeeting__c> activities = [
+            SELECT Id, Account__c, KafkaId__c, KafkaHash__c, JsonPayload__c, Status__c
+            FROM DialogueMeeting__c
         ];
 
         System.assertEquals(1, activities.size(), 'Still only one activity');
-        System.assertEquals('INNKALT', activities[0].AktivitetStatuskode__c, 'NYTT_TID_STED status ignored');
+        System.assertEquals('INNKALT', activities[0].Status__c, 'NYTT_TID_STED status ignored');
     }
 
     @isTest
@@ -109,13 +122,13 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         KafkaModiaDialogMoteHandler handler = new KafkaModiaDialogMoteHandler();
         handler.processMessages(messages);
 
-        List<ArenaActivity__c> activities = [
-            SELECT Id, Account__c, KafkaId__c, KafkaHash__c, JsonPayload__c, AktivitetStatuskode__c
-            FROM ArenaActivity__c
+        List<DialogueMeeting__c> activities = [
+            SELECT Id, Account__c, KafkaId__c, KafkaHash__c, JsonPayload__c, Status__c
+            FROM DialogueMeeting__c
         ];
 
         System.assertEquals(1, activities.size(), 'Only one activity');
-        System.assertEquals('AVLYST', activities[0].AktivitetStatuskode__c, 'Most recent change inserted');
+        System.assertEquals('AVLYST', activities[0].Status__c, 'Most recent change inserted');
     }
 
     @isTest
@@ -128,21 +141,22 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         Account acc2 = new Account(Name = 'Test Employer 2', INT_OrganizationNumber__c = '873113633');
         insert acc2;
 
+        List<User> owner = [SELECT Id FROM User WHERE CRM_NAV_Ident__c = 'Z994911'];
+
         KafkaMessage__c msg1 = new KafkaMessage__c();
         msg1.CRM_Topic__c = 'teamsykefravr.isdialogmote-dialogmote-statusendring';
         msg1.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
         msg1.CRM_Value__c = encodedValue;
 
-        ArenaActivity__c activity = new ArenaActivity__c(
+        DialogueMeeting__c activity = new DialogueMeeting__c(
+            Name = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e',
             KafkaId__c = msg1.CRM_Key__c,
-            AktivitetStatuskode__c = 'INNKALT',
-            NavIdent__c = 'C158639',
-            NAVenhet__c = '8888',
-            DateRegistered__c = Date.newInstance(2006, 3, 16),
-            DateFrom__c = Date.newInstance(2006, 3, 17),
-            DateTimeRegistered__c = Datetime.newInstance(2008, 12, 1, 12, 30, 2),
-            DateTimeFrom__c = Datetime.newInstance(2008, 12, 1, 12, 30, 2),
-            TilfelleStartdato__c = Datetime.newInstance(2008, 12, 1, 12, 30, 2),
+            Status__c = 'INNKALT',
+            UserNavIdent__c = 'C158639',
+            OwnerId = owner[0].id,
+            MeetingTime__c = Datetime.newInstance(2008, 12, 1, 12, 30, 2),
+            StatusChangeTime__c = Datetime.newInstance(2008, 12, 1, 12, 30, 2),
+            CaseStartDate__c = Datetime.newInstance(2008, 12, 1, 12, 30, 2),
             Account__c = acc2.id
         );
         insert activity;
@@ -150,50 +164,51 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         KafkaModiaDialogMoteHandler handler = new KafkaModiaDialogMoteHandler();
         handler.processMessages(new List<KafkaMessage__c>{ msg1 });
 
-        List<ArenaActivity__c> activities = [
+        List<DialogueMeeting__c> activities = [
             SELECT
                 Id,
+                Name,
                 Account__c,
                 KafkaId__c,
                 KafkaHash__c,
                 JsonPayload__c,
-                AktivitetStatuskode__c,
-                NavIdent__c,
-                NAVenhet__c,
-                DateRegistered__c,
-                DateFrom__c,
-                DateTimeRegistered__c,
-                DateTimeFrom__c,
-                TilfelleStartdato__c
-            FROM ArenaActivity__c
+                Status__c,
+                UserNavIdent__c,
+                NavUnit__c,
+                StatusChangeTime__c,
+                MeetingTime__c,
+                CaseStartDate__c,
+                IsEmployeeParticipating__c,
+                IsEmployerParticipating__c,
+                IsSickLeaveIssuerParticipating__c,
+                OwnerId
+            FROM DialogueMeeting__c
         ];
 
         String decodedValue = KafkaMessageUtils.base64ULSafeDecode(msg1.CRM_Value__c).toString();
 
-        date checkDateRegistered = date.newInstance(1970, 1, 19);
-        datetime checkDateTimeRegistered = datetime.newInstance(1970, 1, 19, 18, 46, 52);
-        date checkDateFrom = date.newInstance(1970, 1, 19);
-        datetime checkDateTimeFrom = datetime.newInstance(1970, 1, 19, 18, 55, 30);
-        datetime checkTilfelleStartdato = datetime.newInstance(1970, 1, 1, 0, 0, 18);
+        List<NavUnit__c> NavUnitId = [SELECT Id FROM NavUnit__c WHERE INT_UnitNumber__c = '1805'];
+        datetime checkStatusChangeTime = datetime.newInstance(1970, 1, 19, 18, 46, 52);
+        datetime checkMeetingTime = datetime.newInstance(1970, 1, 19, 18, 55, 30);
+        datetime checkCaseStartDate = datetime.newInstance(1970, 1, 1, 0, 0, 18);
 
         System.assertEquals(1, activities.size(), 'Still only one activity');
-        System.assertEquals('AVLYST', activities[0].AktivitetStatuskode__c, 'Successful status updated');
+        System.assertEquals('AVLYST', activities[0].Status__c, 'Successful status updated');
         System.assertEquals(msg1.CRM_Key__c, activities[0].KafkaId__c, 'Correct KafkaId');
         System.assertEquals(msg1.CRM_Value__c, activities[0].KafkaHash__c, 'Correct KafkaId');
-        System.assertEquals('Z994911', activities[0].NavIdent__c, 'Successful NavIdent updated');
-        System.assertEquals('1805', activities[0].NAVenhet__c, 'Successful NavEnhet updated');
+        System.assertEquals('Z994911', activities[0].UserNavIdent__c, 'Successful NavIdent updated');
+        System.assertEquals(NavUnitId[0].id, activities[0].NavUnit__c, 'Successful NavUnit updated');
         System.assertEquals(acc1.id, activities[0].Account__c, 'Successful Account updated');
-        System.assertEquals(checkDateRegistered, activities[0].DateRegistered__c, 'Successful DateRegistered updated');
+        System.assertEquals(owner[0].id, activities[0].OwnerId, 'Successful User updated');
         System.assertEquals(
-            checkDateTimeRegistered,
-            activities[0].DateTimeRegistered__c,
+            checkStatusChangeTime,
+            activities[0].StatusChangeTime__c,
             'Successful DateTimeRegistered updated'
         );
-        System.assertEquals(checkDateFrom, activities[0].DateFrom__c, 'Successful DateFrom updated');
-        System.assertEquals(checkDateTimeFrom, activities[0].DateTimeFrom__c, 'Successful DateTimeFrom updated');
+        System.assertEquals(checkMeetingTime, activities[0].MeetingTime__c, 'Successful MeetingTime updated');
         System.assertEquals(
-            checkTilfelleStartdato,
-            activities[0].TilfelleStartdato__c,
+            checkCaseStartDate,
+            activities[0].CaseStartDate__c,
             'Successful TilfelleStartdato updated'
         );
         System.assertEquals(decodedValue, activities[0].JsonPayload__c, 'Correct JsonPayload');
@@ -209,19 +224,19 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         msg1.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
         msg1.CRM_Value__c = encodedValue;
 
-        ArenaActivity__c activity = new ArenaActivity__c(
+        DialogueMeeting__c activity = new DialogueMeeting__c(
             KafkaId__c = msg1.CRM_Key__c,
             KafkaHash__c = encodedValue,
-            AktivitetStatuskode__c = 'INNKALT'
+            Status__c = 'INNKALT'
         );
         insert activity;
 
         KafkaModiaDialogMoteHandler handler = new KafkaModiaDialogMoteHandler();
         handler.processMessages(new List<KafkaMessage__c>{ msg1 });
 
-        List<ArenaActivity__c> activities = [
-            SELECT Id, Account__c, KafkaId__c, KafkaHash__c, JsonPayload__c, AktivitetStatuskode__c
-            FROM ArenaActivity__c
+        List<DialogueMeeting__c> activities = [
+            SELECT Id, Account__c, KafkaId__c, KafkaHash__c, JsonPayload__c, Status__c
+            FROM DialogueMeeting__c
         ];
 
         System.assertEquals(1, activities.size(), 'Still only one activity');
@@ -247,15 +262,18 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         AsyncRequestSchedulable.enqueueAsyncJobs();
         Test.StopTest();
 
-        List<ArenaActivity__c> activities = [
-            SELECT Id, Account__c, KafkaId__c, KafkaHash__c, JsonPayload__c
-            FROM ArenaActivity__c
+        List<DialogueMeeting__c> activities = [
+            SELECT Id, Account__c, KafkaId__c, KafkaHash__c, JsonPayload__c, OwnerId
+            FROM DialogueMeeting__c
         ];
+
+        List<User> owner = [SELECT Id FROM User WHERE CRM_NAV_Ident__c = 'Z994911'];
 
         System.assertEquals(1, activities.size(), 'Activity Inserted');
         System.assertEquals(acc.id, activities[0].Account__c, 'Correct Account');
         System.assertEquals(msg1.CRM_Key__c, activities[0].KafkaId__c, 'Correct KafkaId');
         System.assertEquals(msg1.CRM_Value__c, activities[0].KafkaHash__c, 'Correct KafkaId');
+        System.assertEquals(owner[0].id, activities[0].OwnerId, 'Correct Owner');
     }
 
     @isTest
@@ -298,9 +316,9 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         AsyncRequestSchedulable.enqueueAsyncJobs();
         Test.StopTest();
 
-        List<ArenaActivity__c> activities = [
+        List<DialogueMeeting__c> activities = [
             SELECT Id, Account__c, KafkaId__c, KafkaHash__c, JsonPayload__c
-            FROM ArenaActivity__c
+            FROM DialogueMeeting__c
         ];
 
         System.assertEquals(3, activities.size(), '3 activities inserted. One updated with prexisting key');
