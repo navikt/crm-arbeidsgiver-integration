@@ -149,7 +149,8 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         msg1.CRM_Value__c = encodedValue;
 
         DialogueMeeting__c activity = new DialogueMeeting__c(
-            Name = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e',
+            Name = 'Dialogmøte',
+            DialogueMeetingId__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc12',
             KafkaId__c = msg1.CRM_Key__c,
             Status__c = 'INNKALT',
             UserNavIdent__c = 'C158639',
@@ -176,6 +177,7 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
                 UserNavIdent__c,
                 NavUnit__c,
                 StatusChangeTime__c,
+                DialogueMeetingId__c,
                 MeetingTime__c,
                 CaseStartDate__c,
                 IsEmployeeParticipating__c,
@@ -200,6 +202,8 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         System.assertEquals(NavUnitId[0].id, activities[0].NavUnit__c, 'Successful NavUnit updated');
         System.assertEquals(acc1.id, activities[0].Account__c, 'Successful Account updated');
         System.assertEquals(owner[0].id, activities[0].OwnerId, 'Successful User updated');
+        System.assertEquals('a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e', activities[0].DialogueMeetingId__c, 'Successful DialogueMeetingId__c updated');
+        System.assertEquals('Dialogmøte 1970-01-19', activities[0].Name, 'Successful Name updated');
         System.assertEquals(
             checkStatusChangeTime,
             activities[0].StatusChangeTime__c,
