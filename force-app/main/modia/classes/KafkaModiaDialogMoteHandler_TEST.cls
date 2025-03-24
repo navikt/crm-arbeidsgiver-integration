@@ -8,6 +8,17 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         List<User> users = TestDataFactory.getUsers(1, 'Standard User', false, false);
         users[0].CRM_NAV_Ident__c = 'Z994911';
         insert users;
+
+        //PermissionSetAssignment DML operation in a System.runAs block to avoid the mixed DML error
+        User thisUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
+        System.runAs(thisUser) {
+            PermissionSet permSet = [SELECT Id FROM PermissionSet WHERE Name = 'Arbeidsgiver_base'];
+            PermissionSetAssignment permSetAssign = new PermissionSetAssignment(
+                AssigneeId = users[0].Id,
+                PermissionSetId = permSet.Id
+            );
+            insert permSetAssign;
+        }
     }
     
     @isTest
