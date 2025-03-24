@@ -64,7 +64,7 @@ public without sharing class KafkaModiaDialogMoteHandler extends KafkaMessagePro
         Map<String, String> lastSaved = getLastSaved(DialogueMeeting__c.class, keyToDialogMote.keyset());
         Map<String, Account> accountMap = getOrgNumberAccountMap();
         Map<String, NavUnit__c> navUnitMap = getNavUnitsMap();
-        Map<String, User> navIdentMap = getNavIdentMapWithCustomPermission();
+        Map<String, User> navIdentMap = getNavIdentMapWithProfile();
         List<DialogueMeeting__c> activities = new List<DialogueMeeting__c>();
 
         for (KafkaModiaDialogMote_Model model : keyToDialogMote.values()) {
@@ -109,19 +109,16 @@ public without sharing class KafkaModiaDialogMoteHandler extends KafkaMessagePro
         return activities;
     }
 
-    public Map<String, User> getNavIdentMapWithCustomPermission() {
+    public Map<String, User> getNavIdentMapWithProfile() {
         Map<String, User> navIdentMap = new Map<String, User>();
         List<User> users = [
-            SELECT Id, firstName, lastName, CRM_NAV_Ident__c
+            SELECT Id, firstName, lastName, CRM_NAV_Ident__c, ProfileId
             FROM User
-            WHERE IsActive = TRUE AND CRM_NAV_Ident__c IN :navIdents
+            WHERE IsActive = TRUE AND Profile.Name = 'NAV Kontor' AND CRM_NAV_Ident__c IN :navIdents
         ];
-    
-        // Filter users based on custom permission "Arbeidsgiver"
+
         for (User u : users) {
-            if (FeatureManagement.checkPermission('Arbeidsgiver')) {
-                navIdentMap.put(u.CRM_NAV_Ident__c, u);
-            }
+            navIdentMap.put(u.CRM_NAV_Ident__c, u);
         }
         return navIdentMap;
     }
