@@ -71,7 +71,7 @@ public with sharing class FiaCooperationTest {
         '                        "navn": "Tilretteleggings- og medvirkningsplikt",' +
         '                        "målsetning": "Utvikle rutiner og kultur for tilrettelegging og medvirkning, samt kartlegging av tilretteleggingsmuligheter på arbeidsplassen.",' +
         '                        "inkludert": false,' +
-        '                        "status": "SLETTET",' +
+        '                        "status": null,' +
         '                        "startDato": null,' +
         '                        "sluttDato": null' +
         '                    }' +
