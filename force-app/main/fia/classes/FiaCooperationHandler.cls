@@ -7,6 +7,7 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
     private List<IACooperation__c> iaCooperationsToUpsert = new List<IACooperation__c>();
     private List<IATheme__c> iaThemesToUpsert = new List<IATheme__c>();
     private List<IA_Subtheme__c> iaSubthemesToUpsert = new List<IA_Subtheme__c>();
+    public static final String STATUS_DELETED = 'SLETTET';
 
     /**
      * @description Implementation of processMessages-method from IKafkaMessageConsumer
@@ -17,19 +18,39 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
         if (fiaCooperations.isEmpty()) {
             return;
         }
+        handleDeletions(fiaCooperations);
+        handleUpserts(fiaCooperations);
+        logger.publish();
+    }
 
-        List<String> cooperationIdsToDelete = getDeletedCooperationIds(fiaCooperations);
-        List<String> themesIdsToDelete = getDeletedThemeIds(fiaCooperations);
-        Map<String, FiaCooperation> updates = getNewestUpdates(fiaCooperations);
-
-        // Remove deleted cooperations from map with updates (can't do both)
-        for (String cooperationId : getDeletedCooperationIds(fiaCooperations)) {
-            if (updates.containsKey(cooperationId)) {
-                updates.remove(cooperationId);
+    /**
+     * @description Processes a list of Kafka Message records and extracts FiaCooperation objects.
+     * The Kafka Message is also added to a map to allow for status updates should exceptions occur
+     * during subsequent sObject creation.      *
+     * @param kafkaMessages List of Kafka Message records to be processed.
+     * @return A list of FiaCooperation objects.
+     */
+    private List<FiaCooperation> extractData(List<KafkaMessage__c> kafkaMessages) {
+        List<FiaCooperation> allFiaCooperationUpdates = new List<FiaCooperation>();
+        for (KafkaMessage__c kafkaMessage : kafkaMessages) {
+            try {
+                FiaCooperation fiaCooperation = (FiaCooperation) parse(FiaCooperation.class, kafkaMessage);
+                allFiaCooperationUpdates.add(fiaCooperation);
+                keyToKafkaMessageMap.put(kafkaMessage.CRM_Key__c, kafkaMessage);
+                kafkaMessage.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
+            } catch (Exception e) {
+                handleError(null, e.getMessage(), e.getStackTraceString(), kafkaMessage);
             }
         }
-        createRecords(updates.values());
+        return allFiaCooperationUpdates;
+    }
 
+    private void handleDeletions(List<FiaCooperation> fiaCooperations) {
+        List<String> cooperationIdsToDelete = getDeletedIds(fiaCooperations, 'cooperation');
+        List<String> themesIdsToDelete = getDeletedIds(fiaCooperations, 'theme');
+
+        // deleteThemes(themesIdsToDelete);
+        // deleteCooperations(cooperationIdsToDelete);
         // Do deletes
         if (!themesIdsToDelete.isEmpty()) {
             List<IATheme__c> iaThemesToDelete = [
@@ -61,8 +82,17 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             }
             delete iaCooperationToDelete;
         }
+    }
 
-        //do upserts
+    private void handleUpserts(List<FiaCooperation> fiaCooperations) {
+        Map<String, FiaCooperation> updates = getNewestUpdates(fiaCooperations);
+        // Remove deleted cooperations from map with updates (can't do both)
+        for (String cooperationId : getDeletedIds(fiaCooperations, 'cooperation')) {
+            updates.remove(cooperationId);
+        }
+
+        createRecords(updates.values());
+
         if (!iaCooperationsToUpsert.isEmpty()) {
             upsertRecords(iaCooperationsToUpsert, IACooperation__c.CooperationId__c);
         }
@@ -70,31 +100,6 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             upsertRecords(iaThemesToUpsert, IATheme__c.ThemeId__c);
             upsertRecords(iaSubthemesToUpsert, IA_Subtheme__c.SubthemeId__c);
         }
-
-        logger.publish();
-    }
-
-    /**
-     * @description Processes a list of Kafka Message records and extracts FiaCooperation objects.
-     * The Kafka Message is also added to a map to allow for status updates should exceptions occur
-     * during subsequent sObject creation.      *
-     * @param kafkaMessages List of Kafka Message records to be processed.
-     * @return A list of FiaCooperation objects.
-     */
-    private List<FiaCooperation> extractData(List<KafkaMessage__c> kafkaMessages) {
-        List<FiaCooperation> allFiaCooperationUpdates = new List<FiaCooperation>();
-        for (KafkaMessage__c kafkaMessage : kafkaMessages) {
-            try {
-                FiaCooperation fiaCooperation = (FiaCooperation) parse(FiaCooperation.class, kafkaMessage);
-                allFiaCooperationUpdates.add(fiaCooperation);
-                keyToKafkaMessageMap.put(kafkaMessage.CRM_Key__c, kafkaMessage);
-                //mark kafka message as prosessed
-                kafkaMessage.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
-            } catch (Exception e) {
-                handleError(null, e.getMessage(), e.getStackTraceString(), kafkaMessage);
-            }
-        }
-        return allFiaCooperationUpdates;
     }
 
     /**
@@ -136,30 +141,18 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
     }
 
     // Loop all messages and create list of deletes
-    private List<String> getDeletedCooperationIds(List<FiaCooperation> allFiaCooperationUpdates) {
-        List<String> deletedCooperations = new List<String>();
-        for (FiaCooperation fiaCooperation : allFiaCooperationUpdates) {
-            if (fiaCooperation.samarbeid.status == 'SLETTET') {
-                deletedCooperations.add(fiaCooperation.samarbeid.id);
-            }
-        }
-        return deletedCooperations;
-    }
-
-    // Loop all messages and create list of deletes
-    private List<String> getDeletedThemeIds(List<FiaCooperation> allFiaCooperationUpdates) {
-        List<String> deletedThemes = new List<String>();
-        for (FiaCooperation fiaCooperation : allFiaCooperationUpdates) {
-            if (fiaCooperation.samarbeid.status == 'SLETTET') {
-                continue;
-            }
-            if (fiaCooperation.plan != null && fiaCooperation.plan.status == 'SLETTET') {
+    private List<String> getDeletedIds(List<FiaCooperation> updates, String type) {
+        List<String> deletedIds = new List<String>();
+        for (FiaCooperation fiaCooperation : updates) {
+            if (type == 'cooperation' && fiaCooperation.samarbeid.status == STATUS_DELETED) {
+                deletedIds.add(fiaCooperation.samarbeid.id);
+            } else if (type == 'theme' && fiaCooperation.plan != null && fiaCooperation.plan.status == STATUS_DELETED) {
                 for (FiaCooperation.Tema tema : fiaCooperation.plan.temaer) {
-                    deletedThemes.add(tema.id);
+                    deletedIds.add(tema.id);
                 }
             }
         }
-        return deletedThemes;
+        return deletedIds;
     }
 
     /**
@@ -175,9 +168,23 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
                         'IA Case not found in Salesforce: ' + fiaCooperation.saksnummer
                     );
                 }
+
                 IACooperation__c iaCooperation = createIACooperation(fiaCooperation);
                 iaCooperationsToUpsert.add(iaCooperation);
-                createThemesAndSubthemes(fiaCooperation);
+                if (fiaCooperation.plan?.temaer == null) {
+                    continue;
+                }
+                for (FiaCooperation.Tema tema : fiaCooperation.plan.temaer) {
+                    IATheme__c iaTheme = createTheme(tema, fiaCooperation);
+                    iaThemesToUpsert.add(iaTheme);
+                    if (tema.undertemaer == null) {
+                        continue;
+                    }
+                    for (FiaCooperation.Undertema undertema : tema.undertemaer) {
+                        IA_Subtheme__c iaSubtheme = createSubtheme(undertema, tema.id, fiaCooperation);
+                        iaSubthemesToUpsert.add(iaSubtheme);
+                    }
+                }
             } catch (Exception e) {
                 handleError(
                     fiaCooperation.key,
@@ -200,26 +207,6 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             existingCaseNumbers.add(iaCase.Name);
         }
         return existingCaseNumbers;
-    }
-
-    // Helper method that creates themes and subthemes
-    private void createThemesAndSubthemes(FiaCooperation fiaCooperation) {
-        if (fiaCooperation.plan == null || fiaCooperation.plan.temaer == null) {
-            return;
-        }
-        for (FiaCooperation.Tema tema : fiaCooperation.plan.temaer) {
-            IATheme__c iaTheme = createTheme(tema, fiaCooperation);
-            iaThemesToUpsert.add(iaTheme);
-
-            //Continue to next iteration if undertemaer is null
-            if (tema.undertemaer == null) {
-                continue;
-            }
-
-            for (FiaCooperation.Undertema undertema : tema.undertemaer) {
-                handleSubthemeV1(undertema, tema.id, fiaCooperation);
-            }
-        }
     }
 
     // Helper method to create new instance of an IACooperation__c sObject
@@ -283,15 +270,6 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             IA_CooperationTheme__r = new IACooperation__c(CooperationId__c = fiaCooperation.samarbeid.id)
         );
         return iaSubtheme;
-    }
-
-    private void handleSubthemeV1(
-        FiaCooperation.Undertema undertema,
-        String iaThemeReference,
-        FiaCooperation fiaCooperation
-    ) {
-        IA_Subtheme__c iaSubtheme = createSubtheme(undertema, iaThemeReference, fiaCooperation);
-        iaSubthemesToUpsert.add(iaSubtheme);
     }
 
     // Helper method to set a field only if the value is not blank
