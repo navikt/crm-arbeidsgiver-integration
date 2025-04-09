@@ -780,4 +780,31 @@ private class FiaCooperationHandlerTest {
         ];
         Assert.areEqual(0, cooperationRecords.size(), 'Cooperation should be deleted');
     }
+
+    @IsTest
+    static void testDeleteRecords() {
+        // Arrange: Create test data
+        List<IACooperation__c> recordsToDelete = new List<IACooperation__c>{
+            new IACooperation__c(CooperationId__c = '1', Name = 'Test Cooperation 1'),
+            new IACooperation__c(CooperationId__c = '2', Name = 'Test Cooperation 2')
+        };
+        insert recordsToDelete;
+
+        // Verify records are inserted
+        List<IACooperation__c> insertedRecords = [
+            SELECT Id, CooperationId__c
+            FROM IACooperation__c
+            WHERE CooperationId__c IN ('1', '2')
+        ];
+        System.assertEquals(2, insertedRecords.size(), 'Records should be inserted before deletion.');
+
+        // Act: Call the deleteRecords method
+        Test.startTest();
+        new FiaCooperationHandler().deleteRecords(insertedRecords);
+        Test.stopTest();
+
+        // Assert: Verify records are deleted
+        List<IACooperation__c> deletedRecords = [SELECT Id FROM IACooperation__c WHERE CooperationId__c IN ('1', '2')];
+        System.assertEquals(0, deletedRecords.size(), 'Records should be deleted.');
+    }
 }
