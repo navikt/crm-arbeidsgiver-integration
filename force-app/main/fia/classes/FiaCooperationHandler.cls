@@ -71,16 +71,25 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             ];
             List<IACooperation__c> iaCooperationToDelete = new List<IACooperation__c>();
             for (IACooperation__c iaCoop : existingIaCooperations) {
-                if (iaCoop.Tasks.size() > 0 || iaCoop.Events.size() > 0) {
-                    System.debug('IA Cooperation has related tasks or events and cannot be deleted: ' + iaCoop.Id);
+                try {
+                    if (iaCoop.Tasks.size() > 0 || iaCoop.Events.size() > 0) {
+                        System.debug(
+                            LoggingLevel.ERROR,
+                            'IA Cooperation has related tasks or events and cannot be deleted: ' + iaCoop.Id
+                        );
+                        throw new FiaCooperationHandlerException(
+                            'IA Cooperation has related tasks or events and cannot be deleted: ' + iaCoop.Id
+                        );
+                    } else {
+                        iaCooperationToDelete.add(iaCoop);
+                    }
+                } catch (Exception e) {
                     handleError(
                         iaCoop.Id,
-                        'IA Cooperation has related tasks or events and cannot be deleted: ' + iaCoop.Id,
-                        null,
+                        e.getMessage(),
+                        e.getStackTraceString(),
                         keyToKafkaMessageMap.get(iaCoop.id)
                     );
-                } else {
-                    iaCooperationToDelete.add(iaCoop);
                 }
             }
             deleteRecords(iaCooperationToDelete);
