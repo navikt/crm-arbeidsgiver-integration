@@ -45,42 +45,45 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
         return allFiaCooperationUpdates;
     }
 
+    /**
+     * @description Handles deletions of IA Cooperation and IA Theme records based on the provided FiaCooperation objects.
+     * @param fiaCooperations List of FiaCooperation objects to process for deletions.
+     */
     private void handleDeletions(List<FiaCooperation> fiaCooperations) {
         List<String> cooperationIdsToDelete = getDeletedIds(fiaCooperations, 'cooperation');
         List<String> themesIdsToDelete = getDeletedIds(fiaCooperations, 'theme');
 
-        // deleteThemes(themesIdsToDelete);
-        // deleteCooperations(cooperationIdsToDelete);
-        // Do deletes
         if (!themesIdsToDelete.isEmpty()) {
             List<IATheme__c> iaThemesToDelete = [
-                SELECT Id, (SELECT id FROM Tasks), (SELECT id FROM Events)
+                SELECT Id
                 FROM IATheme__c
                 WHERE ThemeId__c = :themesIdsToDelete
             ];
-            for (IATheme__c iaTheeme : iaThemesToDelete) {
-                if (iaTheeme.Tasks.size() > 0 || iaTheeme.Events.size() > 0) {
-                    throw new FiaCooperationHandlerException(
-                        'IA Theme has related tasks or events and cannot be deleted: ' + iaTheeme.Id
-                    );
-                }
-            }
-            delete iaThemesToDelete;
+
+            deleteRecords(iaThemesToDelete);
         }
+
         if (!cooperationIdsToDelete.isEmpty()) {
-            List<IACooperation__c> iaCooperationToDelete = [
-                SELECT Id, (SELECT id FROM Tasks), (SELECT id FROM Events)
+            List<IACooperation__c> existingIaCooperations = [
+                SELECT Id, CooperationId__c, (SELECT id FROM Tasks), (SELECT id FROM Events)
                 FROM IACooperation__c
                 WHERE CooperationId__c = :cooperationIdsToDelete
             ];
-            for (IACooperation__c iaCoop : iaCooperationToDelete) {
+            List<IACooperation__c> iaCooperationToDelete = new List<IACooperation__c>();
+            for (IACooperation__c iaCoop : existingIaCooperations) {
                 if (iaCoop.Tasks.size() > 0 || iaCoop.Events.size() > 0) {
-                    throw new FiaCooperationHandlerException(
-                        'IA Cooperation has related tasks or events and cannot be deleted: ' + iaCoop.Id
+                    System.debug('IA Cooperation has related tasks or events and cannot be deleted: ' + iaCoop.Id);
+                    handleError(
+                        iaCoop.Id,
+                        'IA Cooperation has related tasks or events and cannot be deleted: ' + iaCoop.Id,
+                        null,
+                        keyToKafkaMessageMap.get(iaCoop.id)
                     );
+                } else {
+                    iaCooperationToDelete.add(iaCoop);
                 }
             }
-            delete iaCooperationToDelete;
+            deleteRecords(iaCooperationToDelete);
         }
     }
 
@@ -140,7 +143,12 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
         return fiaSamarbeidMap;
     }
 
-    // Loop all messages and create list of deletes
+    /**
+     * @description Creates a list of deleted IDs based on the provided FiaCooperation objects.
+     * @param updates List of FiaCooperation objects to process for deletions.
+     * @param type Type of deletion ('cooperation' or 'theme').
+     * @return A list of deleted IDs.
+     */
     private List<String> getDeletedIds(List<FiaCooperation> updates, String type) {
         List<String> deletedIds = new List<String>();
         for (FiaCooperation fiaCooperation : updates) {
@@ -284,6 +292,27 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
     }
 
     /**
+     * @description Deletes records and handles errors.
+     * @param records List of records to delete
+     */
+    @testVisible
+    private void deleteRecords(List<sObject> records) {
+        Database.DeleteResult[] deleteResult = Database.delete(records, false);
+        for (Integer i = 0; i < deleteResult.size(); i++) {
+            if (!deleteResult[i].isSuccess()) {
+                String kafkaKey = (String) records[i].get('KafkaId__c');
+                Database.Error e = deleteResult[i].getErrors()[0];
+                String stackTrace =
+                    'Class.FiaCooperationHandler.deleteRecords, ' +
+                    e.getStatusCode() +
+                    ', ' +
+                    e.getFields();
+                handleError(kafkaKey, e.getMessage(), stackTrace, keyToKafkaMessageMap.get(kafkaKey));
+            }
+        }
+    }
+
+    /**
      * @description Upserts records and handles errors.
      * @param records List of records to upsert
      * @param externalId Field to use as external id during upsert
@@ -319,7 +348,6 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
         String stackTrace,
         List<KafkaMessage__c> kafkaMessages
     ) {
-        System.debug(stackTrace);
         String errorRef = logger.logError(referenceInfo, message, stackTrace);
         logger.setMessageErrors(kafkaMessages, errorRef);
     }
