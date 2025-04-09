@@ -84,12 +84,7 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
                         iaCooperationToDelete.add(iaCoop);
                     }
                 } catch (Exception e) {
-                    handleError(
-                        iaCoop.Id,
-                        e.getMessage(),
-                        e.getStackTraceString(),
-                        keyToKafkaMessageMap.get(iaCoop.id)
-                    );
+                    String errorRef = logger.logError(iaCoop.Id, e.getMessage(), e.getStackTraceString());
                 }
             }
             deleteRecords(iaCooperationToDelete);
@@ -309,14 +304,14 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
         Database.DeleteResult[] deleteResult = Database.delete(records, false);
         for (Integer i = 0; i < deleteResult.size(); i++) {
             if (!deleteResult[i].isSuccess()) {
-                String kafkaKey = (String) records[i].get('KafkaId__c');
+                //String kafkaKey = (String) records[i].get('KafkaId__c');
                 Database.Error e = deleteResult[i].getErrors()[0];
-                String stackTrace =
-                    'Class.FiaCooperationHandler.deleteRecords, ' +
-                    e.getStatusCode() +
-                    ', ' +
-                    e.getFields();
-                handleError(kafkaKey, e.getMessage(), stackTrace, keyToKafkaMessageMap.get(kafkaKey));
+                String errorRef = logger.logError(
+                    deleteResult[i].getId(),
+                    e.getMessage(),
+                    'Class.FiaCooperationHandler.deleteRecords'
+                );
+                //handleError(deleteResult[i].getId(), e.getMessage(), stackTrace, null);
             }
         }
     }
