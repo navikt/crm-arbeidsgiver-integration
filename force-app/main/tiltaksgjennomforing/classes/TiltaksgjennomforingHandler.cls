@@ -1,3 +1,18 @@
+/**
+ * @description This TiltaksgjennomforingHandler class processes kafka messages that are read from the topic arbeidsgiver.tiltak-avtale-hendelse
+ * and creates new records in the Workfare__c object
+ *
+ * @author Andre Colle <andre.colle@nav.no>
+ * @since 2025-04-10 Created.
+ *
+ * @see [License](https://github.com/navikt/crm-arbeidsgiver-integration/blob/main/LICENSE)
+ * @see [Github](https://github.com/navikt/crm-arbeidsgiver-integration)
+ * @see TiltaksgjennomforingModel
+ * @see TiltaksgjennomforingHandlerTest
+ *
+ * @group TAG Tiltaksgjennomforing Integration
+ */
+
 public without sharing class TiltaksgjennomforingHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer {
     private Map<String, TiltaksgjennomforingModel> keyToAgreement = new Map<String, TiltaksgjennomforingModel>();
 
@@ -59,8 +74,7 @@ public without sharing class TiltaksgjennomforingHandler extends KafkaMessagePro
                 continue;
             }
 
-            Workfare__c c = new Workfare__c(
-                Name = model.avtaleNr,
+            Workfare__c w = new Workfare__c(
                 Status__c = model.avtaleStatus,
                 Type__c = model.tiltakstype,
                 NavIdent__c = model?.veilederNavIdent,
@@ -72,54 +86,60 @@ public without sharing class TiltaksgjennomforingHandler extends KafkaMessagePro
                 KafkaId__c = model.key
             );
 
+            if (model.avtaleNr != null) {
+                w.Name = model.avtaleNr;
+            } else {
+                w.Name = 'Avtalenummer ikke opprettet enda';
+            }
+
             if (model.startDato != null && Date.valueof(model.startDato).year() > 1700) {
-                c.StartDate__c = Date.valueof(model.startDato);
+                w.StartDate__c = Date.valueof(model.startDato);
             }
 
             if (model.sluttDato != null && Date.valueof(model.sluttDato).year() < 4000) {
-                c.EndDate__c = Date.valueof(model.sluttDato);
+                w.EndDate__c = Date.valueof(model.sluttDato);
             }
 
             if (model.arbeidsgiverFornavn != null & model.arbeidsgiverEtternavn != null) {
-                c.EmployerContactName__c =
+                w.EmployerContactName__c =
                     model.arbeidsgiverFornavn.left(31) +
                     ' ' +
                     model.arbeidsgiverEtternavn.left(32);
             }
 
             if (model.mentorFornavn != null & model.mentorEtternavn != null) {
-                c.MentorName__c = model.mentorFornavn.left(31) + ' ' + model.mentorEtternavn.left(32);
+                w.MentorName__c = model.mentorFornavn.left(31) + ' ' + model.mentorEtternavn.left(32);
             }
 
             if (model.bedriftNr != null) {
-                c.Link__c =
+                w.Link__c =
                     'https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/' +
                     model.avtaleId +
                     '?bedrift=' +
                     model.bedriftnr;
             } else {
-                c.Link__c = 'https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/' + model.avtaleId;
+                w.Link__c = 'https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/' + model.avtaleId;
             }
 
             if (navIdentMapAllProfile.containsKey(model.veilederNavIdent)) {
                 User us = navIdentMapAllProfile.get(model.veilederNavIdent);
-                c.InternalContact__c = us.id;
+                w.InternalContact__c = us.id;
             }
 
             if (navIdentMap.containsKey(model.veilederNavIdent)) {
                 User us = navIdentMap.get(model.veilederNavIdent);
-                c.OwnerId = us.id;
+                w.OwnerId = us.id;
             }
 
             if (accountMap.containsKey(model.bedriftnr)) {
-                c.Account__c = accountMap.get(model.bedriftnr).Id;
+                w.Account__c = accountMap.get(model.bedriftnr).Id;
             }
 
             if (navUnitMap.containsKey(model.enhetOppfolging)) {
-                c.NavUnit__c = navUnitMap.get(model.enhetOppfolging).Id;
+                w.NavUnit__c = navUnitMap.get(model.enhetOppfolging).Id;
             }
 
-            agreementsList.add(c);
+            agreementsList.add(w);
         }
         return agreementsList;
     }

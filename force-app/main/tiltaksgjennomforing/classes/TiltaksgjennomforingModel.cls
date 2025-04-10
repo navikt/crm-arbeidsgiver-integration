@@ -1,3 +1,17 @@
+/**
+ * @description This TiltaksgjennomforingModel class sets the model for json strings read from kafka topic arbeidsgiver.tiltak-avtale-hendelse
+ *
+ * @author Andre Colle <andre.colle@nav.no>
+ * @since 2025-04-10 Created.
+ *
+ * @see [License](https://github.com/navikt/crm-arbeidsgiver-integration/blob/main/LICENSE)
+ * @see [Github](https://github.com/navikt/crm-arbeidsgiver-integration)
+ * @see TiltaksgjennomforingHandler
+ * @see TiltaksgjennomforingModelTest
+ *
+ * @group TAG Tiltaksgjennomforing Integration
+ */
+
 public class TiltaksgjennomforingModel implements IKafkaMessageParser {
     public String hendelseType { get; set; }
     public String avtaleStatus { get; set; }
