@@ -1,6 +1,6 @@
 public class TAG_DeleteKafkaMessagesBatchJob extends KafkaMessageProcessor implements Database.Batchable<sObject> {
     private static final String KAFKA_MESSAGE_QUERY =
-        'SELECT Id FROM KafkaMessage__c WHERE CreatedDate < N_DAYS_AGO:7 AND CreatedDate > N_DAYS_AGO:15 AND IsDeleted = false AND CRM_Status__c = \'Processed\' AND' +
+        'SELECT Id FROM KafkaMessage__c WHERE LastModifiedDate < N_DAYS_AGO:7 AND LastModifiedDate > N_DAYS_AGO:15 AND IsDeleted = false AND CRM_Status__c = \'Processed\' AND' +
         ' (CRM_Topic__c = \'teampam.stilling-ekstern-1\' OR' +
         ' CRM_Topic__c = \'teamarenanais.aapen-arena-arbeidsgiveraktivitetendret-v1\' OR' +
         ' CRM_Topic__c = \'arbeidsgiver.tiltak-avtale-hendelse\' OR' +
