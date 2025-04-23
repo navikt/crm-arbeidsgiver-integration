@@ -82,7 +82,6 @@ public without sharing class TiltaksgjennomforingHandler extends KafkaMessagePro
                 ActionType__c = model?.hendelseType,
                 ContentType__c = model?.innholdType,
                 AgreementId__c = model.avtaleId,
-                KafkaHash__c = model.hash,
                 KafkaId__c = model.key
             );
 

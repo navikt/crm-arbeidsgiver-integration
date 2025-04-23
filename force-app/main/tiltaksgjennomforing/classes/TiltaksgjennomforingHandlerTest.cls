@@ -106,7 +106,6 @@ public with sharing class TiltaksgjennomforingHandlerTest {
                 EmployerContactPhone__c,
                 EndDate__c,
                 InternalContact__c,
-                KafkaHash__c,
                 KafkaId__c,
                 Link__c,
                 MentorName__c,
@@ -132,7 +131,6 @@ public with sharing class TiltaksgjennomforingHandlerTest {
         System.assertEquals('12345678', agreements[0].EmployerContactPhone__c);
         System.assertEquals('2023-01-01', String.valueOf(agreements[0].EndDate__c));
         System.assertEquals(users[0].id, agreements[0].InternalContact__c);
-        System.assertEquals(message[0].CRM_Value__c, agreements[0].KafkaHash__c);
         System.assertEquals(message[0].CRM_Key__c, agreements[0].KafkaId__c);
         System.assertEquals('https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/c9d8fe1e-c4d2-499e-bd16-af3a88b1e734?bedrift=973113631', agreements[0].Link__c);
         System.assertEquals('Test Testersen', agreements[0].MentorName__c);
@@ -185,7 +183,6 @@ public with sharing class TiltaksgjennomforingHandlerTest {
                 EmployerContactPhone__c,
                 EndDate__c,
                 InternalContact__c,
-                KafkaHash__c,
                 KafkaId__c,
                 Link__c,
                 MentorName__c,
@@ -211,7 +208,6 @@ public with sharing class TiltaksgjennomforingHandlerTest {
         System.assertEquals('12345678', agreements[0].EmployerContactPhone__c);
         System.assertEquals('2023-01-01', String.valueOf(agreements[0].EndDate__c));
         System.assertEquals(users[0].id, agreements[0].InternalContact__c);
-        //System.assertEquals(message[0].CRM_Value__c, agreements[0].KafkaHash__c);
         System.assertEquals(message[0].CRM_Key__c, agreements[0].KafkaId__c);
         System.assertEquals('https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/c9d8fe1e-c4d2-499e-bd16-af3a88b1e734?bedrift=973113632', agreements[0].Link__c);
         System.assertEquals(null, agreements[0].MentorName__c);
@@ -268,7 +264,6 @@ public with sharing class TiltaksgjennomforingHandlerTest {
                 EmployerContactPhone__c,
                 EndDate__c,
                 InternalContact__c,
-                KafkaHash__c,
                 KafkaId__c,
                 Link__c,
                 MentorName__c,
@@ -290,7 +285,6 @@ public with sharing class TiltaksgjennomforingHandlerTest {
         System.assertEquals(null, agreements[0].EmployerContactPhone__c);
         System.assertEquals(null, String.valueOf(agreements[0].EndDate__c));
         System.assertEquals(null, agreements[0].InternalContact__c);
-        System.assertEquals(message[0].CRM_Value__c, agreements[0].KafkaHash__c);
         System.assertEquals(message[0].CRM_Key__c, agreements[0].KafkaId__c);
         System.assertEquals('https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/c9d8fe1e-c4d2-499e-bd16-af3a88b1e735', agreements[0].Link__c);
         System.assertEquals(null, agreements[0].MentorName__c);
