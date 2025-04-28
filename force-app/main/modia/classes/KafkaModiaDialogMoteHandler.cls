@@ -82,8 +82,6 @@ public without sharing class KafkaModiaDialogMoteHandler extends KafkaMessagePro
                 IsEmployeeParticipating__c = model.arbeidstaker,
                 IsEmployerParticipating__c = model.arbeidsgiver,
                 IsSickLeaveIssuerParticipating__c = model.sykmelder,
-                JsonPayload__c = model.jsonPayload,
-                KafkaHash__c = model.hash,
                 KafkaId__c = model.key
             );
 
