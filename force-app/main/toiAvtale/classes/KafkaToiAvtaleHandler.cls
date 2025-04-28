@@ -94,7 +94,6 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
                 RecordTypeId = avtaleRecordTypeId,
                 ExternalId__c = model.avtaleNr,
                 TAG_Status__c = model.avtaleStatus,
-                KafkaHash__c = model.hash,
                 KafkaId__c = model.key,
                 TAG_Category__c = model.tiltakstype,
                 NavIdent__c = model?.veilederNavIdent,
@@ -188,7 +187,6 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
                 AktivitetsKode__c = ' ',
                 Aktivitetstype__c = model?.tiltakstype,
                 KafkaId__c = model.key,
-                KafkaHash__c = model.hash,
                 NAVIdent__c = model?.veilederNavIdent,
                 TAG_Source__c = 'Tiltaksløsning'
             );
