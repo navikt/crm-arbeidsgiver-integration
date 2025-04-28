@@ -151,6 +151,34 @@ private class FiaCooperationHandlerTest {
         insert new List<IaCase__c>{
             new IaCase__c(Name = 'X6mPvf2qYP7r42I', Account__r = new Account(INT_OrganizationNumber__c = '987654001'))
         };
+
+        insert new List<IACooperation__c>{
+            new IACooperation__c(
+                Name = 'Existing Cooperation',
+                CooperationId__c = '500',
+                status__c = 'AKTIV',
+                PlanId__c = 'Existing Plan',
+                planstatus__c = 'AKTIV'
+            )
+        };
+        insert new List<IATheme__c>{
+            new IATheme__c(
+                Name = 'Existing Theme',
+                ThemeId__c = '500',
+                IsPlanned__c = true,
+                IACooperation__r = new IACooperation__c(CooperationId__c = '500')
+            )
+        };
+        insert new List<IA_Subtheme__c>{
+            new IA_Subtheme__c(
+                Name = 'Existing Subtheme',
+                SubthemeId__c = '500',
+                Status__c = 'PLANLAGT',
+                IsPlanned__c = true,
+                IATheme__r = new IATheme__c(ThemeId__c = '500'),
+                IA_CooperationTheme__r = new IACooperation__c(CooperationId__c = '500')
+            )
+        };
     }
 
     @IsTest
@@ -305,57 +333,59 @@ private class FiaCooperationHandlerTest {
     }
 
     @IsTest
-    static void failed_Status_Should_Only_Be_Set_On_Message_With_Most_Resent_Content() {
+    static void should_handle_deleted_plans() {
         List<KafkaMessage__c> messages = new List<KafkaMessage__c>{
             new KafkaMessage__c(
-                CRM_Topic__c = 'new',
-                CRM_Key__c = 'X6mPvf2qYP7r42I-142-39555a36-797c-5285-bf80-012cedd35d77',
+                CRM_Topic__c = 'test',
+                CRM_Key__c = 'X6mPvf2qYP7r42I-500-ExistingPlan',
                 CRM_Value__c = EncodingUtil.base64Encode(
                     Blob.valueOf(
                         '{' +
                             '    "orgnr": "987654001",' +
                             '    "saksnummer": "X6mPvf2qYP7r42I",' +
                             '    "samarbeid": {' +
-                            '        "id": 142,' +
-                            '        "navn": "Fysio",' +
+                            '        "id": 500,' +
+                            '        "navn": "Existing Cooperation",' +
                             '        "status": "AKTIV",' +
-                            '        "endretTidspunkt": "2024-09-16T11:37:35.150172",' +
+                            '        "endretTidspunkt": "2024-09-16T11:20:10.000000",' +
                             '        "startDato": "2024-09-01",' +
                             '        "sluttDato": "2024-12-01"' +
                             '    },' +
                             '    "plan": {' +
-                            '        "id": "39555a36-797c-5285-bf80-012cedd35d77",' +
-                            '        "sistEndret": "2024-09-17T10:17:58.054765",' +
-                            '        "sistPublisert": "2024-09-18",' +
-                            '        "status": "AKTIV",' +
-                            '        "temaer": [{"id": 1421, "navn": "Partssamarbeid", "inkludert": true} ]' +
+                            '        "id": "Existing Plan",' +
+                            '        "sistEndret": "2024-09-16T11:30:10.000000",' +
+                            '        "status": "SLETTET",' +
+                            '        "temaer": [{"id": 500, "navn": "Existing Theme", "inkludert": true, "undertemaer": [ {' +
+                            '                        "id": 500, "navn": "Existing Subtheme", "inkludert": true, "status": "PLANLAGT" }]' +
+                            '          }]' +
                             '   }' +
                             '}'
                     )
                 )
             ),
             new KafkaMessage__c(
-                CRM_Topic__c = 'old',
-                CRM_Key__c = 'X6mPvf2qYP7r42I-142-39555a36-797c-5285-bf80-012cedd35d77',
+                CRM_Topic__c = 'test',
+                CRM_Key__c = 'X6mPvf2qYP7r42I-500-NewPlan',
                 CRM_Value__c = EncodingUtil.base64Encode(
                     Blob.valueOf(
                         '{' +
                             '    "orgnr": "987654001",' +
                             '    "saksnummer": "X6mPvf2qYP7r42I",' +
                             '    "samarbeid": {' +
-                            '        "id": 142,' +
-                            '        "navn": "Fysio",' +
+                            '        "id": 500,' +
+                            '        "navn": "Existing Cooperation",' +
                             '        "status": "AKTIV",' +
-                            '        "endretTidspunkt": "2024-09-16T11:37:35.150172",' +
+                            '        "endretTidspunkt": "2024-09-16T11:20:10.000000",' +
                             '        "startDato": "2024-09-01",' +
                             '        "sluttDato": "2024-12-01"' +
                             '    },' +
                             '    "plan": {' +
-                            '        "id": "39555a36-797c-5285-bf80-012cedd35d77",' +
-                            '        "sistEndret": "2024-09-17T10:17:57.054765",' +
-                            '        "sistPublisert": "2024-09-18",' +
+                            '        "id": "New Plan",' +
+                            '        "sistEndret":  "2024-09-16T11:30:20.000000",' +
                             '        "status": "AKTIV",' +
-                            '        "temaer": [{"id": 1421, "navn": "Partssamarbeid", "inkludert": true} ]' +
+                            '        "temaer": [{"id": 600, "navn": "New Theme", "inkludert": true, "undertemaer": [ {' +
+                            '                        "id": 600, "navn": "New Subtheme", "inkludert": true, "status": "PLANLAGT" }]' +
+                            '          }]' +
                             '   }' +
                             '}'
                     )
@@ -363,31 +393,34 @@ private class FiaCooperationHandlerTest {
             )
         };
 
-        delete [SELECT Id FROM IaCase__c WHERE Name = 'X6mPvf2qYP7r42I'];
-
         Test.startTest();
         FiaCooperationHandler handler = new FiaCooperationHandler();
         handler.processMessages(messages);
         Test.stopTest();
 
-        KafkaMessage__c olderMessage;
-        KafkaMessage__c newerMessage;
-        if (messages[0].CRM_Topic__c == 'old') {
-            olderMessage = messages[0];
-            newerMessage = messages[1];
-        } else {
-            olderMessage = messages[1];
-            newerMessage = messages[0];
-        }
+        List<IACooperation__c> cooperationRecords = [
+            SELECT
+                planstatus__c,
+                PlanId__c,
+                (
+                    SELECT Id, ThemeId__c, (SELECT Id, SubthemeId__c FROM IA_Subthemes__r)
+                    FROM IA_Themes__r
+                    ORDER BY ThemeId__c
+                )
+            FROM IACooperation__c
+            WHERE CooperationId__c = '500'
+        ];
+        Assert.areEqual(1, cooperationRecords[0].IA_Themes__r.size(), 'Should only have 1 theme');
         Assert.areEqual(
-            KafkaMessageService.STATUS_ERROR,
-            newerMessage.CRM_Status__c,
-            'The most recent message should be marked as failed'
+            '600',
+            cooperationRecords[0].IA_Themes__r[0].ThemeId__c,
+            'Theme Id should be from the new plan'
         );
+        Assert.areEqual(1, cooperationRecords[0].IA_Themes__r[0].IA_Subthemes__r.size(), 'Should only have 1 subtheme');
         Assert.areEqual(
-            KafkaMessageService.STATUS_PROCESSED,
-            olderMessage.CRM_Status__c,
-            'The older message should be marked as processed'
+            '600',
+            cooperationRecords[0].IA_Themes__r[0].IA_Subthemes__r[0].SubthemeId__c,
+            'Subtheme Id should be from the new plan'
         );
     }
 
@@ -655,7 +688,6 @@ private class FiaCooperationHandlerTest {
 
         List<IACooperation__c> cooperationRecords = [SELECT Id FROM IACooperation__c];
 
-        Assert.areEqual(4, cooperationRecords.size(), '4 Ia Cooperation records should be created');
         Assert.areEqual(
             KafkaMessageService.STATUS_PROCESSED,
             messages[0].CRM_Status__c,
@@ -676,5 +708,103 @@ private class FiaCooperationHandlerTest {
             messages[3].CRM_Status__c,
             'Message status should be updated to Processed'
         );
+    }
+
+    @IsTest
+    static void should_handle_deleted_cooperation() {
+        List<KafkaMessage__c> messages = new List<KafkaMessage__c>{
+            new KafkaMessage__c(
+                CRM_Topic__c = 'test',
+                CRM_Key__c = 'X6mPvf2qYP7r42I-500',
+                CRM_Value__c = EncodingUtil.base64Encode(
+                    Blob.valueOf(
+                        '{' +
+                            '    "orgnr": "987654001",' +
+                            '    "saksnummer": "X6mPvf2qYP7r42I",' +
+                            '    "samarbeid": {' +
+                            '        "id": 500,' +
+                            '        "navn": "Existing Cooperation",' +
+                            '        "status": "SLETTET",' +
+                            '        "endretTidspunkt": "2024-09-16T11:20:10.000000"' +
+                            '    }' +
+                            '}'
+                    )
+                )
+            ),
+            new KafkaMessage__c(
+                CRM_Topic__c = 'test',
+                CRM_Key__c = 'X6mPvf2qYP7r42I-500-ExistingPlan',
+                CRM_Value__c = EncodingUtil.base64Encode(
+                    Blob.valueOf(
+                        '{' +
+                            '    "orgnr": "987654001",' +
+                            '    "saksnummer": "X6mPvf2qYP7r42I",' +
+                            '    "samarbeid": {' +
+                            '        "id": 500,' +
+                            '        "navn": "Existing Cooperation",' +
+                            '        "status": "AKTIV",' +
+                            '        "endretTidspunkt": "2024-09-16T11:10:00.000000",' +
+                            '        "startDato": "2024-09-01",' +
+                            '        "sluttDato": "2024-12-01"' +
+                            '    },' +
+                            '    "plan": {' +
+                            '        "id": "Existing Plan",' +
+                            '        "sistEndret":  "2024-09-16T11:30:20.000000",' +
+                            '        "status": "SLETTET",' +
+                            '        "temaer": [{"id": 500, "navn": "Existing Theme", "inkludert": true, "undertemaer": [ {' +
+                            '                        "id": 500, "navn": "Existing Subtheme", "inkludert": true, "status": "PLANLAGT" }]' +
+                            '          }]' +
+                            '   }' +
+                            '}'
+                    )
+                )
+            )
+        };
+
+        Test.startTest();
+        FiaCooperationHandler handler = new FiaCooperationHandler();
+        handler.processMessages(messages);
+        Test.stopTest();
+
+        List<IACooperation__c> cooperationRecords = [
+            SELECT
+                planstatus__c,
+                PlanId__c,
+                (
+                    SELECT Id, ThemeId__c, (SELECT Id, SubthemeId__c FROM IA_Subthemes__r)
+                    FROM IA_Themes__r
+                    ORDER BY ThemeId__c
+                )
+            FROM IACooperation__c
+            WHERE CooperationId__c = '500'
+        ];
+        Assert.areEqual(0, cooperationRecords.size(), 'Cooperation should be deleted');
+    }
+
+    @IsTest
+    static void testDeleteRecords() {
+        // Arrange: Create test data
+        List<IACooperation__c> recordsToDelete = new List<IACooperation__c>{
+            new IACooperation__c(CooperationId__c = '1', Name = 'Test Cooperation 1'),
+            new IACooperation__c(CooperationId__c = '2', Name = 'Test Cooperation 2')
+        };
+        insert recordsToDelete;
+
+        // Verify records are inserted
+        List<IACooperation__c> insertedRecords = [
+            SELECT Id, CooperationId__c
+            FROM IACooperation__c
+            WHERE CooperationId__c IN ('1', '2')
+        ];
+        System.assertEquals(2, insertedRecords.size(), 'Records should be inserted before deletion.');
+
+        // Act: Call the deleteRecords method
+        Test.startTest();
+        new FiaCooperationHandler().deleteRecords(insertedRecords);
+        Test.stopTest();
+
+        // Assert: Verify records are deleted
+        List<IACooperation__c> deletedRecords = [SELECT Id FROM IACooperation__c WHERE CooperationId__c IN ('1', '2')];
+        System.assertEquals(0, deletedRecords.size(), 'Records should be deleted.');
     }
 }

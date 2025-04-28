@@ -7,8 +7,7 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
     private List<IACooperation__c> iaCooperationsToUpsert = new List<IACooperation__c>();
     private List<IATheme__c> iaThemesToUpsert = new List<IATheme__c>();
     private List<IA_Subtheme__c> iaSubthemesToUpsert = new List<IA_Subtheme__c>();
-    private Map<String, FiaCooperation> fiaSamarbeidMap = new Map<String, FiaCooperation>();
-    private Map<String, FiaCooperation.Plan> fiaPlanMap = new Map<String, FiaCooperation.Plan>();
+    public static final String STATUS_DELETED = 'SLETTET';
 
     /**
      * @description Implementation of processMessages-method from IKafkaMessageConsumer
@@ -19,9 +18,88 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
         if (fiaCooperations.isEmpty()) {
             return;
         }
-        createRecords(fiaCooperations);
+        handleDeletions(fiaCooperations);
+        handleUpserts(fiaCooperations);
+        logger.publish();
+    }
 
-        //do upserts
+    /**
+     * @description Processes a list of Kafka Message records and extracts FiaCooperation objects.
+     * The Kafka Message is also added to a map to allow for status updates should exceptions occur
+     * during subsequent sObject creation.      *
+     * @param kafkaMessages List of Kafka Message records to be processed.
+     * @return A list of FiaCooperation objects.
+     */
+    private List<FiaCooperation> extractData(List<KafkaMessage__c> kafkaMessages) {
+        List<FiaCooperation> allFiaCooperationUpdates = new List<FiaCooperation>();
+        for (KafkaMessage__c kafkaMessage : kafkaMessages) {
+            try {
+                FiaCooperation fiaCooperation = (FiaCooperation) parse(FiaCooperation.class, kafkaMessage);
+                allFiaCooperationUpdates.add(fiaCooperation);
+                keyToKafkaMessageMap.put(kafkaMessage.CRM_Key__c, kafkaMessage);
+                kafkaMessage.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
+            } catch (Exception e) {
+                handleError(null, e.getMessage(), e.getStackTraceString(), kafkaMessage);
+            }
+        }
+        return allFiaCooperationUpdates;
+    }
+
+    /**
+     * @description Handles deletions of IA Cooperation and IA Theme records based on the provided FiaCooperation objects.
+     * @param fiaCooperations List of FiaCooperation objects to process for deletions.
+     */
+    private void handleDeletions(List<FiaCooperation> fiaCooperations) {
+        List<String> cooperationIdsToDelete = getDeletedIds(fiaCooperations, 'cooperation');
+        List<String> themesIdsToDelete = getDeletedIds(fiaCooperations, 'theme');
+
+        if (!themesIdsToDelete.isEmpty()) {
+            List<IATheme__c> iaThemesToDelete = [
+                SELECT Id
+                FROM IATheme__c
+                WHERE ThemeId__c = :themesIdsToDelete
+            ];
+
+            deleteRecords(iaThemesToDelete);
+        }
+
+        if (!cooperationIdsToDelete.isEmpty()) {
+            List<IACooperation__c> existingIaCooperations = [
+                SELECT Id, CooperationId__c, (SELECT id FROM Tasks), (SELECT id FROM Events)
+                FROM IACooperation__c
+                WHERE CooperationId__c = :cooperationIdsToDelete
+            ];
+            List<IACooperation__c> iaCooperationToDelete = new List<IACooperation__c>();
+            for (IACooperation__c iaCoop : existingIaCooperations) {
+                try {
+                    if (iaCoop.Tasks.size() > 0 || iaCoop.Events.size() > 0) {
+                        System.debug(
+                            LoggingLevel.ERROR,
+                            'IA Cooperation has related tasks or events and cannot be deleted: ' + iaCoop.Id
+                        );
+                        throw new FiaCooperationHandlerException(
+                            'IA Cooperation has related tasks or events and cannot be deleted: ' + iaCoop.Id
+                        );
+                    } else {
+                        iaCooperationToDelete.add(iaCoop);
+                    }
+                } catch (Exception e) {
+                    String errorRef = logger.logError(iaCoop.Id, e.getMessage(), e.getStackTraceString());
+                }
+            }
+            deleteRecords(iaCooperationToDelete);
+        }
+    }
+
+    private void handleUpserts(List<FiaCooperation> fiaCooperations) {
+        Map<String, FiaCooperation> updates = getNewestUpdates(fiaCooperations);
+        // Remove deleted cooperations from map with updates (can't do both)
+        for (String cooperationId : getDeletedIds(fiaCooperations, 'cooperation')) {
+            updates.remove(cooperationId);
+        }
+
+        createRecords(updates.values());
+
         if (!iaCooperationsToUpsert.isEmpty()) {
             upsertRecords(iaCooperationsToUpsert, IACooperation__c.CooperationId__c);
         }
@@ -29,45 +107,35 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             upsertRecords(iaThemesToUpsert, IATheme__c.ThemeId__c);
             upsertRecords(iaSubthemesToUpsert, IA_Subtheme__c.SubthemeId__c);
         }
-
-        logger.publish();
     }
 
     /**
-     * @description Processes a list of Kafka Message records and extracts FiaCooperation objects, organizing them
+     * @description Processes a list of FiaCooperation objects, organizing them
      *  into a map keyed by their unique identifier. Each message is parsed into a FiaCooperation object, and only
-     *  the most recent entry (based on the 'sistEndret' or 'endretTidspunkt' timestamp) is stored in the map. If an object with a newer
-     *  timestamp already exists in the map, the message is marked as processed but not added to the map.
-     * The corresponding Kafka Message is also added to a secondary map to allow for status updates in case of
-     *  exceptions during subsequent sObject creation. All messages that are successfully parsed, regardless of
-     *  whether they are added to the map, will have their status updated to 'processed'.
-     *
-     * @param kafkaMessages List of Kafka Message records to be processed.
+     *  the most recent entry (based on the 'sistEndret' or 'endretTidspunkt' timestamp) is stored in the map.
+     * @param allFiaCooperationUpdates List of FiaCooperation objects to be processed.
      * @return A map containing FiaCooperation objects keyed by their unique identifier.
      */
-    private List<FiaCooperation> extractData(List<KafkaMessage__c> kafkaMessages) {
-        for (KafkaMessage__c kafkaMessage : kafkaMessages) {
-            try {
-                FiaCooperation fiaCooperation = (FiaCooperation) parse(FiaCooperation.class, kafkaMessage);
-
-                String cooperationId = fiaCooperation.samarbeid.id;
-                // Add or replace entry in the cooperation map
-                if (!fiaSamarbeidMap.containsKey(cooperationId) || isNewerCooperation(fiaCooperation)) {
-                    fiaSamarbeidMap.put(cooperationId, fiaCooperation);
-                    keyToKafkaMessageMap.put(kafkaMessage.CRM_Key__c, kafkaMessage);
+    private Map<String, FiaCooperation> getNewestUpdates(List<FiaCooperation> allFiaCooperationUpdates) {
+        Map<String, FiaCooperation> fiaSamarbeidMap = new Map<String, FiaCooperation>();
+        Map<String, FiaCooperation.Plan> fiaPlanMap = new Map<String, FiaCooperation.Plan>();
+        for (FiaCooperation fiaCooperation : allFiaCooperationUpdates) {
+            String cooperationId = fiaCooperation.samarbeid.id;
+            // Add or replace entry in the cooperation map
+            FiaCooperation existing = fiaSamarbeidMap.get(fiaCooperation.samarbeid.id);
+            Boolean isNewerCooperation = (existing == null ||
+            existing.samarbeid.endretTidspunkt < fiaCooperation.samarbeid.endretTidspunkt);
+            if (!fiaSamarbeidMap.containsKey(cooperationId) || isNewerCooperation) {
+                fiaSamarbeidMap.put(cooperationId, fiaCooperation);
+            }
+            if (fiaCooperation.plan != null) {
+                // Add or replace entry in the plan map
+                FiaCooperation.Plan existingPlan = fiaPlanMap.get(fiaCooperation.samarbeid.id);
+                Boolean isNewerPlan = (existingPlan == null ||
+                existingPlan.sistEndret < fiaCooperation.plan.sistEndret);
+                if (!fiaPlanMap.containsKey(cooperationId) || isNewerPlan) {
+                    fiaPlanMap.put(cooperationId, fiaCooperation.plan);
                 }
-
-                if (fiaCooperation.plan != null) {
-                    // Add or replace entry in the plan map
-                    if (!fiaPlanMap.containsKey(cooperationId) || isNewerPlan(fiaCooperation)) {
-                        fiaPlanMap.put(cooperationId, fiaCooperation.plan);
-                        keyToKafkaMessageMap.put(kafkaMessage.CRM_Key__c, kafkaMessage);
-                    }
-                }
-                //mark kafka message as prosessed
-                kafkaMessage.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
-            } catch (Exception e) {
-                handleError(null, e.getMessage(), e.getStackTraceString(), kafkaMessage);
             }
         }
         //have map with most recent of each type, now combine in one map and return it as list.
@@ -76,18 +144,27 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
                 fiaSamarbeidMap.get(cooperationId).plan = fiaPlanMap.get(cooperationId);
             }
         }
-        return fiaSamarbeidMap.values();
+        return fiaSamarbeidMap;
     }
 
-    // Helper method to check if the cooperation is more recent
-    private Boolean isNewerCooperation(FiaCooperation fiaCooperation) {
-        FiaCooperation existing = fiaSamarbeidMap.get(fiaCooperation.samarbeid.id);
-        return existing == null || existing.samarbeid.endretTidspunkt < fiaCooperation.samarbeid.endretTidspunkt;
-    }
-    // Helper method to check if the plan is more recent
-    private Boolean isNewerPlan(FiaCooperation fiaCooperation) {
-        FiaCooperation.Plan existingPlan = fiaPlanMap.get(fiaCooperation.samarbeid.id);
-        return existingPlan == null || existingPlan.sistEndret < fiaCooperation.plan.sistEndret;
+    /**
+     * @description Creates a list of deleted IDs based on the provided FiaCooperation objects.
+     * @param updates List of FiaCooperation objects to process for deletions.
+     * @param type Type of deletion ('cooperation' or 'theme').
+     * @return A list of deleted IDs.
+     */
+    private List<String> getDeletedIds(List<FiaCooperation> updates, String type) {
+        List<String> deletedIds = new List<String>();
+        for (FiaCooperation fiaCooperation : updates) {
+            if (type == 'cooperation' && fiaCooperation.samarbeid.status == STATUS_DELETED) {
+                deletedIds.add(fiaCooperation.samarbeid.id);
+            } else if (type == 'theme' && fiaCooperation.plan != null && fiaCooperation.plan.status == STATUS_DELETED) {
+                for (FiaCooperation.Tema tema : fiaCooperation.plan.temaer) {
+                    deletedIds.add(tema.id);
+                }
+            }
+        }
+        return deletedIds;
     }
 
     /**
@@ -103,9 +180,23 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
                         'IA Case not found in Salesforce: ' + fiaCooperation.saksnummer
                     );
                 }
+
                 IACooperation__c iaCooperation = createIACooperation(fiaCooperation);
                 iaCooperationsToUpsert.add(iaCooperation);
-                createThemesAndSubthemes(fiaCooperation);
+                if (fiaCooperation.plan?.temaer == null) {
+                    continue;
+                }
+                for (FiaCooperation.Tema tema : fiaCooperation.plan.temaer) {
+                    IATheme__c iaTheme = createTheme(tema, fiaCooperation);
+                    iaThemesToUpsert.add(iaTheme);
+                    if (tema.undertemaer == null) {
+                        continue;
+                    }
+                    for (FiaCooperation.Undertema undertema : tema.undertemaer) {
+                        IA_Subtheme__c iaSubtheme = createSubtheme(undertema, tema.id, fiaCooperation);
+                        iaSubthemesToUpsert.add(iaSubtheme);
+                    }
+                }
             } catch (Exception e) {
                 handleError(
                     fiaCooperation.key,
@@ -128,29 +219,6 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             existingCaseNumbers.add(iaCase.Name);
         }
         return existingCaseNumbers;
-    }
-
-    // Helper method that creates themes and subthemes
-    private void createThemesAndSubthemes(FiaCooperation fiaCooperation) {
-        if (fiaCooperation.plan == null || fiaCooperation.plan.temaer == null) {
-            return;
-        }
-        for (FiaCooperation.Tema tema : fiaCooperation.plan.temaer) {
-            IATheme__c iaTheme = createTheme(tema, fiaCooperation);
-            iaThemesToUpsert.add(iaTheme);
-
-            //Continue to next iteration if undertemaer is null
-            if (tema.undertemaer == null) {
-                continue;
-            }
-
-            for (FiaCooperation.Undertema undertema : tema.undertemaer) {
-                //Use handleSubthemeV1 before fia-changes
-                handleSubthemeV1(undertema, tema.id, fiaCooperation);
-                //Switch to handleSubthemeV2 when fia-changes goes live
-                //handleSubthemeV2(undertema, tema.id, fiaCooperation);
-            }
-        }
     }
 
     // Helper method to create new instance of an IACooperation__c sObject
@@ -216,27 +284,6 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
         return iaSubtheme;
     }
 
-    private void handleSubthemeV1(
-        FiaCooperation.Undertema undertema,
-        String iaThemeReference,
-        FiaCooperation fiaCooperation
-    ) {
-        IA_Subtheme__c iaSubtheme = createSubtheme(undertema, iaThemeReference, fiaCooperation);
-        iaSubthemesToUpsert.add(iaSubtheme);
-    }
-
-    private void handleSubthemeV2(
-        FiaCooperation.Undertema undertema,
-        String iaThemeReference,
-        FiaCooperation fiaCooperation
-    ) {
-        // Update if included is true or if not included and status shows it was removed. Skip update if not included and status is blank
-        if (undertema.inkludert || (!undertema.inkludert && undertema.status == 'SLETTET')) {
-            IA_Subtheme__c iaSubtheme = createSubtheme(undertema, iaThemeReference, fiaCooperation);
-            iaSubthemesToUpsert.add(iaSubtheme);
-        }
-    }
-
     // Helper method to set a field only if the value is not blank
     private void setFieldIfNotBlank(SObject obj, String fieldName, Object value) {
         if (value instanceof String && !String.isBlank((String) value)) {
@@ -245,6 +292,27 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             obj.put(fieldName, value);
         } else if (value instanceof Datetime && value != null) {
             obj.put(fieldName, value);
+        }
+    }
+
+    /**
+     * @description Deletes records and handles errors.
+     * @param records List of records to delete
+     */
+    @testVisible
+    private void deleteRecords(List<sObject> records) {
+        Database.DeleteResult[] deleteResult = Database.delete(records, false);
+        for (Integer i = 0; i < deleteResult.size(); i++) {
+            if (!deleteResult[i].isSuccess()) {
+                //String kafkaKey = (String) records[i].get('KafkaId__c');
+                Database.Error e = deleteResult[i].getErrors()[0];
+                String errorRef = logger.logError(
+                    deleteResult[i].getId(),
+                    e.getMessage(),
+                    'Class.FiaCooperationHandler.deleteRecords'
+                );
+                //handleError(deleteResult[i].getId(), e.getMessage(), stackTrace, null);
+            }
         }
     }
 
@@ -284,7 +352,6 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
         String stackTrace,
         List<KafkaMessage__c> kafkaMessages
     ) {
-        System.debug(stackTrace);
         String errorRef = logger.logError(referenceInfo, message, stackTrace);
         logger.setMessageErrors(kafkaMessages, errorRef);
     }
