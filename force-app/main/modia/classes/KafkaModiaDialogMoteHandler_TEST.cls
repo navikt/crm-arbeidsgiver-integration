@@ -10,7 +10,7 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         users[0].CRM_NAV_Ident__c = 'Z994911';
         insert users;
     }
-    
+
     @isTest
     static void processSingleMessage() {
         Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '973113631');
@@ -35,7 +35,6 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         System.assertEquals(1, activities.size(), 'Activity Inserted');
         System.assertEquals(acc.id, activities[0].Account__c, 'Correct Account');
         System.assertEquals(msg1.CRM_Key__c, activities[0].KafkaId__c, 'Correct KafkaId');
-        System.assertEquals(msg1.CRM_Value__c, activities[0].KafkaHash__c, 'Correct KafkaId');
     }
 
     @isTest
@@ -68,7 +67,6 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         System.assertEquals(1, activities.size(), 'Still only one activity');
         System.assertEquals('AVLYST', activities[0].Status__c, 'Successful status updated');
         System.assertEquals(msg1.CRM_Key__c, activities[0].KafkaId__c, 'Correct KafkaId');
-        System.assertEquals(msg1.CRM_Value__c, activities[0].KafkaHash__c, 'Correct KafkaId');
     }
 
     @isTest
@@ -81,10 +79,7 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         msg1.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
         msg1.CRM_Value__c = encodedValue;
 
-        DialogueMeeting__c activity = new DialogueMeeting__c(
-            KafkaId__c = msg1.CRM_Key__c,
-            Status__c = 'INNKALT'
-        );
+        DialogueMeeting__c activity = new DialogueMeeting__c(KafkaId__c = msg1.CRM_Key__c, Status__c = 'INNKALT');
         insert activity;
 
         KafkaModiaDialogMoteHandler handler = new KafkaModiaDialogMoteHandler();
@@ -191,19 +186,22 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         String decodedValue = KafkaMessageUtils.base64ULSafeDecode(msg1.CRM_Value__c).toString();
 
         List<NavUnit__c> NavUnitId = [SELECT Id FROM NavUnit__c WHERE INT_UnitNumber__c = '1805'];
-        datetime checkStatusChangeTime = datetime.newInstance(1970, 1, 19, 18, 46, 52);
-        datetime checkMeetingTime = datetime.newInstance(1970, 1, 19, 18, 55, 30);
-        datetime checkCaseStartDate = datetime.newInstance(1970, 1, 1, 0, 0, 18);
+        datetime checkStatusChangeTime = datetime.newInstanceGMT(1970, 1, 19, 18, 46, 52);
+        datetime checkMeetingTime = datetime.newInstanceGMT(1970, 1, 19, 18, 55, 30);
+        datetime checkCaseStartDate = datetime.newInstanceGMT(1970, 1, 1, 0, 0, 18);
 
         System.assertEquals(1, activities.size(), 'Still only one activity');
         System.assertEquals('AVLYST', activities[0].Status__c, 'Successful status updated');
         System.assertEquals(msg1.CRM_Key__c, activities[0].KafkaId__c, 'Correct KafkaId');
-        System.assertEquals(msg1.CRM_Value__c, activities[0].KafkaHash__c, 'Correct KafkaId');
         System.assertEquals('Z994911', activities[0].UserNavIdent__c, 'Successful NavIdent updated');
         System.assertEquals(NavUnitId[0].id, activities[0].NavUnit__c, 'Successful NavUnit updated');
         System.assertEquals(acc1.id, activities[0].Account__c, 'Successful Account updated');
         //System.assertEquals(owner[0].id, activities[0].OwnerId, 'Successful User updated');
-        System.assertEquals('a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e', activities[0].DialogueMeetingId__c, 'Successful DialogueMeetingId__c updated');
+        System.assertEquals(
+            'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e',
+            activities[0].DialogueMeetingId__c,
+            'Successful DialogueMeetingId__c updated'
+        );
         System.assertEquals('Dialogmøte 1970-01-19', activities[0].Name, 'Successful Name updated');
         System.assertEquals(
             checkStatusChangeTime,
@@ -211,12 +209,8 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
             'Successful DateTimeRegistered updated'
         );
         System.assertEquals(checkMeetingTime, activities[0].MeetingTime__c, 'Successful MeetingTime updated');
-        System.assertEquals(
-            checkCaseStartDate,
-            activities[0].CaseStartDate__c,
-            'Successful TilfelleStartdato updated'
-        );
-        System.assertEquals(decodedValue, activities[0].JsonPayload__c, 'Correct JsonPayload');
+        System.assertEquals(checkCaseStartDate, activities[0].CaseStartDate__c, 'Successful TilfelleStartdato updated');
+        System.assertEquals(null, activities[0].JsonPayload__c, 'No JsonPayload');
     }
 
     @isTest
@@ -277,7 +271,7 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         System.assertEquals(1, activities.size(), 'Activity Inserted');
         System.assertEquals(acc.id, activities[0].Account__c, 'Correct Account');
         System.assertEquals(msg1.CRM_Key__c, activities[0].KafkaId__c, 'Correct KafkaId');
-        System.assertEquals(msg1.CRM_Value__c, activities[0].KafkaHash__c, 'Correct KafkaId');
+
         //System.assertEquals(owner[0].id, activities[0].OwnerId, 'Correct Owner');
     }
 

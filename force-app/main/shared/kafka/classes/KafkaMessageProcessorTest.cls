@@ -92,9 +92,29 @@ public with sharing class KafkaMessageProcessorTest {
     }
 
     @isTest
+    static void parseISODateTime() {
+        KafkaMessageProcessorExtension processor = new KafkaMessageProcessorExtension();
+        DateTime dateTimeGMT = DateTime.newInstanceGMT(2020, 5, 31, 22, 30, 0);
+        System.assertEquals(
+            dateTimeGMT,
+            processor.parseISODateTime('2020-05-31T22:30:00.000Z'),
+            'Expected Z offset to be parsed as GMT time'
+        );
+        System.assertEquals(
+            dateTimeGMT,
+            processor.parseISODateTime('2020-05-31T22:30:00.000'),
+            'Expected undefined offset to be parsed as GMT time'
+        );
+        System.assertEquals(
+            dateTimeGMT,
+            processor.parseISODateTime('2020-06-01T00:30:00.000+0200'),
+            'Expected +0200 offset to be parsed as GMT time'
+        );
+    }
+
+    @isTest
     static void dateTimeValue() {
         DateTime dt = DateTime.newInstance(1970, 1, 19, 18, 46, 52);
-
         String timeDate = '1970-01-19T18:46:52.748Z';
         Datetime dateTimeValue = new KafkaMessageProcessorExtension().dateTimeValue(timeDate);
 
@@ -206,11 +226,9 @@ public with sharing class KafkaMessageProcessorTest {
     static void getNavIdentMap() {
         List<User> us = TestDataFactory.getUsers(1, 'Standard User', false, false);
         us[0].CRM_NAV_Ident__c = 'C112233';
-        insert us; 
+        insert us;
 
-        Map<String, User> navIdentMap = new KafkaMessageProcessorExtension()
-            .addNavIdent('C112233')
-            .getNavIdentMap();
+        Map<String, User> navIdentMap = new KafkaMessageProcessorExtension().addNavIdent('C112233').getNavIdentMap();
 
         System.assertEquals(1, navIdentMap.size(), 'User added to map');
         System.assertEquals(true, navIdentMap.containsKey(us[0].CRM_NAV_Ident__c));
@@ -222,9 +240,7 @@ public with sharing class KafkaMessageProcessorTest {
         NavUnit__c unit = new NavUnit__c(Name = 'NAV Test', INT_UnitNumber__c = '0303');
         insert unit;
 
-        Map<String, NavUnit__c> navUnitMap = new KafkaMessageProcessorExtension()
-            .addNavUnit('0303')
-            .getNavUnitsMap();
+        Map<String, NavUnit__c> navUnitMap = new KafkaMessageProcessorExtension().addNavUnit('0303').getNavUnitsMap();
 
         System.assertEquals(1, navUnitMap.size(), 'Nav unit added to map');
         System.assertEquals(true, navUnitMap.containsKey(unit.INT_UnitNumber__c));

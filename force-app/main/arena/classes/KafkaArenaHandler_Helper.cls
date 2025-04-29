@@ -16,7 +16,6 @@ public inherited sharing class KafkaArenaHandler_Helper {
                 msg.CRM_ErrorMessage__c = e.getMessage() + ' (' + e.getLineNumber() + ')';
             }
         }
-        // TODO fix
 
         return arenaModels;
     }
@@ -61,42 +60,31 @@ public inherited sharing class KafkaArenaHandler_Helper {
         List<ArenaActivity__c> arenaActivities = new List<ArenaActivity__c>();
 
         for (KafkaArenaHandler_Model model : models) {
-            Boolean shouldCreateOrUpdate = true;
+            ArenaActivity__c aa = new ArenaActivity__c(
+                AktivitetstypeBeskrivelse__c = model.AktivitetstypeBeskrivelse,
+                Aktivitetsgruppekode__c = model.Aktivitetsgruppekode,
+                AktivitetStatuskode__c = model.AktivitetStatuskode,
+                AktivitetsKode__c = model.AktivitetsKode,
+                Aktivitetstype__c = model.aktivitetstypenavn,
+                DateRegistered__c = stringToDate(model.regDato),
+                Description__c = model.beskrivelse,
+                DateFrom__c = stringToDate(model.fraDato),
+                DateTo__c = stringToDate(model.tilDato),
+                KafkaId__c = model.key,
+                RegisteredByNavIdent__c = model.regUser,
+                CaseWorkerNavIdent__c = model.saksbehandler,
+                TAG_Source__c = 'Arena'
+            );
 
-            if (existingActivities.containsKey(model.key)) {
-                // should update existing record because the hash is different
-                shouldCreateOrUpdate = existingActivities.get(model.key).KafkaHash__c != model.hash;
+            if (model.etternavn != null) {
+                aa.CaseWorkerName__c = model.fornavn + ' ' + model.etternavn;
             }
 
-            if (shouldCreateOrUpdate) {
-                ArenaActivity__c aa = new ArenaActivity__c(
-                    AktivitetstypeBeskrivelse__c = model.AktivitetstypeBeskrivelse,
-                    Aktivitetsgruppekode__c = model.Aktivitetsgruppekode,
-                    AktivitetStatuskode__c = model.AktivitetStatuskode,
-                    AktivitetsKode__c = model.AktivitetsKode,
-                    Aktivitetstype__c = model.aktivitetstypenavn,
-                    DateRegistered__c = stringToDate(model.regDato),
-                    Description__c = model.beskrivelse,
-                    DateFrom__c = stringToDate(model.fraDato),
-                    DateTo__c = stringToDate(model.tilDato),
-                    KafkaId__c = model.key,
-                    KafkaHash__c = model.hash,
-                    JsonPayload__c = model.jsonPayload,
-                    RegisteredByNavIdent__c = model.regUser,
-                    CaseWorkerNavIdent__c = model.saksbehandler,
-                    TAG_Source__c = 'Arena'
-                );
+            aa.Account__c = accountMap.containsKey(String.valueOf(model.bedriftsnr))
+                ? accountMap.get(String.valueOf(model.bedriftsnr)).Id
+                : null;
 
-                if (model.etternavn != null) {
-                    aa.CaseWorkerName__c = model.fornavn + ' ' + model.etternavn;
-                }
-
-                aa.Account__c = accountMap.containsKey(String.valueOf(model.bedriftsnr))
-                    ? accountMap.get(String.valueOf(model.bedriftsnr)).Id
-                    : null;
-
-                arenaActivities.add(aa);
-            }
+            arenaActivities.add(aa);
         }
 
         return arenaActivities;
