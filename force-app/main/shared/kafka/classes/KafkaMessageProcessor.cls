@@ -60,6 +60,19 @@ public inherited sharing abstract class KafkaMessageProcessor {
         return dtime;
     }
 
+    /**
+     * @description Uses JSON parser to deserialization DateTimes in ISO format "yyyy-MM-dd'T'HH:mm:ss.SSSZ".
+     * @param datetimeString The datetime string to parse. For instance 2020-01-04T23:30:05.711Z or 2020-01-05T00:30:05.711Z-02:00
+     * @return DateTime object or null if the year is out of range.
+     */
+    public DateTime parseISODateTime(String datetimeString) {
+        Datetime result = (DateTime) JSON.deserialize('"' + datetimeString + '"', DateTime.class);
+        if (result.year() < 1700 || result.year() > 4000) {
+            return null;
+        }
+        return result;
+    }
+
     public Map<String, String> getLastSaved(Type className, Set<String> kafkaIds) {
         String query = 'SELECT KafkaHash__c, KafkaId__c FROM ' + className.getName() + ' WHERE KafkaId__c IN: kafkaIds';
         Map<String, String> keyToExistingHash = new Map<String, String>();
@@ -92,7 +105,7 @@ public inherited sharing abstract class KafkaMessageProcessor {
         List<User> users = [
             SELECT Id, firstName, lastName, CRM_NAV_Ident__c
             FROM User
-            WHERE IsActive = true AND CRM_NAV_Ident__c IN :navIdents
+            WHERE IsActive = TRUE AND CRM_NAV_Ident__c IN :navIdents
         ];
 
         for (User u : users) {

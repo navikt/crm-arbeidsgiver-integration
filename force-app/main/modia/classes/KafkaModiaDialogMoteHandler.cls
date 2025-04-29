@@ -75,9 +75,9 @@ public without sharing class KafkaModiaDialogMoteHandler extends KafkaMessagePro
             DialogueMeeting__c dm = new DialogueMeeting__c(
                 Name = 'Dialogmøte ' + model.dialogmoteTidspunkt.substring(0, 10),
                 DialogueMeetingId__c = model.dialogmoteUuid,
-                MeetingTime__c = dateTimeValue(model.dialogmoteTidspunkt),
-                StatusChangeTime__c = dateTimeValue(model.statusEndringTidspunkt),
-                CaseStartDate__c = dateTimeValue(model.tilfelleStartdato),
+                MeetingTime__c = parseISODateTime(model.dialogmoteTidspunkt),
+                StatusChangeTime__c = parseISODateTime(model.statusEndringTidspunkt),
+                CaseStartDate__c = parseISODateTime(model.tilfelleStartdato),
                 UserNavIdent__c = model.navIdent,
                 IsEmployeeParticipating__c = model.arbeidstaker,
                 IsEmployerParticipating__c = model.arbeidsgiver,

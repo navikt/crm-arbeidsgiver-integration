@@ -186,9 +186,9 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         String decodedValue = KafkaMessageUtils.base64ULSafeDecode(msg1.CRM_Value__c).toString();
 
         List<NavUnit__c> NavUnitId = [SELECT Id FROM NavUnit__c WHERE INT_UnitNumber__c = '1805'];
-        datetime checkStatusChangeTime = datetime.newInstance(1970, 1, 19, 18, 46, 52);
-        datetime checkMeetingTime = datetime.newInstance(1970, 1, 19, 18, 55, 30);
-        datetime checkCaseStartDate = datetime.newInstance(1970, 1, 1, 0, 0, 18);
+        datetime checkStatusChangeTime = datetime.newInstanceGMT(1970, 1, 19, 18, 46, 52);
+        datetime checkMeetingTime = datetime.newInstanceGMT(1970, 1, 19, 18, 55, 30);
+        datetime checkCaseStartDate = datetime.newInstanceGMT(1970, 1, 1, 0, 0, 18);
 
         System.assertEquals(1, activities.size(), 'Still only one activity');
         System.assertEquals('AVLYST', activities[0].Status__c, 'Successful status updated');
