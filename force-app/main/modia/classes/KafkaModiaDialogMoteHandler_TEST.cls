@@ -28,7 +28,7 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         handler.processMessages(new List<KafkaMessage__c>{ msg1 });
 
         List<DialogueMeeting__c> activities = [
-            SELECT Id, Account__c, KafkaId__c, KafkaHash__c, JsonPayload__c
+            SELECT Id, Account__c, KafkaId__c
             FROM DialogueMeeting__c
         ];
 
@@ -60,7 +60,7 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         handler.processMessages(new List<KafkaMessage__c>{ msg1 });
 
         List<DialogueMeeting__c> activities = [
-            SELECT Id, Account__c, KafkaId__c, KafkaHash__c, JsonPayload__c, Status__c
+            SELECT Id, Account__c, KafkaId__c, Status__c
             FROM DialogueMeeting__c
         ];
 
@@ -86,7 +86,7 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         handler.processMessages(new List<KafkaMessage__c>{ msg1 });
 
         List<DialogueMeeting__c> activities = [
-            SELECT Id, Account__c, KafkaId__c, KafkaHash__c, JsonPayload__c, Status__c
+            SELECT Id, Account__c, KafkaId__c, Status__c
             FROM DialogueMeeting__c
         ];
 
@@ -119,7 +119,7 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         handler.processMessages(messages);
 
         List<DialogueMeeting__c> activities = [
-            SELECT Id, Account__c, KafkaId__c, KafkaHash__c, JsonPayload__c, Status__c
+            SELECT Id, Account__c, KafkaId__c, Status__c
             FROM DialogueMeeting__c
         ];
 
@@ -167,8 +167,6 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
                 Name,
                 Account__c,
                 KafkaId__c,
-                KafkaHash__c,
-                JsonPayload__c,
                 Status__c,
                 UserNavIdent__c,
                 NavUnit__c,
@@ -210,7 +208,6 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         );
         System.assertEquals(checkMeetingTime, activities[0].MeetingTime__c, 'Successful MeetingTime updated');
         System.assertEquals(checkCaseStartDate, activities[0].CaseStartDate__c, 'Successful TilfelleStartdato updated');
-        System.assertEquals(null, activities[0].JsonPayload__c, 'No JsonPayload');
     }
 
     @isTest
@@ -223,18 +220,14 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         msg1.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
         msg1.CRM_Value__c = encodedValue;
 
-        DialogueMeeting__c activity = new DialogueMeeting__c(
-            KafkaId__c = msg1.CRM_Key__c,
-            KafkaHash__c = encodedValue,
-            Status__c = 'INNKALT'
-        );
+        DialogueMeeting__c activity = new DialogueMeeting__c(KafkaId__c = msg1.CRM_Key__c, Status__c = 'INNKALT');
         insert activity;
 
         KafkaModiaDialogMoteHandler handler = new KafkaModiaDialogMoteHandler();
         handler.processMessages(new List<KafkaMessage__c>{ msg1 });
 
         List<DialogueMeeting__c> activities = [
-            SELECT Id, Account__c, KafkaId__c, KafkaHash__c, JsonPayload__c, Status__c
+            SELECT Id, Account__c, KafkaId__c, Status__c
             FROM DialogueMeeting__c
         ];
 
@@ -262,7 +255,7 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         Test.StopTest();
 
         List<DialogueMeeting__c> activities = [
-            SELECT Id, Account__c, KafkaId__c, KafkaHash__c, JsonPayload__c, OwnerId
+            SELECT Id, Account__c, KafkaId__c, OwnerId
             FROM DialogueMeeting__c
         ];
 
@@ -316,7 +309,7 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
         Test.StopTest();
 
         List<DialogueMeeting__c> activities = [
-            SELECT Id, Account__c, KafkaId__c, KafkaHash__c, JsonPayload__c
+            SELECT Id, Account__c, KafkaId__c
             FROM DialogueMeeting__c
         ];
 
