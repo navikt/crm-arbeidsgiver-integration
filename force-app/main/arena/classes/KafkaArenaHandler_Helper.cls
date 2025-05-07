@@ -41,7 +41,7 @@ public inherited sharing class KafkaArenaHandler_Helper {
     public static Map<String, ArenaActivity__c> getArenaActivity(Set<String> kafkaIds) {
         Map<String, ArenaActivity__c> aaMap = new Map<String, ArenaActivity__c>();
         List<ArenaActivity__c> arenaActivities = [
-            SELECT KafkaHash__c, KafkaId__c
+            SELECT KafkaId__c
             FROM ArenaActivity__c
             WHERE KafkaId__c IN :kafkaIds
         ];
