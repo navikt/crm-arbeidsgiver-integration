@@ -197,11 +197,11 @@ public with sharing class KafkaMessageProcessorTest {
         String json = '{"status": "NY"}';
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
-        ArenaActivity__c activity = new ArenaActivity__c(KafkaId__c = key);
+        JobPosting__c activity = new JobPosting__c(KafkaId__c = key, KafkaHash__c = encodedValue);
         insert activity;
 
         Map<String, String> lastSavedMessages = new KafkaMessageProcessorExtension()
-            .getLastSaved(ArenaActivity__c.class, new Set<String>{ key });
+            .getLastSaved(JobPosting__c.class, new Set<String>{ key });
 
         System.assertEquals(1, lastSavedMessages.size(), 'Account added to map');
         System.assertEquals(true, lastSavedMessages.containsKey(key));
