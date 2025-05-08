@@ -77,7 +77,6 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
     }
 
     private List<Contract__c> toSObjects() {
-        Map<String, String> lastSaved = getLastSaved(Contract__c.class, keyToAvtale.keyset());
         Map<String, Account> accountMap = getOrgNumberAccountMap();
         Map<String, User> navIdentMapAllProfile = getNavIdentMap();
         Map<String, User> navIdentMap = getNavIdentMapWithProfile();
@@ -86,10 +85,6 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
         List<Contract__c> contracts = new List<Contract__c>();
 
         for (KafkaToiAvtaleHandler_Model model : keyToAvtale.values()) {
-            if (!isNewOrChanged(model.key, model.hash, lastSaved)) {
-                continue;
-            }
-
             Contract__c c = new Contract__c(
                 RecordTypeId = avtaleRecordTypeId,
                 ExternalId__c = model.avtaleNr,
@@ -170,17 +165,12 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
     }
 
     private List<ArenaActivity__c> toSObjectsActivity() {
-        Map<String, String> lastSaved = getLastSaved(ArenaActivity__c.class, keyToAvtale.keyset());
         Map<String, Account> accountMap = getOrgNumberAccountMap();
         Map<String, User> navIdentMapAllProfile = getNavIdentMap();
         Map<String, NavUnit__c> navUnitMap = getNavUnitsMap();
         List<ArenaActivity__c> activities = new List<ArenaActivity__c>();
 
         for (KafkaToiAvtaleHandler_Model model : keyToAvtale.values()) {
-            if (!isNewOrChanged(model.key, model.hash, lastSaved)) {
-                continue;
-            }
-
             ArenaActivity__c aa = new ArenaActivity__c(
                 Aktivitetsgruppekode__c = 'TLTAK',
                 AktivitetStatuskode__c = model?.avtaleStatus,
