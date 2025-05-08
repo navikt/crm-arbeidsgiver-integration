@@ -197,7 +197,7 @@ public with sharing class KafkaMessageProcessorTest {
         String json = '{"status": "NY"}';
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
-        ArenaActivity__c activity = new ArenaActivity__c(KafkaId__c = key, KafkaHash__c = encodedValue);
+        ArenaActivity__c activity = new ArenaActivity__c(KafkaId__c = key);
         insert activity;
 
         Map<String, String> lastSavedMessages = new KafkaMessageProcessorExtension()
