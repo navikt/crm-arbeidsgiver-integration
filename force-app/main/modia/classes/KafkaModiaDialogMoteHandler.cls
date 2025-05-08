@@ -61,17 +61,12 @@ public without sharing class KafkaModiaDialogMoteHandler extends KafkaMessagePro
     }
 
     private List<DialogueMeeting__c> toSObject() {
-        Map<String, String> lastSaved = getLastSaved(DialogueMeeting__c.class, keyToDialogMote.keyset());
         Map<String, Account> accountMap = getOrgNumberAccountMap();
         Map<String, NavUnit__c> navUnitMap = getNavUnitsMap();
         Map<String, User> navIdentMap = getNavIdentMapWithProfile();
         List<DialogueMeeting__c> activities = new List<DialogueMeeting__c>();
 
         for (KafkaModiaDialogMote_Model model : keyToDialogMote.values()) {
-            if (!isNewOrChanged(model.key, model.hash, lastSaved)) {
-                continue;
-            }
-
             DialogueMeeting__c dm = new DialogueMeeting__c(
                 Name = 'Dialogmøte ' + model.dialogmoteTidspunkt.substring(0, 10),
                 DialogueMeetingId__c = model.dialogmoteUuid,
