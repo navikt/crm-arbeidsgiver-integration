@@ -121,32 +121,75 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
         Map<String, FiaCooperation.Plan> fiaPlanMap = new Map<String, FiaCooperation.Plan>();
         for (FiaCooperation fiaCooperation : allFiaCooperationUpdates) {
             String cooperationId = fiaCooperation.samarbeid.id;
-            // Add or replace entry in the cooperation map
-            FiaCooperation existing = fiaSamarbeidMap.get(fiaCooperation.samarbeid.id);
-            Boolean isNewerCooperation = (existing == null ||
-            existing.samarbeid.endretTidspunkt < fiaCooperation.samarbeid.endretTidspunkt);
-            if (!fiaSamarbeidMap.containsKey(cooperationId) || isNewerCooperation) {
+            // Determine the newest cooperation
+            FiaCooperation existingCooperation = fiaSamarbeidMap.get(cooperationId);
+            if (isNewerCooperation(existingCooperation, fiaCooperation)) {
                 fiaSamarbeidMap.put(cooperationId, fiaCooperation);
             }
+            // Determine the newest plan
             if (fiaCooperation.plan != null) {
-                // Add or replace entry in the plan map
-                FiaCooperation.Plan existingPlan = fiaPlanMap.get(fiaCooperation.samarbeid.id);
-                Boolean isNewerPlan = (existingPlan == null ||
-                existingPlan.sistEndret < fiaCooperation.plan.sistEndret);
-                if (!fiaPlanMap.containsKey(cooperationId) || isNewerPlan) {
+                FiaCooperation.Plan existingPlan = fiaPlanMap.get(cooperationId);
+                if (isNewerPlan(existingPlan, fiaCooperation.plan)) {
                     fiaPlanMap.put(cooperationId, fiaCooperation.plan);
                 }
             }
         }
-        //have map with most recent of each type, now combine in one map and return it as list.
-        for (String cooperationId : fiaSamarbeidMap.keySet()) {
-            if (fiaPlanMap.containsKey(cooperationId)) {
-                fiaSamarbeidMap.get(cooperationId).plan = fiaPlanMap.get(cooperationId);
-            }
-        }
-        return fiaSamarbeidMap;
+        // Combine cooperation and plan maps
+        return combineCooperationAndPlanMaps(fiaSamarbeidMap, fiaPlanMap);
     }
 
+    /**
+     * @description Determines if the given cooperation is newer than the existing one.
+     * @param existingCooperation The existing cooperation object.
+     * @param newCooperation The new cooperation object.
+     * @return True if the new cooperation is newer, false otherwise.
+     */
+    @testVisible
+    private static Boolean isNewerCooperation(FiaCooperation existingCooperation, FiaCooperation newCooperation) {
+        Datetime existingCooperationTime = existingCooperation?.samarbeid?.endretTidspunkt;
+        Datetime newCooperationTime = newCooperation?.samarbeid?.endretTidspunkt;
+
+        if (existingCooperationTime == null && newCooperationTime == null) {
+            return false; // Both are null, consider them equal
+        }
+        if (existingCooperationTime == null) {
+            return true; // Existing is null, new is newer
+        }
+        if (newCooperationTime == null) {
+            return false; // New is null, existing is newer
+        }
+        return existingCooperationTime < newCooperationTime; // Compare timestamps
+    }
+
+    /**
+     * @description Determines if the given plan is newer than the existing one.
+     * @param existingPlan The existing plan object.
+     * @param newPlan The new plan object.
+     * @return True if the new plan is newer, false otherwise.
+     */
+    @testVisible
+    private static Boolean isNewerPlan(FiaCooperation.Plan existingPlan, FiaCooperation.Plan newPlan) {
+        return existingPlan == null || existingPlan.sistEndret < newPlan.sistEndret;
+    }
+
+    /**
+     * @description Combines the cooperation and plan maps into a single map.
+     * @param cooperationMap Map of cooperation objects.
+     * @param planMap Map of plan objects.
+     * @return Combined map of cooperation objects with their plans.
+     */
+    @testVisible
+    private static Map<String, FiaCooperation> combineCooperationAndPlanMaps(
+        Map<String, FiaCooperation> cooperationMap,
+        Map<String, FiaCooperation.Plan> planMap
+    ) {
+        for (String cooperationId : cooperationMap.keySet()) {
+            if (planMap.containsKey(cooperationId)) {
+                cooperationMap.get(cooperationId).plan = planMap.get(cooperationId);
+            }
+        }
+        return cooperationMap;
+    }
     /**
      * @description Creates a list of deleted IDs based on the provided FiaCooperation objects.
      * @param updates List of FiaCooperation objects to process for deletions.
