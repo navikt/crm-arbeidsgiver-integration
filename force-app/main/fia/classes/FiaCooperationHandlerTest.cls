@@ -807,4 +807,70 @@ private class FiaCooperationHandlerTest {
         List<IACooperation__c> deletedRecords = [SELECT Id FROM IACooperation__c WHERE CooperationId__c IN ('1', '2')];
         System.assertEquals(0, deletedRecords.size(), 'Records should be deleted.');
     }
+
+    @isTest
+    static void testIsNewerCooperation() {
+        FiaCooperation existingCooperation = new FiaCooperation();
+        FiaCooperation newCooperation = new FiaCooperation();
+
+        newCooperation.samarbeid = new FiaCooperation.Samarbeid();
+        newCooperation.samarbeid.endretTidspunkt = Datetime.newInstance(2025, 1, 1, 0, 0, 0);
+        Assert.isTrue(
+            FiaCooperationHandler.isNewerCooperation(existingCooperation, newCooperation),
+            'New cooperation should be considered newer if existing cooperation is null.'
+        );
+
+        existingCooperation.samarbeid = new FiaCooperation.Samarbeid();
+        Assert.isTrue(
+            FiaCooperationHandler.isNewerCooperation(existingCooperation, newCooperation),
+            'New cooperation should be considered newer if existing cooperation endretTidspunkt is null.'
+        );
+
+        // Set newer date
+        existingCooperation.samarbeid.endretTidspunkt = Datetime.newInstance(2025, 1, 1, 0, 0, 1);
+        Assert.isFalse(
+            FiaCooperationHandler.isNewerCooperation(existingCooperation, newCooperation),
+            'Existing cooperation date should be considered newer.'
+        );
+
+        newCooperation.samarbeid.endretTidspunkt = null;
+        Assert.isFalse(
+            FiaCooperationHandler.isNewerCooperation(existingCooperation, newCooperation),
+            'Existing cooperation date should be considered newer when compared to null.'
+        );
+    }
+
+    @isTest
+    static void testIsNewerPlan() {
+        FiaCooperation.Plan oldPlan = new FiaCooperation.Plan();
+        oldPlan.sistEndret = Datetime.newInstance(2023, 1, 1, 0, 0, 0);
+
+        FiaCooperation.Plan newPlan = new FiaCooperation.Plan();
+        newPlan.sistEndret = Datetime.newInstance(2023, 6, 1, 0, 0, 0);
+
+        Boolean result = FiaCooperationHandler.isNewerPlan(oldPlan, newPlan);
+        System.assert(result, 'New plan should be considered newer.');
+    }
+
+    @isTest
+    static void testCombineCooperationAndPlanMaps() {
+        Map<String, FiaCooperation> cooperationMap = new Map<String, FiaCooperation>();
+        Map<String, FiaCooperation.Plan> planMap = new Map<String, FiaCooperation.Plan>();
+
+        FiaCooperation cooperation = new FiaCooperation();
+        cooperation.samarbeid = new FiaCooperation.Samarbeid();
+        cooperation.samarbeid.id = '1';
+
+        FiaCooperation.Plan plan = new FiaCooperation.Plan();
+        plan.sistEndret = Datetime.newInstance(2023, 6, 1, 0, 0, 0);
+
+        cooperationMap.put('1', cooperation);
+        planMap.put('1', plan);
+
+        Map<String, FiaCooperation> result = FiaCooperationHandler.combineCooperationAndPlanMaps(
+            cooperationMap,
+            planMap
+        );
+        System.assert(result.get('1').plan != null, 'Plan should be combined with cooperation.');
+    }
 }
