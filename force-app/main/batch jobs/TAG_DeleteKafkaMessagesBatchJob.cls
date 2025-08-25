@@ -10,13 +10,13 @@ public class TAG_DeleteKafkaMessagesBatchJob extends KafkaMessageProcessor imple
         ' CRM_Topic__c = \'pia.fullfort-behovsvurdering-v1\' OR' +
         ' CRM_Topic__c = \'pia.ia-sak-v1\' OR' +
         ' CRM_Topic__c = \'pia.samarbeidsplan-v1\' OR' +
-        ' CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-bransje-v1\' OR' +
-        ' CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-land-v1\' OR' +
-        ' CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-virksomhet-v1\' OR' +
-        ' CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-naring-v1\' OR' +
-        ' CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-naringskode-v1\' OR' +
-        ' CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-metadata-virksomhet-v1\' OR' +
-        ' CRM_Topic__c = \'arbeidsgiver.sykefravarsstatistikk-sektor-v1\' OR' +
+        ' CRM_Topic__c = \'pia.sykefravarsstatistikk-bransje-v1\' OR' +
+        ' CRM_Topic__c = \'pia.sykefravarsstatistikk-land-v1\' OR' +
+        ' CRM_Topic__c = \'pia.sykefravarsstatistikk-virksomhet-v1\' OR' +
+        ' CRM_Topic__c = \'pia.sykefravarsstatistikk-naring-v1\' OR' +
+        ' CRM_Topic__c = \'pia.sykefravarsstatistikk-naringskode-v1\' OR' +
+        ' CRM_Topic__c = \'pia.sykefravarsstatistikk-metadata-virksomhet-v1\' OR' +
+        ' CRM_Topic__c = \'pia.sykefravarsstatistikk-sektor-v1\' OR' +
         ' CRM_Topic__c = \'public-ereg-cache-org-tombstones\' OR' +
         ' CRM_Topic__c = \'teamsykefravr.isdialogmote-dialogmote-statusendring\')';
 
@@ -42,7 +42,7 @@ public class TAG_DeleteKafkaMessagesBatchJob extends KafkaMessageProcessor imple
 
 /*
 Emptied obsolete topics:
-arbeidsgiver.sykefravarsstatistikk-v1
+pia.sykefravarsstatistikk-v1
 team-innhold.arbeidsgiver-kontaktskjema
 permittering-og-nedbemanning.aapen-permittering-arbeidsgiver
 team-dialog.crm-kafka-activity-events

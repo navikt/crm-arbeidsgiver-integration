@@ -13,7 +13,7 @@ public class SickLeaveMetadataHandlerTest {
         String encodedValueC = EncodingUtil.base64Encode(Blob.valueOf(jsonC));
 
         KafkaMessage__c msgC = new KafkaMessage__c();
-        msgC.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-land-v1';
+        msgC.CRM_Topic__c = 'pia.sykefravarsstatistikk-land-v1';
         msgC.CRM_Key__c = 'ewogICJrYXRlZ29yaSI6ICJCUkFOU0pFIiwKICAia29kZSI6ICJTWUtFSFVTIiwKICAia3ZhcnRhbCI6ICIyIiwKICAiw6Vyc3RhbGwiOiAiMjAyMyIKfQ==';
         msgC.CRM_Value__c = encodedValueC;
 
@@ -23,7 +23,7 @@ public class SickLeaveMetadataHandlerTest {
         String encodedValueN = EncodingUtil.base64Encode(Blob.valueOf(jsonN));
 
         KafkaMessage__c msgN = new KafkaMessage__c();
-        msgN.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-naring-v1';
+        msgN.CRM_Topic__c = 'pia.sykefravarsstatistikk-naring-v1';
         msgN.CRM_Key__c = 'ewgICJrYXRlZ29yaSI6ICJCUkFOU0pFIiwKICAia29kZSI6ICJTWUtFSFVTIiwKICAia3ZhcnRhbCI6ICIyIiwKICAiw6Vyc3RhbGwiOiAiMjAyMyIKfQ==';
         msgN.CRM_Value__c = encodedValueN;
 
@@ -33,7 +33,7 @@ public class SickLeaveMetadataHandlerTest {
         String encodedValueNK = EncodingUtil.base64Encode(Blob.valueOf(jsonNK));
 
         KafkaMessage__c msgNK = new KafkaMessage__c();
-        msgNK.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-naringskode-v1';
+        msgNK.CRM_Topic__c = 'pia.sykefravarsstatistikk-naringskode-v1';
         msgNK.CRM_Key__c = 'ewogICJrYXRlZ29yaS6ICJCUkFOU0pFIiwKICAia29kZSI6ICJTWUtFSFVTIiwKICAia3ZhcnRhbCI6ICIyIiwKICAiw6Vyc3RhbGwiOiAiMjAyMyIKfQ==';
         msgNK.CRM_Value__c = encodedValueNK;
 
@@ -43,7 +43,7 @@ public class SickLeaveMetadataHandlerTest {
         String encodedValueB = EncodingUtil.base64Encode(Blob.valueOf(jsonB));
 
         KafkaMessage__c msgB = new KafkaMessage__c();
-        msgB.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-bransje-v1';
+        msgB.CRM_Topic__c = 'pia.sykefravarsstatistikk-bransje-v1';
         msgB.CRM_Key__c = 'ewogICJrYXRlZ29yaSI6ICJCUkFOU0pFIiwKICAi29kZSI6ICJTWUtFSFVTIiwKICAia3ZhcnRhbCI6ICIyIiwKICAiw6Vyc3RhbGwiOiAiMjAyMyIKfQ==';
         msgB.CRM_Value__c = encodedValueB;
 
@@ -53,7 +53,7 @@ public class SickLeaveMetadataHandlerTest {
         String encodedValueS = EncodingUtil.base64Encode(Blob.valueOf(jsonS));
 
         KafkaMessage__c msgS = new KafkaMessage__c();
-        msgS.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-sektor-v1';
+        msgS.CRM_Topic__c = 'pia.sykefravarsstatistikk-sektor-v1';
         msgS.CRM_Key__c = 'ewogICJrYXRlZ29yaSI6ICJCUkFOU0pFiwKICAia29kZSI6ICJTWUtFSFVTIiwKICAia3ZhcnRhbCI6ICIyIiwKICAiw6Vyc3RhbGwiOiAiMjAyMyIKfQ==';
         msgS.CRM_Value__c = encodedValueS;
 
@@ -73,7 +73,7 @@ public class SickLeaveMetadataHandlerTest {
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-metadata-virksomhet-v1';
+        msg1.CRM_Topic__c = 'pia.sykefravarsstatistikk-metadata-virksomhet-v1';
         msg1.CRM_Key__c = '{"orgnr":"999999999","arstall":"2023","kvartal":"2"}';
         msg1.CRM_Value__c = encodedValue;
 
@@ -127,7 +127,7 @@ public class SickLeaveMetadataHandlerTest {
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-virksomhet-v1';
+        msg1.CRM_Topic__c = 'pia.sykefravarsstatistikk-virksomhet-v1';
         msg1.CRM_Key__c = 'ewogICJrYXRlZ29yaSI6ICJCUkFOU0pFIiwKICAia29kZSI6ICJTWUtFSFVTIiwKICAia3ZhcnRhbCI6ICIyIiwKICAiw6Vyc3RhbGwiOiAiMjAyMyIKfQ==';
         msg1.CRM_Value__c = encodedValue;
 
@@ -183,7 +183,7 @@ public class SickLeaveMetadataHandlerTest {
         String encodedValue2 = EncodingUtil.base64Encode(Blob.valueOf(json2));
 
         KafkaMessage__c msg2 = new KafkaMessage__c();
-        msg2.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-metadata-virksomhet-v1';
+        msg2.CRM_Topic__c = 'pia.sykefravarsstatistikk-metadata-virksomhet-v1';
         msg2.CRM_Key__c = '{"orgnr":"12345678","arstall":"2023","kvartal":"2"}';
         msg2.CRM_Value__c = encodedValue2;
 
@@ -254,7 +254,7 @@ public class SickLeaveMetadataHandlerTest {
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-metadata-virksomhet-v1';
+        msg1.CRM_Topic__c = 'pia.sykefravarsstatistikk-metadata-virksomhet-v1';
         msg1.CRM_Key__c = '{"orgnr":"999999999","arstall":"2023","kvartal":"2"}';
         msg1.CRM_Value__c = encodedValue;
 
@@ -311,7 +311,7 @@ public class SickLeaveMetadataHandlerTest {
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-metadata-virksomhet-v1';
+        msg1.CRM_Topic__c = 'pia.sykefravarsstatistikk-metadata-virksomhet-v1';
         msg1.CRM_Key__c = '{"orgnr":"999999999","arstall":"2023","kvartal":"2"}';
         msg1.CRM_Value__c = encodedValue;
 
@@ -405,7 +405,7 @@ public class SickLeaveMetadataHandlerTest {
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-metadata-virksomhet-v1';
+        msg1.CRM_Topic__c = 'pia.sykefravarsstatistikk-metadata-virksomhet-v1';
         msg1.CRM_Key__c = '{"orgnr":"919300760","arstall":"2023","kvartal":"2"}';
         msg1.CRM_Value__c = encodedValue;
 
@@ -452,7 +452,7 @@ public class SickLeaveMetadataHandlerTest {
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-metadata-virksomhet-v1';
+        msg1.CRM_Topic__c = 'pia.sykefravarsstatistikk-metadata-virksomhet-v1';
         msg1.CRM_Key__c = '{"orgnr":"919300760","arstall":"2023","kvartal":"2"}';
         msg1.CRM_Value__c = encodedValue;
         messages.add(msg1);
@@ -493,7 +493,7 @@ public class SickLeaveMetadataHandlerTest {
         String encodedValueC = EncodingUtil.base64Encode(Blob.valueOf(jsonC));
 
         KafkaMessage__c msgC = new KafkaMessage__c();
-        msgC.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-land-v1';
+        msgC.CRM_Topic__c = 'pia.sykefravarsstatistikk-land-v1';
         msgC.CRM_Key__c = 'ewogICJrYXRlZ29yaSICJCUkFOU0pFIiwKICAia29kZSI6ICJTWUtFSFVTIiwKICAia3ZhcnRhbCI6ICIyIiwKICAiw6Vyc3RhbGwiOiAiMjAyMyIKfQ==';
         msgC.CRM_Value__c = encodedValueC;
 
@@ -503,7 +503,7 @@ public class SickLeaveMetadataHandlerTest {
         String encodedValueC2 = EncodingUtil.base64Encode(Blob.valueOf(jsonC2));
 
         KafkaMessage__c msgC2 = new KafkaMessage__c();
-        msgC2.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-land-v1';
+        msgC2.CRM_Topic__c = 'pia.sykefravarsstatistikk-land-v1';
         msgC2.CRM_Key__c = 'ewogICJrYXRlZ29yaSI6ICJkFOU0pFIiwKICAia29kZSI6ICJTWtFSFVTIiwKICAia3ZhcnRhbCI6ICIyIiwKICAiw6Vyc3RhbGwiOiAiMjAyMyIKfQ==';
         msgC2.CRM_Value__c = encodedValueC2;
 
@@ -520,7 +520,7 @@ public class SickLeaveMetadataHandlerTest {
         String encodedValue3 = EncodingUtil.base64Encode(Blob.valueOf(json3));
 
         KafkaMessage__c msg3 = new KafkaMessage__c();
-        msg3.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-metadata-virksomhet-v1';
+        msg3.CRM_Topic__c = 'pia.sykefravarsstatistikk-metadata-virksomhet-v1';
         msg3.CRM_Key__c = '{"orgnr":"999999999","arstall":"2021","kvartal":"3"}';
         msg3.CRM_Value__c = encodedValue3;
 
@@ -530,7 +530,7 @@ public class SickLeaveMetadataHandlerTest {
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-metadata-virksomhet-v1';
+        msg1.CRM_Topic__c = 'pia.sykefravarsstatistikk-metadata-virksomhet-v1';
         msg1.CRM_Key__c = '{"orgnr":"999999999","arstall":"2023","kvartal":"2"}';
         msg1.CRM_Value__c = encodedValue;
 
@@ -540,7 +540,7 @@ public class SickLeaveMetadataHandlerTest {
         String encodedValue2 = EncodingUtil.base64Encode(Blob.valueOf(json2));
 
         KafkaMessage__c msg2 = new KafkaMessage__c();
-        msg2.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-metadata-virksomhet-v1';
+        msg2.CRM_Topic__c = 'pia.sykefravarsstatistikk-metadata-virksomhet-v1';
         msg2.CRM_Key__c = '{"orgnr":"999999999","arstall":"2022","kvartal":"3"}';
         msg2.CRM_Value__c = encodedValue2;
 
@@ -597,7 +597,7 @@ public class SickLeaveMetadataHandlerTest {
         String encodedValueC = EncodingUtil.base64Encode(Blob.valueOf(jsonC));
 
         KafkaMessage__c msgC = new KafkaMessage__c();
-        msgC.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-sektor-v1';
+        msgC.CRM_Topic__c = 'pia.sykefravarsstatistikk-sektor-v1';
         msgC.CRM_Key__c = 'ewogICJrYXRlZ29yaSICJCUkFOU0pFIiwKICAia29kZSI6ICJTWUtFSFVTIiwKICAia3ZhcnRhbCI6ICIyIiwKICAiw6Vyc3RhbGwiOiAiMjAyMyIKfQ==';
         msgC.CRM_Value__c = encodedValueC;
 
@@ -607,7 +607,7 @@ public class SickLeaveMetadataHandlerTest {
         String encodedValueC2 = EncodingUtil.base64Encode(Blob.valueOf(jsonC2));
 
         KafkaMessage__c msgC2 = new KafkaMessage__c();
-        msgC2.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-sektor-v1';
+        msgC2.CRM_Topic__c = 'pia.sykefravarsstatistikk-sektor-v1';
         msgC2.CRM_Key__c = 'ewogICJrYXRlZ29yaSI6ICJkFOU0pFIiwKICAia29kZSI6ICJTWtFSFVTIiwKICAia3ZhcnRhbCI6ICIyIiwKICAiw6Vyc3RhbGwiOiAiMjAyMyIKfQ==';
         msgC2.CRM_Value__c = encodedValueC2;
 
@@ -624,7 +624,7 @@ public class SickLeaveMetadataHandlerTest {
         String encodedValue3 = EncodingUtil.base64Encode(Blob.valueOf(json3));
 
         KafkaMessage__c msg3 = new KafkaMessage__c();
-        msg3.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-metadata-virksomhet-v1';
+        msg3.CRM_Topic__c = 'pia.sykefravarsstatistikk-metadata-virksomhet-v1';
         msg3.CRM_Key__c = '{"orgnr":"999999999","arstall":"2021","kvartal":"3"}';
         msg3.CRM_Value__c = encodedValue3;
 
@@ -634,7 +634,7 @@ public class SickLeaveMetadataHandlerTest {
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-metadata-virksomhet-v1';
+        msg1.CRM_Topic__c = 'pia.sykefravarsstatistikk-metadata-virksomhet-v1';
         msg1.CRM_Key__c = '{"orgnr":"999999999","arstall":"2023","kvartal":"2"}';
         msg1.CRM_Value__c = encodedValue;
 
@@ -644,7 +644,7 @@ public class SickLeaveMetadataHandlerTest {
         String encodedValue2 = EncodingUtil.base64Encode(Blob.valueOf(json2));
 
         KafkaMessage__c msg2 = new KafkaMessage__c();
-        msg2.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-metadata-virksomhet-v1';
+        msg2.CRM_Topic__c = 'pia.sykefravarsstatistikk-metadata-virksomhet-v1';
         msg2.CRM_Key__c = '{"orgnr":"999999999","arstall":"2022","kvartal":"3"}';
         msg2.CRM_Value__c = encodedValue2;
 

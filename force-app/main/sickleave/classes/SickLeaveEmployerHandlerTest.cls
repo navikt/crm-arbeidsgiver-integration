@@ -25,7 +25,7 @@ public class SickLeaveEmployerHandlerTest {
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-virksomhet-v1';
+        msg1.CRM_Topic__c = 'pia.sykefravarsstatistikk-virksomhet-v1';
         msg1.CRM_Key__c = 'ewogICJrYXRlZ29yaSI6ICJCUkFOU0pFIiwKICAia29kZSI6ICJTWUtFSFVTIiwKICAia3ZhcnRhbCI6ICIyIiwKICAiw6Vyc3RhbGwiOiAiMjAyMyIKfQ==';
         msg1.CRM_Value__c = encodedValue;
 

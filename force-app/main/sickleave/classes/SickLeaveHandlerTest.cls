@@ -9,7 +9,7 @@ public class SickLeaveHandlerTest {
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-bransje-v1';
+        msg1.CRM_Topic__c = 'pia.sykefravarsstatistikk-bransje-v1';
         msg1.CRM_Key__c = 'ewogICJrYXRlZ29yaSI6ICJCUkFOU0pFIiwKICAia29kZSI6ICJTWUtFSFVTIiwKICAia3ZhcnRhbCI6ICIyIiwKICAiw6Vyc3RhbGwiOiAiMjAyMyIKfQ==';
         //msg1.CRM_Value__c = 'eyJrYXRlZ29yaSI6IkJSQU5TSkUiLCJrb2RlIjoiU1lLRUhVUyIsInNpc3RlUHVibGlzZXJ0ZUt2YXJ0YWwiOnsiw6Vyc3RhbGwiOjIwMjMsImt2YXJ0YWwiOjIsInByb3NlbnQiOjIuMCwidGFwdGVEYWdzdmVyayI6MTAwMDAwMDAuMCwibXVsaWdlRGFnc3ZlcmsiOjUwMDAwMDAwMC4wLCJhbnRhbGxQZXJzb25lciI6MjUwMDAwMCwiZXJNYXNrZXJ0IjpmYWxzZX0sInNpc3RlNEt2YXJ0YWwiOnsicHJvc2VudCI6MS45LCJ0YXB0ZURhZ3N2ZXJrIjozODAwMDAwMC4wLCJtdWxpZ2VEYWdzdmVyayI6MjAwMDAwMDAwMC4wLCJlck1hc2tlcnQiOmZhbHNlLCJrdmFydGFsZXIiOlt7IsOlcnN0YWxsIjoyMDIwLCJrdmFydGFsIjogMn0seyLDpXJzdGFsbCI6MjAyMCwia3ZhcnRhbCI6MX0seyLDpXJzdGFsbCI6MjAxOSwia3ZhcnRhbCI6NH0seyLDpXJzdGFsbCI6MjAxOSwia3ZhcnRhbCI6M31dfX0=';
         msg1.CRM_Value__c = encodedValue;
@@ -66,7 +66,7 @@ public class SickLeaveHandlerTest {
         String encodedValue1 = EncodingUtil.base64Encode(Blob.valueOf(json1));
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-naring-v1';
+        msg1.CRM_Topic__c = 'pia.sykefravarsstatistikk-naring-v1';
         msg1.CRM_Key__c = 'ewogICJrYXRlZ29yaSI6ICJCUkFOU0pFIiwKICAia29kZSI6ICJTWUtFSFVTIiwKICAia3ZhcnRhbCI6ICIyIiwKICAiw6Vyc3RhbGwiOiAiMjAyMyIKfQ==';
         msg1.CRM_Value__c = encodedValue1;
 
@@ -117,7 +117,7 @@ public class SickLeaveHandlerTest {
         String encodedValue2 = EncodingUtil.base64Encode(Blob.valueOf(json2));
 
         KafkaMessage__c msg2 = new KafkaMessage__c();
-        msg2.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-naring-v1';
+        msg2.CRM_Topic__c = 'pia.sykefravarsstatistikk-naring-v1';
         msg2.CRM_Key__c = 'ewogICJrYXRlZ29yaSI6ICJCUkFOU0pFIiwKICAia29kZSI6ICJTWUtFSFVTIiwKICAia3ZhcnRhbCI6ICIyIiwKICAiw6Vyc3RhbGwiOiAiMjAyMyIKfQ==';
         msg2.CRM_Value__c = encodedValue2;
 
@@ -167,7 +167,7 @@ public class SickLeaveHandlerTest {
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(json));
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
-        msg1.CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-bransje-v1';
+        msg1.CRM_Topic__c = 'pia.sykefravarsstatistikk-bransje-v1';
         msg1.CRM_Key__c = 'ewogICJrYXRlZ29yaSI6ICJCUkFOU0pFIiwKICAia29kZSI6ICJTWUtFSFVTIiwKICAia3ZhcnRhbCI6ICIyIiwKICAiw6Vyc3RhbGwiOiAiMjAyMyIKfQ==';
         msg1.CRM_Value__c = encodedValue;
 

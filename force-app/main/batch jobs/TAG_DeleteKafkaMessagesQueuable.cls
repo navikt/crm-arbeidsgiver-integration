@@ -4,7 +4,7 @@ public without sharing class TAG_DeleteKafkaMessagesQueuable implements Queueabl
             SELECT Id
             FROM KafkaMessage__c
             WHERE
-                (CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-v1'
+                (CRM_Topic__c = 'pia.sykefravarsstatistikk-v1'
                 OR CRM_Topic__c = 'public-ereg-cache-org-json')
                 AND CreatedDate < N_DAYS_AGO:14
                 AND CRM_Status__c = 'Processed'
