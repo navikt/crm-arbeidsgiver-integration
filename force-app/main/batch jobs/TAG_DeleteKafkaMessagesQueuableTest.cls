@@ -7,7 +7,7 @@ public with sharing class TAG_DeleteKafkaMessagesQueuableTest {
         for (Integer i = 0; i < 4998; i++) {
             KafkaMessage__c k = new KafkaMessage__c(
                 CRM_Status__c = 'Processed',
-                CRM_Topic__c = 'arbeidsgiver.sykefravarsstatistikk-v1',
+                CRM_Topic__c = 'pia.sykefravarsstatistikk-v1',
                 CRM_Key__c = '12' + i
             );
             messagesToInsert.add(k);
