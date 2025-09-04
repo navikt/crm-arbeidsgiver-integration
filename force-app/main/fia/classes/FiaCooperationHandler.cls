@@ -146,8 +146,8 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
      */
     @testVisible
     private static Boolean isNewerCooperation(FiaCooperation existingCooperation, FiaCooperation newCooperation) {
-        Datetime existingCooperationTime = existingCooperation?.samarbeid?.endretTidspunkt;
-        Datetime newCooperationTime = newCooperation?.samarbeid?.endretTidspunkt;
+        Datetime existingCooperationTime = existingCooperation?.samarbeid?.getLastModifiedDate();
+        Datetime newCooperationTime = newCooperation?.samarbeid?.getLastModifiedDate();
 
         if (existingCooperationTime == null && newCooperationTime == null) {
             return false; // Both are null, consider them equal
@@ -169,7 +169,7 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
      */
     @testVisible
     private static Boolean isNewerPlan(FiaCooperation.Plan existingPlan, FiaCooperation.Plan newPlan) {
-        return existingPlan == null || existingPlan.sistEndret < newPlan.sistEndret;
+        return existingPlan == null || existingPlan.getLastModifiedDate() < newPlan.getLastModifiedDate();
     }
 
     /**
@@ -281,15 +281,14 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
         setFieldIfNotBlank(iaCooperation, 'Status__c', fiaCooperation.samarbeid.status);
         setFieldIfNotBlank(iaCooperation, 'StartDate__c', fiaCooperation.samarbeid.startDato);
         setFieldIfNotBlank(iaCooperation, 'EndDate__c', fiaCooperation.samarbeid.sluttDato);
+        setFieldIfNotBlank(iaCooperation, 'CooperationLastModified__c', fiaCooperation.samarbeid.getLastModifiedDate());
         //Set values for plan
         if (fiaCooperation.plan != null) {
             iaCooperation.PlanId__c = fiaCooperation.plan.id;
             iaCooperation.IncludedArbeidsmiljo__c = fiaCooperation.includesArbeidsmiljo();
             iaCooperation.IncludedPartssamarbeid__c = fiaCooperation.includesPartssamarbeid();
             iaCooperation.IncludedSykefravaersarbeid__c = fiaCooperation.includesSykefravaersarbeid();
-            iaCooperation.PlanLastModified__c = fiaCooperation.plan.sistEndret;
-            iaCooperation.PlanLastPublished__c = fiaCooperation.plan.sistPublisert;
-            iaCooperation.PlanLastPublished__c = fiaCooperation.plan.sistPublisert;
+            iaCooperation.PlanLastModified__c = fiaCooperation.plan.getLastModifiedDate();
             iaCooperation.PlanStatus__c = fiaCooperation.plan.status;
         }
         return iaCooperation;
