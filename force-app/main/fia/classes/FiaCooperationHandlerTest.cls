@@ -814,7 +814,7 @@ private class FiaCooperationHandlerTest {
         FiaCooperation newCooperation = new FiaCooperation();
 
         newCooperation.samarbeid = new FiaCooperation.Samarbeid();
-        newCooperation.samarbeid.endretTidspunkt = Datetime.newInstance(2025, 1, 1, 0, 0, 0);
+        newCooperation.samarbeid.endretTidspunkt = '2025-01-01T00:00:00.106545'; //Datetime.newInstance(2025, 1, 1, 0, 0, 0);
         Assert.isTrue(
             FiaCooperationHandler.isNewerCooperation(existingCooperation, newCooperation),
             'New cooperation should be considered newer if existing cooperation is null.'
@@ -827,7 +827,7 @@ private class FiaCooperationHandlerTest {
         );
 
         // Set newer date
-        existingCooperation.samarbeid.endretTidspunkt = Datetime.newInstance(2025, 1, 1, 0, 0, 1);
+        existingCooperation.samarbeid.endretTidspunkt = '2025-01-01T00:00:01.106545'; //Datetime.newInstance(2025, 1, 1, 0, 0, 1);
         Assert.isFalse(
             FiaCooperationHandler.isNewerCooperation(existingCooperation, newCooperation),
             'Existing cooperation date should be considered newer.'
@@ -843,10 +843,10 @@ private class FiaCooperationHandlerTest {
     @isTest
     static void testIsNewerPlan() {
         FiaCooperation.Plan oldPlan = new FiaCooperation.Plan();
-        oldPlan.sistEndret = Datetime.newInstance(2023, 1, 1, 0, 0, 0);
+        oldPlan.sistEndret = '2023-01-01T00:00:00.106545'; //Datetime.newInstance(2023, 1, 1, 0, 0, 0);
 
         FiaCooperation.Plan newPlan = new FiaCooperation.Plan();
-        newPlan.sistEndret = Datetime.newInstance(2023, 6, 1, 0, 0, 0);
+        newPlan.sistEndret = '2023-06-01T00:00:00.106545'; //Datetime.newInstance(2023, 6, 1, 0, 0, 0);
 
         Boolean result = FiaCooperationHandler.isNewerPlan(oldPlan, newPlan);
         System.assert(result, 'New plan should be considered newer.');
@@ -862,7 +862,7 @@ private class FiaCooperationHandlerTest {
         cooperation.samarbeid.id = '1';
 
         FiaCooperation.Plan plan = new FiaCooperation.Plan();
-        plan.sistEndret = Datetime.newInstance(2023, 6, 1, 0, 0, 0);
+        plan.sistEndret = '2023-06-01T00:00:00.106545'; // Datetime.newInstance(2023, 6, 1, 0, 0, 0);
 
         cooperationMap.put('1', cooperation);
         planMap.put('1', plan);
