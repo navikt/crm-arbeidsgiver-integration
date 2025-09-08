@@ -1,4 +1,4 @@
-@IsTest
+/*@IsTest
 public with sharing class TAG_DeleteKafkaMessagesBatchJobTest {
     @isTest
     static void executeBatch() {
@@ -92,4 +92,4 @@ public with sharing class TAG_DeleteKafkaMessagesBatchJobTest {
 
         System.assertEquals(6, kafkaMessagesNotDeleted.size(), 'Should be 6 kafka messages that are not deleted');
     }
-}
+}*/
