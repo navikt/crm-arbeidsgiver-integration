@@ -1,6 +1,6 @@
 @IsTest
 public with sharing class TAG_DeleteKafkaMessagesBatchJobTest {
-/*    @isTest
+    @isTest
     static void executeBatch() {
         KafkaMessage__c kafkaMessageTiltak1 = new KafkaMessage__c(
             CRM_Status__c = 'Processed',
@@ -91,5 +91,5 @@ public with sharing class TAG_DeleteKafkaMessagesBatchJobTest {
         List<KafkaMessage__c> kafkaMessagesNotDeleted = [SELECT Id FROM KafkaMessage__c];
 
         System.assertEquals(6, kafkaMessagesNotDeleted.size(), 'Should be 6 kafka messages that are not deleted');
-    }*/
+    }
 }
