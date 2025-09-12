@@ -103,7 +103,7 @@ private without sharing class KafkaArenaHandler_HelperTest {
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
         msg1.CRM_Topic__c = 'teamarenanais.aapen-arena-arbeidsgiveraktivitetendret-v1';
-        msg1.CRM_Key__c = 'd60gwew775ed-249f-49e6-bd15-ff790b56cc07';
+        msg1.CRM_Key__c = '2025-09-05 07:35:05.000000';
         msg1.CRM_Value__c = 'ewogICAgImFrdGl2aXRldFN0YXR1c2tvZGUiOiAiRlVMTEYiLAogICAgImJlZHJpZnRzbnIiOiA5NzMxMTM2MzEsCiAgICAiYmVza3JpdmVsc2UiOiAiQmVkcmlmdHPDuGtvbm9tc3R1ZGlldCAyMCB2dFxuSMO4Z3Nrb2xla2FuZGlkYXRzdHVkaWV0IG1lZCByZXRuaW5nIGZvciByZWduc2thcHNmw7hyZXJlLiAyMHZ0IiwKICAgICJvcmduck1vcnNlbHNrYXAiOiA5NzEyMjg4NjUsCiAgICAic2Frc2JlaGFuZGxlciI6ICJKRUkxODEyIiwKICAgICJha3Rpdml0ZXRza29kZSI6ICJVVERZUksiLAogICAgImZyYURhdG8iOiAiMjAwMy0wMS0wMSIsCiAgICAidGlsRGF0byI6ICIyMDA0LTEyLTMxIiwKICAgICJyZWdEYXRvIjogIjIwMDMtMDMtMjUiLAogICAgInJlZ1VzZXIiOiAiR0wxODEyIiwKICAgICJha3Rpdml0ZXRzZ3J1cHBla29kZSI6ICJUTFRBSyIsCiAgICAiYWt0aXZpdGV0c3R5cGViZXNrcml2ZWxzZSI6IG51bGwsCiAgICAiYWt0aXZpdGV0c3R5cGVuYXZuIjogIlV0ZGFubmluZyIsCiAgICAiZm9ybmF2biI6ICJKb25uIEVnaWwiLAogICAgImV0dGVybmF2biI6ICJJbmRyZXZvbGwiLAogICAgIm5hdklkZW50IjogIkkxMTEzNDUiCn0=';
 
         List<KafkaArenaHandler_Model> models = KafkaArenaHandler_Helper.convertKafkaToArenaModel(
@@ -137,6 +137,11 @@ private without sharing class KafkaArenaHandler_HelperTest {
         System.assertEquals(null, arenaActivities[0].AktivitetstypeBeskrivelse__c);
         System.assertEquals('Utdanning', arenaActivities[0].Aktivitetstype__c);
         System.assertEquals('Jonn Egil Indrevoll', arenaActivities[0].CaseWorkerName__c);
+        System.assertEquals(
+            DateTime.newInstanceGMT(2025, 9, 5, 5, 35, 5),
+            arenaActivities[0].TimeStampFromMessage__c,
+            'Correct timestamp extracted from key, 2025-09-05 07:35:05.000000'
+        );
     }
 
     @isTest

@@ -82,7 +82,8 @@ public without sharing class TiltaksgjennomforingHandler extends KafkaMessagePro
                 ActionType__c = model?.hendelseType,
                 ContentType__c = model?.innholdType,
                 AgreementId__c = model.avtaleId,
-                KafkaId__c = model.key
+                KafkaId__c = model.key,
+                TimeStampFromMessage__c = parseISODateTime(model.sistEndret)
             );
 
             if (model.avtaleNr != null) {
