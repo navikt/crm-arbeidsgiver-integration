@@ -3,6 +3,9 @@
  */
 
 public with sharing class FiaCooperation implements IKafkaMessageParser {
+    // =============================================================================
+    // MODEL DATA - Core domain entities and infrastructure data
+    // =============================================================================
     public String orgnr;
     public String saksnummer;
     public Samarbeid samarbeid;
@@ -19,7 +22,7 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
         public Date sluttDato;
         public String endretTidspunkt; // Timestamp is sent in user timezone. Store as string for later conversion. "2025-09-04T10:28:29.106545"
         public Datetime getLastModifiedDate() {
-            return convertNorwegianTimeToGmt(endretTidspunkt);
+            return SharedIntegrationFunctions.convertNorwegianTimeToGmt(endretTidspunkt);
         }
     }
 
@@ -31,7 +34,7 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
         public string status;
 
         public Datetime getLastModifiedDate() {
-            return convertNorwegianTimeToGmt(sistEndret);
+            return SharedIntegrationFunctions.convertNorwegianTimeToGmt(sistEndret);
         }
     }
 
@@ -52,6 +55,9 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
         public Date sluttDato;
     }
 
+    // =============================================================================
+    // FACTORY METHODS - Object creation and parsing
+    // =============================================================================
     public static FiaCooperation parse(String json, String key, String hash) {
         String formattedJSON = json.replaceAll('"målsetning":', '"malsetning":');
         FiaCooperation model = (FiaCooperation) System.JSON.deserialize(formattedJSON, FiaCooperation.class);
@@ -62,25 +68,42 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
         return model;
     }
 
+    // =============================================================================
+    // DOMAIN LOGIC - Business rules and computed properties
+    // =============================================================================
+
+    /**
+     * @description Determine which themes are included
+     */
     public Boolean includesArbeidsmiljo() {
         return includesTema('Arbeidsmiljø');
     }
+    /**
+     * @description Determine which themes are included
+     */
     public Boolean includesSykefravaersarbeid() {
         return includesTema('Sykefraværsarbeid');
     }
+    /**
+     * @description Determine which themes are included
+     */
     public Boolean includesPartssamarbeid() {
         return includesTema('Partssamarbeid');
     }
-    // Age of the message when processed, in minutes.
-    public Integer getMessageAge() {
-        return calculateMessageAgeInMinutes(DateTime.now());
-    }
-
-    // Overloaded method to accept currentTime for better performance in batch operations
+    /**
+     * @description Calculates age in minutes from provided timestamp.
+     */
     public Integer getMessageAge(DateTime currentTime) {
         return calculateMessageAgeInMinutes(currentTime);
     }
 
+    // =============================================================================
+    // PRIVATE HELPER METHODS - Implementation details
+    // =============================================================================
+
+    /**
+     * @description Domain helper for theme inclusion logic
+     */
     private Boolean includesTema(String name) {
         boolean isIncluded = false;
         if (plan == null || plan.temaer == null) {
@@ -96,28 +119,8 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
     }
 
     /**
-     * Converts a Norwegian datetime string to GMT.
+     * @description Message age calculation logic
      */
-    private static DateTime convertNorwegianTimeToGmt(String datetimeString) {
-        if (datetimeString == null || String.isBlank(datetimeString.trim())) {
-            return null;
-        }
-        String formattedDateTime = datetimeString.replaceAll('T', ' ');
-        TimeZone norwegianTz = TimeZone.getTimeZone('Europe/Oslo');
-        DateTime tempDateTime = DateTime.valueOfGmt(formattedDateTime);
-
-        Integer offsetMilliseconds = norwegianTz.getOffset(tempDateTime);
-        DateTime gmtDateTime = tempDateTime.addSeconds(-offsetMilliseconds / 1000);
-        if (gmtDateTime.year() < 1700 || gmtDateTime.year() > 4000) {
-            return null;
-        }
-        return gmtDateTime;
-    }
-
-    private Integer calculateMessageAgeInMinutes() {
-        return calculateMessageAgeInMinutes(DateTime.now());
-    }
-
     private Integer calculateMessageAgeInMinutes(DateTime currentTime) {
         // Validate input parameter
         if (currentTime == null) {
@@ -180,6 +183,9 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
         }
     }
 
+    /**
+     * @description Entity classification helpers
+     */
     private boolean isPlanUpdate() {
         if (plan == null) {
             return false;

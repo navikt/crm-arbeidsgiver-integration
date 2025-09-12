@@ -230,140 +230,35 @@ public with sharing class FiaCooperationTest {
         Assert.isTrue(model.includesPartssamarbeid());
     }
 
-    @IsTest
-    static void convertNorwegianTimeToGmt_Should_Convert_Winter_Time() {
-        // Winter time in Norway (UTC+1)
-        // Test data: 2024-01-15 14:30:00 Norwegian time should be 2024-01-15 13:30:00 GMT
-        FiaCooperation.Samarbeid samarbeid = new FiaCooperation.Samarbeid();
-        samarbeid.endretTidspunkt = '2024-01-15T14:30:00.123456';
-
-        DateTime result = samarbeid.getLastModifiedDate();
-
-        DateTime expected = DateTime.newInstanceGmt(2024, 1, 15, 13, 30, 0);
-        Assert.areEqual(expected, result, 'Winter time should be converted correctly (UTC+1)');
-    }
-
-    @IsTest
-    static void convertNorwegianTimeToGmt_Should_Convert_Summer_Time() {
-        // Summer time in Norway (UTC+2)
-        // Test data: 2024-07-15 14:30:00 Norwegian time should be 2024-07-15 12:30:00 GMT
-        FiaCooperation.Samarbeid samarbeid = new FiaCooperation.Samarbeid();
-        samarbeid.endretTidspunkt = '2024-07-15T14:30:00.123456';
-
-        DateTime result = samarbeid.getLastModifiedDate();
-
-        DateTime expected = DateTime.newInstanceGmt(2024, 7, 15, 12, 30, 0);
-        Assert.areEqual(expected, result, 'Summer time should be converted correctly (UTC+2)');
-    }
-
-    @IsTest
-    static void convertNorwegianTimeToGmt_Should_Handle_Null_Input() {
-        FiaCooperation.Samarbeid samarbeid = new FiaCooperation.Samarbeid();
-        samarbeid.endretTidspunkt = null;
-
-        DateTime result = samarbeid.getLastModifiedDate();
-
-        Assert.isNull(result, 'Null input should return null');
-    }
-
-    @IsTest
-    static void convertNorwegianTimeToGmt_Should_Handle_Empty_String() {
-        FiaCooperation.Samarbeid samarbeid = new FiaCooperation.Samarbeid();
-        samarbeid.endretTidspunkt = '';
-
-        DateTime result = samarbeid.getLastModifiedDate();
-
-        Assert.isNull(result, 'Empty string should return null');
-    }
-
-    @IsTest
-    static void convertNorwegianTimeToGmt_Should_Handle_Whitespace_String() {
-        FiaCooperation.Samarbeid samarbeid = new FiaCooperation.Samarbeid();
-        samarbeid.endretTidspunkt = '   ';
-
-        DateTime result = samarbeid.getLastModifiedDate();
-
-        Assert.isNull(result, 'Whitespace string should return null');
-    }
-
-    @IsTest
-    static void convertNorwegianTimeToGmt_Should_Handle_Edge_Cases() {
-        FiaCooperation.Samarbeid samarbeid = new FiaCooperation.Samarbeid();
-
-        // Test midnight
-        samarbeid.endretTidspunkt = '2024-01-15T00:00:00.000000';
-        DateTime result = samarbeid.getLastModifiedDate();
-        DateTime expected = DateTime.newInstanceGmt(2024, 1, 14, 23, 0, 0); // Previous day in GMT
-        Assert.areEqual(expected, result, 'Should handle midnight correctly');
-
-        // Test end of year
-        samarbeid.endretTidspunkt = '2024-12-31T23:59:59.999999';
-        result = samarbeid.getLastModifiedDate();
-        expected = DateTime.newInstanceGmt(2024, 12, 31, 22, 59, 59); // Winter time UTC+1
-        Assert.areEqual(expected, result, 'Should handle end of year correctly');
-    }
-
-    @IsTest
-    static void convertNorwegianTimeToGmt_Should_Reject_Invalid_Years() {
-        FiaCooperation.Samarbeid samarbeid = new FiaCooperation.Samarbeid();
-
-        // Test year too low
-        samarbeid.endretTidspunkt = '1600-01-15T14:30:00.000000';
-        DateTime result = samarbeid.getLastModifiedDate();
-        Assert.isNull(result, 'Should return null for year < 1700');
-
-        // Test year too high
-        samarbeid.endretTidspunkt = '5000-01-15T14:30:00.000000';
-        result = samarbeid.getLastModifiedDate();
-        Assert.isNull(result, 'Should return null for year > 4000');
-    }
-
-    @IsTest
-    static void convertNorwegianTimeToGmt_Should_Handle_DST_Transition() {
-        FiaCooperation.Samarbeid samarbeid = new FiaCooperation.Samarbeid();
-
-        // Test date just before DST starts (last Sunday in March)
-        // 2024: DST starts March 31st at 2:00 AM
-        samarbeid.endretTidspunkt = '2024-03-30T14:30:00.000000';
-        DateTime result = samarbeid.getLastModifiedDate();
-        DateTime expected = DateTime.newInstanceGmt(2024, 3, 30, 13, 30, 0); // Winter time UTC+1
-        Assert.areEqual(expected, result, 'Should handle time before DST transition');
-
-        // Test date just after DST starts
-        samarbeid.endretTidspunkt = '2024-04-01T14:30:00.000000';
-        result = samarbeid.getLastModifiedDate();
-        expected = DateTime.newInstanceGmt(2024, 4, 1, 12, 30, 0); // Summer time UTC+2
-        Assert.areEqual(expected, result, 'Should handle time after DST transition');
-    }
-
     @isTest
     static void getMessageAge_Should_Calculate_Age_In_Minutes() {
+        DateTime currentTime = DateTime.now();
         // Create cooperation with recent message (should NOT be logged) - 10 minutes old
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(JSON));
         FiaCooperation recentCooperation = FiaCooperation.parse(JSON, '12345678', encodedValue);
         recentCooperation.samarbeid = new FiaCooperation.Samarbeid();
-        DateTime recentTime = DateTime.now().addMinutes(-10);
+        DateTime recentTime = currentTime.addMinutes(-10);
         String recentTimeString = recentTime.format('yyyy-MM-dd\'T\'HH:mm:ss.SSSSSS');
         recentCooperation.samarbeid.endretTidspunkt = recentTimeString;
 
         // Create cooperation with old message (should be logged) - 30 minutes old
         FiaCooperation oldCooperation = FiaCooperation.parse(JSON, '12345678', encodedValue);
         oldCooperation.samarbeid = new FiaCooperation.Samarbeid();
-        DateTime oldTime = DateTime.now().addMinutes(-30);
+        DateTime oldTime = currentTime.addMinutes(-30);
         String oldTimeString = oldTime.format('yyyy-MM-dd\'T\'HH:mm:ss.SSSSSS');
         oldCooperation.samarbeid.endretTidspunkt = oldTimeString;
 
         // Create cooperation with very old message (should be logged) - 120 minutes old
         FiaCooperation veryOldCooperation = FiaCooperation.parse(JSON, '12345678', encodedValue);
         veryOldCooperation.samarbeid = new FiaCooperation.Samarbeid();
-        DateTime veryOldTime = DateTime.now().addMinutes(-120);
+        DateTime veryOldTime = currentTime.addMinutes(-120);
         String veryOldTimeString = veryOldTime.format('yyyy-MM-dd\'T\'HH:mm:ss.SSSSSS');
         veryOldCooperation.samarbeid.endretTidspunkt = veryOldTimeString;
 
         Test.startTest();
-        Integer recentAge = recentCooperation.getMessageAge();
-        Integer oldAge = oldCooperation.getMessageAge();
-        Integer veryOldAge = veryOldCooperation.getMessageAge();
+        Integer recentAge = recentCooperation.getMessageAge(currentTime);
+        Integer oldAge = oldCooperation.getMessageAge(currentTime);
+        Integer veryOldAge = veryOldCooperation.getMessageAge(currentTime);
         Test.stopTest();
 
         // Assert: Verify that message ages are calculated correctly
@@ -393,14 +288,15 @@ public with sharing class FiaCooperationTest {
         planUpdateCooperation.saksnummer = 'X6mPvf2qYP7r42I';
         planUpdateCooperation.key = 'X6mPvf2qYP7r42I-142-9220e758-d84c-4d33-8375-c0e55b4b0f49';
         // Set old plan timestamp
-        DateTime oldTime = DateTime.now().addMinutes(-45);
+        DateTime currentTime = DateTime.now();
+        DateTime oldTime = currentTime.addMinutes(-45);
         String oldTimeString = oldTime.format('yyyy-MM-dd\'T\'HH:mm:ss.SSSSSS');
         planUpdateCooperation.plan.sistEndret = oldTimeString;
         cooperations.add(planUpdateCooperation);
 
         // Act: Test the message age calculation for plan updates
         Test.startTest();
-        Integer planAge = planUpdateCooperation.getMessageAge();
+        Integer planAge = planUpdateCooperation.getMessageAge(currentTime);
         Test.stopTest();
 
         // Assert: Verify plan update age is calculated correctly
