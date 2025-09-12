@@ -19,7 +19,7 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
         public Date sluttDato;
         public String endretTidspunkt; // Timestamp is sent in user timezone. Store as string for later conversion. "2025-09-04T10:28:29.106545"
         public Datetime getLastModifiedDate() {
-            return convertNorwegianTimeToGmt(endretTidspunkt);
+            return SharedIntegrationFunctions.convertNorwegianTimeToGmt(endretTidspunkt);
         }
     }
 
@@ -31,7 +31,7 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
         public string status;
 
         public Datetime getLastModifiedDate() {
-            return convertNorwegianTimeToGmt(sistEndret);
+            return SharedIntegrationFunctions.convertNorwegianTimeToGmt(sistEndret);
         }
     }
 
@@ -93,25 +93,6 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
             }
         }
         return isIncluded;
-    }
-
-    /**
-     * Converts a Norwegian datetime string to GMT.
-     */
-    private static DateTime convertNorwegianTimeToGmt(String datetimeString) {
-        if (datetimeString == null || String.isBlank(datetimeString.trim())) {
-            return null;
-        }
-        String formattedDateTime = datetimeString.replaceAll('T', ' ');
-        TimeZone norwegianTz = TimeZone.getTimeZone('Europe/Oslo');
-        DateTime tempDateTime = DateTime.valueOfGmt(formattedDateTime);
-
-        Integer offsetMilliseconds = norwegianTz.getOffset(tempDateTime);
-        DateTime gmtDateTime = tempDateTime.addSeconds(-offsetMilliseconds / 1000);
-        if (gmtDateTime.year() < 1700 || gmtDateTime.year() > 4000) {
-            return null;
-        }
-        return gmtDateTime;
     }
 
     private Integer calculateMessageAgeInMinutes() {

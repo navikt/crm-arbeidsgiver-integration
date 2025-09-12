@@ -8,4 +8,23 @@ public with sharing class SharedIntegrationFunctions {
 
         return userMap;
     }
+
+    /**
+     * Converts a Norwegian datetime string to GMT.
+     */
+    public static DateTime convertNorwegianTimeToGmt(String datetimeString) {
+        if (datetimeString == null || String.isBlank(datetimeString.trim())) {
+            return null;
+        }
+        String formattedDateTime = datetimeString.replaceAll('T', ' ');
+        TimeZone norwegianTz = TimeZone.getTimeZone('Europe/Oslo');
+        DateTime tempDateTime = DateTime.valueOfGmt(formattedDateTime);
+
+        Integer offsetMilliseconds = norwegianTz.getOffset(tempDateTime);
+        DateTime gmtDateTime = tempDateTime.addSeconds(-offsetMilliseconds / 1000);
+        if (gmtDateTime.year() < 1700 || gmtDateTime.year() > 4000) {
+            return null;
+        }
+        return gmtDateTime;
+    }
 }
