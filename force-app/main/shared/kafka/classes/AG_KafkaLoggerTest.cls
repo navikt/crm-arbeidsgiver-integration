@@ -44,4 +44,12 @@ public class AG_KafkaLoggerTest {
         System.assert(String.isNotBlank(messages[0].CRM_ErrorMessage__c));
         System.assertEquals(KafkaMessageService.STATUS_ERROR, messages[0].CRM_Status__c);
     }
+
+    @isTest
+    static void testLogTimeDeviation() {
+        AG_KafkaLogger logger = AG_KafkaLogger.get();
+        String reference = logger.logTimeDeviation('Test topic', 'Test key', 12345);
+
+        System.assert(String.isNotBlank(reference));
+    }
 }

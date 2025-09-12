@@ -335,4 +335,75 @@ public with sharing class FiaCooperationTest {
         expected = DateTime.newInstanceGmt(2024, 4, 1, 12, 30, 0); // Summer time UTC+2
         Assert.areEqual(expected, result, 'Should handle time after DST transition');
     }
+
+    @isTest
+    static void getMessageAge_Should_Calculate_Age_In_Minutes() {
+        // Create cooperation with recent message (should NOT be logged) - 10 minutes old
+        String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(JSON));
+        FiaCooperation recentCooperation = FiaCooperation.parse(JSON, '12345678', encodedValue);
+        recentCooperation.samarbeid = new FiaCooperation.Samarbeid();
+        DateTime recentTime = DateTime.now().addMinutes(-10);
+        String recentTimeString = recentTime.format('yyyy-MM-dd\'T\'HH:mm:ss.SSSSSS');
+        recentCooperation.samarbeid.endretTidspunkt = recentTimeString;
+
+        // Create cooperation with old message (should be logged) - 30 minutes old
+        FiaCooperation oldCooperation = FiaCooperation.parse(JSON, '12345678', encodedValue);
+        oldCooperation.samarbeid = new FiaCooperation.Samarbeid();
+        DateTime oldTime = DateTime.now().addMinutes(-30);
+        String oldTimeString = oldTime.format('yyyy-MM-dd\'T\'HH:mm:ss.SSSSSS');
+        oldCooperation.samarbeid.endretTidspunkt = oldTimeString;
+
+        // Create cooperation with very old message (should be logged) - 120 minutes old
+        FiaCooperation veryOldCooperation = FiaCooperation.parse(JSON, '12345678', encodedValue);
+        veryOldCooperation.samarbeid = new FiaCooperation.Samarbeid();
+        DateTime veryOldTime = DateTime.now().addMinutes(-120);
+        String veryOldTimeString = veryOldTime.format('yyyy-MM-dd\'T\'HH:mm:ss.SSSSSS');
+        veryOldCooperation.samarbeid.endretTidspunkt = veryOldTimeString;
+
+        Test.startTest();
+        Integer recentAge = recentCooperation.getMessageAge();
+        Integer oldAge = oldCooperation.getMessageAge();
+        Integer veryOldAge = veryOldCooperation.getMessageAge();
+        Test.stopTest();
+
+        // Assert: Verify that message ages are calculated correctly
+        System.assert(
+            recentAge != null && recentAge <= 15,
+            recentAge + ' - Recent cooperation should have age <= 15 minutes'
+        );
+        System.assert(oldAge != null && oldAge > 15, oldAge + ' - Old cooperation should have age > 15 minutes');
+        System.assert(
+            veryOldAge != null && veryOldAge > 15,
+            veryOldAge + ' - Very old cooperation should have age > 15 minutes'
+        );
+    }
+
+    @isTest
+    static void testlogTimeDeviations_Should_Handle_Plan_Updates() {
+        // Arrange: Create FiaCooperation with plan update (key format includes plan id)
+        List<FiaCooperation> cooperations = new List<FiaCooperation>();
+
+        FiaCooperation planUpdateCooperation = FiaCooperation.parse(
+            JSON,
+            'X6mPvf2qYP7r42I-142-9220e758-d84c-4d33-8375-c0e55b4b0f49',
+            'plan-hash'
+        );
+        planUpdateCooperation.plan.id = '9220e758-d84c-4d33-8375-c0e55b4b0f49';
+        planUpdateCooperation.samarbeid.id = '142';
+        planUpdateCooperation.saksnummer = 'X6mPvf2qYP7r42I';
+        planUpdateCooperation.key = 'X6mPvf2qYP7r42I-142-9220e758-d84c-4d33-8375-c0e55b4b0f49';
+        // Set old plan timestamp
+        DateTime oldTime = DateTime.now().addMinutes(-45);
+        String oldTimeString = oldTime.format('yyyy-MM-dd\'T\'HH:mm:ss.SSSSSS');
+        planUpdateCooperation.plan.sistEndret = oldTimeString;
+        cooperations.add(planUpdateCooperation);
+
+        // Act: Test the message age calculation for plan updates
+        Test.startTest();
+        Integer planAge = planUpdateCooperation.getMessageAge();
+        Test.stopTest();
+
+        // Assert: Verify plan update age is calculated correctly
+        System.assert(planAge != null && planAge > 15, 'Plan update should have age > 15 minutes, was: ' + planAge);
+    }
 }

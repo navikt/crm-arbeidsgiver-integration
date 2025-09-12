@@ -71,6 +71,15 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
     public Boolean includesPartssamarbeid() {
         return includesTema('Partssamarbeid');
     }
+    // Age of the message when processed, in minutes.
+    public Integer getMessageAge() {
+        return calculateMessageAgeInMinutes(DateTime.now());
+    }
+
+    // Overloaded method to accept currentTime for better performance in batch operations
+    public Integer getMessageAge(DateTime currentTime) {
+        return calculateMessageAgeInMinutes(currentTime);
+    }
 
     private Boolean includesTema(String name) {
         boolean isIncluded = false;
@@ -103,5 +112,83 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
             return null;
         }
         return gmtDateTime;
+    }
+
+    private Integer calculateMessageAgeInMinutes() {
+        return calculateMessageAgeInMinutes(DateTime.now());
+    }
+
+    private Integer calculateMessageAgeInMinutes(DateTime currentTime) {
+        // Validate input parameter
+        if (currentTime == null) {
+            return null;
+        }
+
+        Datetime sourceTime;
+        // If message is an update for plan, then a plan id will be included in the message key.
+        if (this.isPlanUpdate()) {
+            // Source system timestamp is in the plan.sistEndret field.
+            if (plan == null || String.isBlank(plan.sistEndret)) {
+                return null;
+            }
+            sourceTime = plan.getLastModifiedDate();
+        } else {
+            // Source system timestamp is in the samarbeid.endretTidspunkt field.
+            if (samarbeid == null || String.isBlank(samarbeid.endretTidspunkt)) {
+                return null;
+            }
+            sourceTime = samarbeid.getLastModifiedDate();
+        }
+
+        // Check if date conversion was successful
+        if (sourceTime == null) {
+            return null;
+        }
+
+        Long sourceTimeAsLong;
+        Long currentTimeAsLong;
+
+        try {
+            sourceTimeAsLong = sourceTime.getTime();
+            currentTimeAsLong = currentTime.getTime();
+        } catch (System.NullPointerException e) {
+            // Log specific null pointer issues for debugging
+            System.debug(LoggingLevel.WARN, 'Null value encountered in time calculation: ' + e.getMessage());
+            return null;
+        } catch (System.TypeException e) {
+            // Handle invalid datetime format or conversion errors
+            System.debug(LoggingLevel.WARN, 'Invalid datetime format in age calculation: ' + e.getMessage());
+            return null;
+        }
+
+        Long ageInMilliseconds = currentTimeAsLong - sourceTimeAsLong;
+        if (ageInMilliseconds < 0) {
+            // Future timestamps indicate data quality issues
+            System.debug(
+                LoggingLevel.WARN,
+                'Message timestamp is in the future. sourceTime: ' + sourceTime + ', currentTime: ' + currentTime
+            );
+            return null;
+        }
+
+        try {
+            Long ageInMinutes = ageInMilliseconds / 60000;
+            return ageInMinutes.intValue();
+        } catch (System.MathException e) {
+            System.debug(LoggingLevel.WARN, 'Math calculation error in age calculation: ' + e.getMessage());
+            return null;
+        }
+    }
+
+    private boolean isPlanUpdate() {
+        if (plan == null) {
+            return false;
+        }
+        String planidKey = saksnummer + '-' + samarbeid?.id + '-' + plan?.id;
+        return key != null && key == planidKey;
+    }
+    private boolean isSamarbeidUpdate() {
+        String samarbeidKey = saksnummer + '-' + samarbeid?.id;
+        return key != null && key == samarbeidKey;
     }
 }

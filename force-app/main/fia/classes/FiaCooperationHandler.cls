@@ -8,7 +8,7 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
     private List<IATheme__c> iaThemesToUpsert = new List<IATheme__c>();
     private List<IA_Subtheme__c> iaSubthemesToUpsert = new List<IA_Subtheme__c>();
     public static final String STATUS_DELETED = 'SLETTET';
-
+    private static final Integer AGE_THRESHOLD_MINUTES = 15;
     /**
      * @description Implementation of processMessages-method from IKafkaMessageConsumer
      * @param messages List of kafka message records
@@ -18,8 +18,10 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
         if (fiaCooperations.isEmpty()) {
             return;
         }
+
         handleDeletions(fiaCooperations);
         handleUpserts(fiaCooperations);
+        logTimeDeviations(fiaCooperations);
         logger.publish();
     }
 
@@ -106,6 +108,18 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
         if (!iaThemesToUpsert.isEmpty()) {
             upsertRecords(iaThemesToUpsert, IATheme__c.ThemeId__c);
             upsertRecords(iaSubthemesToUpsert, IA_Subtheme__c.SubthemeId__c);
+        }
+    }
+
+    // Log message ages for monitoring purposes
+    @testVisible
+    private void logTimeDeviations(List<FiaCooperation> fiaCooperations) {
+        DateTime batchProcessingTime = DateTime.now(); // Calculate once per batch
+        for (FiaCooperation fiaCooperation : fiaCooperations) {
+            Integer ageInMinutes = fiaCooperation.getMessageAge(batchProcessingTime);
+            if (ageInMinutes != null && ageInMinutes > AGE_THRESHOLD_MINUTES) {
+                logger.logTimeDeviation('FiaCooperationHandler', fiaCooperation.key, ageInMinutes);
+            }
         }
     }
 
