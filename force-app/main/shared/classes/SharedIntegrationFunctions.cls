@@ -17,14 +17,20 @@ public with sharing class SharedIntegrationFunctions {
             return null;
         }
         String formattedDateTime = datetimeString.replaceAll('T', ' ');
-        TimeZone norwegianTz = TimeZone.getTimeZone('Europe/Oslo');
-        DateTime tempDateTime = DateTime.valueOfGmt(formattedDateTime);
-
-        Integer offsetMilliseconds = norwegianTz.getOffset(tempDateTime);
-        DateTime gmtDateTime = tempDateTime.addSeconds(-offsetMilliseconds / 1000);
-        if (gmtDateTime.year() < 1700 || gmtDateTime.year() > 4000) {
+        try {
+            DateTime tempDateTime = DateTime.valueOfGmt(formattedDateTime);
+            TimeZone norwegianTz = TimeZone.getTimeZone('Europe/Oslo');
+            if (norwegianTz == null) {
+                return null;
+            }
+            Integer offsetMilliseconds = norwegianTz.getOffset(tempDateTime);
+            DateTime gmtDateTime = tempDateTime.addSeconds(-offsetMilliseconds / 1000);
+            if (gmtDateTime.year() < 1700 || gmtDateTime.year() > 4000) {
+                return null;
+            }
+            return gmtDateTime;
+        } catch (TypeException e) {
             return null;
         }
-        return gmtDateTime;
     }
 }
