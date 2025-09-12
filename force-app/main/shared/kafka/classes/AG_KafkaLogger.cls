@@ -65,4 +65,24 @@ public with sharing class AG_KafkaLogger {
         }
         return messages;
     }
+
+    /**
+     * @description Logs the time deviation for a specific Kafka message.
+     * @param topic - The Kafka topic name. Logged to referenceInfo
+     * @param key - The key of the Kafka message.
+     * @param timeInMinutes - The time taken to process the message in minutes.
+     */
+    public String logTimeDeviation(String topic, String key, Integer timeInMinutes) {
+        LoggerUtility.LogLevel logLevel = LoggerUtility.LogLevel.Info;
+        Integer ageInMinutes = Math.round(timeInMinutes);
+        String message = ''; // Not used yet.
+        String payload = key + ' | Age: ' + ageInMinutes + ' minutes';
+        String logRef = '';
+        // referenceId, referenceInfo, logMessage, payLoad, timeTaken, domain
+        logger.logMessage(logLevel, '', topic, message, payload, null, CRM_ApplicationDomain.Domain.POAB);
+
+        logRef = logger.peek().UUID__c;
+
+        return logRef;
+    }
 }

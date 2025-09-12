@@ -873,4 +873,13 @@ private class FiaCooperationHandlerTest {
         );
         System.assert(result.get('1').plan != null, 'Plan should be combined with cooperation.');
     }
+
+    @isTest
+    static void testlogTimeDeviations_Should_Handle_Empty_List() {
+        List<FiaCooperation> cooperations = new List<FiaCooperation>();
+        Test.startTest();
+        new FiaCooperationHandler().logTimeDeviations(cooperations);
+
+        Test.stopTest();
+    }
 }
