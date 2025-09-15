@@ -73,7 +73,8 @@ public inherited sharing class KafkaArenaHandler_Helper {
                 KafkaId__c = model.key,
                 RegisteredByNavIdent__c = model.regUser,
                 CaseWorkerNavIdent__c = model.saksbehandler,
-                TAG_Source__c = 'Arena'
+                TAG_Source__c = 'Arena',
+                TimeStampFromMessage__c = extractMessageTimeStampFromKey(model.key)
             );
 
             if (model.etternavn != null) {
@@ -121,5 +122,15 @@ public inherited sharing class KafkaArenaHandler_Helper {
         } catch (TypeException e) {
             return null;
         }
+    }
+
+    // Extract DateTime from key
+    public static DateTime extractMessageTimeStampFromKey(String key) {
+        // Verify that key looks like a datetime
+        if (key == null || key.length() != 26) {
+            return null;
+        }
+        DateTime dt = SharedIntegrationFunctions.convertNorwegianTimeToGmt(key);
+        return dt;
     }
 }

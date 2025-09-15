@@ -33,8 +33,8 @@ public with sharing class TiltaksgjennomforingHandlerTest {
             )
         );
 
-         //Record status GJENNOMFØRES and type MIDLERTIDIG_LONNSTILSKUDD and multiple null values
-         testMessages.add(
+        //Record status GJENNOMFØRES and type MIDLERTIDIG_LONNSTILSKUDD and multiple null values
+        testMessages.add(
             new KafkaMessage__c(
                 CRM_Topic__c = topic,
                 CRM_Key__c = 'c9d8fe1e-c4d2-499e-bd16-af3a88b1e735',
@@ -69,8 +69,8 @@ public with sharing class TiltaksgjennomforingHandlerTest {
                     CRM_Value__c = EncodingUtil.base64Encode(
                         Blob.valueOf(
                             '{"avtaleId":"' +
-                            key +
-                            '","hendelseType":"STILLINGSBESKRIVELSE_ENDRET","avtaleStatus":"GJENNOMFØRES","deltakerFnr":"02129623805","mentorFnr":null,"bedriftNr":"973113631","veilederNavIdent":"Z992800","tiltakstype":"MENTOR","opprettetTidspunkt":"2022-05-23T10:27:13.626211","avtaleNr":397,"sistEndret":"2022-10-26T09:54:36.265048609Z","annullertTidspunkt":null,"annullertGrunn":null,"slettemerket":false,"opprettetAvArbeidsgiver":false,"enhetGeografisk":"0805","enhetsnavnGeografisk":"NAV Porsgrunn","enhetOppfolging":"0219","enhetsnavnOppfolging":"NAV Bærum","godkjentForEtterregistrering":true,"kvalifiseringsgruppe":"BFORM","formidlingsgruppe":"ARBS","tilskuddPeriode":[],"feilregistrert":false,"versjon":5,"deltakerFornavn":"Overfølsom","deltakerEtternavn":"Klovn","deltakerTlf":"12345676","bedriftNavn":"GAMLE FREDRIKSTAD OG RAMNES REGNSKA P","arbeidsgiverFornavn":"Dolly","arbeidsgiverEtternavn":"Duck","arbeidsgiverTlf":"12345678","veilederFornavn":"Onkel","veilederEtternavn":"Donald","veilederTlf":"12345678","oppfolging":"rtretyrteyrtey","tilrettelegging":"fdghdfghdfghfdgh","startDato":"2022-01-01","sluttDato":"2023-01-01","stillingprosent":100,"journalpostId":null,"arbeidsoppgaver":"trrtyrtrtytreyccxzc","stillingstittel":"Bussrengjører","stillingStyrk08":9122,"stillingKonseptId":168963,"antallDagerPerUke":5,"refusjonKontaktperson":null,"mentorFornavn":null,"mentorEtternavn":null,"mentorOppgaver":null,"mentorAntallTimer":null,"mentorTimelonn":null,"mentorTlf":null,"arbeidsgiverKontonummer":"91311592950","lonnstilskuddProsent":40,"manedslonn":20000,"feriepengesats":0.143,"arbeidsgiveravgift":0.106,"harFamilietilknytning":false,"familietilknytningForklaring":null,"feriepengerBelop":2860,"otpSats":0.1,"otpBelop":2286,"arbeidsgiveravgiftBelop":2665,"sumLonnsutgifter":27811,"sumLonnstilskudd":11124,"manedslonn100pst":27811,"sumLønnstilskuddRedusert":8343,"datoForRedusertProsent":"2022-07-01","stillingstype":"FAST","maal":[],"inkluderingstilskuddsutgift":[],"inkluderingstilskuddBegrunnelse":null,"inkluderingstilskuddTotalBeløp":0,"godkjentAvDeltaker":"2022-05-23T10:31:49.922613","godkjentTaushetserklæringAvMentor":null,"godkjentAvArbeidsgiver":"2022-05-23T10:31:18.693921","godkjentAvVeileder":"2022-05-23T10:31:49.922613","godkjentAvBeslutter":null,"avtaleInngått":"2022-05-23T10:31:49.922613","ikrafttredelsestidspunkt":"2022-10-26T11:54:34.265009244","godkjentAvNavIdent":"Z992800","godkjentAvBeslutterNavIdent":null,"enhetKostnadssted":null,"enhetsnavnKostnadssted":null,"godkjentPaVegneGrunn":{"ikkeBankId":true,"reservert":false,"digitalKompetanse":false,"arenaMigreringDeltaker":true},"godkjentPaVegneAv":true,"godkjentPaVegneAvArbeidsgiverGrunn":{"klarerIkkeGiFaTilgang":false,"vetIkkeHvemSomKanGiTilgang":false,"farIkkeTilgangPersonvern":false,"arenaMigreringArbeidsgiver":true},"godkjentPaVegneAvArbeidsgiver":false,"innholdType":"ENDRE_STILLING","utførtAv":"Z992800"}'
+                                key +
+                                '","hendelseType":"STILLINGSBESKRIVELSE_ENDRET","avtaleStatus":"GJENNOMFØRES","deltakerFnr":"02129623805","mentorFnr":null,"bedriftNr":"973113631","veilederNavIdent":"Z992800","tiltakstype":"MENTOR","opprettetTidspunkt":"2022-05-23T10:27:13.626211","avtaleNr":397,"sistEndret":"2022-10-26T09:54:36.265048609Z","annullertTidspunkt":null,"annullertGrunn":null,"slettemerket":false,"opprettetAvArbeidsgiver":false,"enhetGeografisk":"0805","enhetsnavnGeografisk":"NAV Porsgrunn","enhetOppfolging":"0219","enhetsnavnOppfolging":"NAV Bærum","godkjentForEtterregistrering":true,"kvalifiseringsgruppe":"BFORM","formidlingsgruppe":"ARBS","tilskuddPeriode":[],"feilregistrert":false,"versjon":5,"deltakerFornavn":"Overfølsom","deltakerEtternavn":"Klovn","deltakerTlf":"12345676","bedriftNavn":"GAMLE FREDRIKSTAD OG RAMNES REGNSKA P","arbeidsgiverFornavn":"Dolly","arbeidsgiverEtternavn":"Duck","arbeidsgiverTlf":"12345678","veilederFornavn":"Onkel","veilederEtternavn":"Donald","veilederTlf":"12345678","oppfolging":"rtretyrteyrtey","tilrettelegging":"fdghdfghdfghfdgh","startDato":"2022-01-01","sluttDato":"2023-01-01","stillingprosent":100,"journalpostId":null,"arbeidsoppgaver":"trrtyrtrtytreyccxzc","stillingstittel":"Bussrengjører","stillingStyrk08":9122,"stillingKonseptId":168963,"antallDagerPerUke":5,"refusjonKontaktperson":null,"mentorFornavn":null,"mentorEtternavn":null,"mentorOppgaver":null,"mentorAntallTimer":null,"mentorTimelonn":null,"mentorTlf":null,"arbeidsgiverKontonummer":"91311592950","lonnstilskuddProsent":40,"manedslonn":20000,"feriepengesats":0.143,"arbeidsgiveravgift":0.106,"harFamilietilknytning":false,"familietilknytningForklaring":null,"feriepengerBelop":2860,"otpSats":0.1,"otpBelop":2286,"arbeidsgiveravgiftBelop":2665,"sumLonnsutgifter":27811,"sumLonnstilskudd":11124,"manedslonn100pst":27811,"sumLønnstilskuddRedusert":8343,"datoForRedusertProsent":"2022-07-01","stillingstype":"FAST","maal":[],"inkluderingstilskuddsutgift":[],"inkluderingstilskuddBegrunnelse":null,"inkluderingstilskuddTotalBeløp":0,"godkjentAvDeltaker":"2022-05-23T10:31:49.922613","godkjentTaushetserklæringAvMentor":null,"godkjentAvArbeidsgiver":"2022-05-23T10:31:18.693921","godkjentAvVeileder":"2022-05-23T10:31:49.922613","godkjentAvBeslutter":null,"avtaleInngått":"2022-05-23T10:31:49.922613","ikrafttredelsestidspunkt":"2022-10-26T11:54:34.265009244","godkjentAvNavIdent":"Z992800","godkjentAvBeslutterNavIdent":null,"enhetKostnadssted":null,"enhetsnavnKostnadssted":null,"godkjentPaVegneGrunn":{"ikkeBankId":true,"reservert":false,"digitalKompetanse":false,"arenaMigreringDeltaker":true},"godkjentPaVegneAv":true,"godkjentPaVegneAvArbeidsgiverGrunn":{"klarerIkkeGiFaTilgang":false,"vetIkkeHvemSomKanGiTilgang":false,"farIkkeTilgangPersonvern":false,"arenaMigreringArbeidsgiver":true},"godkjentPaVegneAvArbeidsgiver":false,"innholdType":"ENDRE_STILLING","utførtAv":"Z992800"}'
                         )
                     )
                 )
@@ -114,7 +114,8 @@ public with sharing class TiltaksgjennomforingHandlerTest {
                 OwnerId,
                 StartDate__c,
                 Status__c,
-                Type__c
+                Type__c,
+                TimeStampFromMessage__c
             FROM Workfare__c
         ];
 
@@ -132,13 +133,21 @@ public with sharing class TiltaksgjennomforingHandlerTest {
         System.assertEquals('2023-01-01', String.valueOf(agreements[0].EndDate__c));
         System.assertEquals(users[0].id, agreements[0].InternalContact__c);
         System.assertEquals(message[0].CRM_Key__c, agreements[0].KafkaId__c);
-        System.assertEquals('https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/c9d8fe1e-c4d2-499e-bd16-af3a88b1e734?bedrift=973113631', agreements[0].Link__c);
+        System.assertEquals(
+            'https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/c9d8fe1e-c4d2-499e-bd16-af3a88b1e734?bedrift=973113631',
+            agreements[0].Link__c
+        );
         System.assertEquals('Test Testersen', agreements[0].MentorName__c);
         System.assertEquals('397', agreements[0].Name);
         System.assertEquals(units[0].id, agreements[0].NavUnit__c);
         System.assertEquals('2022-01-01', String.valueOf(agreements[0].StartDate__c));
         System.assertEquals('GJENNOMFØRES', agreements[0].Status__c);
         System.assertEquals('MIDLERTIDIG_LONNSTILSKUDD', agreements[0].Type__c);
+        System.assertEquals(
+            DateTime.newInstanceGMT(2022, 10, 26, 9, 54, 34),
+            agreements[0].TimeStampFromMessage__c,
+            'Should be set from time value in json, 2022-10-26T09:54:34.265048609Z'
+        );
     }
 
     @isTest
@@ -209,7 +218,10 @@ public with sharing class TiltaksgjennomforingHandlerTest {
         System.assertEquals('2023-01-01', String.valueOf(agreements[0].EndDate__c));
         System.assertEquals(users[0].id, agreements[0].InternalContact__c);
         System.assertEquals(message[0].CRM_Key__c, agreements[0].KafkaId__c);
-        System.assertEquals('https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/c9d8fe1e-c4d2-499e-bd16-af3a88b1e734?bedrift=973113632', agreements[0].Link__c);
+        System.assertEquals(
+            'https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/c9d8fe1e-c4d2-499e-bd16-af3a88b1e734?bedrift=973113632',
+            agreements[0].Link__c
+        );
         System.assertEquals(null, agreements[0].MentorName__c);
         System.assertEquals('397', agreements[0].Name);
         System.assertEquals(units[0].id, agreements[0].NavUnit__c);
@@ -286,7 +298,10 @@ public with sharing class TiltaksgjennomforingHandlerTest {
         System.assertEquals(null, String.valueOf(agreements[0].EndDate__c));
         System.assertEquals(null, agreements[0].InternalContact__c);
         System.assertEquals(message[0].CRM_Key__c, agreements[0].KafkaId__c);
-        System.assertEquals('https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/c9d8fe1e-c4d2-499e-bd16-af3a88b1e735', agreements[0].Link__c);
+        System.assertEquals(
+            'https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/c9d8fe1e-c4d2-499e-bd16-af3a88b1e735',
+            agreements[0].Link__c
+        );
         System.assertEquals(null, agreements[0].MentorName__c);
         System.assertEquals('Avtalenummer ikke opprettet enda', agreements[0].Name);
         System.assertEquals(null, agreements[0].NavUnit__c);
@@ -311,12 +326,15 @@ public with sharing class TiltaksgjennomforingHandlerTest {
         Test.stopTest();
 
         List<Workfare__c> agreements = [
-            SELECT
-                Id
+            SELECT Id
             FROM Workfare__c
         ];
 
-        System.assertEquals('Error', message[0].CRM_Status__c, 'Expecting CRM_Status__c = Error as json-string has errors');
+        System.assertEquals(
+            'Error',
+            message[0].CRM_Status__c,
+            'Expecting CRM_Status__c = Error as json-string has errors'
+        );
         System.assertEquals(0, agreements.size(), 'Expecting agreements-list to be empty');
     }
 }
