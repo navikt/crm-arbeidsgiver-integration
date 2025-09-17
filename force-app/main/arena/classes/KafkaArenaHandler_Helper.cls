@@ -73,8 +73,8 @@ public inherited sharing class KafkaArenaHandler_Helper {
                 KafkaId__c = model.key,
                 RegisteredByNavIdent__c = model.regUser,
                 CaseWorkerNavIdent__c = model.saksbehandler,
-                TAG_Source__c = 'Arena',
-                TimeStampFromMessage__c = extractMessageTimeStampFromKey(model.key)
+                TAG_Source__c = 'Arena' //,
+                // TimeStampFromMessage__c = extractMessageTimeStampFromKey(model.key)
             );
 
             if (model.etternavn != null) {
