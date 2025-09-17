@@ -21,7 +21,7 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
 
         handleDeletions(fiaCooperations);
         handleUpserts(fiaCooperations);
-        // logTimeDeviations(fiaCooperations);
+        // logTimeDeviations(fiaCooperations); // Temporarily disabled for performance monitoring review. Re-enable after confirming batch processing SLAs.
         logger.publish();
     }
 
