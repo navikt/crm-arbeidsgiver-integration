@@ -21,7 +21,7 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
 
         handleDeletions(fiaCooperations);
         handleUpserts(fiaCooperations);
-        logTimeDeviations(fiaCooperations);
+        // logTimeDeviations(fiaCooperations);
         logger.publish();
     }
 
