@@ -6,6 +6,7 @@ public with sharing class ReportingDataBuilder {
     public ReportingDataBuilder() {
         this.reportingDataEntries = new List<ReportingData__c>();
         this.logger = new LoggerUtility();
+        this.logger.setLogLevel(this.defaultLogLevel);
     }
 
     /**

@@ -100,12 +100,12 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
      * @description Calculates age in minutes from provided timestamp.
      */
     public Integer getMessageAge(DateTime currentTime) {
-        DateTime timeStampFromMessage = this.isPlanUpdate() ? this.planLastModified : this.cooperationLastModified;
+        DateTime timestampFromMessage = this.isPlanUpdate() ? this.planLastModified : this.cooperationLastModified;
 
-        if (currentTime == null || timeStampFromMessage == null) {
+        if (currentTime == null || timestampFromMessage == null) {
             return null;
         }
-        return SharedIntegrationFunctions.calculateMinutesBetween(timeStampFromMessage, currentTime);
+        return SharedIntegrationFunctions.calculateMinutesBetween(timestampFromMessage, currentTime);
     }
 
     // =============================================================================

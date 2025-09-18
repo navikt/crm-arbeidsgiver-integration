@@ -55,17 +55,21 @@ public with sharing class SharedIntegrationFunctions {
      * @return Integer difference in minutes, or null if inputs are invalid.
      */
     public static Integer calculateMinutesBetween(DateTime past, DateTime present) {
-        if (past == null || present == null || past.getTime() > present.getTime()) {
+        if (past == null || present == null) {
             return null;
         }
-        if (past == present) {
+        Long pastMillis = past.getTime();
+        Long presentMillis = present.getTime();
+        if (pastMillis > presentMillis) {
+            return null;
+        }
+        if (pastMillis == presentMillis) {
             return 0;
         }
-        Long diffInMillis = present.getTime() - past.getTime();
 
         try {
-            Long diffInMinutes = diffInMillis / 60000;
-            return diffInMinutes.intValue();
+            Decimal minutes = Integer.valueOf((presentMillis - pastMillis) / (1000 * 60));
+            return minutes.intValue();
         } catch (System.MathException e) {
             System.debug(LoggingLevel.ERROR, 'Math calculation error in calculateMinutesBetween: ' + e.getMessage());
             return null;
