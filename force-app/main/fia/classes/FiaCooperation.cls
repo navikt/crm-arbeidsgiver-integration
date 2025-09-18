@@ -4,7 +4,7 @@
 
 public with sharing class FiaCooperation implements IKafkaMessageParser {
     // =============================================================================
-    // MODEL DATA - Core domain entities and infrastructure data
+    // MODEL DATA
     // =============================================================================
     public String orgnr;
     public String saksnummer;
@@ -14,7 +14,6 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
     public String hash;
     public String key;
 
-    // public DateTime timeStampFromMessage { get; set; }
     public DateTime cooperationLastModified { get; set; }
     public DateTime planLastModified { get; set; }
 
@@ -73,11 +72,8 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
         model.cooperationLastModified = SharedIntegrationFunctions.convertNorwegianTimeToGmt(
             model.samarbeid?.endretTidspunkt
         );
-        // Set timestamp based on whether this is a plan update or cooperation update
-        // model.timeStampFromMessage = model.isPlanUpdate() ? model.planLastModified : model.cooperationLastModified;
         return model;
     }
-
     // =============================================================================
     // DOMAIN LOGIC - Business rules and computed properties
     // =============================================================================
@@ -140,10 +136,14 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
         if (plan == null) {
             return false;
         }
-        if (planLastModified > cooperationLastModified) {
+        if (planLastModified != null && cooperationLastModified != null && planLastModified > cooperationLastModified) {
             return true;
         }
-        if (planLastModified != null && planLastModified == cooperationLastModified) {
+        if (
+            planLastModified != null &&
+            cooperationLastModified != null &&
+            planLastModified == cooperationLastModified
+        ) {
             String planidKey = saksnummer + '-' + samarbeid?.id + '-' + plan?.id;
             return key != null && key == planidKey;
         }

@@ -240,18 +240,14 @@ public with sharing class FiaCooperationTest {
         DateTime recentTime = currentTime.addMinutes(-10);
         String recentTimeString = recentTime.format('yyyy-MM-dd\'T\'HH:mm:ss.SSSSSS');
         recentCooperation.samarbeid.endretTidspunkt = recentTimeString;
-        // recentCooperation.timeStampFromMessage = recentTime;
         recentCooperation.cooperationLastModified = recentTime;
         recentCooperation.planLastModified = null;
-        System.debug(recentCooperation);
         // Create cooperation with old message (should be logged) - 30 minutes old
         FiaCooperation oldCooperation = FiaCooperation.parse(JSON, '12345678', encodedValue);
         oldCooperation.samarbeid = new FiaCooperation.Samarbeid();
         DateTime oldTime = currentTime.addMinutes(-30);
         String oldTimeString = oldTime.format('yyyy-MM-dd\'T\'HH:mm:ss.SSSSSS');
         oldCooperation.samarbeid.endretTidspunkt = oldTimeString;
-        //oldCooperation.timeStampFromMessage = oldTime;
-        oldCooperation.cooperationLastModified = oldTime;
         oldCooperation.planLastModified = null;
 
         // Create cooperation with very old message (should be logged) - 120 minutes old
@@ -260,7 +256,7 @@ public with sharing class FiaCooperationTest {
         DateTime veryOldTime = currentTime.addMinutes(-120);
         String veryOldTimeString = veryOldTime.format('yyyy-MM-dd\'T\'HH:mm:ss.SSSSSS');
         veryOldCooperation.samarbeid.endretTidspunkt = veryOldTimeString;
-        // veryOldCooperation.timeStampFromMessage = veryOldTime;
+
         veryOldCooperation.cooperationLastModified = veryOldTime;
         veryOldCooperation.planLastModified = null;
 

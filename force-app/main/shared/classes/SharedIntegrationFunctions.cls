@@ -55,7 +55,7 @@ public with sharing class SharedIntegrationFunctions {
      * @return Integer difference in minutes, or null if inputs are invalid.
      */
     public static Integer calculateMinutesBetween(DateTime past, DateTime present) {
-        if (past == null || present == null || past > present) {
+        if (past == null || present == null || past.getTime() > present.getTime()) {
             return null;
         }
         if (past == present) {
