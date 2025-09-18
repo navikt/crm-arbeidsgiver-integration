@@ -1,7 +1,7 @@
 public without sharing class FiaCaseHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer {
     Map<String, FiaCase> keyToFiaCase = new Map<String, FiaCase>();
     public Set<String> fiaCasesToDelete;
-
+    private static final Integer AGE_THRESHOLD_MINUTES = 15;
     public FiaCaseHandler() {
         this.fiaCasesToDelete = new Set<String>();
     }
@@ -32,7 +32,7 @@ public without sharing class FiaCaseHandler extends KafkaMessageProcessor implem
         if (!fiaCasesToDelete.isEmpty()) {
             deleteFiaCases(messages);
         }
-
+        logTimeDeviations(keyToFiaCase);
         logger.publish();
     }
 
@@ -134,5 +134,18 @@ public without sharing class FiaCaseHandler extends KafkaMessageProcessor implem
             fiaCaseToDeleteMap.put(iac.KafkaId__c, iac);
         }
         return fiaCaseToDeleteMap;
+    }
+
+    @TestVisible
+    private void logTimeDeviations(Map<String, FiaCase> keyToFiaCase) {
+        DateTime batchProcessingTime = DateTime.now();
+        ReportingDataBuilder reportingDataBuilder = new ReportingDataBuilder();
+        for (FiaCase fiaCase : keyToFiaCase.values()) {
+            Integer messageAge = fiaCase.getMessageAge(batchProcessingTime);
+            if (messageAge > AGE_THRESHOLD_MINUTES) {
+                reportingDataBuilder.logTimeDeviation('pia.ia-sak-v1', fiaCase.key, messageAge);
+            }
+        }
+        reportingDataBuilder.saveReportingDataEntries();
     }
 }
