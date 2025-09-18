@@ -14,6 +14,10 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
     public String hash;
     public String key;
 
+    // public DateTime timeStampFromMessage { get; set; }
+    public DateTime cooperationLastModified { get; set; }
+    public DateTime planLastModified { get; set; }
+
     public class Samarbeid {
         public String id;
         public String navn;
@@ -21,6 +25,7 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
         public Date startDato;
         public Date sluttDato;
         public String endretTidspunkt; // Timestamp is sent in user timezone. Store as string for later conversion. "2025-09-04T10:28:29.106545"
+
         public Datetime getLastModifiedDate() {
             return SharedIntegrationFunctions.convertNorwegianTimeToGmt(endretTidspunkt);
         }
@@ -64,7 +69,12 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
         model.jsonPayload = json;
         model.hash = hash;
         model.key = key;
-
+        model.planLastModified = SharedIntegrationFunctions.convertNorwegianTimeToGmt(model.plan?.sistEndret);
+        model.cooperationLastModified = SharedIntegrationFunctions.convertNorwegianTimeToGmt(
+            model.samarbeid?.endretTidspunkt
+        );
+        // Set timestamp based on whether this is a plan update or cooperation update
+        // model.timeStampFromMessage = model.isPlanUpdate() ? model.planLastModified : model.cooperationLastModified;
         return model;
     }
 
@@ -94,15 +104,20 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
      * @description Calculates age in minutes from provided timestamp.
      */
     public Integer getMessageAge(DateTime currentTime) {
-        return calculateMessageAgeInMinutes(currentTime);
+        DateTime timeStampFromMessage = this.isPlanUpdate() ? this.planLastModified : this.cooperationLastModified;
+
+        if (currentTime == null || timeStampFromMessage == null) {
+            return null;
+        }
+        return SharedIntegrationFunctions.calculateMinutesBetween(timeStampFromMessage, currentTime);
     }
 
     // =============================================================================
-    // PRIVATE HELPER METHODS - Implementation details
+    // PRIVATE HELPER METHODS
     // =============================================================================
 
     /**
-     * @description Domain helper for theme inclusion logic
+     * @description Helper for theme inclusion logic
      */
     private Boolean includesTema(String name) {
         boolean isIncluded = false;
@@ -119,82 +134,19 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
     }
 
     /**
-     * @description Message age calculation logic
-     */
-    private Integer calculateMessageAgeInMinutes(DateTime currentTime) {
-        // Validate input parameter
-        if (currentTime == null) {
-            return null;
-        }
-
-        Datetime sourceTime;
-        // If message is an update for plan, then a plan id will be included in the message key.
-        if (this.isPlanUpdate()) {
-            // Source system timestamp is in the plan.sistEndret field.
-            if (plan == null || String.isBlank(plan.sistEndret)) {
-                return null;
-            }
-            sourceTime = plan.getLastModifiedDate();
-        } else {
-            // Source system timestamp is in the samarbeid.endretTidspunkt field.
-            if (samarbeid == null || String.isBlank(samarbeid.endretTidspunkt)) {
-                return null;
-            }
-            sourceTime = samarbeid.getLastModifiedDate();
-        }
-
-        // Check if date conversion was successful
-        if (sourceTime == null) {
-            return null;
-        }
-
-        Long sourceTimeAsLong;
-        Long currentTimeAsLong;
-
-        try {
-            sourceTimeAsLong = sourceTime.getTime();
-            currentTimeAsLong = currentTime.getTime();
-        } catch (System.NullPointerException e) {
-            // Log specific null pointer issues for debugging
-            System.debug(LoggingLevel.WARN, 'Null value encountered in time calculation: ' + e.getMessage());
-            return null;
-        } catch (System.TypeException e) {
-            // Handle invalid datetime format or conversion errors
-            System.debug(LoggingLevel.WARN, 'Invalid datetime format in age calculation: ' + e.getMessage());
-            return null;
-        }
-
-        Long ageInMilliseconds = currentTimeAsLong - sourceTimeAsLong;
-        if (ageInMilliseconds < 0) {
-            // Future timestamps indicate data quality issues
-            System.debug(
-                LoggingLevel.WARN,
-                'Message timestamp is in the future. sourceTime: ' + sourceTime + ', currentTime: ' + currentTime
-            );
-            return null;
-        }
-
-        try {
-            Long ageInMinutes = ageInMilliseconds / 60000;
-            return ageInMinutes.intValue();
-        } catch (System.MathException e) {
-            System.debug(LoggingLevel.WARN, 'Math calculation error in age calculation: ' + e.getMessage());
-            return null;
-        }
-    }
-
-    /**
-     * @description Entity classification helpers
+     * @description Classification helper
      */
     private boolean isPlanUpdate() {
         if (plan == null) {
             return false;
         }
-        String planidKey = saksnummer + '-' + samarbeid?.id + '-' + plan?.id;
-        return key != null && key == planidKey;
-    }
-    private boolean isSamarbeidUpdate() {
-        String samarbeidKey = saksnummer + '-' + samarbeid?.id;
-        return key != null && key == samarbeidKey;
+        if (planLastModified > cooperationLastModified) {
+            return true;
+        }
+        if (planLastModified != null && planLastModified == cooperationLastModified) {
+            String planidKey = saksnummer + '-' + samarbeid?.id + '-' + plan?.id;
+            return key != null && key == planidKey;
+        }
+        return false;
     }
 }
