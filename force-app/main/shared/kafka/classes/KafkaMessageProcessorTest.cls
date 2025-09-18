@@ -92,27 +92,6 @@ public with sharing class KafkaMessageProcessorTest {
     }
 
     @isTest
-    static void parseISODateTime() {
-        KafkaMessageProcessorExtension processor = new KafkaMessageProcessorExtension();
-        DateTime dateTimeGMT = DateTime.newInstanceGMT(2020, 5, 31, 22, 30, 0);
-        System.assertEquals(
-            dateTimeGMT,
-            processor.parseISODateTime('2020-05-31T22:30:00.000Z'),
-            'Expected Z offset to be parsed as GMT time'
-        );
-        System.assertEquals(
-            dateTimeGMT,
-            processor.parseISODateTime('2020-05-31T22:30:00.000'),
-            'Expected undefined offset to be parsed as GMT time'
-        );
-        System.assertEquals(
-            dateTimeGMT,
-            processor.parseISODateTime('2020-06-01T00:30:00.000+0200'),
-            'Expected +0200 offset to be parsed as GMT time'
-        );
-    }
-
-    @isTest
     static void dateTimeValue() {
         DateTime dt = DateTime.newInstance(1970, 1, 19, 18, 46, 52);
         String timeDate = '1970-01-19T18:46:52.748Z';

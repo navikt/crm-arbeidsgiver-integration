@@ -21,7 +21,7 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
 
         handleDeletions(fiaCooperations);
         handleUpserts(fiaCooperations);
-        // logTimeDeviations(fiaCooperations); // Temporarily disabled for performance monitoring review. Re-enable after confirming batch processing SLAs.
+        logTimeDeviations(fiaCooperations);
         logger.publish();
     }
 
@@ -115,12 +115,16 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
     @testVisible
     private void logTimeDeviations(List<FiaCooperation> fiaCooperations) {
         DateTime batchProcessingTime = DateTime.now(); // Calculate once per batch
+        ReportingDataBuilder ageLogger = new ReportingDataBuilder();
+
         for (FiaCooperation fiaCooperation : fiaCooperations) {
             Integer ageInMinutes = fiaCooperation.getMessageAge(batchProcessingTime);
             if (ageInMinutes != null && ageInMinutes > AGE_THRESHOLD_MINUTES) {
-                logger.logTimeDeviation('FiaCooperationHandler', fiaCooperation.key, ageInMinutes);
+                String topic = this.keyToKafkaMessageMap.get(fiaCooperation.key)?.CRM_Topic__c;
+                ageLogger.logTimeDeviation(topic, fiaCooperation.key, ageInMinutes);
             }
         }
+        ageLogger.saveReportingDataEntries();
     }
 
     /**

@@ -22,5 +22,6 @@ public with sharing class FiaCaseTest {
         System.assertEquals('ny', model.status);
         System.assertEquals('2022-02-18T07:07:07.064711', model.opprettetTidspunkt);
         System.assertEquals('2022-02-18T07:19:21.575794', model.endretTidspunkt);
+        System.assertEquals(DateTime.newInstance(2022, 2, 18, 7, 19, 21), model.timeStampFromMessage);
     }
 }

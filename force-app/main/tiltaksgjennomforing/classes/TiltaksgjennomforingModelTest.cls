@@ -1,99 +1,99 @@
 @IsTest
 public with sharing class TiltaksgjennomforingModelTest {
     public static String JSON =
-    '{' +
-    '   \"hendelseType\":\"STILLINGSBESKRIVELSE_ENDRET\",' +
-    '   \"avtaleStatus\":\"GJENNOMFØRES\",' +
-    '   \"deltakerFnr\":\"02129623805\",' +
-    '   \"mentorFnr\":null,' +
-    '   \"bedriftNr\":\"910825526\",' +
-    '   \"veilederNavIdent\":\"Z992800\",' +
-    '   \"tiltakstype\":\"MIDLERTIDIG_LONNSTILSKUDD\",' +
-    '   \"opprettetTidspunkt\":\"2022-05-23T10:27:13.626211\",' +
-    '   \"avtaleId\":\"c9d8fe1e-c4d2-499e-bd16-af3a88b1e734\",' +
-    '   \"avtaleNr\":397,' +
-    '   \"sistEndret\":\"2022-10-26T09:54:34.265048609Z\",' +
-    '   \"annullertTidspunkt\":null,' +
-    '   \"annullertGrunn\":null,' +
-    '   \"slettemerket\":false,' +
-    '   \"opprettetAvArbeidsgiver\":false,' +
-    '   \"enhetGeografisk\":\"0805\",' +
-    '   \"enhetsnavnGeografisk\":\"NAV Porsgrunn\",' +
-    '   \"enhetOppfolging\":\"0219\",' +
-    '   \"enhetsnavnOppfolging\":\"NAV Bærum\",' +
-    '   \"godkjentForEtterregistrering\":true,' +
-    '   \"kvalifiseringsgruppe\":\"BFORM\",' +
-    '   \"formidlingsgruppe\":\"ARBS\",' +
-    '   \"tilskuddPeriode\":[{"id":"cb153a4f-bb17-4140-80bb-6ed398c690b7","beløp":4434,"startDato":"2022-10-26","sluttDato":"2022-10-31","godkjentAvNavIdent":null,"godkjentTidspunkt":null,"enhet":null,"enhetsnavn":null,"lonnstilskuddProsent":40,"avslagsårsaker":[],"avslagsforklaring":null,"avslåttAvNavIdent":null,"avslåttTidspunkt":null,"løpenummer":1,"status":"UBEHANDLET","refusjonStatus":null,"aktiv":true,"kanBesluttesFom":"-999999999-01-01"},{"id":"eb935214-ea38-4bf6-923e-aaeeabf23a99","beløp":22491,"startDato":"2022-11-01","sluttDato":"2022-11-30","godkjentAvNavIdent":null,"godkjentTidspunkt":null,"enhet":null,"enhetsnavn":null,"lonnstilskuddProsent":40,"avslagsårsaker":[],"avslagsforklaring":null,"avslåttAvNavIdent":null,"avslåttTidspunkt":null,"løpenummer":2,"status":"UBEHANDLET","refusjonStatus":null,"aktiv":true,"kanBesluttesFom":"2022-08-01"},{"id":"6e03ed0c-70bb-498d-a406-201eb9fe89c5","beløp":22491,"startDato":"2022-12-01","sluttDato":"2022-12-31","godkjentAvNavIdent":null,"godkjentTidspunkt":null,"enhet":null,"enhetsnavn":null,"lonnstilskuddProsent":40,"avslagsårsaker":[],"avslagsforklaring":null,"avslåttAvNavIdent":null,"avslåttTidspunkt":null,"løpenummer":3,"status":"UBEHANDLET","refusjonStatus":null,"aktiv":true,"kanBesluttesFom":"2022-09-01"},{"id":"f4d7d44b-d779-4d2b-be1b-f8b8fef9745c","beløp":739,"startDato":"2023-01-01","sluttDato":"2023-01-01","godkjentAvNavIdent":null,"godkjentTidspunkt":null,"enhet":null,"enhetsnavn":null,"lonnstilskuddProsent":40,"avslagsårsaker":[],"avslagsforklaring":null,"avslåttAvNavIdent":null,"avslåttTidspunkt":null,"løpenummer":4,"status":"UBEHANDLET","refusjonStatus":null,"aktiv":true,"kanBesluttesFom":"2023-01-01"}],' +
-    '   \"feilregistrert\":false,' +
-    '   \"versjon\":5,' +
-    '   \"deltakerFornavn\":\"Overfølsom\",' +
-    '   \"deltakerEtternavn\":\"Klovn\",' +
-    '   \"deltakerTlf\":\"12345676\",' +
-    '   \"bedriftNavn\":\"GAMLE FREDRIKSTAD OG RAMNES REGNSKA P\",' +
-    '   \"arbeidsgiverFornavn\":\"Dolly\",' +
-    '   \"arbeidsgiverEtternavn\":\"Duck\",' +
-    '   \"arbeidsgiverTlf\":\"12345678\",' +
-    '   \"veilederFornavn\":\"Onkel\",' +
-    '   \"veilederEtternavn\":\"Donald\",' +
-    '   \"veilederTlf\":\"12345678\",' +
-    '   \"oppfolging\":\"rtretyrteyrtey\",' +
-    '   \"tilrettelegging\":\"fdghdfghdfghfdgh\",' +
-    '   \"startDato\":\"2022-01-01\",' +
-    '   \"sluttDato\":\"2023-01-01\",' +
-    '   \"stillingprosent\":100,' +
-    '   \"journalpostId\":null,' +
-    '   \"arbeidsoppgaver\":\"trrtyrtrtytreyccxzc\",' +
-    '   \"stillingstittel\":\"Bussrengjører\",' +
-    '   \"stillingStyrk08\":9122,' +
-    '   \"stillingKonseptId\":168963,' +
-    '   \"antallDagerPerUke\":5,' +
-    '   \"refusjonKontaktperson\":null,' +
-    '   \"mentorFornavn\":null,' +
-    '   \"mentorEtternavn\":null,' +
-    '   \"mentorOppgaver\":null,' +
-    '   \"mentorAntallTimer\":null,' +
-    '   \"mentorTimelonn\":null,' +
-    '   \"mentorTlf\":null,' +
-    '   \"arbeidsgiverKontonummer\":\"91311592950\",' +
-    '   \"lonnstilskuddProsent\":40,' +
-    '   \"manedslonn\":20000,' +
-    '   \"feriepengesats\":0.143,' +
-    '   \"arbeidsgiveravgift\":0.106,' +
-    '   \"harFamilietilknytning\":false,' +
-    '   \"familietilknytningForklaring\":null,' +
-    '   \"feriepengerBelop\":2860,' +
-    '   \"otpSats\":0.1,' +
-    '   \"otpBelop\":2286,' +
-    '   \"arbeidsgiveravgiftBelop\":2665,' +
-    '   \"sumLonnsutgifter\":27811,' +
-    '   \"sumLonnstilskudd\":11124,' +
-    '   \"manedslonn100pst\":27811,' +
-    '   \"sumLønnstilskuddRedusert\":8343,' +
-    '   \"datoForRedusertProsent\":\"2022-07-01\",' +
-    '   \"stillingstype\":\"FAST\",' +
-    '   \"maal\":[],' +
-    '   \"inkluderingstilskuddsutgift\":[],' +
-    '   \"inkluderingstilskuddBegrunnelse\":null,' +
-    '   \"inkluderingstilskuddTotalBeløp\":0,' +
-    '   \"godkjentAvDeltaker\":\"2022-05-23T10:31:49.922613\",' +
-    '   \"godkjentTaushetserklæringAvMentor\":null,' +
-    '   \"godkjentAvArbeidsgiver\":\"2022-05-23T10:31:18.693921\",' +
-    '   \"godkjentAvVeileder\":\"2022-05-23T10:31:49.922613\",' +
-    '   \"godkjentAvBeslutter\":null,' +
-    '   \"avtaleInngått\":\"2022-05-23T10:31:49.922613\",' +
-    '   \"ikrafttredelsestidspunkt\":\"2022-10-26T11:54:34.265009244\",' +
-    '   \"godkjentAvNavIdent\":\"Z992800\",' +
-    '   \"godkjentAvBeslutterNavIdent\":null,' +
-    '   \"enhetKostnadssted\":null,' +
-    '   \"enhetsnavnKostnadssted\":null,' +
-    '   \"godkjentPaVegneGrunn\":{\"ikkeBankId\":true,\"reservert\":false,\"digitalKompetanse\":false,\"arenaMigreringDeltaker\":true},' +
-    '   \"godkjentPaVegneAv\":true,' +
-    '   \"godkjentPaVegneAvArbeidsgiverGrunn\":null,' +
-    '   \"godkjentPaVegneAvArbeidsgiver\":false,' +
-    '   \"innholdType\":\"ENDRE_STILLING\",' +
-    '   \"utførtAv\":\"Z992800\"' +
-    '}';
+        '{' +
+        '   \"hendelseType\":\"STILLINGSBESKRIVELSE_ENDRET\",' +
+        '   \"avtaleStatus\":\"GJENNOMFØRES\",' +
+        '   \"deltakerFnr\":\"02129623805\",' +
+        '   \"mentorFnr\":null,' +
+        '   \"bedriftNr\":\"910825526\",' +
+        '   \"veilederNavIdent\":\"Z992800\",' +
+        '   \"tiltakstype\":\"MIDLERTIDIG_LONNSTILSKUDD\",' +
+        '   \"opprettetTidspunkt\":\"2022-05-23T10:27:13.626211\",' +
+        '   \"avtaleId\":\"c9d8fe1e-c4d2-499e-bd16-af3a88b1e734\",' +
+        '   \"avtaleNr\":397,' +
+        '   \"sistEndret\":\"2022-10-26T09:54:34.265048609Z\",' +
+        '   \"annullertTidspunkt\":null,' +
+        '   \"annullertGrunn\":null,' +
+        '   \"slettemerket\":false,' +
+        '   \"opprettetAvArbeidsgiver\":false,' +
+        '   \"enhetGeografisk\":\"0805\",' +
+        '   \"enhetsnavnGeografisk\":\"NAV Porsgrunn\",' +
+        '   \"enhetOppfolging\":\"0219\",' +
+        '   \"enhetsnavnOppfolging\":\"NAV Bærum\",' +
+        '   \"godkjentForEtterregistrering\":true,' +
+        '   \"kvalifiseringsgruppe\":\"BFORM\",' +
+        '   \"formidlingsgruppe\":\"ARBS\",' +
+        '   \"tilskuddPeriode\":[{"id":"cb153a4f-bb17-4140-80bb-6ed398c690b7","beløp":4434,"startDato":"2022-10-26","sluttDato":"2022-10-31","godkjentAvNavIdent":null,"godkjentTidspunkt":null,"enhet":null,"enhetsnavn":null,"lonnstilskuddProsent":40,"avslagsårsaker":[],"avslagsforklaring":null,"avslåttAvNavIdent":null,"avslåttTidspunkt":null,"løpenummer":1,"status":"UBEHANDLET","refusjonStatus":null,"aktiv":true,"kanBesluttesFom":"-999999999-01-01"},{"id":"eb935214-ea38-4bf6-923e-aaeeabf23a99","beløp":22491,"startDato":"2022-11-01","sluttDato":"2022-11-30","godkjentAvNavIdent":null,"godkjentTidspunkt":null,"enhet":null,"enhetsnavn":null,"lonnstilskuddProsent":40,"avslagsårsaker":[],"avslagsforklaring":null,"avslåttAvNavIdent":null,"avslåttTidspunkt":null,"løpenummer":2,"status":"UBEHANDLET","refusjonStatus":null,"aktiv":true,"kanBesluttesFom":"2022-08-01"},{"id":"6e03ed0c-70bb-498d-a406-201eb9fe89c5","beløp":22491,"startDato":"2022-12-01","sluttDato":"2022-12-31","godkjentAvNavIdent":null,"godkjentTidspunkt":null,"enhet":null,"enhetsnavn":null,"lonnstilskuddProsent":40,"avslagsårsaker":[],"avslagsforklaring":null,"avslåttAvNavIdent":null,"avslåttTidspunkt":null,"løpenummer":3,"status":"UBEHANDLET","refusjonStatus":null,"aktiv":true,"kanBesluttesFom":"2022-09-01"},{"id":"f4d7d44b-d779-4d2b-be1b-f8b8fef9745c","beløp":739,"startDato":"2023-01-01","sluttDato":"2023-01-01","godkjentAvNavIdent":null,"godkjentTidspunkt":null,"enhet":null,"enhetsnavn":null,"lonnstilskuddProsent":40,"avslagsårsaker":[],"avslagsforklaring":null,"avslåttAvNavIdent":null,"avslåttTidspunkt":null,"løpenummer":4,"status":"UBEHANDLET","refusjonStatus":null,"aktiv":true,"kanBesluttesFom":"2023-01-01"}],' +
+        '   \"feilregistrert\":false,' +
+        '   \"versjon\":5,' +
+        '   \"deltakerFornavn\":\"Overfølsom\",' +
+        '   \"deltakerEtternavn\":\"Klovn\",' +
+        '   \"deltakerTlf\":\"12345676\",' +
+        '   \"bedriftNavn\":\"GAMLE FREDRIKSTAD OG RAMNES REGNSKA P\",' +
+        '   \"arbeidsgiverFornavn\":\"Dolly\",' +
+        '   \"arbeidsgiverEtternavn\":\"Duck\",' +
+        '   \"arbeidsgiverTlf\":\"12345678\",' +
+        '   \"veilederFornavn\":\"Onkel\",' +
+        '   \"veilederEtternavn\":\"Donald\",' +
+        '   \"veilederTlf\":\"12345678\",' +
+        '   \"oppfolging\":\"rtretyrteyrtey\",' +
+        '   \"tilrettelegging\":\"fdghdfghdfghfdgh\",' +
+        '   \"startDato\":\"2022-01-01\",' +
+        '   \"sluttDato\":\"2023-01-01\",' +
+        '   \"stillingprosent\":100,' +
+        '   \"journalpostId\":null,' +
+        '   \"arbeidsoppgaver\":\"trrtyrtrtytreyccxzc\",' +
+        '   \"stillingstittel\":\"Bussrengjører\",' +
+        '   \"stillingStyrk08\":9122,' +
+        '   \"stillingKonseptId\":168963,' +
+        '   \"antallDagerPerUke\":5,' +
+        '   \"refusjonKontaktperson\":null,' +
+        '   \"mentorFornavn\":null,' +
+        '   \"mentorEtternavn\":null,' +
+        '   \"mentorOppgaver\":null,' +
+        '   \"mentorAntallTimer\":null,' +
+        '   \"mentorTimelonn\":null,' +
+        '   \"mentorTlf\":null,' +
+        '   \"arbeidsgiverKontonummer\":\"91311592950\",' +
+        '   \"lonnstilskuddProsent\":40,' +
+        '   \"manedslonn\":20000,' +
+        '   \"feriepengesats\":0.143,' +
+        '   \"arbeidsgiveravgift\":0.106,' +
+        '   \"harFamilietilknytning\":false,' +
+        '   \"familietilknytningForklaring\":null,' +
+        '   \"feriepengerBelop\":2860,' +
+        '   \"otpSats\":0.1,' +
+        '   \"otpBelop\":2286,' +
+        '   \"arbeidsgiveravgiftBelop\":2665,' +
+        '   \"sumLonnsutgifter\":27811,' +
+        '   \"sumLonnstilskudd\":11124,' +
+        '   \"manedslonn100pst\":27811,' +
+        '   \"sumLønnstilskuddRedusert\":8343,' +
+        '   \"datoForRedusertProsent\":\"2022-07-01\",' +
+        '   \"stillingstype\":\"FAST\",' +
+        '   \"maal\":[],' +
+        '   \"inkluderingstilskuddsutgift\":[],' +
+        '   \"inkluderingstilskuddBegrunnelse\":null,' +
+        '   \"inkluderingstilskuddTotalBeløp\":0,' +
+        '   \"godkjentAvDeltaker\":\"2022-05-23T10:31:49.922613\",' +
+        '   \"godkjentTaushetserklæringAvMentor\":null,' +
+        '   \"godkjentAvArbeidsgiver\":\"2022-05-23T10:31:18.693921\",' +
+        '   \"godkjentAvVeileder\":\"2022-05-23T10:31:49.922613\",' +
+        '   \"godkjentAvBeslutter\":null,' +
+        '   \"avtaleInngått\":\"2022-05-23T10:31:49.922613\",' +
+        '   \"ikrafttredelsestidspunkt\":\"2022-10-26T11:54:34.265009244\",' +
+        '   \"godkjentAvNavIdent\":\"Z992800\",' +
+        '   \"godkjentAvBeslutterNavIdent\":null,' +
+        '   \"enhetKostnadssted\":null,' +
+        '   \"enhetsnavnKostnadssted\":null,' +
+        '   \"godkjentPaVegneGrunn\":{\"ikkeBankId\":true,\"reservert\":false,\"digitalKompetanse\":false,\"arenaMigreringDeltaker\":true},' +
+        '   \"godkjentPaVegneAv\":true,' +
+        '   \"godkjentPaVegneAvArbeidsgiverGrunn\":null,' +
+        '   \"godkjentPaVegneAvArbeidsgiver\":false,' +
+        '   \"innholdType\":\"ENDRE_STILLING\",' +
+        '   \"utførtAv\":\"Z992800\"' +
+        '}';
 
     @isTest
     static void parse() {
@@ -181,5 +181,10 @@ public with sharing class TiltaksgjennomforingModelTest {
         System.assertEquals('ENDRE_STILLING', model.innholdType);
         System.assertEquals(null, model.key);
         System.assertEquals('Z992800', model.utfortAv);
+        System.assertEquals(
+            DateTime.newInstanceGmt(2022, 10, 26, 9, 54, 34),
+            model.timeStampFromMessage,
+            'Should be set from string value, 2022-10-26T09:54:34.265048609Z'
+        );
     }
 }

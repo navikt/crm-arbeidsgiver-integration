@@ -28,7 +28,7 @@
                 },
                 {
                     "package": "crm-platform-reporting",
-                    "versionNumber": "0.41.0.LATEST"
+                    "versionNumber": "0.42.0.LATEST"
                 },
                 {
                     "package": "crm-shared-timeline",
@@ -56,7 +56,7 @@
                 },
                 {
                     "package": "crm-arbeidsgiver-base",
-                    "versionNumber": "1.596.0.LATEST"
+                    "versionNumber": "1.601.0.LATEST"
                 }
             ]
         }

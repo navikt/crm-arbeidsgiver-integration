@@ -382,4 +382,36 @@ public with sharing class FiaCaseHandlerTest {
         System.assert(iaCase2.isEmpty());
         System.assert(iaCase3.isEmpty());
     }
+
+    @isTest
+    static void should_LogTimeDeviations() {
+        DateTime testDataChangeDate = Datetime.now().addMinutes(-16); // Simulate data change 16 minutes ago
+        Map<String, FiaCase> keyToFiaCase = new Map<String, FiaCase>();
+        FiaCase fiaCase = new FiaCase();
+        fiaCase.endretTidspunkt = '' + testDataChangeDate.formatGmt('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'');
+        fiaCase.timeStampFromMessage = testDataChangeDate;
+        keyToFiaCase.put('TEST', fiaCase);
+
+        Test.startTest();
+        FiaCaseHandler handler = new FiaCaseHandler();
+        handler.logTimeDeviations(keyToFiaCase);
+        Test.stopTest();
+
+        Assert.areEqual(1, [SELECT COUNT() FROM ReportingData__c]);
+    }
+    @isTest
+    static void should_not_LogTimeDeviations() {
+        DateTime testDataChangeDate = Datetime.now().addMinutes(-10); // Simulate data change 10 minutes ago
+        Map<String, FiaCase> keyToFiaCase = new Map<String, FiaCase>();
+        FiaCase fiaCase = new FiaCase();
+        fiaCase.endretTidspunkt = '' + testDataChangeDate.formatGmt('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'');
+        fiaCase.timeStampFromMessage = testDataChangeDate;
+        keyToFiaCase.put('TEST', fiaCase);
+
+        Test.startTest();
+        FiaCaseHandler handler = new FiaCaseHandler();
+        handler.logTimeDeviations(keyToFiaCase);
+        Test.stopTest();
+        Assert.areEqual(0, [SELECT COUNT() FROM ReportingData__c]);
+    }
 }

@@ -33,4 +33,46 @@ public with sharing class SharedIntegrationFunctions {
             return null;
         }
     }
+
+    /**
+     * @description Uses JSON parser to deserialize DateTimes in ISO format "yyyy-MM-dd'T'HH:mm:ss.SSSZ".
+     * @param datetimeString The datetime string to parse. For instance 2020-01-04T23:30:05.711Z or 2020-01-05T00:30:05.711Z-02:00
+     * @return DateTime object or null if the year is out of range.
+     */
+    public static DateTime parseISODateTime(String datetimeString) {
+        Datetime result = (DateTime) JSON.deserialize('"' + datetimeString + '"', DateTime.class);
+        if (result.year() < 1700 || result.year() > 4000) {
+            return null;
+        }
+        return result;
+    }
+
+    /**
+     * @description Calculates difference in minutes between two timestamps.
+     * If either timestamp is null, or if the difference is negative, null is returned.
+     * @param past The earlier timestamp.
+     * @param present The later timestamp.
+     * @return Integer difference in minutes, or null if inputs are invalid.
+     */
+    public static Integer calculateMinutesBetween(DateTime past, DateTime present) {
+        if (past == null || present == null) {
+            return null;
+        }
+        Long pastMillis = past.getTime();
+        Long presentMillis = present.getTime();
+        if (pastMillis > presentMillis) {
+            return null;
+        }
+        if (pastMillis == presentMillis) {
+            return 0;
+        }
+
+        try {
+            Decimal minutes = Integer.valueOf((presentMillis - pastMillis) / (1000 * 60));
+            return minutes.intValue();
+        } catch (System.MathException e) {
+            System.debug(LoggingLevel.ERROR, 'Math calculation error in calculateMinutesBetween: ' + e.getMessage());
+            return null;
+        }
+    }
 }
