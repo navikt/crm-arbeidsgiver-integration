@@ -111,6 +111,8 @@ public class TiltaksgjennomforingModel implements IKafkaMessageParser {
     public String hash { get; set; }
     public String key { get; set; }
 
+    public DateTime timeStampFromMessage { get; set; }
+
     public static TiltaksgjennomforingModel parse(String json, String key, String hash) {
         String formattedJSON = json.replaceAll('sumLønnstilskuddRedusert', 'sumLonnstilskuddRedusert')
             .replaceAll('inkluderingstilskuddTotalBeløp', 'inkluderingstilskuddTotalBelop')
@@ -125,7 +127,24 @@ public class TiltaksgjennomforingModel implements IKafkaMessageParser {
         model.jsonPayload = json;
         model.hash = hash;
         model.key = key;
-
+        model.timeStampFromMessage = parseTimestamp(model.sistEndret);
         return model;
+    }
+
+    /**
+     * @description Calculates age in minutes from provided timestamp.
+     */
+    public Integer getMessageAge(DateTime currentTime) {
+        if (this.timeStampFromMessage == null) {
+            return null;
+        }
+        return SharedIntegrationFunctions.calculateMinutesBetween(this.timeStampFromMessage, currentTime);
+    }
+
+    private static DateTime parseTimestamp(String timestamp) {
+        if (timestamp == null) {
+            return null;
+        }
+        return SharedIntegrationFunctions.parseISODateTime(timestamp);
     }
 }

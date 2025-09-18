@@ -337,4 +337,40 @@ public with sharing class TiltaksgjennomforingHandlerTest {
         );
         System.assertEquals(0, agreements.size(), 'Expecting agreements-list to be empty');
     }
+
+    @isTest
+    static void should_LogTimeDeviations() {
+        DateTime testDataChangeDate = Datetime.now().addMinutes(-16); // Simulate data change 16 minutes ago
+
+        Map<String, TiltaksgjennomforingModel> keyToAgreement = new Map<String, TiltaksgjennomforingModel>();
+
+        TiltaksgjennomforingModel agreement = new TiltaksgjennomforingModel();
+        agreement.sistEndret = '' + testDataChangeDate.formatGmt('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'');
+        agreement.timeStampFromMessage = testDataChangeDate;
+        keyToAgreement.put('TEST', agreement);
+
+        Test.startTest();
+        TiltaksgjennomforingHandler handler = new TiltaksgjennomforingHandler();
+        handler.logTimeDeviations(keyToAgreement);
+        Test.stopTest();
+
+        Assert.areEqual(1, [SELECT COUNT() FROM ReportingData__c]);
+    }
+    @isTest
+    static void should_not_LogTimeDeviations() {
+        DateTime testDataChangeDate = Datetime.now().addMinutes(-10); // Simulate data change 10 minutes ago
+
+        Map<String, TiltaksgjennomforingModel> keyToAgreement = new Map<String, TiltaksgjennomforingModel>();
+
+        TiltaksgjennomforingModel agreement = new TiltaksgjennomforingModel();
+        agreement.sistEndret = '' + testDataChangeDate.formatGmt('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'');
+        agreement.timeStampFromMessage = testDataChangeDate;
+        keyToAgreement.put('TEST', agreement);
+
+        Test.startTest();
+        TiltaksgjennomforingHandler handler = new TiltaksgjennomforingHandler();
+        handler.logTimeDeviations(keyToAgreement);
+        Test.stopTest();
+        Assert.areEqual(0, [SELECT COUNT() FROM ReportingData__c]);
+    }
 }
