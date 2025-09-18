@@ -2,11 +2,9 @@
 public with sharing class ReportingDataBuilder {
     private List<ReportingData__c> reportingDataEntries;
     private LoggerUtility logger;
-    private LoggerUtility.LogLevel defaultLogLevel = LoggerUtility.LogLevel.Info;
     public ReportingDataBuilder() {
         this.reportingDataEntries = new List<ReportingData__c>();
         this.logger = new LoggerUtility();
-        this.logger.setLogLevel(this.defaultLogLevel);
     }
 
     /**
@@ -30,7 +28,7 @@ public with sharing class ReportingDataBuilder {
                 this.reportingDataEntries.clear();
             } catch (DmlException e) {
                 this.logger.logMessage(
-                    this.defaultLogLevel,
+                    LoggerUtility.LogLevel.Info,
                     '',
                     '',
                     'Failed to insert ReportingData__c records: ' + e.getMessage(),
