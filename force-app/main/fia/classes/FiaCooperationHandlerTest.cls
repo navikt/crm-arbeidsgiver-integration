@@ -814,6 +814,12 @@ private class FiaCooperationHandlerTest {
         FiaCooperation newCooperation = new FiaCooperation();
 
         newCooperation.samarbeid = new FiaCooperation.Samarbeid();
+        Assert.isTrue(
+            FiaCooperationHandler.isNewerCooperation(existingCooperation, newCooperation),
+            'New cooperation should be considered newer if neither has endretTidspunkt.'
+        );
+
+        newCooperation.samarbeid = new FiaCooperation.Samarbeid();
         newCooperation.samarbeid.endretTidspunkt = '2025-01-01T00:00:00.106545'; //Datetime.newInstance(2025, 1, 1, 0, 0, 0);
         Assert.isTrue(
             FiaCooperationHandler.isNewerCooperation(existingCooperation, newCooperation),

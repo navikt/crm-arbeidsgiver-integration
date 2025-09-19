@@ -133,17 +133,13 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
      * @description Classification helper
      */
     private boolean isPlanUpdate() {
-        if (plan == null) {
+        if (plan == null || planLastModified == null) {
             return false;
-        }
-        if (planLastModified != null && cooperationLastModified != null && planLastModified > cooperationLastModified) {
+        } else if (planLastModified != null && cooperationLastModified == null) {
             return true;
-        }
-        if (
-            planLastModified != null &&
-            cooperationLastModified != null &&
-            planLastModified == cooperationLastModified
-        ) {
+        } else if (planLastModified > cooperationLastModified) {
+            return true;
+        } else if (planLastModified == cooperationLastModified) {
             String planidKey = saksnummer + '-' + samarbeid?.id + '-' + plan?.id;
             return key != null && key == planidKey;
         }

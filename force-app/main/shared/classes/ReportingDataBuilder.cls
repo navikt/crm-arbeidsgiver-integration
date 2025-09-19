@@ -2,6 +2,8 @@
 public with sharing class ReportingDataBuilder {
     private List<ReportingData__c> reportingDataEntries;
     private LoggerUtility logger;
+    private static final String CRM_CATEGORY = 'TAG Admin';
+    private static final String RECORD_NAME = 'Tidsmåling';
     public ReportingDataBuilder() {
         this.reportingDataEntries = new List<ReportingData__c>();
         this.logger = new LoggerUtility();
@@ -17,6 +19,7 @@ public with sharing class ReportingDataBuilder {
         ReportingData__c reportingData = createReportingDataRecord();
         reportingData.TAG_Category__c = topic;
         reportingData.TAG_Key__c = key;
+        reportingData.CRM_Category__c = CRM_CATEGORY;
         reportingData.TAG_Measurement__c = timeInMinutes;
         this.reportingDataEntries.add(reportingData);
     }
@@ -46,7 +49,7 @@ public with sharing class ReportingDataBuilder {
      * @return ReportingData__c - A new instance with common fields populated.
      */
     private ReportingData__c createReportingDataRecord() {
-        return new ReportingData__c(Name = 'Tidsmåling');
+        return new ReportingData__c(Name = RECORD_NAME);
     }
 
     /**
