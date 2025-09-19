@@ -168,7 +168,7 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
         Datetime newCooperationTime = newCooperation?.samarbeid?.getLastModifiedDate();
 
         if (existingCooperationTime == null && newCooperationTime == null) {
-            return false; // Both are null, consider them equal
+            return true; // Both are null, consider them equal
         }
         if (existingCooperationTime == null) {
             return true; // Existing is null, new is newer
