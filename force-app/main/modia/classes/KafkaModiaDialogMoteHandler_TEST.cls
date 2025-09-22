@@ -315,4 +315,46 @@ public with sharing class KafkaModiaDialogMoteHandler_TEST {
 
         System.assertEquals(3, activities.size(), '3 activities inserted. One updated with prexisting key');
     }
+
+    @isTest
+    static void should_LogTimeDeviations() {
+        DateTime testDataChangeDate = Datetime.now().addMinutes(-16); // Simulate data change 16 minutes ago
+
+        Map<String, KafkaModiaDialogMote_Model> keyToDialogMote = new Map<String, KafkaModiaDialogMote_Model>();
+
+        KafkaModiaDialogMote_Model dialogMote = new KafkaModiaDialogMote_Model();
+        dialogMote.statusEndringTidspunkt = '' + testDataChangeDate.formatGmt('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'');
+        keyToDialogMote.put('TEST', dialogMote);
+
+        Test.startTest();
+        KafkaModiaDialogMoteHandler handler = new KafkaModiaDialogMoteHandler();
+        handler.logTimeDeviations(keyToDialogMote);
+        Test.stopTest();
+
+        Assert.areEqual(
+            1,
+            [SELECT COUNT() FROM ReportingData__c],
+            'Delays more than 15 min should create a ReportingData record'
+        );
+    }
+    @isTest
+    static void should_not_LogTimeDeviations() {
+        DateTime testDataChangeDate = Datetime.now().addMinutes(-10); // Simulate data change 10 minutes ago
+
+        Map<String, KafkaModiaDialogMote_Model> keyToDialogMote = new Map<String, KafkaModiaDialogMote_Model>();
+
+        KafkaModiaDialogMote_Model dialogMote = new KafkaModiaDialogMote_Model();
+        dialogMote.statusEndringTidspunkt = '' + testDataChangeDate.formatGmt('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'');
+        keyToDialogMote.put('TEST', dialogMote);
+
+        Test.startTest();
+        KafkaModiaDialogMoteHandler handler = new KafkaModiaDialogMoteHandler();
+        handler.logTimeDeviations(keyToDialogMote);
+        Test.stopTest();
+        Assert.areEqual(
+            0,
+            [SELECT COUNT() FROM ReportingData__c],
+            'Delays less than 15 min should not create a ReportingData record'
+        );
+    }
 }

@@ -1,6 +1,6 @@
 public without sharing class KafkaModiaDialogMoteHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer {
     private Map<String, KafkaModiaDialogMote_Model> keyToDialogMote = new Map<String, KafkaModiaDialogMote_Model>();
-
+    private static final Integer AGE_THRESHOLD_MINUTES = 15;
     public void processMessages(List<KafkaMessage__c> messages) {
         for (KafkaMessage__c msg : messages) {
             try {
@@ -20,6 +20,7 @@ public without sharing class KafkaModiaDialogMoteHandler extends KafkaMessagePro
             }
         }
         convertAndUpsertDialogMote(messages);
+        logTimeDeviations(keyToDialogMote); // Create reporting data
         logger.publish();
     }
 
@@ -114,5 +115,22 @@ public without sharing class KafkaModiaDialogMoteHandler extends KafkaMessagePro
             navIdentMap.put(u.CRM_NAV_Ident__c, u);
         }
         return navIdentMap;
+    }
+
+    @TestVisible
+    private void logTimeDeviations(Map<String, KafkaModiaDialogMote_Model> keyToDialogMote) {
+        DateTime batchProcessingTime = DateTime.now();
+        ReportingDataBuilder reportingDataBuilder = new ReportingDataBuilder();
+        for (KafkaModiaDialogMote_Model dialogMote : keyToDialogMote.values()) {
+            Integer messageAge = dialogMote.getMessageAge(batchProcessingTime);
+            if (messageAge > AGE_THRESHOLD_MINUTES) {
+                reportingDataBuilder.logTimeDeviation(
+                    'teamsykefravr.isdialogmote-dialogmote-statusendring',
+                    dialogMote.key,
+                    messageAge
+                );
+            }
+        }
+        reportingDataBuilder.saveReportingDataEntries();
     }
 }

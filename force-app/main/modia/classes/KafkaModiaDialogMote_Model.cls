@@ -33,4 +33,12 @@ public with sharing class KafkaModiaDialogMote_Model implements IKafkaMessagePar
 
         return model;
     }
+
+    /**
+     * @description Calculates age in minutes from provided timestamp.
+     */
+    public Integer getMessageAge(DateTime currentTime) {
+        DateTime messageTime = SharedIntegrationFunctions.parseISODateTime(this.statusEndringTidspunkt);
+        return SharedIntegrationFunctions.calculateMinutesBetween(messageTime, currentTime);
+    }
 }
