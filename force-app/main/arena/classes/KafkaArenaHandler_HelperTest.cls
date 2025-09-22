@@ -248,4 +248,43 @@ private without sharing class KafkaArenaHandler_HelperTest {
 
         System.assertEquals(null, res);
     }
+
+    @isTest
+    static void should_LogTimeDeviations_when_timestamp_exceed_limit() {
+        List<KafkaArenaHandler_Model> arenaModels = new List<KafkaArenaHandler_Model>();
+        KafkaArenaHandler_Model arenaModel = new KafkaArenaHandler_Model();
+        arenaModel.timeStampFromMessage = Datetime.now().addMinutes(-16);
+        arenaModels.add(arenaModel);
+        Test.startTest();
+        KafkaArenaHandler_Helper.logTimeDeviations(arenaModels, 15);
+        Test.stopTest();
+
+        Assert.areEqual(1, [SELECT COUNT() FROM ReportingData__c], 'One log entry should be created');
+    }
+
+    @isTest
+    static void should_not_LogTimeDeviations_when_timestamp_is_null() {
+        List<KafkaArenaHandler_Model> arenaModels = new List<KafkaArenaHandler_Model>();
+        KafkaArenaHandler_Model arenaModel = new KafkaArenaHandler_Model();
+        arenaModel.timeStampFromMessage = null;
+        arenaModels.add(arenaModel);
+
+        Test.startTest();
+        KafkaArenaHandler_Helper.logTimeDeviations(arenaModels, 15);
+        Test.stopTest();
+
+        Assert.areEqual(0, [SELECT COUNT() FROM ReportingData__c], 'No log entry should be created');
+    }
+    @isTest
+    static void should_not_LogTimeDeviations_when_timestamp_is_within_limit() {
+        List<KafkaArenaHandler_Model> arenaModels = new List<KafkaArenaHandler_Model>();
+        KafkaArenaHandler_Model arenaModel = new KafkaArenaHandler_Model();
+        arenaModel.timeStampFromMessage = Datetime.now().addMinutes(-10);
+        arenaModels.add(arenaModel);
+        Test.startTest();
+        KafkaArenaHandler_Helper.logTimeDeviations(arenaModels, 15);
+        Test.stopTest();
+
+        Assert.areEqual(0, [SELECT COUNT() FROM ReportingData__c], 'No log entry should be created');
+    }
 }
