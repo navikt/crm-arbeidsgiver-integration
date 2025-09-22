@@ -1,6 +1,6 @@
 public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer {
     Map<String, ArbeidsplassenJobPosting> keyToJobPosting = new Map<String, ArbeidsplassenJobPosting>();
-
+    private static final Integer AGE_THRESHOLD_MINUTES = 15;
     public void processMessages(List<KafkaMessage__c> messages) {
         for (KafkaMessage__c msg : messages) {
             try {
@@ -16,6 +16,7 @@ public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends Kafk
         }
 
         convertAndUpsertJobPostings(messages);
+        logTimeDeviations(keyToJobPosting);
         logger.publish();
     }
 
@@ -35,8 +36,7 @@ public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends Kafk
             jobPostings = getJobPostingSObjects();
 
             Schema.SObjectField f = JobPosting__c.Fields.KafkaId__c;
-            Database.UpsertResult [] cr = Database.upsert(jobPostings , f, false);
-
+            Database.UpsertResult[] cr = Database.upsert(jobPostings, f, false);
         } catch (Exception e) {
             String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
             logger.setMessageErrors(messages, errorRef);
@@ -87,5 +87,18 @@ public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends Kafk
         }
 
         return jobPosting;
+    }
+
+    @TestVisible
+    private void logTimeDeviations(Map<String, ArbeidsplassenJobPosting> keyToJobPosting) {
+        DateTime batchProcessingTime = DateTime.now();
+        ReportingDataBuilder reportingDataBuilder = new ReportingDataBuilder();
+        for (ArbeidsplassenJobPosting jobPosting : keyToJobPosting.values()) {
+            Integer messageAge = jobPosting.getMessageAge(batchProcessingTime);
+            if (messageAge > AGE_THRESHOLD_MINUTES) {
+                reportingDataBuilder.logTimeDeviation('teampam.stilling-ekstern-1', jobPosting.key, messageAge);
+            }
+        }
+        reportingDataBuilder.saveReportingDataEntries();
     }
 }

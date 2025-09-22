@@ -301,4 +301,29 @@ public with sharing class ArbeidsplassenJobPostingTest {
 
         System.assert(String.isBlank(value));
     }
+
+    @isTest
+    static void should_calculate_message_age_correctly() {
+        String updatedTimeNOR = '2024-01-15T14:30:00.123456'; // 14:30 Norway time.  Norway is UTC+1 in winter, so 14:30 Norway time = 13:30 GMT
+        DateTime processedTimeGmt = DateTime.newInstanceGmt(2024, 1, 15, 13, 50, 0); // 13:50 GMT, 20 minutes after the above time
+        ArbeidsplassenJobPosting jobPosting = new ArbeidsplassenJobPosting();
+        jobPosting.updated = updatedTimeNOR;
+        Integer age = jobPosting.getMessageAge(processedTimeGmt);
+        Assert.areEqual(20, age, 'Message age should be 20 minutes');
+    }
+
+    @isTest
+    static void should_handle_invalid_date_formats() {
+        DateTime processedTimeGmt = DateTime.newInstanceGmt(2024, 1, 15, 13, 50, 0);
+        ArbeidsplassenJobPosting nullValue = new ArbeidsplassenJobPosting();
+        nullValue.updated = null;
+        ArbeidsplassenJobPosting invalidValue = new ArbeidsplassenJobPosting();
+        invalidValue.updated = 'not-a-valid-timestamp';
+        ArbeidsplassenJobPosting futureDate = new ArbeidsplassenJobPosting();
+        futureDate.updated = '2024-12-31T23:59:59.999999';
+
+        Assert.areEqual(null, nullValue.getMessageAge(processedTimeGmt), 'Should return null for null timestamp');
+        Assert.areEqual(null, invalidValue.getMessageAge(processedTimeGmt), 'Should return null for invalid timestamp');
+        Assert.areEqual(null, futureDate.getMessageAge(processedTimeGmt), 'Should return null for future timestamp');
+    }
 }

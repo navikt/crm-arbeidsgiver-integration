@@ -246,11 +246,59 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
         KafkaArbeidsplassenJobPostingHandler handler = new KafkaArbeidsplassenJobPostingHandler();
         handler.processMessages(new List<KafkaMessage__c>{ msg1 });
 
-        List<JobPosting__c> jobPostings = [SELECT Id, Account__c, Title__c, KafkaId__c, KafkaHash__c FROM JobPosting__c];
+        List<JobPosting__c> jobPostings = [
+            SELECT Id, Account__c, Title__c, KafkaId__c, KafkaHash__c
+            FROM JobPosting__c
+        ];
 
         System.assertEquals(msg1.CRM_Value__c, jobPostings[0].KafkaHash__c, 'Correct KafkaId');
         System.assertEquals(msg1.CRM_Key__c, jobPostings[0].KafkaId__c, 'Correct KafkaId');
         System.assertEquals(1, jobPostings.size(), 'Job Posting Inserted');
-        System.assertEquals('Er du engasjert i politikk, samfunn og næringsliv? Vi ser etter deg som har god kunnskap om og gjerne erfaring fra politiske styrings- og beslutningsstrukturer på nasjonalt nivå. Du evner å se helheten og setter deg raskt inn i komplekse saker. Vil du væ', jobPostings[0].Title__c, 'Correct Title');
+        System.assertEquals(
+            'Er du engasjert i politikk, samfunn og næringsliv? Vi ser etter deg som har god kunnskap om og gjerne erfaring fra politiske styrings- og beslutningsstrukturer på nasjonalt nivå. Du evner å se helheten og setter deg raskt inn i komplekse saker. Vil du væ',
+            jobPostings[0].Title__c,
+            'Correct Title'
+        );
+    }
+
+    @isTest
+    static void should_LogTimeDeviations_when_timestamp_exceed_limit() {
+        DateTime updatedTimeGmt = Datetime.now().addMinutes(-20);
+        String updatedTimestr = updatedTimeGmt.format('yyyy-MM-dd\'T\'HH:mm:ss', 'Europe/Oslo');
+        Map<String, ArbeidsplassenJobPosting> keyToJobPosting = new Map<String, ArbeidsplassenJobPosting>();
+
+        ArbeidsplassenJobPosting jobPosting = new ArbeidsplassenJobPosting();
+        jobPosting.updated = updatedTimestr;
+        keyToJobPosting.put('TEST', jobPosting);
+        Test.startTest();
+        KafkaArbeidsplassenJobPostingHandler handler = new KafkaArbeidsplassenJobPostingHandler();
+        handler.logTimeDeviations(keyToJobPosting);
+        Test.stopTest();
+
+        Assert.areEqual(
+            1,
+            [SELECT COUNT() FROM ReportingData__c],
+            'Delays more than 15 min should create a ReportingData record'
+        );
+    }
+
+    @isTest
+    static void should_not_LogTimeDeviations_when_timestamp_is_within_limit() {
+        DateTime updatedTimeGmt = Datetime.now().addMinutes(-10);
+        String updatedTimestr = updatedTimeGmt.format('yyyy-MM-dd\'T\'HH:mm:ss', 'Europe/Oslo');
+        Map<String, ArbeidsplassenJobPosting> keyToJobPosting = new Map<String, ArbeidsplassenJobPosting>();
+
+        ArbeidsplassenJobPosting jobPosting = new ArbeidsplassenJobPosting();
+        jobPosting.updated = updatedTimestr;
+        keyToJobPosting.put('TEST', jobPosting);
+        Test.startTest();
+        KafkaArbeidsplassenJobPostingHandler handler = new KafkaArbeidsplassenJobPostingHandler();
+        handler.logTimeDeviations(keyToJobPosting);
+        Test.stopTest();
+        Assert.areEqual(
+            0,
+            [SELECT COUNT() FROM ReportingData__c],
+            'Delays less than 15 min should not create a ReportingData record'
+        );
     }
 }
