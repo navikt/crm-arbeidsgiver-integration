@@ -33,4 +33,21 @@ public with sharing class KafkaModiaDialogMote_ModelTEST {
         System.assertEquals(false, model.sykmelder);
         System.assertEquals('1805', model.enhetNr);
     }
+
+    @isTest
+    static void getMessageAge() {
+        KafkaModiaDialogMote_Model model = KafkaModiaDialogMote_Model.parse(JSON, null, null);
+        model.statusEndringTidspunkt = '2025-01-19T18:00:00.000Z';
+        Assert.areEqual(
+            60,
+            model.getMessageAge(DateTime.newInstanceGmt(2025, 1, 19, 19, 0, 0)),
+            'Age should be 60 minutes'
+        );
+        Assert.areEqual(
+            0,
+            model.getMessageAge(DateTime.newInstanceGmt(2025, 1, 19, 18, 0, 0)),
+            'Age should be 0 minutes'
+        );
+        Assert.isNull(model.getMessageAge(null), 'Age should be null');
+    }
 }

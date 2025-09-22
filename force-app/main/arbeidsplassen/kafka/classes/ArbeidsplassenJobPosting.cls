@@ -133,4 +133,13 @@ public with sharing class ArbeidsplassenJobPosting implements IKafkaMessageParse
 
         return model;
     }
+
+    public Integer getMessageAge(DateTime currentTime) {
+        DateTime timestampFromMessage = SharedIntegrationFunctions.convertNorwegianTimeToGmt(this.updated);
+
+        if (currentTime == null || timestampFromMessage == null) {
+            return null;
+        }
+        return SharedIntegrationFunctions.calculateMinutesBetween(timestampFromMessage, currentTime);
+    }
 }

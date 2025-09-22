@@ -73,9 +73,8 @@ public inherited sharing class KafkaArenaHandler_Helper {
                 KafkaId__c = model.key,
                 RegisteredByNavIdent__c = model.regUser,
                 CaseWorkerNavIdent__c = model.saksbehandler,
-                TAG_Source__c = 'Arena' //,
-                // TimeStampFromMessage__c = extractMessageTimeStampFromKey(model.key)
-                // TimeStampFromMessage__c temporarily disabled due to test changes; uncomment when ready to re-enable.
+                TAG_Source__c = 'Arena',
+                TimeStampFromMessage__c = model.timeStampFromMessage
             );
 
             if (model.etternavn != null) {
@@ -125,13 +124,19 @@ public inherited sharing class KafkaArenaHandler_Helper {
         }
     }
 
-    // Extract DateTime from key
-    public static DateTime extractMessageTimeStampFromKey(String key) {
-        // Verify that key looks like a datetime
-        if (key == null || key.length() != 26) {
-            return null;
+    public static void logTimeDeviations(List<KafkaArenaHandler_Model> arenaModels, Integer thresholdMinutes) {
+        DateTime batchProcessingTime = DateTime.now();
+        ReportingDataBuilder reportingDataBuilder = new ReportingDataBuilder();
+        for (KafkaArenaHandler_Model am : arenaModels) {
+            Integer messageAge = am.getMessageAge(batchProcessingTime);
+            if (messageAge > thresholdMinutes) {
+                reportingDataBuilder.logTimeDeviation(
+                    'teamarenanais.aapen-arena-arbeidsgiveraktivitetendret-v1',
+                    am.key,
+                    messageAge
+                );
+            }
         }
-        DateTime dt = SharedIntegrationFunctions.convertNorwegianTimeToGmt(key);
-        return dt;
+        reportingDataBuilder.saveReportingDataEntries();
     }
 }

@@ -17,6 +17,7 @@ public without sharing class KafkaArenaHandler extends KafkaMessageProcessor imp
             arenaActivities = KafkaArenaHandler_Helper.removeDuplicates(arenaActivities);
 
             upsert arenaActivities ArenaActivity__c.KafkaId__c;
+            KafkaArenaHandler_Helper.logTimeDeviations(arenaModels, 15);
         } catch (Exception e) {
             String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
             logger.setMessageErrors(messages, errorRef);
