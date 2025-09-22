@@ -40,11 +40,19 @@ public with sharing class SharedIntegrationFunctions {
      * @return DateTime object or null if the year is out of range.
      */
     public static DateTime parseISODateTime(String datetimeString) {
-        Datetime result = (DateTime) JSON.deserialize('"' + datetimeString + '"', DateTime.class);
-        if (result.year() < 1700 || result.year() > 4000) {
+        if (datetimeString == null || String.isBlank(datetimeString.trim())) {
             return null;
         }
-        return result;
+        try {
+            Datetime result = (DateTime) JSON.deserialize('"' + datetimeString + '"', DateTime.class);
+            if (result.year() < 1700 || result.year() > 4000) {
+                return null;
+            }
+            return result;
+        } catch (Exception e) {
+            System.debug(LoggingLevel.ERROR, 'Error parsing ISO DateTime: ' + e.getMessage());
+            return null;
+        }
     }
 
     /**

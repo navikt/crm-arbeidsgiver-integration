@@ -176,5 +176,16 @@ private without sharing class SharedIntegrationFunctionsTest {
             SharedIntegrationFunctions.parseISODateTime('2020-06-01T00:30:00.000+0200'),
             'Expected +0200 offset to be parsed as GMT time'
         );
+
+        System.assertEquals(
+            null,
+            SharedIntegrationFunctions.parseISODateTime('not a date'),
+            'Expected invalid date string to return null'
+        );
+        System.assertEquals(
+            null,
+            SharedIntegrationFunctions.parseISODateTime(''),
+            'Expected blank date string to return null'
+        );
     }
 }
