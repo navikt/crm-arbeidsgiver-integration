@@ -28,10 +28,10 @@ public with sharing class KafkaToiAvtaleHandlerTest {
             insert qs;
         }
 
-        NavUnit__c unit = new NavUnit__c(Name = 'NAV Test', INT_UnitNumber__c = '0219', CRM_QueueId__c = g.Id);
+        NavUnit__c unit = new NavUnit__c(Name = 'Nav Test', INT_UnitNumber__c = '0219', CRM_QueueId__c = g.Id);
         insert unit;
 
-        List<NavUnit__c> units = [SELECT Id, INT_UnitNumber__c FROM NavUnit__c WHERE Name = 'NAV Test'];
+        List<NavUnit__c> units = [SELECT Id, INT_UnitNumber__c FROM NavUnit__c WHERE Name = 'Nav Test'];
 
         System.assertEquals(1, units.size(), 'Unit Inserted');
         System.assertEquals('0219', units[0].INT_UnitNumber__c, 'Unit nr Inserted');
@@ -153,10 +153,10 @@ public with sharing class KafkaToiAvtaleHandlerTest {
             insert qs;
         }
 
-        NavUnit__c unit = new NavUnit__c(Name = 'NAV Test', INT_UnitNumber__c = '0219', CRM_QueueId__c = g.Id);
+        NavUnit__c unit = new NavUnit__c(Name = 'Nav Test', INT_UnitNumber__c = '0219', CRM_QueueId__c = g.Id);
         insert unit;
 
-        List<NavUnit__c> units = [SELECT Id, INT_UnitNumber__c FROM NavUnit__c WHERE Name = 'NAV Test'];
+        List<NavUnit__c> units = [SELECT Id, INT_UnitNumber__c FROM NavUnit__c WHERE Name = 'Nav Test'];
 
         System.assertEquals(1, units.size(), 'Unit Inserted');
         System.assertEquals('0219', units[0].INT_UnitNumber__c, 'Unit nr Inserted');
@@ -241,10 +241,10 @@ public with sharing class KafkaToiAvtaleHandlerTest {
             insert qs;
         }
 
-        NavUnit__c unit = new NavUnit__c(Name = 'NAV Test', INT_UnitNumber__c = '0219', CRM_QueueId__c = g.Id);
+        NavUnit__c unit = new NavUnit__c(Name = 'Nav Test', INT_UnitNumber__c = '0219', CRM_QueueId__c = g.Id);
         insert unit;
 
-        List<NavUnit__c> units = [SELECT Id, INT_UnitNumber__c FROM NavUnit__c WHERE Name = 'NAV Test'];
+        List<NavUnit__c> units = [SELECT Id, INT_UnitNumber__c FROM NavUnit__c WHERE Name = 'Nav Test'];
 
         System.assertEquals(1, units.size(), 'Unit Inserted');
         System.assertEquals('0219', units[0].INT_UnitNumber__c, 'Unit nr Inserted');
@@ -382,10 +382,10 @@ public with sharing class KafkaToiAvtaleHandlerTest {
 
         System.assertEquals(1, groups.size(), 'Group Inserted');
 
-        NavUnit__c unit = new NavUnit__c(Name = 'NAV Test', INT_UnitNumber__c = '0219', CRM_QueueId__c = g.Id);
+        NavUnit__c unit = new NavUnit__c(Name = 'Nav Test', INT_UnitNumber__c = '0219', CRM_QueueId__c = g.Id);
         insert unit;
 
-        List<NavUnit__c> units = [SELECT Id, INT_UnitNumber__c FROM NavUnit__c WHERE Name = 'NAV Test'];
+        List<NavUnit__c> units = [SELECT Id, INT_UnitNumber__c FROM NavUnit__c WHERE Name = 'Nav Test'];
 
         System.assertEquals(1, units.size(), 'Unit Inserted');
         System.assertEquals('0219', units[0].INT_UnitNumber__c, 'Unit nr Inserted');
@@ -482,10 +482,10 @@ public with sharing class KafkaToiAvtaleHandlerTest {
 
         System.assertEquals(1, groups.size(), 'Group Inserted');
 
-        NavUnit__c unit = new NavUnit__c(Name = 'NAV Test', INT_UnitNumber__c = '0219', CRM_QueueId__c = g.Id);
+        NavUnit__c unit = new NavUnit__c(Name = 'Nav Test', INT_UnitNumber__c = '0219', CRM_QueueId__c = g.Id);
         insert unit;
 
-        List<NavUnit__c> units = [SELECT Id, INT_UnitNumber__c FROM NavUnit__c WHERE Name = 'NAV Test'];
+        List<NavUnit__c> units = [SELECT Id, INT_UnitNumber__c FROM NavUnit__c WHERE Name = 'Nav Test'];
 
         System.assertEquals(1, units.size(), 'Unit Inserted');
         System.assertEquals('0219', units[0].INT_UnitNumber__c, 'Unit nr Inserted');
@@ -606,10 +606,10 @@ public with sharing class KafkaToiAvtaleHandlerTest {
             insert qs;
         }
 
-        NavUnit__c unit = new NavUnit__c(Name = 'NAV Test', INT_UnitNumber__c = '0219', CRM_QueueId__c = g.Id);
+        NavUnit__c unit = new NavUnit__c(Name = 'Nav Test', INT_UnitNumber__c = '0219', CRM_QueueId__c = g.Id);
         insert unit;
 
-        List<NavUnit__c> units = [SELECT Id, INT_UnitNumber__c FROM NavUnit__c WHERE Name = 'NAV Test'];
+        List<NavUnit__c> units = [SELECT Id, INT_UnitNumber__c FROM NavUnit__c WHERE Name = 'Nav Test'];
 
         System.assertEquals(1, units.size(), 'Unit Inserted');
         System.assertEquals('0219', units[0].INT_UnitNumber__c, 'Unit nr Inserted');
@@ -739,10 +739,10 @@ public with sharing class KafkaToiAvtaleHandlerTest {
             insert qs;
         }
 
-        NavUnit__c unit = new NavUnit__c(Name = 'NAV Test', INT_UnitNumber__c = '0220', CRM_QueueId__c = g.Id);
+        NavUnit__c unit = new NavUnit__c(Name = 'Nav Test', INT_UnitNumber__c = '0220', CRM_QueueId__c = g.Id);
         insert unit;
 
-        List<NavUnit__c> units = [SELECT Id, INT_UnitNumber__c FROM NavUnit__c WHERE Name = 'NAV Test'];
+        List<NavUnit__c> units = [SELECT Id, INT_UnitNumber__c FROM NavUnit__c WHERE Name = 'Nav Test'];
 
         System.assertEquals(1, units.size(), 'Unit Inserted');
         System.assertEquals('0220', units[0].INT_UnitNumber__c, 'Unit nr Inserted');
@@ -862,10 +862,10 @@ public with sharing class KafkaToiAvtaleHandlerTest {
             insert qs;
         }
 
-        NavUnit__c unit = new NavUnit__c(Name = 'NAV Test', INT_UnitNumber__c = '0220');
+        NavUnit__c unit = new NavUnit__c(Name = 'Nav Test', INT_UnitNumber__c = '0220');
         insert unit;
 
-        List<NavUnit__c> units = [SELECT Id, INT_UnitNumber__c FROM NavUnit__c WHERE Name = 'NAV Test'];
+        List<NavUnit__c> units = [SELECT Id, INT_UnitNumber__c FROM NavUnit__c WHERE Name = 'Nav Test'];
 
         System.assertEquals(1, units.size(), 'Unit Inserted');
         System.assertEquals('0220', units[0].INT_UnitNumber__c, 'Unit nr Inserted');
@@ -956,10 +956,10 @@ public with sharing class KafkaToiAvtaleHandlerTest {
             insert qs;
         }
 
-        NavUnit__c unit = new NavUnit__c(Name = 'NAV Test', INT_UnitNumber__c = '0219', CRM_QueueId__c = g.Id);
+        NavUnit__c unit = new NavUnit__c(Name = 'Nav Test', INT_UnitNumber__c = '0219', CRM_QueueId__c = g.Id);
         insert unit;
 
-        List<NavUnit__c> units = [SELECT Id, INT_UnitNumber__c FROM NavUnit__c WHERE Name = 'NAV Test'];
+        List<NavUnit__c> units = [SELECT Id, INT_UnitNumber__c FROM NavUnit__c WHERE Name = 'Nav Test'];
 
         System.assertEquals(1, units.size(), 'Unit Inserted');
         System.assertEquals('0219', units[0].INT_UnitNumber__c, 'Unit nr Inserted');
@@ -1075,10 +1075,10 @@ public with sharing class KafkaToiAvtaleHandlerTest {
             insert qs;
         }
 
-        NavUnit__c unit = new NavUnit__c(Name = 'NAV Test', INT_UnitNumber__c = '0219', CRM_QueueId__c = g.Id);
+        NavUnit__c unit = new NavUnit__c(Name = 'Nav Test', INT_UnitNumber__c = '0219', CRM_QueueId__c = g.Id);
         insert unit;
 
-        List<NavUnit__c> units = [SELECT Id, INT_UnitNumber__c FROM NavUnit__c WHERE Name = 'NAV Test'];
+        List<NavUnit__c> units = [SELECT Id, INT_UnitNumber__c FROM NavUnit__c WHERE Name = 'Nav Test'];
 
         System.assertEquals(1, units.size(), 'Unit Inserted');
         System.assertEquals('0219', units[0].INT_UnitNumber__c, 'Unit nr Inserted');
