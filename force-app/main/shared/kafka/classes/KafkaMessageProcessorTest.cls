@@ -216,7 +216,7 @@ public with sharing class KafkaMessageProcessorTest {
 
     @isTest
     static void getNavUnitsMap() {
-        NavUnit__c unit = new NavUnit__c(Name = 'NAV Test', INT_UnitNumber__c = '0303');
+        NavUnit__c unit = new NavUnit__c(Name = 'Nav Test', INT_UnitNumber__c = '0303');
         insert unit;
 
         Map<String, NavUnit__c> navUnitMap = new KafkaMessageProcessorExtension().addNavUnit('0303').getNavUnitsMap();

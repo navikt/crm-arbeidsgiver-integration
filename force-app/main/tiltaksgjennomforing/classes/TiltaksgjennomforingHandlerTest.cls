@@ -7,9 +7,9 @@ public with sharing class TiltaksgjennomforingHandlerTest {
         Account account2 = new Account(Name = 'Test Employer 2', INT_OrganizationNumber__c = '973113632');
         insert account2;
 
-        NavUnit__c unit1 = new NavUnit__c(Name = 'NAV Unit 1', INT_UnitNumber__c = '0219');
+        NavUnit__c unit1 = new NavUnit__c(Name = 'Nav Unit 1', INT_UnitNumber__c = '0219');
         insert unit1;
-        NavUnit__c unit2 = new NavUnit__c(Name = 'NAV Unit 2', INT_UnitNumber__c = '0239');
+        NavUnit__c unit2 = new NavUnit__c(Name = 'Nav Unit 2', INT_UnitNumber__c = '0239');
         insert unit2;
 
         List<User> users = TestDataFactory.getUsers(2, 'Standard User', false, false);
