@@ -2,7 +2,8 @@
 public with sharing class ReportingDataBuilder {
     private List<ReportingData__c> reportingDataEntries;
     private LoggerUtility logger;
-    private static final String CRM_CATEGORY = 'TAG Admin';
+    // private static final String CRM_CATEGORY = 'TAG Admin';
+    private static final String CRM_CATEGORY = '';
     private static final String RECORD_NAME = 'Tidsmåling';
     public ReportingDataBuilder() {
         this.reportingDataEntries = new List<ReportingData__c>();
