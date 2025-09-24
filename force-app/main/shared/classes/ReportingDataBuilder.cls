@@ -2,8 +2,10 @@
 public with sharing class ReportingDataBuilder {
     private List<ReportingData__c> reportingDataEntries;
     private LoggerUtility logger;
-    private static final String CRM_CATEGORY = 'TAG Admin';
+    // private static final String CRM_CATEGORY = 'TAG Admin';
+    private static final String CRM_CATEGORY = '';
     private static final String RECORD_NAME = 'Tidsmåling';
+
     public ReportingDataBuilder() {
         this.reportingDataEntries = new List<ReportingData__c>();
         this.logger = new LoggerUtility();
@@ -24,6 +26,11 @@ public with sharing class ReportingDataBuilder {
         this.reportingDataEntries.add(reportingData);
     }
 
+    /**
+     * @description Saves all accumulated ReportingData__c records to the database.
+     * If the list is empty, no action is taken.
+     * In case of DML exceptions, logs the error using LoggerUtility. Logs at Info level since this is not a critical functionality.
+     */
     public void saveReportingDataEntries() {
         if (!this.reportingDataEntries.isEmpty()) {
             try {
