@@ -244,7 +244,7 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
 
                 IACooperation__c iaCooperation = createIACooperation(fiaCooperation);
                 iaCooperationsToUpsert.add(iaCooperation);
-                if (fiaCooperation.plan?.temaer == null) {
+                if (fiaCooperation.plan?.temaer == null || fiaCooperation.plan?.status == STATUS_DELETED) {
                     continue;
                 }
                 for (FiaCooperation.Tema tema : fiaCooperation.plan.temaer) {
