@@ -5,8 +5,6 @@ public class TAG_DeleteKafkaMessagesBatchJob extends KafkaMessageProcessor imple
         ' CRM_Topic__c = \'teamarenanais.aapen-arena-arbeidsgiveraktivitetendret-v1\' OR' +
         ' CRM_Topic__c = \'arbeidsgiver.tiltak-avtale-hendelse\' OR' +
         ' CRM_Topic__c = \'public-ereg-cache-org-json\' OR' +
-        ' CRM_Topic__c = \'pia.ia-sak-v1\' OR' +
-        ' CRM_Topic__c = \'pia.ia-sak-leveranse-v1\' OR' +
         ' CRM_Topic__c = \'pia.fullfort-behovsvurdering-v1\' OR' +
         ' CRM_Topic__c = \'pia.ia-sak-v1\' OR' +
         ' CRM_Topic__c = \'pia.samarbeidsplan-v1\' OR' +
@@ -49,5 +47,6 @@ team-dialog.crm-kafka-activity-events
 team-dialog.crm-kafka-activity-oppgaver
 gg-arbeidsgiver-aktivitet-v1-p
 privat-arbeidsgiver-aktivitet-crm
+pia.ia-sak-leveranse-v1
 */
 
