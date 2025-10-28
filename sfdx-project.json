@@ -8,7 +8,7 @@
             "dependencies": [
                 {
                     "package": "crm-platform-base",
-                    "versionNumber": "0.283.0.LATEST"
+                    "versionNumber": "0.287.0.LATEST"
                 },
                 {
                     "package": "crm-platform-email-scheduling",
@@ -28,7 +28,7 @@
                 },
                 {
                     "package": "crm-platform-reporting",
-                    "versionNumber": "0.43.0.LATEST"
+                    "versionNumber": "0.44.0.LATEST"
                 },
                 {
                     "package": "crm-shared-timeline",
@@ -43,12 +43,28 @@
                     "versionNumber": "0.36.0.LATEST"
                 },
                 {
+                    "package": "platform-data-model",
+                    "versionNumber": "0.1.2.LATEST"
+                },
+                {
+                    "package": "custom-metadata-dao",
+                    "versionNumber": "0.1.2.LATEST"
+                },
+                {
+                    "package": "custom-permission-helper",
+                    "versionNumber": "0.1.2.LATEST"
+                },
+                {
+                    "package": "feature-toggle",
+                    "versionNumber": "0.1.3.LATEST"
+                },
+                {
                     "package": "crm-platform-integration",
                     "versionNumber": "0.159.0.LATEST"
                 },
                 {
                     "package": "crm-journal-utilities",
-                    "versionNumber": "0.50.0.LATEST"
+                    "versionNumber": "0.51.0.LATEST"
                 },
                 {
                     "package": "crm-platform-oppgave",
@@ -56,7 +72,7 @@
                 },
                 {
                     "package": "crm-arbeidsgiver-base",
-                    "versionNumber": "1.601.0.LATEST"
+                    "versionNumber": "1.613.0.LATEST"
                 }
             ]
         }
@@ -69,6 +85,10 @@
         "crm-platform-email-scheduling": "0Ho2o000000fxWwCAI",
         "crm-platform-access-control": "0Ho2o0000008OR3CAM",
         "crm-henvendelse-base": "0Ho7U000000000kSAA",
+        "platform-data-model": "0HoKB00000000010AA",
+        "custom-metadata-dao": "0HoKB000000000B0AQ",
+        "custom-permission-helper": "0HoKB000000000f0AA",
+        "feature-toggle": "0HoKB000000000V0AQ",
         "crm-platform-integration": "0Ho2o0000008ORrCAM",
         "crm-shared-base": "0Ho2o000000fxXLCAY",
         "crm-platform-reporting": "0Ho2o0000008OSfCAM",
@@ -79,5 +99,11 @@
         "crm-platform-oppgave": "0Ho2o000000fxXzCAI",
         "crm-arbeidsgiver-integration": "0Ho2o0000008OSpCAM",
         "crm-arbeidsgiver-base": "0Ho2o0000008OQtCAM"
+    },
+    "packageKeyConfig": {
+        "platform-data-model": false,
+        "custom-metadata-dao": false,
+        "custom-permission-helper": false,
+        "feature-toggle": false
     }
 }
