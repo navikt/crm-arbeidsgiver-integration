@@ -86,6 +86,11 @@ public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends Kafk
             jobPosting.Account__c = accountMap.get(model.employer.orgnr).Id;
         }
 
+        if (model.getProperty('rekrutteringshjelp') == 'true') {
+            jobPosting.RecruitmentAssistance__c = true;
+            jobPosting.RecruitmentPhone__c = model.getProperty('rekrutteringshjelpTelefonnummer');
+        }
+
         return jobPosting;
     }
 

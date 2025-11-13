@@ -154,6 +154,324 @@ public with sharing class ArbeidsplassenJobPostingTest {
         '\n' +
         '}';
 
+    public static final String JSON_RECRUITMENT_HELP =
+        '{\n' +
+        '  "uuid": "21c2a9e4-d013-4bf5-b30e-225d8695088d",\n' +
+        '  "adnr": "1059662",\n' +
+        '  "title": "Trenger en helt",\n' +
+        '  "status": "ACTIVE",\n' +
+        '  "privacy": "SHOW_ALL",\n' +
+        '  "administration": {\n' +
+        '    "status": "DONE",\n' +
+        '    "remarks": [],\n' +
+        '    "comments": "Auto approved - 2025-10-28T13:11:30.355133675\\n",\n' +
+        '    "reportee": "AUTO",\n' +
+        '    "navIdent": ""\n' +
+        '  },\n' +
+        '  "published": "2025-10-28T13:10:53",\n' +
+        '  "expires": "2025-11-18T00:00:00",\n' +
+        '  "created": "2025-10-28T13:11:30.528326",\n' +
+        '  "updated": "2025-10-28T13:11:39.663852",\n' +
+        '  "employer": {\n' +
+        '    "name": "ORDKNAPP BLOMSTRETE TIGER AS",\n' +
+        '    "publicName": "ORDKNAPP BLOMSTRETE TIGER AS",\n' +
+        '    "orgnr": "312113341",\n' +
+        '    "parentOrgnr": "311185268",\n' +
+        '    "orgform": "BEDR"\n' +
+        '  },\n' +
+        '  "categories": [],\n' +
+        '  "source": "Stillingsregistrering",\n' +
+        '  "medium": "Stillingsregistrering",\n' +
+        '  "reference": "21c2a9e4-d013-4bf5-b30e-225d8695088d",\n' +
+        '  "publishedByAdmin": "2025-10-28T13:11:30.355187",\n' +
+        '  "businessName": "Ordknapp Blomstrete Tiger As",\n' +
+        '  "locations": [\n' +
+        '    {\n' +
+        '      "address": "Kong Oscarsgate 8B",\n' +
+        '      "postalCode": "3112",\n' +
+        '      "county": "VESTFOLD",\n' +
+        '      "municipal": "TØNSBERG",\n' +
+        '      "city": "TØNSBERG",\n' +
+        '      "country": "NORGE",\n' +
+        '      "latitude": null,\n' +
+        '      "longitude": null,\n' +
+        '      "municipal_code": "3905",\n' +
+        '      "county_code": "39"\n' +
+        '    }\n' +
+        '  ],\n' +
+        '  "properties": [\n' +
+        '    {\n' +
+        '      "key": "extent",\n' +
+        '      "value": "Heltid"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "rekrutteringshjelp",\n' +
+        '      "value": "true"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "rekrutteringshjelpTelefonnummer",\n' +
+        '      "value": "12312312"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "workday",\n' +
+        '      "value": "[\\"Ukedager\\"]"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "positioncount",\n' +
+        '      "value": "1"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "engagementtype",\n' +
+        '      "value": "Vikariat"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "starttime",\n' +
+        '      "value": "Etter avtale"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "employerdescription",\n' +
+        '      "value": "<p>Vi selger tigre, blomstre og knapper.</p>\\n"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "remote",\n' +
+        '      "value": "Hybridkontor"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "classification_styrk08_code",\n' +
+        '      "value": "8154"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "applicationemail",\n' +
+        '      "value": "test@testnav.navtest"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "sector",\n' +
+        '      "value": "Privat"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "workhours",\n' +
+        '      "value": "[\\"Dagtid\\"]"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "applicationdue",\n' +
+        '      "value": "Snarest"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "jobtitle",\n' +
+        '      "value": "Bandasjearbeider"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "classification_styrk08_score",\n' +
+        '      "value": "1.0"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "jobarrangement",\n' +
+        '      "value": "Turnus"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "adtext",\n' +
+        '      "value": "<p>Kor e alle helter hen?<br />\\nStå opp igjen<br />\\nZorro kom tilbake<br />\\nKem ska redde verden no?<br />\\nPrøysen og barnatro<br />\\nE nostalgi på video</p>\\n"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "workLanguage",\n' +
+        '      "value": "[\\"Norsk\\"]"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "adtextFormat",\n' +
+        '      "value": "ikkeStrukturert"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "ontologyJobtitle",\n' +
+        '      "value": "{\\"konseptId\\":254881,\\"label\\":\\"Bandasjearbeider\\",\\"styrk08\\":\\"8154\\"}"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "classification_input_source",\n' +
+        '      "value": "ontologyJobtitle"\n' +
+        '    }\n' +
+        '  ],\n' +
+        '  "contacts": [],\n' +
+        '  "classifications": [\n' +
+        '    {\n' +
+        '      "categoryType": "JANZZ",\n' +
+        '      "code": "254881",\n' +
+        '      "name": "Bandasjearbeider",\n' +
+        '      "score": 1.0,\n' +
+        '      "janzzParentId": "254881"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "categoryType": "ESCO",\n' +
+        '      "code": "http://data.europa.eu/esco/isco/C8154",\n' +
+        '      "name": "Bandasjearbeider",\n' +
+        '      "score": 1.0,\n' +
+        '      "janzzParentId": "254881"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "categoryType": "STYRK08",\n' +
+        '      "code": "8154",\n' +
+        '      "name": "Operatører innen tekstilbearbeiding",\n' +
+        '      "score": 1.0,\n' +
+        '      "janzzParentId": "254881"\n' +
+        '    }\n' +
+        '  ]\n' +
+        '}';
+
+    public static final String JSON_RECRUITMENT_HELP_FALSE =
+        '{\n' +
+        '  "uuid": "21c2a9e4-d013-4bf5-b30e-225d8695088d",\n' +
+        '  "adnr": "1059662",\n' +
+        '  "title": "Trenger en helt",\n' +
+        '  "status": "ACTIVE",\n' +
+        '  "privacy": "SHOW_ALL",\n' +
+        '  "administration": {\n' +
+        '    "status": "DONE",\n' +
+        '    "remarks": [],\n' +
+        '    "comments": "Auto approved - 2025-10-28T13:11:30.355133675\\n",\n' +
+        '    "reportee": "AUTO",\n' +
+        '    "navIdent": ""\n' +
+        '  },\n' +
+        '  "published": "2025-10-28T13:10:53",\n' +
+        '  "expires": "2025-11-18T00:00:00",\n' +
+        '  "created": "2025-10-28T13:11:30.528326",\n' +
+        '  "updated": "2025-10-28T13:11:39.663852",\n' +
+        '  "employer": {\n' +
+        '    "name": "ORDKNAPP BLOMSTRETE TIGER AS",\n' +
+        '    "publicName": "ORDKNAPP BLOMSTRETE TIGER AS",\n' +
+        '    "orgnr": "312113341",\n' +
+        '    "parentOrgnr": "311185268",\n' +
+        '    "orgform": "BEDR"\n' +
+        '  },\n' +
+        '  "categories": [],\n' +
+        '  "source": "Stillingsregistrering",\n' +
+        '  "medium": "Stillingsregistrering",\n' +
+        '  "reference": "21c2a9e4-d013-4bf5-b30e-225d8695088d",\n' +
+        '  "publishedByAdmin": "2025-10-28T13:11:30.355187",\n' +
+        '  "businessName": "Ordknapp Blomstrete Tiger As",\n' +
+        '  "locations": [\n' +
+        '    {\n' +
+        '      "address": "Kong Oscarsgate 8B",\n' +
+        '      "postalCode": "3112",\n' +
+        '      "county": "VESTFOLD",\n' +
+        '      "municipal": "TØNSBERG",\n' +
+        '      "city": "TØNSBERG",\n' +
+        '      "country": "NORGE",\n' +
+        '      "latitude": null,\n' +
+        '      "longitude": null,\n' +
+        '      "municipal_code": "3905",\n' +
+        '      "county_code": "39"\n' +
+        '    }\n' +
+        '  ],\n' +
+        '  "properties": [\n' +
+        '    {\n' +
+        '      "key": "extent",\n' +
+        '      "value": "Heltid"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "rekrutteringshjelp",\n' +
+        '      "value": "false"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "workday",\n' +
+        '      "value": "[\\"Ukedager\\"]"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "positioncount",\n' +
+        '      "value": "1"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "engagementtype",\n' +
+        '      "value": "Vikariat"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "starttime",\n' +
+        '      "value": "Etter avtale"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "employerdescription",\n' +
+        '      "value": "<p>Vi selger tigre, blomstre og knapper.</p>\\n"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "remote",\n' +
+        '      "value": "Hybridkontor"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "classification_styrk08_code",\n' +
+        '      "value": "8154"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "applicationemail",\n' +
+        '      "value": "test@testnav.navtest"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "sector",\n' +
+        '      "value": "Privat"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "workhours",\n' +
+        '      "value": "[\\"Dagtid\\"]"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "applicationdue",\n' +
+        '      "value": "Snarest"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "jobtitle",\n' +
+        '      "value": "Bandasjearbeider"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "classification_styrk08_score",\n' +
+        '      "value": "1.0"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "jobarrangement",\n' +
+        '      "value": "Turnus"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "adtext",\n' +
+        '      "value": "<p>Kor e alle helter hen?<br />\\nStå opp igjen<br />\\nZorro kom tilbake<br />\\nKem ska redde verden no?<br />\\nPrøysen og barnatro<br />\\nE nostalgi på video</p>\\n"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "workLanguage",\n' +
+        '      "value": "[\\"Norsk\\"]"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "adtextFormat",\n' +
+        '      "value": "ikkeStrukturert"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "ontologyJobtitle",\n' +
+        '      "value": "{\\"konseptId\\":254881,\\"label\\":\\"Bandasjearbeider\\",\\"styrk08\\":\\"8154\\"}"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "classification_input_source",\n' +
+        '      "value": "ontologyJobtitle"\n' +
+        '    }\n' +
+        '  ],\n' +
+        '  "contacts": [],\n' +
+        '  "classifications": [\n' +
+        '    {\n' +
+        '      "categoryType": "JANZZ",\n' +
+        '      "code": "254881",\n' +
+        '      "name": "Bandasjearbeider",\n' +
+        '      "score": 1.0,\n' +
+        '      "janzzParentId": "254881"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "categoryType": "ESCO",\n' +
+        '      "code": "http://data.europa.eu/esco/isco/C8154",\n' +
+        '      "name": "Bandasjearbeider",\n' +
+        '      "score": 1.0,\n' +
+        '      "janzzParentId": "254881"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "categoryType": "STYRK08",\n' +
+        '      "code": "8154",\n' +
+        '      "name": "Operatører innen tekstilbearbeiding",\n' +
+        '      "score": 1.0,\n' +
+        '      "janzzParentId": "254881"\n' +
+        '    }\n' +
+        '  ]\n' +
+        '}';
+
     @IsTest
     static void parse_successNoNulls() {
         ArbeidsplassenJobPosting model = ArbeidsplassenJobPosting.parse(JSON, 'testkey', 'testhash');
@@ -222,12 +540,112 @@ public with sharing class ArbeidsplassenJobPostingTest {
     }
 
     @IsTest
+    static void parse_successRecruitment() {
+        ArbeidsplassenJobPosting model = ArbeidsplassenJobPosting.parse(JSON_RECRUITMENT_HELP, 'testkey', 'testhash');
+
+        System.assertEquals('21c2a9e4-d013-4bf5-b30e-225d8695088d', model.uuid);
+        System.assertEquals('Trenger en helt', model.title);
+        System.assertEquals('ACTIVE', model.status);
+        System.assertEquals('2025-10-28T13:10:53', model.published);
+        System.assertEquals('2025-11-18T00:00:00', model.expires);
+        System.assertEquals('2025-10-28T13:11:30.528326', model.created);
+        System.assertEquals('2025-10-28T13:11:39.663852', model.updated);
+        System.assertEquals('Stillingsregistrering', model.source);
+        System.assertEquals('Stillingsregistrering', model.medium);
+        System.assertEquals('21c2a9e4-d013-4bf5-b30e-225d8695088d', model.reference);
+        System.assertEquals('Ordknapp Blomstrete Tiger As', model.businessName);
+        System.assertEquals(1, model.locations.size());
+        System.assertEquals('Kong Oscarsgate 8B', model.locations[0].address);
+        System.assertEquals('TØNSBERG', model.locations[0].city);
+        System.assertEquals('NORGE', model.locations[0].country);
+        System.assertEquals('VESTFOLD', model.locations[0].county);
+        System.assertEquals('39', model.locations[0].county_code);
+        System.assertEquals(null, model.locations[0].latitude);
+        System.assertEquals(null, model.locations[0].longitude);
+        System.assertEquals('TØNSBERG', model.locations[0].municipal);
+        System.assertEquals('3905', model.locations[0].municipal_code);
+        System.assertEquals('3112', model.locations[0].postalCode);
+        System.assertEquals(22, model.properties.size());
+        System.assertEquals(0, model.categories.size());
+        System.assertEquals(0, model.contacts.size());
+        System.assertEquals('ORDKNAPP BLOMSTRETE TIGER AS', model.employer.name);
+        System.assertEquals('ORDKNAPP BLOMSTRETE TIGER AS', model.employer.publicName);
+        System.assertEquals('312113341', model.employer.orgnr);
+        System.assertEquals('311185268', model.employer.parentOrgnr);
+        System.assertEquals('BEDR', model.employer.orgform);
+    }
+
+    @IsTest
+    static void parse_successRecruitmentFalse() {
+        ArbeidsplassenJobPosting model = ArbeidsplassenJobPosting.parse(
+            JSON_RECRUITMENT_HELP_FALSE,
+            'testkey',
+            'testhash'
+        );
+
+        System.assertEquals('21c2a9e4-d013-4bf5-b30e-225d8695088d', model.uuid);
+        System.assertEquals('Trenger en helt', model.title);
+        System.assertEquals('ACTIVE', model.status);
+        System.assertEquals('2025-10-28T13:10:53', model.published);
+        System.assertEquals('2025-11-18T00:00:00', model.expires);
+        System.assertEquals('2025-10-28T13:11:30.528326', model.created);
+        System.assertEquals('2025-10-28T13:11:39.663852', model.updated);
+        System.assertEquals('Stillingsregistrering', model.source);
+        System.assertEquals('Stillingsregistrering', model.medium);
+        System.assertEquals('21c2a9e4-d013-4bf5-b30e-225d8695088d', model.reference);
+        System.assertEquals('Ordknapp Blomstrete Tiger As', model.businessName);
+        System.assertEquals(1, model.locations.size());
+        System.assertEquals('Kong Oscarsgate 8B', model.locations[0].address);
+        System.assertEquals('TØNSBERG', model.locations[0].city);
+        System.assertEquals('NORGE', model.locations[0].country);
+        System.assertEquals('VESTFOLD', model.locations[0].county);
+        System.assertEquals('39', model.locations[0].county_code);
+        System.assertEquals(null, model.locations[0].latitude);
+        System.assertEquals(null, model.locations[0].longitude);
+        System.assertEquals('TØNSBERG', model.locations[0].municipal);
+        System.assertEquals('3905', model.locations[0].municipal_code);
+        System.assertEquals('3112', model.locations[0].postalCode);
+        System.assertEquals(21, model.properties.size());
+        System.assertEquals(0, model.categories.size());
+        System.assertEquals(0, model.contacts.size());
+        System.assertEquals('ORDKNAPP BLOMSTRETE TIGER AS', model.employer.name);
+        System.assertEquals('ORDKNAPP BLOMSTRETE TIGER AS', model.employer.publicName);
+        System.assertEquals('312113341', model.employer.orgnr);
+        System.assertEquals('311185268', model.employer.parentOrgnr);
+        System.assertEquals('BEDR', model.employer.orgform);
+    }
+
+    @IsTest
     static void getProperty_success() {
         ArbeidsplassenJobPosting model = ArbeidsplassenJobPosting.parse(JSON, 'testkey', 'testhash');
 
         String value = model.getProperty('extent');
 
         System.assertEquals('Heltid', value);
+    }
+
+    @IsTest
+    static void getPropertyRecruitment_success() {
+        ArbeidsplassenJobPosting model = ArbeidsplassenJobPosting.parse(JSON_RECRUITMENT_HELP, 'testkey', 'testhash');
+
+        String value = model.getProperty('rekrutteringshjelp');
+        String valuetlf = model.getProperty('rekrutteringshjelpTelefonnummer');
+
+        System.assertEquals('true', value);
+        System.assertEquals('12312312', valuetlf);
+    }
+
+    @IsTest
+    static void getPropertyRecruitmentFalse_success() {
+        ArbeidsplassenJobPosting model = ArbeidsplassenJobPosting.parse(
+            JSON_RECRUITMENT_HELP_FALSE,
+            'testkey',
+            'testhash'
+        );
+
+        String value = model.getProperty('rekrutteringshjelp');
+
+        System.assertEquals('false', value);
     }
 
     @IsTest
