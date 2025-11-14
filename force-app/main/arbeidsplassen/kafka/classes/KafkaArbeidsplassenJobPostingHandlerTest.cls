@@ -63,6 +63,25 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
     }
 
     @IsTest
+    static void processSingleMessage_newFormat() {
+        String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(ArbeidsplassenJobPostingTest.JSON_NEW_FORMAT));
+
+        KafkaMessage__c msg1 = new KafkaMessage__c();
+        msg1.CRM_Topic__c = 'teampam.stilling-ekstern-1';
+        msg1.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
+        msg1.CRM_Value__c = encodedValue;
+
+        KafkaArbeidsplassenJobPostingHandler handler = new KafkaArbeidsplassenJobPostingHandler();
+        handler.processMessages(new List<KafkaMessage__c>{ msg1 });
+
+        List<JobPosting__c> jobPostings = [SELECT Id, Account__c, KafkaId__c, KafkaHash__c FROM JobPosting__c];
+
+        System.assertEquals(msg1.CRM_Value__c, jobPostings[0].KafkaHash__c, 'Correct KafkaId');
+        System.assertEquals(msg1.CRM_Key__c, jobPostings[0].KafkaId__c, 'Correct KafkaId');
+        System.assertEquals(1, jobPostings.size(), 'Job Posting Inserted');
+    }
+
+    @IsTest
     static void processSingleMessage_nulls() {
         final String JSON_WITH_NULLS =
             '{\n' +
