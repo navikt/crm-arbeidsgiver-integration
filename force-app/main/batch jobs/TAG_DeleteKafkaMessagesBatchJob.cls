@@ -1,23 +1,7 @@
 public class TAG_DeleteKafkaMessagesBatchJob extends KafkaMessageProcessor implements Database.Batchable<sObject> {
     private static final String KAFKA_MESSAGE_QUERY =
         'SELECT Id FROM KafkaMessage__c WHERE AND IsDeleted = false AND' +
-        ' (CRM_Topic__c = \'teampam.stilling-ekstern-1\' OR' +
-        ' CRM_Topic__c = \'teamarenanais.aapen-arena-arbeidsgiveraktivitetendret-v1\' OR' +
-        ' CRM_Topic__c = \'arbeidsgiver.tiltak-avtale-hendelse\' OR' +
-        ' CRM_Topic__c = \'public-ereg-cache-org-json\' OR' +
-        ' CRM_Topic__c = \'pia.fullfort-behovsvurdering-v1\' OR' +
-        ' CRM_Topic__c = \'pia.ia-sak-v1\' OR' +
-        ' CRM_Topic__c = \'pia.samarbeidsplan-v1\' OR' +
-        ' CRM_Topic__c = \'team-dialog.employer-activity\' OR' +
-        ' CRM_Topic__c = \'pia.sykefravarsstatistikk-bransje-v1\' OR' +
-        ' CRM_Topic__c = \'pia.sykefravarsstatistikk-land-v1\' OR' +
-        ' CRM_Topic__c = \'pia.sykefravarsstatistikk-virksomhet-v1\' OR' +
-        ' CRM_Topic__c = \'pia.sykefravarsstatistikk-naring-v1\' OR' +
-        ' CRM_Topic__c = \'pia.sykefravarsstatistikk-naringskode-v1\' OR' +
-        ' CRM_Topic__c = \'pia.sykefravarsstatistikk-metadata-virksomhet-v1\' OR' +
-        ' CRM_Topic__c = \'pia.sykefravarsstatistikk-sektor-v1\' OR' +
-        ' CRM_Topic__c = \'public-ereg-cache-org-tombstones\' OR' +
-        ' CRM_Topic__c = \'teamsykefravr.isdialogmote-dialogmote-statusendring\')';
+        ' (CRM_Topic__c = \'team-dialog.employer-activity\')';
 
     public Database.QueryLocator start(Database.BatchableContext BC) {
         return Database.getQueryLocator(KAFKA_MESSAGE_QUERY);
