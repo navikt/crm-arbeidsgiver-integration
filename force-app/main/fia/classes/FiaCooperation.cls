@@ -145,4 +145,35 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
         }
         return false;
     }
+    private DateTime getRelevantLastModifiedDate() {
+        if (planLastModified == null) {
+            return cooperationLastModified;
+        }
+        if (cooperationLastModified == null) {
+            return planLastModified;
+        }
+        if (cooperationLastModified > planLastModified) {
+            return cooperationLastModified;
+        }
+        return planLastModified;
+    }
+
+    /* Sort list of cooperations by last modified dates */
+    public class FiaCooperationComparer implements Comparator<FiaCooperation> {
+        public Integer compare(FiaCooperation a, FiaCooperation b) {
+            DateTime aDate = a.getRelevantLastModifiedDate();
+            DateTime bDate = b.getRelevantLastModifiedDate();
+            if (aDate == bDate) {
+                return 0;
+            } else if (aDate == null) {
+                return -1;
+            } else if (bDate == null) {
+                return 1;
+            } else if (aDate < bDate) {
+                return -1;
+            } else {
+                return 1;
+            }
+        }
+    }
 }
