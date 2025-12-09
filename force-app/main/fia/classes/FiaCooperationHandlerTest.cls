@@ -428,7 +428,7 @@ private class FiaCooperationHandlerTest {
         Assert.isTrue(merged.hash.contains('#END#'), 'hash should contain delimiter');
         Assert.isTrue(merged.jsonPayload.contains('payload1'), 'Should contain first payload');
         Assert.isTrue(merged.jsonPayload.startsWith('...'), 'Should be abbreviated at start');
-        Assert.isTrue(merged.jsonPayload.length() < 32768, 'Should not exceed max length');
+        Assert.areEqual(32768, merged.jsonPayload.length(), 'Should be abbreviated to max length');
         Assert.isTrue(merged.jsonPayload.contains('payload2'), 'Should contain second payload');
         Assert.isTrue(merged.jsonPayload.contains('payload3'), 'Should contain third payload');
     }
