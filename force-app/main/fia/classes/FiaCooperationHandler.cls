@@ -9,6 +9,7 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
     private List<IA_Subtheme__c> iaSubthemesToUpsert = new List<IA_Subtheme__c>();
     public static final String STATUS_DELETED = 'SLETTET';
     private static final Integer AGE_THRESHOLD_MINUTES = 15;
+    private static final Integer LONG_TEXTAREA_LENGTH = 32768;
     /**
      * @description Implementation of processMessages-method from IKafkaMessageConsumer
      * @param messages List of kafka message records
@@ -186,10 +187,16 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
      * Helper method to merge tracking fields with delimiter.
      */
     private String mergeTrackingField(String existing, String newValue) {
+        String value;
         if (String.isBlank(existing)) {
-            return newValue + ' #END# ';
+            value = newValue + ' #END#\n';
+        } else {
+            value = existing + newValue + ' #END#\n';
         }
-        return existing + newValue + ' #END# ';
+        if (value.length() > LONG_TEXTAREA_LENGTH) {
+            value = value.abbreviate(LONG_TEXTAREA_LENGTH, value.length());
+        }
+        return value;
     }
 
     /**
