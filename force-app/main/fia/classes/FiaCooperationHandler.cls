@@ -19,8 +19,22 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             return;
         }
 
-        handleDeletions(fiaCooperations);
-        handleUpserts(fiaCooperations);
+        // Identify deletions before merging
+        List<String> cooperationIdsToDelete = getDeletedCooperationIds(fiaCooperations);
+        List<String> themeIdsToDelete = getDeletedThemeIds(fiaCooperations);
+
+        // Merge multiple updates for same cooperation
+        Map<String, FiaCooperation> mergedCooperations = combineMessageData(fiaCooperations);
+
+        // Remove cooperations marked for deletion from merged map
+        for (String cooperationId : cooperationIdsToDelete) {
+            mergedCooperations.remove(cooperationId);
+        }
+
+        // Execute deletions and upserts
+        handleDeletions(cooperationIdsToDelete, themeIdsToDelete);
+        handleUpserts(mergedCooperations.values());
+
         logTimeDeviations(fiaCooperations);
         logger.publish();
     }
@@ -32,7 +46,8 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
      * @param kafkaMessages List of Kafka Message records to be processed.
      * @return A list of FiaCooperation objects.
      */
-    private List<FiaCooperation> extractData(List<KafkaMessage__c> kafkaMessages) {
+    @testVisible
+    public List<FiaCooperation> extractData(List<KafkaMessage__c> kafkaMessages) {
         List<FiaCooperation> allFiaCooperationUpdates = new List<FiaCooperation>();
         for (KafkaMessage__c kafkaMessage : kafkaMessages) {
             try {
@@ -48,20 +63,17 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
     }
 
     /**
-     * @description Handles deletions of IA Cooperation and IA Theme records based on the provided FiaCooperation objects.
-     * @param fiaCooperations List of FiaCooperation objects to process for deletions.
+     * @description Executes deletion of IA Cooperation and IA Theme records.
+     * @param cooperationIdsToDelete List of cooperation IDs to delete
+     * @param themeIdsToDelete List of theme IDs to delete
      */
-    private void handleDeletions(List<FiaCooperation> fiaCooperations) {
-        List<String> cooperationIdsToDelete = getDeletedIds(fiaCooperations, 'cooperation');
-        List<String> themesIdsToDelete = getDeletedIds(fiaCooperations, 'theme');
-
-        if (!themesIdsToDelete.isEmpty()) {
+    private void handleDeletions(List<String> cooperationIdsToDelete, List<String> themeIdsToDelete) {
+        if (!themeIdsToDelete.isEmpty()) {
             List<IATheme__c> iaThemesToDelete = [
                 SELECT Id
                 FROM IATheme__c
-                WHERE ThemeId__c = :themesIdsToDelete
+                WHERE ThemeId__c = :themeIdsToDelete
             ];
-
             deleteRecords(iaThemesToDelete);
         }
 
@@ -74,17 +86,12 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
             List<IACooperation__c> iaCooperationToDelete = new List<IACooperation__c>();
             for (IACooperation__c iaCoop : existingIaCooperations) {
                 try {
-                    if (iaCoop.Tasks.size() > 0 || iaCoop.Events.size() > 0) {
-                        System.debug(
-                            LoggingLevel.ERROR,
-                            'IA Cooperation has related tasks or events and cannot be deleted: ' + iaCoop.Id
-                        );
+                    if (hasRelatedActivities(iaCoop)) {
                         throw new FiaCooperationHandlerException(
                             'IA Cooperation has related tasks or events and cannot be deleted: ' + iaCoop.Id
                         );
-                    } else {
-                        iaCooperationToDelete.add(iaCoop);
                     }
+                    iaCooperationToDelete.add(iaCoop);
                 } catch (Exception e) {
                     String errorRef = logger.logError(iaCoop.Id, e.getMessage(), e.getStackTraceString());
                 }
@@ -93,14 +100,19 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
         }
     }
 
-    private void handleUpserts(List<FiaCooperation> fiaCooperations) {
-        Map<String, FiaCooperation> updates = getNewestUpdates(fiaCooperations);
-        // Remove deleted cooperations from map with updates (can't do both)
-        for (String cooperationId : getDeletedIds(fiaCooperations, 'cooperation')) {
-            updates.remove(cooperationId);
-        }
+    /**
+     * @description Checks if cooperation has related tasks or events.
+     */
+    private Boolean hasRelatedActivities(IACooperation__c cooperation) {
+        return cooperation.Tasks.size() > 0 || cooperation.Events.size() > 0;
+    }
 
-        createRecords(updates.values());
+    /**
+     * @description Builds and upserts sObjects from merged FiaCooperation data.
+     * @param mergedCooperations Collection of merged FiaCooperation objects to process
+     */
+    private void handleUpserts(List<FiaCooperation> mergedCooperations) {
+        buildSObjectsFromCooperations(mergedCooperations);
 
         if (!iaCooperationsToUpsert.isEmpty()) {
             upsertRecords(iaCooperationsToUpsert, IACooperation__c.CooperationId__c);
@@ -128,99 +140,130 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
     }
 
     /**
-     * @description Processes a list of FiaCooperation objects, organizing them
-     *  into a map keyed by their unique identifier. Each message is parsed into a FiaCooperation object, and only
-     *  the most recent entry (based on the 'sistEndret' or 'endretTidspunkt' timestamp) is stored in the map.
+     * @description Responsible for creating a map where multiple updates on same cooperation are combined.
+     * Simulate database updates by replacing existing values with values from new message, applying same logic as an upsert operation.
+     * Assumes that messages are processed in the order they are received.
+     * Assumes samarbeid element can have partial updates, so each field is updated individually.
+     * Assumes a plan element will either be null or complete with temaer and undertemaer, so whole element can be updated.
+     * Json and hash are wrapped in tokens so we can trace multiple messages.
+     * If samarbeid status indicate it is deleted, the update is skipped and the cooperation will be removed later.
+     * If plan status indicate it is deleted, plan values are updated but the plan's tema and undertema is skipped and removed later.
      * @param allFiaCooperationUpdates List of FiaCooperation objects to be processed.
      * @return A map containing FiaCooperation objects keyed by their unique identifier.
      */
-    private Map<String, FiaCooperation> getNewestUpdates(List<FiaCooperation> allFiaCooperationUpdates) {
+    @testVisible
+    public Map<String, FiaCooperation> combineMessageData(List<FiaCooperation> allFiaCooperationUpdates) {
         Map<String, FiaCooperation> fiaSamarbeidMap = new Map<String, FiaCooperation>();
-        Map<String, FiaCooperation.Plan> fiaPlanMap = new Map<String, FiaCooperation.Plan>();
-        for (FiaCooperation fiaCooperation : allFiaCooperationUpdates) {
-            String cooperationId = fiaCooperation.samarbeid.id;
-            // Determine the newest cooperation
-            FiaCooperation existingCooperation = fiaSamarbeidMap.get(cooperationId);
-            if (isNewerCooperation(existingCooperation, fiaCooperation)) {
-                fiaSamarbeidMap.put(cooperationId, fiaCooperation);
+        for (FiaCooperation fiaUpdate : allFiaCooperationUpdates) {
+            if (isCooperationDeleted(fiaUpdate)) {
+                continue;
             }
-            // Determine the newest plan
-            if (fiaCooperation.plan != null) {
-                FiaCooperation.Plan existingPlan = fiaPlanMap.get(cooperationId);
-                if (isNewerPlan(existingPlan, fiaCooperation.plan)) {
-                    fiaPlanMap.put(cooperationId, fiaCooperation.plan);
-                }
+
+            FiaCooperation fiaData = fiaSamarbeidMap.containsKey(fiaUpdate.samarbeid.id)
+                ? fiaSamarbeidMap.get(fiaUpdate.samarbeid.id)
+                : new FiaCooperation();
+            fiaData.orgnr = fiaUpdate.orgnr;
+            fiaData.saksnummer = fiaUpdate.saksnummer;
+            fiaData.key = fiaUpdate.key;
+            fiaData.jsonPayload = mergeTrackingField(fiaData.jsonPayload, fiaUpdate.jsonPayload);
+            fiaData.hash = mergeTrackingField(fiaData.hash, fiaUpdate.hash);
+
+            fiaData.samarbeid = mergeSamarbeidFields(fiaData.samarbeid, fiaUpdate.samarbeid);
+            fiaData.cooperationLastModified = fiaUpdate.cooperationLastModified != null
+                ? fiaUpdate.cooperationLastModified
+                : fiaData.cooperationLastModified;
+
+            if (fiaUpdate.plan != null) {
+                fiaData.plan = mergePlanFields(fiaData.plan, fiaUpdate.plan);
+                fiaData.planLastModified = fiaUpdate.planLastModified;
             }
+            fiaSamarbeidMap.put(fiaData.samarbeid.id, fiaData);
         }
-        // Combine cooperation and plan maps
-        return combineCooperationAndPlanMaps(fiaSamarbeidMap, fiaPlanMap);
+        return fiaSamarbeidMap;
     }
 
     /**
-     * @description Determines if the given cooperation is newer than the existing one.
-     * @param existingCooperation The existing cooperation object.
-     * @param newCooperation The new cooperation object.
-     * @return True if the new cooperation is newer, false otherwise.
+     * Helper method to merge tracking fields with delimiter.
      */
-    @testVisible
-    private static Boolean isNewerCooperation(FiaCooperation existingCooperation, FiaCooperation newCooperation) {
-        Datetime existingCooperationTime = existingCooperation?.samarbeid?.getLastModifiedDate();
-        Datetime newCooperationTime = newCooperation?.samarbeid?.getLastModifiedDate();
-
-        if (existingCooperationTime == null && newCooperationTime == null) {
-            return true; // Both are null, consider them equal
+    private String mergeTrackingField(String existing, String newValue) {
+        if (String.isBlank(existing)) {
+            return newValue + ' #END# ';
         }
-        if (existingCooperationTime == null) {
-            return true; // Existing is null, new is newer
-        }
-        if (newCooperationTime == null) {
-            return false; // New is null, existing is newer
-        }
-        return existingCooperationTime < newCooperationTime; // Compare timestamps
+        return existing + newValue + ' #END# ';
     }
 
     /**
-     * @description Determines if the given plan is newer than the existing one.
-     * @param existingPlan The existing plan object.
-     * @param newPlan The new plan object.
-     * @return True if the new plan is newer, false otherwise.
+     * Helper method to merge samarbeid fields, applying null-safe updates.
      */
-    @testVisible
-    private static Boolean isNewerPlan(FiaCooperation.Plan existingPlan, FiaCooperation.Plan newPlan) {
-        return existingPlan == null || existingPlan.getLastModifiedDate() < newPlan.getLastModifiedDate();
-    }
-
-    /**
-     * @description Combines the cooperation and plan maps into a single map.
-     * @param cooperationMap Map of cooperation objects.
-     * @param planMap Map of plan objects.
-     * @return Combined map of cooperation objects with their plans.
-     */
-    @testVisible
-    private static Map<String, FiaCooperation> combineCooperationAndPlanMaps(
-        Map<String, FiaCooperation> cooperationMap,
-        Map<String, FiaCooperation.Plan> planMap
+    private FiaCooperation.Samarbeid mergeSamarbeidFields(
+        FiaCooperation.Samarbeid stashed,
+        FiaCooperation.Samarbeid newData
     ) {
-        for (String cooperationId : cooperationMap.keySet()) {
-            if (planMap.containsKey(cooperationId)) {
-                cooperationMap.get(cooperationId).plan = planMap.get(cooperationId);
+        if (stashed == null) {
+            stashed = new FiaCooperation.Samarbeid();
+        }
+        stashed.id = newData.id != null ? newData.id : stashed.id;
+        stashed.navn = newData.navn != null ? newData.navn : stashed.navn;
+        stashed.status = newData.status != null ? newData.status : stashed.status;
+        stashed.startDato = newData.startDato != null ? newData.startDato : stashed.startDato;
+        stashed.sluttDato = newData.sluttDato != null ? newData.sluttDato : stashed.sluttDato;
+        stashed.endretTidspunkt = newData.endretTidspunkt != null ? newData.endretTidspunkt : stashed.endretTidspunkt;
+        return stashed;
+    }
+    private FiaCooperation.Plan mergePlanFields(FiaCooperation.Plan stashed, FiaCooperation.Plan newData) {
+        if (stashed == null) {
+            stashed = new FiaCooperation.Plan();
+        }
+        stashed.id = newData.id != null ? newData.id : stashed.id;
+        stashed.status = newData.status != null ? newData.status : stashed.status;
+        stashed.sistEndret = newData.sistEndret != null ? newData.sistEndret : stashed.sistEndret;
+        stashed.sistPublisert = newData.sistPublisert != null ? newData.sistPublisert : stashed.sistPublisert;
+        // Replace entire plan if new plan exists (atomic update)
+        if (newData.status != STATUS_DELETED) {
+            stashed.temaer = newData.temaer;
+        }
+        return stashed;
+    }
+
+    /**
+     * @description Checks if a cooperation is marked as deleted.
+     */
+    @testVisible
+    private Boolean isCooperationDeleted(FiaCooperation cooperation) {
+        return cooperation?.samarbeid?.status == STATUS_DELETED;
+    }
+
+    /**
+     * @description Checks if a plan is marked as deleted.
+     */
+    @testVisible
+    private Boolean isPlanDeleted(FiaCooperation cooperation) {
+        return cooperation?.plan?.status == STATUS_DELETED;
+    }
+
+    /**
+     * @description Extracts cooperation IDs marked for deletion.
+     */
+    @testVisible
+    private List<String> getDeletedCooperationIds(List<FiaCooperation> cooperations) {
+        List<String> deletedIds = new List<String>();
+        for (FiaCooperation cooperation : cooperations) {
+            if (isCooperationDeleted(cooperation)) {
+                deletedIds.add(cooperation.samarbeid.id);
             }
         }
-        return cooperationMap;
+        return deletedIds;
     }
+
     /**
-     * @description Creates a list of deleted IDs based on the provided FiaCooperation objects.
-     * @param updates List of FiaCooperation objects to process for deletions.
-     * @param type Type of deletion ('cooperation' or 'theme').
-     * @return A list of deleted IDs.
+     * @description Extracts theme IDs from plans marked for deletion.
      */
-    private List<String> getDeletedIds(List<FiaCooperation> updates, String type) {
+    @testVisible
+    private List<String> getDeletedThemeIds(List<FiaCooperation> cooperations) {
         List<String> deletedIds = new List<String>();
-        for (FiaCooperation fiaCooperation : updates) {
-            if (type == 'cooperation' && fiaCooperation.samarbeid.status == STATUS_DELETED) {
-                deletedIds.add(fiaCooperation.samarbeid.id);
-            } else if (type == 'theme' && fiaCooperation.plan != null && fiaCooperation.plan.status == STATUS_DELETED) {
-                for (FiaCooperation.Tema tema : fiaCooperation.plan.temaer) {
+        for (FiaCooperation cooperation : cooperations) {
+            if (isPlanDeleted(cooperation) && cooperation.plan.temaer != null) {
+                for (FiaCooperation.Tema tema : cooperation.plan.temaer) {
                     deletedIds.add(tema.id);
                 }
             }
@@ -232,7 +275,7 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
      * @description Creates records from parsed FiaCooperation data.
      * @param fiaCooperations List with FiaCooperation objects
      */
-    private void createRecords(List<FiaCooperation> fiaCooperations) {
+    private void buildSObjectsFromCooperations(List<FiaCooperation> fiaCooperations) {
         Set<String> existingCasenumbers = getExistingCases(fiaCooperations);
         for (FiaCooperation fiaCooperation : fiaCooperations) {
             try {
@@ -244,7 +287,7 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
 
                 IACooperation__c iaCooperation = createIACooperation(fiaCooperation);
                 iaCooperationsToUpsert.add(iaCooperation);
-                if (fiaCooperation.plan?.temaer == null || fiaCooperation.plan?.status == STATUS_DELETED) {
+                if (fiaCooperation.plan?.temaer == null || isPlanDeleted(fiaCooperation)) {
                     continue;
                 }
                 for (FiaCooperation.Tema tema : fiaCooperation.plan.temaer) {
@@ -371,7 +414,6 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
                     e.getMessage(),
                     'Class.FiaCooperationHandler.deleteRecords'
                 );
-                //handleError(deleteResult[i].getId(), e.getMessage(), stackTrace, null);
             }
         }
     }

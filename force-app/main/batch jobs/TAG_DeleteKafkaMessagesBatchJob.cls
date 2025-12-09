@@ -1,6 +1,6 @@
 public class TAG_DeleteKafkaMessagesBatchJob extends KafkaMessageProcessor implements Database.Batchable<sObject> {
     private static final String KAFKA_MESSAGE_QUERY =
-        'SELECT Id FROM KafkaMessage__c WHERE LastModifiedDate < N_DAYS_AGO:7 AND LastModifiedDate > N_DAYS_AGO:15 AND IsDeleted = false AND (CRM_Status__c = \'Processed\' OR CRM_Status__c = \'Pending\') AND' +
+        'SELECT Id FROM KafkaMessage__c WHERE LastModifiedDate < N_DAYS_AGO:7 AND LastModifiedDate > N_DAYS_AGO:15 AND IsDeleted = false AND CRM_Status__c = \'Processed\' AND' +
         ' (CRM_Topic__c = \'teampam.stilling-ekstern-1\' OR' +
         ' CRM_Topic__c = \'teamarenanais.aapen-arena-arbeidsgiveraktivitetendret-v1\' OR' +
         ' CRM_Topic__c = \'arbeidsgiver.tiltak-avtale-hendelse\' OR' +
@@ -8,7 +8,6 @@ public class TAG_DeleteKafkaMessagesBatchJob extends KafkaMessageProcessor imple
         ' CRM_Topic__c = \'pia.fullfort-behovsvurdering-v1\' OR' +
         ' CRM_Topic__c = \'pia.ia-sak-v1\' OR' +
         ' CRM_Topic__c = \'pia.samarbeidsplan-v1\' OR' +
-        ' CRM_Topic__c = \'team-dialog.employer-activity\' OR' +
         ' CRM_Topic__c = \'pia.sykefravarsstatistikk-bransje-v1\' OR' +
         ' CRM_Topic__c = \'pia.sykefravarsstatistikk-land-v1\' OR' +
         ' CRM_Topic__c = \'pia.sykefravarsstatistikk-virksomhet-v1\' OR' +
