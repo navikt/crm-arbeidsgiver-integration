@@ -405,17 +405,21 @@ private class FiaCooperationHandlerTest {
     static void combineMessageData_should_wrap_tracking_fields_with_delimiter() {
         // Arrange
         FiaCooperation message1 = createFiaCooperation('1', 'AKTIV');
-        message1.jsonPayload = 'payload1';
+        message1.jsonPayload = 'payload1'.leftPad(32768, 'X');
         message1.hash = 'hash1';
 
         FiaCooperation message2 = createFiaCooperation('1', 'AKTIV');
         message2.jsonPayload = 'payload2';
         message2.hash = 'hash2';
 
+        FiaCooperation message3 = createFiaCooperation('1', 'AKTIV');
+        message3.jsonPayload = 'payload3';
+        message3.hash = 'hash3';
+
         // Act
         Test.startTest();
         Map<String, FiaCooperation> result = new FiaCooperationHandler()
-            .combineMessageData(new List<FiaCooperation>{ message1, message2 });
+            .combineMessageData(new List<FiaCooperation>{ message1, message2, message3 });
         Test.stopTest();
 
         // Assert
@@ -423,7 +427,10 @@ private class FiaCooperationHandlerTest {
         Assert.isTrue(merged.jsonPayload.contains('#END#'), 'jsonPayload should contain delimiter');
         Assert.isTrue(merged.hash.contains('#END#'), 'hash should contain delimiter');
         Assert.isTrue(merged.jsonPayload.contains('payload1'), 'Should contain first payload');
+        Assert.isTrue(merged.jsonPayload.startsWith('...'), 'Should be abbreviated at start');
+        Assert.areEqual(32768, merged.jsonPayload.length(), 'Should be abbreviated to max length');
         Assert.isTrue(merged.jsonPayload.contains('payload2'), 'Should contain second payload');
+        Assert.isTrue(merged.jsonPayload.contains('payload3'), 'Should contain third payload');
     }
 
     @isTest
