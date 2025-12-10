@@ -61,10 +61,9 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
         System.assertEquals(msg1.CRM_Key__c, jobPostings[0].KafkaId__c, 'Correct KafkaId');
         System.assertEquals(acc.id, jobPostings[0].Account__c);
     }
-    
-     @IsTest
+
+    @IsTest
     static void processSingleMessage_newFormat() {
-       
         String encodedValue = EncodingUtil.base64Encode(Blob.valueOf(ArbeidsplassenJobPostingTest.JSON_NEW_FORMAT));
 
         KafkaMessage__c msg1 = new KafkaMessage__c();
@@ -114,6 +113,149 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
         System.assertEquals(msg1.CRM_Value__c, jobPostings[0].KafkaHash__c, 'Correct KafkaId');
         System.assertEquals(msg1.CRM_Key__c, jobPostings[0].KafkaId__c, 'Correct KafkaId');
         System.assertEquals(1, jobPostings.size(), 'Job Posting Inserted');
+    }
+    @IsTest
+    static void processSingleMessageRecruitmentHelp_success() {
+        Account acc = new Account(Name = 'ORDKNAPP BLOMSTRETE TIGER AS', INT_OrganizationNumber__c = '312113341');
+        insert acc;
+
+        String encodedValue = EncodingUtil.base64Encode(
+            Blob.valueOf(ArbeidsplassenJobPostingTest.JSON_RECRUITMENT_HELP)
+        );
+
+        KafkaMessage__c msg1 = new KafkaMessage__c();
+        msg1.CRM_Topic__c = 'teampam.stilling-ekstern-1';
+        msg1.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
+        msg1.CRM_Value__c = encodedValue;
+
+        KafkaArbeidsplassenJobPostingHandler handler = new KafkaArbeidsplassenJobPostingHandler();
+        handler.processMessages(new List<KafkaMessage__c>{ msg1 });
+
+        List<JobPosting__c> jobPostings = [
+            SELECT
+                Id,
+                Account__c,
+                KafkaId__c,
+                KafkaHash__c,
+                Title__c,
+                LastUpdated__c,
+                Published__c,
+                Created__c,
+                Expires__c,
+                UUID__c,
+                SourceURL__c,
+                ProfessionCategoryCode__c,
+                ProfessionCategory__c,
+                WorkplaceCity__c,
+                EmployerReference__c,
+                JobPoster__c,
+                EngagementType__c,
+                Extent__c,
+                Status__c,
+                Source__c,
+                Medium__c,
+                RecruitmentAssistance__c,
+                RecruitmentPhone__c,
+                OrganizationNumber__c
+            FROM JobPosting__c
+        ];
+
+        System.assertEquals('2025-10-28 13:11:39', String.valueOf(jobPostings[0].LastUpdated__c));
+        System.assertEquals('2025-10-28 13:10:53', String.valueOf(jobPostings[0].Published__c));
+        System.assertEquals('2025-10-28 13:11:30', String.valueOf(jobPostings[0].Created__c));
+        System.assertEquals('2025-11-18 00:00:00', String.valueOf(jobPostings[0].Expires__c));
+        System.assertEquals('21c2a9e4-d013-4bf5-b30e-225d8695088d', jobPostings[0].UUID__c);
+        System.assertEquals(null, jobPostings[0].SourceURL__c);
+        System.assertEquals(null, jobPostings[0].ProfessionCategoryCode__c);
+        System.assertEquals(null, jobPostings[0].ProfessionCategory__c);
+        System.assertEquals('TØNSBERG', jobPostings[0].WorkplaceCity__c);
+        System.assertEquals('21c2a9e4-d013-4bf5-b30e-225d8695088d', jobPostings[0].EmployerReference__c);
+        System.assertEquals('Ordknapp Blomstrete Tiger As', jobPostings[0].JobPoster__c);
+        System.assertEquals('Vikariat', jobPostings[0].EngagementType__c);
+        System.assertEquals('Heltid', jobPostings[0].Extent__c);
+        System.assertEquals('ACTIVE', jobPostings[0].Status__c);
+        System.assertEquals('Stillingsregistrering', jobPostings[0].Source__c);
+        System.assertEquals('Stillingsregistrering', jobPostings[0].Medium__c);
+        System.assertEquals(1, jobPostings.size());
+        System.assertEquals('Trenger en helt', jobPostings[0].Title__c);
+        System.assertEquals(msg1.CRM_Value__c, jobPostings[0].KafkaHash__c, 'Correct KafkaId');
+        System.assertEquals(msg1.CRM_Key__c, jobPostings[0].KafkaId__c, 'Correct KafkaId');
+        System.assertEquals(acc.id, jobPostings[0].Account__c);
+        System.assertEquals(true, jobPostings[0].RecruitmentAssistance__c);
+        System.assertEquals('12312312', jobPostings[0].RecruitmentPhone__c);
+        System.assertEquals('312113341', jobPostings[0].OrganizationNumber__c);
+    }
+
+    @IsTest
+    static void processSingleMessageRecruitmentHelpFalse_success() {
+        Account acc = new Account(Name = 'ORDKNAPP BLOMSTRETE TIGER AS', INT_OrganizationNumber__c = '312113341');
+        insert acc;
+
+        String encodedValue = EncodingUtil.base64Encode(
+            Blob.valueOf(ArbeidsplassenJobPostingTest.JSON_RECRUITMENT_HELP_FALSE)
+        );
+
+        KafkaMessage__c msg1 = new KafkaMessage__c();
+        msg1.CRM_Topic__c = 'teampam.stilling-ekstern-1';
+        msg1.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
+        msg1.CRM_Value__c = encodedValue;
+
+        KafkaArbeidsplassenJobPostingHandler handler = new KafkaArbeidsplassenJobPostingHandler();
+        handler.processMessages(new List<KafkaMessage__c>{ msg1 });
+
+        List<JobPosting__c> jobPostings = [
+            SELECT
+                Id,
+                Account__c,
+                KafkaId__c,
+                KafkaHash__c,
+                Title__c,
+                LastUpdated__c,
+                Published__c,
+                Created__c,
+                Expires__c,
+                UUID__c,
+                SourceURL__c,
+                ProfessionCategoryCode__c,
+                ProfessionCategory__c,
+                WorkplaceCity__c,
+                EmployerReference__c,
+                JobPoster__c,
+                EngagementType__c,
+                Extent__c,
+                Status__c,
+                Source__c,
+                Medium__c,
+                RecruitmentAssistance__c,
+                RecruitmentPhone__c,
+                OrganizationNumber__c
+            FROM JobPosting__c
+        ];
+
+        System.assertEquals('2025-10-28 13:11:39', String.valueOf(jobPostings[0].LastUpdated__c));
+        System.assertEquals('2025-10-28 13:10:53', String.valueOf(jobPostings[0].Published__c));
+        System.assertEquals('2025-10-28 13:11:30', String.valueOf(jobPostings[0].Created__c));
+        System.assertEquals('2025-11-18 00:00:00', String.valueOf(jobPostings[0].Expires__c));
+        System.assertEquals('21c2a9e4-d013-4bf5-b30e-225d8695088d', jobPostings[0].UUID__c);
+        System.assertEquals(null, jobPostings[0].SourceURL__c);
+        System.assertEquals(null, jobPostings[0].ProfessionCategoryCode__c);
+        System.assertEquals(null, jobPostings[0].ProfessionCategory__c);
+        System.assertEquals('TØNSBERG', jobPostings[0].WorkplaceCity__c);
+        System.assertEquals('21c2a9e4-d013-4bf5-b30e-225d8695088d', jobPostings[0].EmployerReference__c);
+        System.assertEquals('Ordknapp Blomstrete Tiger As', jobPostings[0].JobPoster__c);
+        System.assertEquals('Vikariat', jobPostings[0].EngagementType__c);
+        System.assertEquals('Heltid', jobPostings[0].Extent__c);
+        System.assertEquals('ACTIVE', jobPostings[0].Status__c);
+        System.assertEquals('Stillingsregistrering', jobPostings[0].Source__c);
+        System.assertEquals('Stillingsregistrering', jobPostings[0].Medium__c);
+        System.assertEquals(1, jobPostings.size());
+        System.assertEquals('Trenger en helt', jobPostings[0].Title__c);
+        System.assertEquals(msg1.CRM_Value__c, jobPostings[0].KafkaHash__c, 'Correct KafkaId');
+        System.assertEquals(msg1.CRM_Key__c, jobPostings[0].KafkaId__c, 'Correct KafkaId');
+        System.assertEquals(acc.id, jobPostings[0].Account__c);
+        System.assertEquals(false, jobPostings[0].RecruitmentAssistance__c);
+        System.assertEquals(null, jobPostings[0].RecruitmentPhone__c);
+        System.assertEquals('312113341', jobPostings[0].OrganizationNumber__c);
     }
 
     @IsTest
