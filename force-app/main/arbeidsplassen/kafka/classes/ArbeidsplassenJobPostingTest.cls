@@ -286,7 +286,7 @@ public with sharing class ArbeidsplassenJobPostingTest {
         '    },\n' +
         '    {\n' +
         '      "key": "employerdescription",\n' +
-        '      "value": "<p>Vi selger tigre, blomstre og knapper.</p>\\n"\n' +
+        '      "value": "<p>Etterregistrering, Vi selger tigre, blomstre og knapper.</p>\\n"\n' +
         '    },\n' +
         '    {\n' +
         '      "key": "remote",\n' +
@@ -686,9 +686,11 @@ public with sharing class ArbeidsplassenJobPostingTest {
 
         String value = model.getProperty('rekrutteringshjelp');
         String valuetlf = model.getProperty('rekrutteringshjelpTelefonnummer');
+        Boolean valueEmpDes = model.getProperty('employerdescription').contains('Etterregistrering');
 
         System.assertEquals('true', value);
         System.assertEquals('12312312', valuetlf);
+        System.assertEquals(true, valueEmpDes);
     }
 
     @IsTest
