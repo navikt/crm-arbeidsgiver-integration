@@ -1,5 +1,9 @@
 @isTest
 public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
+    @TestSetup
+    private static void makeData() {
+        TestDataFactory.getQueue('Test queue', 'queue_602', 'CustomOpportunity__c');
+    }
     @IsTest
     static void processSingleMessage_success() {
         Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '123456789');
@@ -116,7 +120,16 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
     }
     @IsTest
     static void processSingleMessageRecruitmentHelp_success() {
-        Account acc = new Account(Name = 'ORDKNAPP BLOMSTRETE TIGER AS', INT_OrganizationNumber__c = '312113341');
+        Group g = [SELECT Id FROM Group WHERE Name = 'Test queue' LIMIT 1];
+
+        NavUnit__c unit1 = new NavUnit__c(Name = 'Nav Unit 1', INT_UnitNumber__c = '0219', CRM_QueueId__c = g.Id);
+        insert unit1;
+
+        Account acc = new Account(
+            Name = 'ORDKNAPP BLOMSTRETE TIGER AS',
+            INT_OrganizationNumber__c = '312113341',
+            TAG_NavUnit__c = unit1.Id
+        );
         insert acc;
 
         String encodedValue = EncodingUtil.base64Encode(
