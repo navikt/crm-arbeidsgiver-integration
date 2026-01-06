@@ -179,36 +179,13 @@ public with sharing class ArbeidsplassenJobPostingTest {
         '   "publishedByAdmin":null,\n' +
         '   "businessName":null,\n' +
         '   "locations":[],\n' +
-        '   "properties":[],\n' +
+        '   "properties":[{\n' +
+        '      "key": "employerdescription",\n' +
+        '      "value": "<p>Etterregistrering,Vi selger tigre, blomstre og knapper.</p>\\n"\n' +
+        '    }],\n' +
         '   "contacts":[],\n' +
         '   "classifications":[]\n' +
         '}';
-
-    @IsTest
-    static void parse_newFormat() {
-        ArbeidsplassenJobPosting model = ArbeidsplassenJobPosting.parse(JSON_NEW_FORMAT, 'testkey', 'testhash');
-
-        System.assertEquals('79867b56-ab2c-47b7-b85c-95ada4aeb348', model.uuid);
-        System.assertEquals('Ny stilling', model.title);
-        System.assertEquals('INACTIVE', model.status);
-        System.assertEquals('2025-11-10T12:54:11.466407', model.published);
-        System.assertEquals('2025-12-10T12:54:11.466468', model.expires);
-        System.assertEquals('2025-11-10T12:54:11.466407', model.created);
-        System.assertEquals('2025-11-10T12:54:11.466407', model.updated);
-        System.assertEquals('DIR', model.source);
-        System.assertEquals('DIR', model.medium);
-        System.assertEquals('79867b56-ab2c-47b7-b85c-95ada4aeb348', model.reference);
-        System.assertEquals(null, model.businessName);
-        System.assertEquals(0, model.locations.size());
-        System.assertEquals(0, model.properties.size());
-        //  System.assert(model.categories == null);
-        System.assertEquals(0, model.contacts.size());
-        //  System.assertEquals(null, model.employer.name);
-        //  System.assertEquals(null, model.employer.publicName);
-        //  System.assertEquals(null, model.employer.orgnr);
-        //  System.assertEquals(null, model.employer.parentOrgnr);
-        //  System.assertEquals(null, model.employer.orgform);
-    }
 
     public static final String JSON_RECRUITMENT_HELP =
         '{\n' +
@@ -286,7 +263,7 @@ public with sharing class ArbeidsplassenJobPostingTest {
         '    },\n' +
         '    {\n' +
         '      "key": "employerdescription",\n' +
-        '      "value": "<p>Etterregistrering, Vi selger tigre, blomstre og knapper.</p>\\n"\n' +
+        '      "value": "<p>Vi selger tigre, blomstre og knapper.</p>\\n"\n' +
         '    },\n' +
         '    {\n' +
         '      "key": "remote",\n' +
@@ -672,6 +649,30 @@ public with sharing class ArbeidsplassenJobPostingTest {
     }
 
     @IsTest
+    static void parse_newFormat() {
+        ArbeidsplassenJobPosting model = ArbeidsplassenJobPosting.parse(JSON_NEW_FORMAT, 'testkey', 'testhash');
+
+        Boolean valueEmpDes = model.getProperty('employerdescription').contains('Etterregistrering');
+
+        System.assertEquals('79867b56-ab2c-47b7-b85c-95ada4aeb348', model.uuid);
+        System.assertEquals('Ny stilling', model.title);
+        System.assertEquals('INACTIVE', model.status);
+        System.assertEquals('2025-11-10T12:54:11.466407', model.published);
+        System.assertEquals('2025-12-10T12:54:11.466468', model.expires);
+        System.assertEquals('2025-11-10T12:54:11.466407', model.created);
+        System.assertEquals('2025-11-10T12:54:11.466407', model.updated);
+        System.assertEquals('DIR', model.source);
+        System.assertEquals('DIR', model.medium);
+        System.assertEquals('79867b56-ab2c-47b7-b85c-95ada4aeb348', model.reference);
+        System.assertEquals(null, model.businessName);
+        System.assertEquals(0, model.locations.size());
+        System.assertEquals(1, model.properties.size());
+        System.assertEquals(true, valueEmpDes);
+        //  System.assert(model.categories == null);
+        System.assertEquals(0, model.contacts.size());
+    }
+
+    @IsTest
     static void getProperty_success() {
         ArbeidsplassenJobPosting model = ArbeidsplassenJobPosting.parse(JSON, 'testkey', 'testhash');
 
@@ -686,11 +687,9 @@ public with sharing class ArbeidsplassenJobPostingTest {
 
         String value = model.getProperty('rekrutteringshjelp');
         String valuetlf = model.getProperty('rekrutteringshjelpTelefonnummer');
-        Boolean valueEmpDes = model.getProperty('employerdescription').contains('Etterregistrering');
-
+        
         System.assertEquals('true', value);
         System.assertEquals('12312312', valuetlf);
-        System.assertEquals(true, valueEmpDes);
     }
 
     @IsTest
