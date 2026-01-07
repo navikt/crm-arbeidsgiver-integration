@@ -169,7 +169,8 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
                 Medium__c,
                 RecruitmentAssistance__c,
                 RecruitmentPhone__c,
-                OrganizationNumber__c
+                OrganizationNumber__c,
+                TAG_EmploymentPlacement__c
             FROM JobPosting__c
         ];
 

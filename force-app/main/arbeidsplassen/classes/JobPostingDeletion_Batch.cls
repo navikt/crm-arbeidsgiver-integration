@@ -1,5 +1,5 @@
 public class JobPostingDeletion_Batch implements Database.Batchable<SObject> {
-    private static final String JOB_POSTING_QUERY = 'SELECT Id FROM JobPosting__c WHERE Status__c != \'ACTIVE\' AND Status__c != \'INACTIVE\'';
+    private static final String JOB_POSTING_QUERY = 'SELECT Id FROM JobPosting__c WHERE Status__c != \'ACTIVE\' AND Status__c != \'INACTIVE\' AND Status__c != \'STOPPED\'';
 
     public Database.QueryLocator start(Database.BatchableContext BC) {
         return Database.getQueryLocator(JOB_POSTING_QUERY);
