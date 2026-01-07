@@ -91,7 +91,7 @@ public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends Kafk
             jobPosting.RecruitmentPhone__c = model.getProperty('rekrutteringshjelpTelefonnummer');
         } 
 
-        if (model.getProperty('employerdescription').contains('Etterregistrering')) {
+        if (model.getProperty('employerdescription') != null && model.getProperty('employerdescription').contains('Etterregistrering')) {
             jobPosting.TAG_EmploymentPlacement__c = true;
         }
 
