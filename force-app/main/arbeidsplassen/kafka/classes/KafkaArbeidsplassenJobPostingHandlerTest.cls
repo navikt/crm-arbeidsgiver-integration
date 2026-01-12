@@ -1,5 +1,7 @@
 @isTest
 public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
+    private static final String EMPLOYMENT_PLACEMENT_RECORD_TYPE_ID_TEST = [SELECT Id FROM RecordType WHERE SObjectType = 'JobPosting__c' AND DeveloperName = 'TAG_EmploymentPlacement' LIMIT 1].Id;
+
     @TestSetup
     private static void makeData() {
         TestDataFactory.getQueue('Test queue', 'queue_602', 'CustomOpportunity__c');
@@ -78,11 +80,17 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
         KafkaArbeidsplassenJobPostingHandler handler = new KafkaArbeidsplassenJobPostingHandler();
         handler.processMessages(new List<KafkaMessage__c>{ msg1 });
 
-        List<JobPosting__c> jobPostings = [SELECT Id, Account__c, KafkaId__c, KafkaHash__c FROM JobPosting__c];
+        List<JobPosting__c> jobPostings = [SELECT Id, Account__c, KafkaId__c, KafkaHash__c, TAG_EmploymentPlacement__c, RecordTypeId FROM JobPosting__c];
 
         System.assertEquals(msg1.CRM_Value__c, jobPostings[0].KafkaHash__c, 'Correct KafkaId');
         System.assertEquals(msg1.CRM_Key__c, jobPostings[0].KafkaId__c, 'Correct KafkaId');
         System.assertEquals(1, jobPostings.size(), 'Job Posting Inserted');
+        System.assertEquals(true, jobPostings[0].TAG_EmploymentPlacement__c, 'Employment Placement set to true');
+        System.assertEquals(
+            EMPLOYMENT_PLACEMENT_RECORD_TYPE_ID_TEST,
+            jobPostings[0].RecordTypeId,
+            'Correct Record Type'
+        );
     }
 
     @IsTest
