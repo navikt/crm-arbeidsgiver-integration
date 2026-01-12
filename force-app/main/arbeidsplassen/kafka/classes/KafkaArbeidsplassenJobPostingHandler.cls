@@ -1,6 +1,7 @@
 public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer {
     Map<String, ArbeidsplassenJobPosting> keyToJobPosting = new Map<String, ArbeidsplassenJobPosting>();
     private static final Integer AGE_THRESHOLD_MINUTES = 15;
+    private static final String EMPLOYMENT_PLACEMENT_RECORD_TYPE_ID = [SELECT Id FROM RecordType WHERE SObjectType = 'JobPosting__c' AND DeveloperName = 'TAG_EmploymentPlacement' LIMIT 1].Id;
     public void processMessages(List<KafkaMessage__c> messages) {
         for (KafkaMessage__c msg : messages) {
             try {
@@ -93,6 +94,7 @@ public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends Kafk
 
         if (model.getProperty('employerdescription') != null && model.getProperty('employerdescription').contains('Etterregistrering')) {
             jobPosting.TAG_EmploymentPlacement__c = true;
+            jobPosting.RecordTypeId = EMPLOYMENT_PLACEMENT_RECORD_TYPE_ID;
         }
 
         return jobPosting;
