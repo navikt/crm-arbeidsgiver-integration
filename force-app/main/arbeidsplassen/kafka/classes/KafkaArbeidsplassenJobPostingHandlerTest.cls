@@ -1,5 +1,7 @@
 @isTest
 public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
+    private static final String EMPLOYMENT_PLACEMENT_RECORD_TYPE_ID_TEST = [SELECT Id FROM RecordType WHERE SObjectType = 'JobPosting__c' AND DeveloperName = 'TAG_EmploymentPlacement' LIMIT 1].Id;
+
     @TestSetup
     private static void makeData() {
         TestDataFactory.getQueue('Test queue', 'queue_602', 'CustomOpportunity__c');
@@ -85,7 +87,7 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
         System.assertEquals(1, jobPostings.size(), 'Job Posting Inserted');
         System.assertEquals(true, jobPostings[0].TAG_EmploymentPlacement__c, 'Employment Placement set to true');
         System.assertEquals(
-            KafkaArbeidsplassenJobPostingHandler.EMPLOYMENT_PLACEMENT_RECORD_TYPE_ID,
+            EMPLOYMENT_PLACEMENT_RECORD_TYPE_ID_TEST,
             jobPostings[0].RecordTypeId,
             'Correct Record Type'
         );
