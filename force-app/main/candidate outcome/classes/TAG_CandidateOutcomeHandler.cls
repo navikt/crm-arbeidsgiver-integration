@@ -22,7 +22,7 @@ public without sharing class TAG_CandidateOutcomeHandler extends KafkaMessagePro
                     TAG_CandidateOutcome.class,
                     msg
                 );
-
+                mapCandidateOutcome(candidateOutcome);
                 addNavUnit(candidateOutcome?.navKontor);
                 msg.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
             } catch (Exception e) {
@@ -71,13 +71,13 @@ public without sharing class TAG_CandidateOutcomeHandler extends KafkaMessagePro
 
             CandidateOutcome__c co = new CandidateOutcome__c(
                 CandidateId__c = model.aktorId,
-                Result__c = model.utfall,
-                NavIdent__c = model.navIdent,
+                Result__c = model?.utfall,
+                NavIdent__c = model?.navIdent,
                 CandidateListId__c = model?.kandidatlisteId,
                 JobPostingId__c = model?.stillingsId,
                 TimeRegistered__c = dateTimeValue(model.tidspunkt),
                 Category__c = model?.stillingskategori,
-                Type__c = 'Etterregistrering',
+                Type__c = 'Stillingsoppdrag',
                 KafkaId__c = model.key,
                 KafkaHash__c = model.hash
             );

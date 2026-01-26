@@ -1,3 +1,17 @@
+/**
+ * @description This TAG_CandidateOutcomeTest class tests the TAG_CandidateOutcome model class
+ *
+ * @author Andre Colle <andre.colle@nav.no>
+ * @since 2026-01-22 Created.
+ *
+ * @see [License](https://github.com/navikt/crm-arbeidsgiver-integration/blob/main/LICENSE)
+ * @see [Github](https://github.com/navikt/crm-arbeidsgiver-integration)
+ * @see TAG_CandidateOutcome
+ * @see TAG_CandidateOutcomeHandler
+ *
+ * @group TAG Candidate Outcome Integration
+ */
+
 @IsTest
 public with sharing class TAG_CandidateOutcomeTest {
     private static final String JSON =
