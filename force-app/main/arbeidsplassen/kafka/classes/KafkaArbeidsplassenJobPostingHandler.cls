@@ -97,6 +97,10 @@ public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends Kafk
             jobPosting.RecordTypeId = EMPLOYMENT_PLACEMENT_RECORD_TYPE_ID;
         }
 
+        if (model.status == 'STOPPED') {
+            jobPosting.RecordTypeId = EMPLOYMENT_PLACEMENT_RECORD_TYPE_ID;
+        }
+
         return jobPosting;
     }
 
