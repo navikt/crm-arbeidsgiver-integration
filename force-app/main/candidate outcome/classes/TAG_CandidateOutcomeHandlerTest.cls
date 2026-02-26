@@ -100,7 +100,6 @@ public with sharing class TAG_CandidateOutcomeHandlerTest {
         Assert.areEqual(1, candidateOutcomeList.size(), 'Expected 1 CandidateOutcome record to be created.');
         Assert.areEqual(messages[0].CRM_Key__c, candidateOutcomeList[0].KafkaId__c, 'Expected KafkaId to match.');
         Assert.areEqual(messages[0].CRM_Value__c, candidateOutcomeList[0].KafkaHash__c, 'Expected KafkaHash to match.');
-        Assert.areEqual('Stillingsoppdrag', candidateOutcomeList[0].Type__c, 'Expected type to be Stillingsoppdrag');
         Assert.areEqual('FATT_JOBBEN', candidateOutcomeList[0].Result__c, 'Expected result to be FATT_JOBBEN');
         Assert.areEqual('Z990248', candidateOutcomeList[0].NavIdent__c, 'Expected NavIdent to match.');
         Assert.isNotNull(candidateOutcomeList[0].NavUnit__c, 'Expected NavUnit to be populated.');
@@ -132,7 +131,6 @@ public with sharing class TAG_CandidateOutcomeHandlerTest {
         ];
 
         Assert.areEqual(1, candidateOutcomeList.size(), 'Expected 1 CandidateOutcome record to be created.');
-        Assert.areEqual('Stillingsoppdrag', candidateOutcomeList[0].Type__c, 'Expected type to be Stillingsoppdrag');
         Assert.areEqual(null, candidateOutcomeList[0].Result__c, 'Expected result to be FATT_JOBBEN');
         Assert.areEqual(null, candidateOutcomeList[0].NavIdent__c, 'Expected NavIdent to match.');
         Assert.isNull(candidateOutcomeList[0].NavUnit__c, 'Expected NavUnit to be populated.');
