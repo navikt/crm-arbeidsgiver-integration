@@ -94,11 +94,6 @@ public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends Kafk
 
         if (model.getProperty('employerdescription') != null && model.getProperty('employerdescription').contains('Etterregistrering')) {
             jobPosting.TAG_EmploymentPlacement__c = true;
-            jobPosting.RecordTypeId = EMPLOYMENT_PLACEMENT_RECORD_TYPE_ID;
-        }
-
-        if (model.status == 'STOPPED') {
-            jobPosting.RecordTypeId = EMPLOYMENT_PLACEMENT_RECORD_TYPE_ID;
         }
 
         return jobPosting;
