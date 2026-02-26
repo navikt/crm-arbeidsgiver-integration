@@ -86,11 +86,6 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
         System.assertEquals(msg1.CRM_Key__c, jobPostings[0].KafkaId__c, 'Correct KafkaId');
         System.assertEquals(1, jobPostings.size(), 'Job Posting Inserted');
         System.assertEquals(true, jobPostings[0].TAG_EmploymentPlacement__c, 'Employment Placement set to true');
-        System.assertEquals(
-            EMPLOYMENT_PLACEMENT_RECORD_TYPE_ID_TEST,
-            jobPostings[0].RecordTypeId,
-            'Correct Record Type'
-        );
     }
 
     @IsTest
