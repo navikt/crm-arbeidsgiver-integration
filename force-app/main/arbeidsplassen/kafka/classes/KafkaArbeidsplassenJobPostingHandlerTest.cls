@@ -1,7 +1,5 @@
 @isTest
 public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
-    private static final String EMPLOYMENT_PLACEMENT_RECORD_TYPE_ID_TEST = [SELECT Id FROM RecordType WHERE SObjectType = 'JobPosting__c' AND DeveloperName = 'TAG_EmploymentPlacement' LIMIT 1].Id;
-
     @TestSetup
     private static void makeData() {
         TestDataFactory.getQueue('Test queue', 'queue_602', 'CustomOpportunity__c');
