@@ -84,9 +84,7 @@ public without sharing class FiaCaseHandler extends KafkaMessageProcessor implem
         Map<String, IACase__c> fiaCaseMap = getFiaCasesToDelete();
         List<IACase__c> fiaCases = new List<IACase__c>();
         try {
-            for (IACase__c iac : fiaCaseMap.values()) {
-                fiaCases.add(iac);
-            }
+            fiaCases = fiaCaseMap.values();
             delete fiaCases;
         } catch (Exception e) {
             String errorRef = logger.logError(e.getMessage() + '/n' + e.getStackTraceString());
