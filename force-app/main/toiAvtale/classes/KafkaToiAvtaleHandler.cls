@@ -84,6 +84,7 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
         Map<String, NavUnit__c> navUnitMapWithQueues = getNavUnitsMapWithQueues();
         List<Contract__c> contracts = new List<Contract__c>();
 
+        Id systemAsynkronUserId = getSystemAsynkronUser();
         for (KafkaToiAvtaleHandler_Model model : keyToAvtale.values()) {
             Contract__c c = new Contract__c(
                 RecordTypeId = avtaleRecordTypeId,
@@ -148,7 +149,7 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
                 !navIdentMap.containsKey(model.veilederNavIdent) &&
                 !navUnitMapWithQueues.containsKey(model.enhetOppfolging)
             ) {
-                c.OwnerId = getSystemAsynkronUser();
+                c.OwnerId = systemAsynkronUserId;
             }
 
             if (accountMap.containsKey(model.bedriftnr)) {
@@ -240,6 +241,7 @@ public without sharing class KafkaToiAvtaleHandler extends KafkaMessageProcessor
     }
 
     public Id getSystemAsynkronUser() {
-        return [SELECT Id FROM User WHERE Name = 'Systembruker Asynkron Prosessering' LIMIT 1].id;
+        List<User> users = [SELECT Id FROM User WHERE Name = 'Systembruker Asynkron Prosessering' LIMIT 1];
+        return users.isEmpty() ? null : users[0].Id;
     }
 }
