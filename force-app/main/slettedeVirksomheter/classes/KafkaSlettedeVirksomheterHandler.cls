@@ -24,6 +24,9 @@ public without sharing class KafkaSlettedeVirksomheterHandler implements IKafkaM
         for (Account act : acts) {
             act.IsDeletedEmployer__c = true;
             act.EmployerDeletedDate__c = Date.today();
+            act.NumberOfEmployees = null;
+            act.CRM_NumberOfEmployeesGrouped__c = null;
+            act.INT_HasEmployees__c = false;
         }
 
         update acts;

@@ -4,10 +4,22 @@ private without sharing class KafkaSlettedeVirksomheterHandlerTest {
     private static void testNewKafkaMessages() {
         KafkaEnhetFilter.bypassFilter = true;
 
-        Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '99999999');
+        Account acc = new Account(
+            Name = 'Test Employer 1',
+            INT_OrganizationNumber__c = '99999999',
+            NumberOfEmployees = 100,
+            CRM_NumberOfEmployeesGrouped__c = '51-100',
+            INT_HasEmployees__c = true
+        );
         insert acc;
 
-        Account acc2 = new Account(Name = 'Test Employer 2', INT_OrganizationNumber__c = '77777777');
+        Account acc2 = new Account(
+            Name = 'Test Employer 2',
+            INT_OrganizationNumber__c = '77777777',
+            NumberOfEmployees = 100,
+            CRM_NumberOfEmployeesGrouped__c = '51-100',
+            INT_HasEmployees__c = true
+        );
         insert acc2;
 
         List<Account> accts = [SELECT Id FROM Account WHERE IsDeletedEmployer__c = TRUE];
@@ -32,8 +44,15 @@ private without sharing class KafkaSlettedeVirksomheterHandlerTest {
         AsyncRequestSchedulable.enqueueAsyncJobs();
         Test.stopTest();
 
-        accts = [SELECT Id, EmployerDeletedDate__c FROM Account WHERE IsDeletedEmployer__c = TRUE];
-        System.assertEquals(2, accts.size(), 'two accounts deleted');
-        System.assertEquals(Date.today(), accts[0].EmployerDeletedDate__c, 'deleted date is today');
+        accts = [
+            SELECT Id, EmployerDeletedDate__c, INT_HasEmployees__c, CRM_NumberOfEmployeesGrouped__c, NumberOfEmployees
+            FROM Account
+            WHERE IsDeletedEmployer__c = TRUE
+        ];
+        Assert.areEqual(2, accts.size(), 'two accounts deleted');
+        Assert.areEqual(Date.today(), accts[0].EmployerDeletedDate__c, 'deleted date is today');
+        Assert.isNull(accts[0].CRM_NumberOfEmployeesGrouped__c, 'Should clear number of employees group when deleted');
+        Assert.isNull(accts[0].NumberOfEmployees, 'Should clear number of employees when deleted');
+        Assert.isFalse(accts[0].INT_HasEmployees__c, 'Should set has employees to false when deleted');
     }
 }
