@@ -46,7 +46,8 @@ public with sharing class KafkaArenaHandler_Model {
     }
 
     // Extract DateTime from key
-    private static DateTime extractMessageTimeStampFromKey(String key) {
+    /*
+     private static DateTime extractMessageTimeStampFromKey(String key) {
         // Verify that key looks like a datetime
         if (key == null || key.length() != 26) {
             return null;
@@ -54,4 +55,5 @@ public with sharing class KafkaArenaHandler_Model {
         DateTime dt = SharedIntegrationFunctions.convertNorwegianTimeToGmt(key);
         return dt;
     }
+        */
 }
