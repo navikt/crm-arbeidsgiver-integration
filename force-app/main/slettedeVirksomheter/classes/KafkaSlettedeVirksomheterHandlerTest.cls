@@ -51,8 +51,12 @@ private without sharing class KafkaSlettedeVirksomheterHandlerTest {
         ];
         Assert.areEqual(2, accts.size(), 'two accounts deleted');
         Assert.areEqual(Date.today(), accts[0].EmployerDeletedDate__c, 'deleted date is today');
-        Assert.isNull(accts[0].CRM_NumberOfEmployeesGrouped__c, 'Should clear number of employees group when deleted');
-        Assert.isNull(accts[0].NumberOfEmployees, 'Should clear number of employees when deleted');
+        Assert.areEqual(
+            '0',
+            accts[0].CRM_NumberOfEmployeesGrouped__c,
+            'Should clear number of employees group when deleted'
+        );
+        Assert.areEqual(0, accts[0].NumberOfEmployees, 'Should clear number of employees when deleted');
         Assert.isFalse(accts[0].INT_HasEmployees__c, 'Should set has employees to false when deleted');
     }
 }
