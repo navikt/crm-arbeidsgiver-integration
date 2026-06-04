@@ -70,6 +70,18 @@
                     "package": "crm-platform-oppgave",
                     "versionNumber": "0.65.0.LATEST"
                 },
+                       {
+                    "package": "crm-shared-user-notification",
+                    "versionNumber": "0.27.0.LATEST"
+                },
+                {
+                    "package": "crm-community-base",
+                    "versionNumber": "0.140.0.LATEST"
+                },
+                {
+                    "package": "crm-henvendelse",
+                    "versionNumber": "0.201.0.LATEST"
+                },
                 {
                     "package": "crm-arbeidsgiver-base",
                     "versionNumber": "1.693.0.LATEST"
