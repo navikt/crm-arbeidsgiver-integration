@@ -77,6 +77,7 @@ public without sharing class TAG_CandidateOutcomeHandler extends KafkaMessagePro
                 JobPostingId__c = model?.stillingsId,
                 TimeRegistered__c = dateTimeValue(model.tidspunkt),
                 Category__c = model?.stillingskategori,
+                RecruitmentEventId__c = model?.rekrutteringstreffId,
                 KafkaId__c = model.key,
                 KafkaHash__c = model.hash
             );
