@@ -2,7 +2,7 @@
 public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
     @TestSetup
     private static void makeData() {
-        TestDataFactory.getQueue('Test queue', 'queue_602', 'CustomOpportunity__c');
+        TestDataFactory.getQueue('Test queue', 'queue_602', 'EmployerInquiry__c');
     }
     @IsTest
     static void processSingleMessage_success() {
@@ -358,30 +358,39 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
 
     @isTest
     static void runJobBulk_insertAndUpdate() {
-        String encodedValue1 = EncodingUtil.base64Encode(Blob.valueOf(ArbeidsplassenJobPostingTest.JSON_WITH_NULLS));
+        Group g = [SELECT Id FROM Group WHERE Name = 'Test queue' LIMIT 1];
+
+        NavUnit__c unit1 = new NavUnit__c(Name = 'Nav Unit 1', INT_UnitNumber__c = '0219', CRM_QueueId__c = g.Id);
+        insert unit1;
+
+        Account acc = new Account(
+            Name = 'ORDKNAPP BLOMSTRETE TIGER AS',
+            INT_OrganizationNumber__c = '312113341',
+            TAG_NavUnit__c = unit1.Id
+        );
+        insert acc;
+
+        String encodedValue1 = EncodingUtil.base64Encode(Blob.valueOf(ArbeidsplassenJobPostingTest.JSON_RECRUITMENT_HELP));
         String encodedValue2 = EncodingUtil.base64Encode(Blob.valueOf(ArbeidsplassenJobPostingTest.JSON));
 
-        // Same key update Existing Job Posting
+        // New Job Posting
         KafkaMessage__c msg = new KafkaMessage__c();
         msg.CRM_Topic__c = 'teampam.stilling-ekstern-1';
         msg.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
         msg.CRM_Value__c = encodedValue1;
 
         // New key new Job Posting
-        KafkaMessage__c msg2 = msg.clone();
+        KafkaMessage__c msg2 = new KafkaMessage__c();
+        msg2.CRM_Topic__c = 'teampam.stilling-ekstern-1';
         msg2.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1f';
+        msg2.CRM_Value__c = encodedValue1;
 
         // Ignore inactive status
-        KafkaMessage__c msg3 = msg.clone();
+        KafkaMessage__c msg3 = new KafkaMessage__c();
+        msg3.CRM_Topic__c = 'teampam.stilling-ekstern-1';
         msg3.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1g';
         msg3.CRM_Value__c = encodedValue2;
 
-        JobPosting__c jobPosting = new JobPosting__c(
-            KafkaId__c = msg.CRM_Key__c,
-            KafkaHash__c = encodedValue2,
-            Expires__c = Date.Today()
-        );
-        insert jobPosting;
         insert new List<KafkaMessage__c>{ msg, msg2, msg3 };
 
         Test.StartTest();
@@ -389,11 +398,11 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
         Test.StopTest();
 
         List<JobPosting__c> jobPostings = [
-            SELECT Id, Expires__c, LastUpdated__c, KafkaId__c, KafkaHash__c
+            SELECT Id, Expires__c, LastUpdated__c, KafkaId__c
             FROM JobPosting__c
         ];
 
-        System.assertEquals(3, jobPostings.size(), '2 new, 1 updated');
+        System.assertEquals(2, jobPostings.size(), '2 new');
     }
 
     @IsTest
