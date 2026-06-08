@@ -2,7 +2,7 @@
 public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
     @TestSetup
     static void makeData() {
-        //TestDataFactory.getQueue('Test queue', 'queue_602', 'EmployerInquiry__c');
+        /*TestDataFactory.getQueue('Test queue', 'queue_602', 'EmployerInquiry__c');
 
         Group g = new Group(Name = 'Test queue', DeveloperName = 'queue_602', Type = 'Queue');
         insert g;
@@ -10,8 +10,34 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
         System.runAs(new User(Id = UserInfo.getUserId())) {
             QueueSobject qs = new QueueSobject(QueueId = g.Id, SobjectType = 'EmployerInquiry__c');
             insert qs;
-        }
+        }*/
+
+        Group groupAlna = new Group(Name='NAV Test Alna', Type='Queue');
+        insert groupAlna;
+
+
+        QueuesObject qoAlna = new QueueSObject(QueueID = groupAlna.id, SObjectType = 'EmployerInquiry__c');
+        insert qoAlna;
+    
+        createDataAsync();
     }
+    
+    //Future method createDataAsync is needed to avoid the below error after QueueSObject is created
+    //Error: MIXED_DML_OPERATION, DML operation on setup object is not permitted after you have updated a non-setup object 
+    @future
+    static void createDataAsync() {
+        Id queueAlna = [SELECT Id, Name FROM Group WHERE Type = 'queue' AND Name = 'NAV Test Alna'].Id;
+       
+        NavUnit__c navUnitAlna = new NavUnit__c(Name = 'Nav Alna', INT_UnitNumber__c = '4444', INT_Region__c = 'Oslo', 
+        CRM_QueueId__c = queueAlna, INT_UnitType__c = 'LOKAL');
+        insert navUnitAlna;
+    
+        Id idAlna = [SELECT Id FROM NavUnit__c WHERE Name = 'Nav Alna'].Id;
+    
+        Account acc1 = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '973113631', INT_RegionNumber__c = '30', INT_MunicipalityNumber__c = '3001', TAG_NavUnit__c = idAlna);
+        insert acc1;
+    }
+
     @IsTest
     static void processSingleMessage_success() {
         Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '123456789');
@@ -129,15 +155,12 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
     }
     @IsTest
     static void processSingleMessageRecruitmentHelp_success() {
-        Group g = [SELECT Id FROM Group WHERE Name = 'Test queue' LIMIT 1];
-
-        NavUnit__c unit1 = new NavUnit__c(Name = 'Nav Unit 1', INT_UnitNumber__c = '0219', CRM_QueueId__c = g.Id);
-        insert unit1;
+        Id idAlna = [SELECT Id FROM NavUnit__c WHERE Name = 'Nav Alna'].Id;
 
         Account acc = new Account(
             Name = 'ORDKNAPP BLOMSTRETE TIGER AS',
             INT_OrganizationNumber__c = '312113341',
-            TAG_NavUnit__c = unit1.Id
+            TAG_NavUnit__c = idAlna
         );
         insert acc;
 
@@ -366,15 +389,12 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
 
     @isTest
     static void runJobBulk_insertAndUpdate() {
-        Group g = [SELECT Id FROM Group WHERE Name = 'Test queue' LIMIT 1];
-
-        NavUnit__c unit1 = new NavUnit__c(Name = 'Nav Unit 1', INT_UnitNumber__c = '0219', CRM_QueueId__c = g.Id);
-        insert unit1;
+        Id idAlna = [SELECT Id FROM NavUnit__c WHERE Name = 'Nav Alna'].Id;
 
         Account acc = new Account(
             Name = 'ORDKNAPP BLOMSTRETE TIGER AS',
             INT_OrganizationNumber__c = '312113341',
-            TAG_NavUnit__c = unit1.Id
+            TAG_NavUnit__c = idAlna
         );
         insert acc;
 
