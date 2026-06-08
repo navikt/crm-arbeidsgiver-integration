@@ -2,15 +2,14 @@
 public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
     @TestSetup
     static void makeData() {
-        /*TestDataFactory.getQueue('Test queue', 'queue_602', 'EmployerInquiry__c');
+        //TestDataFactory.getQueue('Test queue', 'queue_602', 'EmployerInquiry__c');
 
-        Group g = new Group(Name = 'Test queue', DeveloperName = 'queue_602', Type = 'Queue');
+        Group g = new Group(Name = 'Test queue 1', Type = 'Queue');
         insert g;
 
-        System.runAs(new User(Id = UserInfo.getUserId())) {
-            QueueSobject qs = new QueueSobject(QueueId = g.Id, SobjectType = 'EmployerInquiry__c');
-            insert qs;
-        }*/
+        QueueSobject qs = new QueueSobject(QueueId = g.Id, SobjectType = 'EmployerInquiry__c');
+        insert qs;
+
     }
     @IsTest
     static void processSingleMessage_success() {
@@ -129,7 +128,7 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
     }
     @IsTest
     static void processSingleMessageRecruitmentHelp_success() {
-        Group g = [SELECT Id FROM Group WHERE Name = 'Test queue' LIMIT 1];
+        Group g = [SELECT Id FROM Group WHERE Name = 'Test queue 1' AND Type = 'Queue' LIMIT 1];
 
         NavUnit__c unit1 = new NavUnit__c(Name = 'Nav Unit 1', INT_UnitNumber__c = '0219', CRM_QueueId__c = g.Id);
         insert unit1;
@@ -366,7 +365,7 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
 
     @isTest
     static void runJobBulk_insertAndUpdate() {
-        Group g = [SELECT Id FROM Group WHERE Name = 'Test queue' LIMIT 1];
+        Group g = [SELECT Id FROM Group WHERE Name = 'Test queue 1' AND Type = 'Queue' LIMIT 1];
 
         NavUnit__c unit1 = new NavUnit__c(Name = 'Nav Unit 1', INT_UnitNumber__c = '0219', CRM_QueueId__c = g.Id);
         insert unit1;
