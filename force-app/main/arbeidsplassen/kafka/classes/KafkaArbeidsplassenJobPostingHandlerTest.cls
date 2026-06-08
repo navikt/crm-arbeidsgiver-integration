@@ -4,7 +4,7 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
     private static void makeData() {
         //TestDataFactory.getQueue('Test queue', 'queue_602', 'EmployerInquiry__c');
 
-        Group g = new Group(Name = 'Test queue', DeveloperName = 'queue_219', Type = 'Queue');
+        Group g = new Group(Name = 'Test queue', DeveloperName = 'queue_602', Type = 'Queue');
         insert g;
 
         System.runAs(new User(Id = UserInfo.getUserId())) {
