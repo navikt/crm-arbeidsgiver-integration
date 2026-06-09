@@ -2,14 +2,7 @@
 public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
     @TestSetup
     static void makeData() {
-        //TestDataFactory.getQueue('Test queue', 'queue_602', 'EmployerInquiry__c');
-
-        Group g = new Group(Name = 'Test queue 1', Type = 'Queue');
-        insert g;
-
-        QueueSobject qs = new QueueSobject(QueueId = g.Id, SobjectType = 'EmployerInquiry__c');
-        insert qs;
-
+        TestDataFactory.getQueue('Test queue', 'queue_602', 'EmployerInquiry__c');
     }
     @IsTest
     static void processSingleMessage_success() {
