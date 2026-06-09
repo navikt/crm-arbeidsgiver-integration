@@ -26,7 +26,7 @@ public with sharing class TAG_CandidateOutcomeHandlerTest {
                 CRM_Key__c = 'ZDJkNGYwMmQtOGEzOC00Mjk3LTg2YWMtMjEzYTMyOWYxZmFm1',
                 CRM_Value__c = EncodingUtil.base64Encode(
                     Blob.valueOf(
-                        '{"aktørId": "2171954836936", "utfall": "FATT_JOBBEN", "navIdent": "Z990248", "navKontor": "0219", "kandidatlisteId": "880e8678-3e04-4a3c-a81a-37fe25998ebf", "stillingsId": "016a90-75ad-4a39-8fb4-c65e4ed3c6689b", "tidspunkt": "2026-01-20T08:48:52.988", "stillingskategori": "FORMIDLING"}'
+                        '{"aktørId": "2171954836936", "utfall": "FATT_JOBBEN", "navIdent": "Z990248", "navKontor": "0219", "kandidatlisteId": "880e8678-3e04-4a3c-a81a-37fe25998ebf", "stillingsId": "016a90-75ad-4a39-8fb4-c65e4ed3c6689b", "tidspunkt": "2026-01-20T08:48:52.988", "stillingskategori": "FORMIDLING","rekrutteringstreffId": "1234"}'
                     )
                 )
             )
@@ -39,7 +39,7 @@ public with sharing class TAG_CandidateOutcomeHandlerTest {
                 CRM_Key__c = 'ZDJkNGYwMmQtOGEzOC00Mjk3LTg2YWMtMjEzYTMyOWYxZmFm2',
                 CRM_Value__c = EncodingUtil.base64Encode(
                     Blob.valueOf(
-                        '{"aktørId": "2171954836936", "utfall": null, "navIdent": null, "navKontor": null, "kandidatlisteId": null, "stillingsId": null, "tidspunkt": "2026-01-20T08:48:52.988", "stillingskategori": null}'
+                        '{"aktørId": "2171954836936", "utfall": null, "navIdent": null, "navKontor": null, "kandidatlisteId": null, "stillingsId": null, "tidspunkt": "2026-01-20T08:48:52.988", "stillingskategori": null, "rekrutteringstreffId": null}'
                     )
                 )
             )
@@ -65,7 +65,7 @@ public with sharing class TAG_CandidateOutcomeHandlerTest {
                         Blob.valueOf(
                             '{"aktørId":"' +
                             s +
-                            '","utfall":"FATT_JOBBEN","navIdent":"Z990248","navKontor":"0219","kandidatlisteId":"880e8678-3e04-4a3c-a81a-37fe25998ebf","stillingsId":"016a90-75ad-4a39-8fb4-c65e4ed3c6689b","tidspunkt":"2026-01-20T08:48:52.988","stillingskategori":"FORMIDLING"}'
+                            '","utfall":"FATT_JOBBEN","navIdent":"Z990248","navKontor":"0219","kandidatlisteId":"880e8678-3e04-4a3c-a81a-37fe25998ebf","stillingsId":"016a90-75ad-4a39-8fb4-c65e4ed3c6689b","tidspunkt":"2026-01-20T08:48:52.988","stillingskategori":"FORMIDLING","rekrutteringstreffId":"1234"}'
                         )
                     )
                 )

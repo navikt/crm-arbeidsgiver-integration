@@ -21,6 +21,7 @@ public with sharing class TAG_CandidateOutcome implements IKafkaMessageParser {
     public String stillingsId;
     public String tidspunkt;
     public String stillingskategori;
+    public String rekrutteringstreffId;
 
     public String jsonPayload;
     public String hash;
