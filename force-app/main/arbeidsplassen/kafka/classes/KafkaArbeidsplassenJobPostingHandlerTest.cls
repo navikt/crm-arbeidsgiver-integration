@@ -2,7 +2,19 @@
 public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
     @TestSetup
     static void makeData() {
-        TestDataFactory.getQueue('Test queue', 'queue_602', 'EmployerInquiry__c');
+       // TestDataFactory.getQueue('Test queue', 'queue_602', 'EmployerInquiry__c');
+
+        Group g = new Group(Name = 'Test queue', DeveloperName = 'queue_219', Type = 'Queue');
+        insert g;
+        List<Group> groups = [SELECT Id FROM Group WHERE Name = 'Test queue'];
+
+        System.assertEquals(1, groups.size(), 'Group Inserted');
+
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            QueueSobject qs = new QueueSobject(QueueId = g.Id, SobjectType = 'EmployerInquiry__c');
+            insert qs;
+        }
+    }
     }
     @IsTest
     static void processSingleMessage_success() {
