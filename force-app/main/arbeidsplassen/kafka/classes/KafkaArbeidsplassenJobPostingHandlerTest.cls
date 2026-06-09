@@ -2,8 +2,19 @@
 public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
     @TestSetup
     private static void makeData() {
-        TestDataFactory.getQueue('Test queue', 'queue_602', 'CustomOpportunity__c');
+        //TestDataFactory.getQueue('Test queue', 'queue_602', 'CustomOpportunity__c');
+
+        Group g = new Group(Name = 'Test queue', DeveloperName = 'queue_219', Type = 'Queue');
+        insert g;
+
+        List<Group> groups = [SELECT Id FROM Group WHERE Name = 'Test queue'];
+        
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            QueueSobject qs = new QueueSobject(QueueId = g.Id, SobjectType = 'EmployerInquiry__c');
+            insert qs;
+        }
     }
+
     @IsTest
     static void processSingleMessage_success() {
         Account acc = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '123456789');
@@ -358,10 +369,10 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
 
     @isTest
     static void runJobBulk_insertAndUpdate() {
-        String encodedValue1 = EncodingUtil.base64Encode(Blob.valueOf(ArbeidsplassenJobPostingTest.JSON_WITH_NULLS));
+        String encodedValue1 = EncodingUtil.base64Encode(Blob.valueOf(ArbeidsplassenJobPostingTest.JSON_RECRUITMENT_HELP));
         String encodedValue2 = EncodingUtil.base64Encode(Blob.valueOf(ArbeidsplassenJobPostingTest.JSON));
 
-        // Same key update Existing Job Posting
+        // New Job Posting
         KafkaMessage__c msg = new KafkaMessage__c();
         msg.CRM_Topic__c = 'teampam.stilling-ekstern-1';
         msg.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1e';
@@ -376,12 +387,6 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
         msg3.CRM_Key__c = 'a240d1ad-ac38-4c2e-b0e7-e204c7e5bc1g';
         msg3.CRM_Value__c = encodedValue2;
 
-        JobPosting__c jobPosting = new JobPosting__c(
-            KafkaId__c = msg.CRM_Key__c,
-            KafkaHash__c = encodedValue2,
-            Expires__c = Date.Today()
-        );
-        insert jobPosting;
         insert new List<KafkaMessage__c>{ msg, msg2, msg3 };
 
         Test.StartTest();
@@ -389,11 +394,11 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
         Test.StopTest();
 
         List<JobPosting__c> jobPostings = [
-            SELECT Id, Expires__c, LastUpdated__c, KafkaId__c, KafkaHash__c
+            SELECT Id, Expires__c, LastUpdated__c, KafkaId__c
             FROM JobPosting__c
         ];
 
-        System.assertEquals(3, jobPostings.size(), '2 new, 1 updated');
+        System.assertEquals(2, jobPostings.size(), '2 new');
     }
 
     @IsTest

@@ -1,6 +1,6 @@
 public class TAG_DeleteKafkaMessagesBatchJob extends KafkaMessageProcessor implements Database.Batchable<sObject> {
     private static final String KAFKA_MESSAGE_QUERY =
-        'SELECT Id FROM KafkaMessage__c WHERE LastModifiedDate < N_DAYS_AGO:7 AND LastModifiedDate > N_DAYS_AGO:15 AND IsDeleted = false AND CRM_Status__c = \'Processed\' AND' +
+        'SELECT Id FROM KafkaMessage__c WHERE LastModifiedDate < N_DAYS_AGO:7 AND LastModifiedDate > N_DAYS_AGO:90 AND IsDeleted = false AND CRM_Status__c = \'Processed\' AND' +
         ' (CRM_Topic__c = \'teampam.stilling-ekstern-1\' OR' +
         ' CRM_Topic__c = \'teamarenanais.aapen-arena-arbeidsgiveraktivitetendret-v1\' OR' +
         ' CRM_Topic__c = \'arbeidsgiver.tiltak-avtale-hendelse\' OR' +
@@ -16,6 +16,7 @@ public class TAG_DeleteKafkaMessagesBatchJob extends KafkaMessageProcessor imple
         ' CRM_Topic__c = \'pia.sykefravarsstatistikk-metadata-virksomhet-v1\' OR' +
         ' CRM_Topic__c = \'pia.sykefravarsstatistikk-sektor-v1\' OR' +
         ' CRM_Topic__c = \'public-ereg-cache-org-tombstones\' OR' +
+        ' CRM_Topic__c = \'toi.kandidatutfall\' OR' +
         ' CRM_Topic__c = \'teamsykefravr.isdialogmote-dialogmote-statusendring\')';
 
     public Database.QueryLocator start(Database.BatchableContext BC) {
@@ -39,7 +40,7 @@ public class TAG_DeleteKafkaMessagesBatchJob extends KafkaMessageProcessor imple
 }
 
 /*
-Emptied obsolete topics:
+Obsolete topics:
 pia.sykefravarsstatistikk-v1
 team-innhold.arbeidsgiver-kontaktskjema
 permittering-og-nedbemanning.aapen-permittering-arbeidsgiver
