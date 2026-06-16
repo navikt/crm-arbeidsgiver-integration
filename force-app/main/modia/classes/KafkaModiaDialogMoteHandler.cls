@@ -75,6 +75,7 @@ public without sharing class KafkaModiaDialogMoteHandler extends KafkaMessagePro
                 StatusChangeTime__c = SharedIntegrationFunctions.parseISODateTime(model.statusEndringTidspunkt),
                 CaseStartDate__c = SharedIntegrationFunctions.parseISODateTime(model.tilfelleStartdato),
                 UserNavIdent__c = model.navIdent,
+                OrganizationNumber__c = model?.virksomhetsnummer,
                 IsEmployeeParticipating__c = model.arbeidstaker,
                 IsEmployerParticipating__c = model.arbeidsgiver,
                 IsSickLeaveIssuerParticipating__c = model.sykmelder,

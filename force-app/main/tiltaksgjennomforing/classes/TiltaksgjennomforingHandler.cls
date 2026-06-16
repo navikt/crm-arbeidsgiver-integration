@@ -114,11 +114,12 @@ public without sharing class TiltaksgjennomforingHandler extends KafkaMessagePro
             }
 
             if (model.bedriftNr != null) {
+                w.OrganizationNumber__c = model.bedriftNr;
                 w.Link__c =
                     'https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/' +
                     model.avtaleId +
                     '?bedrift=' +
-                    model.bedriftnr;
+                    model.bedriftNr;
             } else {
                 w.Link__c = 'https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/' + model.avtaleId;
             }
