@@ -79,7 +79,9 @@ public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends Kafk
             Title__c = model?.title?.left(254),
             KafkaHash__c = model.hash,
             KafkaId__c = model.key,
-            UUID__c = model.uuid
+            UUID__c = model.uuid,
+            NavIdent__c = model?.administration?.navIdent,
+            NavEmployeeName__c = model?.administration?.reportee
         );
 
         if (accountMap.containsKey(model?.employer?.orgnr)) {
