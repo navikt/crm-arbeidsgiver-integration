@@ -4,6 +4,7 @@ public with sharing class ArbeidsplassenJobPosting implements IKafkaMessageParse
     public List<Contact> contacts { get; set; }
     public List<StyrkCategory> categories { get; set; }
     public Company employer { get; set; }
+    public Admin administration { get; set; }
 
     public String businessName { get; set; }
     public String published { get; set; }
@@ -59,6 +60,14 @@ public with sharing class ArbeidsplassenJobPosting implements IKafkaMessageParse
         public String orgform { get; set; }
         public String orgnr { get; set; }
         public String name { get; set; }
+    }
+
+     public class Admin {
+        public String status { get; set; }
+        //public String remarks { get; set; } Ignore for now as it is not used. Can be re-added later if needed.
+        public String comments { get; set; }
+        public String reportee { get; set; }
+        public String navIdent { get; set; }
     }
 
     public String getProperty(String propertyName) {

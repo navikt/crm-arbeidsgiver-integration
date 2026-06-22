@@ -163,7 +163,7 @@ public with sharing class ArbeidsplassenJobPostingTest {
         '   "privacy":"INTERNAL_NOT_SHOWN",\n' +
         '   "administration": {\n' +
         '       "status":"DONE",\n' +
-        '       "remarks":[],\n' +
+        '       "remarks":[{"employer4":"67"}],\n' +
         '       "comments":"",\n' +
         '       "reportee":"Stig Garberg-Johnsen",\n' +
         '       "navIdent":"G111709"},\n' +
