@@ -78,7 +78,7 @@ public without sharing class TiltaksgjennomforingHandler extends KafkaMessagePro
 
             Workfare__c w = new Workfare__c(
                 Status__c = model.avtaleStatus,
-                Type__c = model.tiltakstype,
+                Type2__c = model.tiltakstype,
                 NavIdent__c = model?.veilederNavIdent,
                 EmployerContactPhone__c = model?.arbeidsgiverTlf,
                 ActionType__c = model?.hendelseType,
@@ -136,6 +136,12 @@ public without sharing class TiltaksgjennomforingHandler extends KafkaMessagePro
 
             if (accountMap.containsKey(model.bedriftnr)) {
                 w.Account__c = accountMap.get(model.bedriftnr).Id;
+
+                if (accountMap.get(model.bedriftnr).NumberOfEmployees > 4) {
+                    w.Type__c = model.tiltakstype;
+                }else {
+                    w.Type__c = null;
+                }
             }
 
             if (navUnitMap.containsKey(model.enhetOppfolging)) {

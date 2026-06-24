@@ -2,9 +2,9 @@
 public with sharing class TiltaksgjennomforingHandlerTest {
     @TestSetup
     static void makeData() {
-        Account account1 = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '973113631');
+        Account account1 = new Account(Name = 'Test Employer 1', INT_OrganizationNumber__c = '973113631', NumberOfEmployees = 5);
         insert account1;
-        Account account2 = new Account(Name = 'Test Employer 2', INT_OrganizationNumber__c = '973113632');
+        Account account2 = new Account(Name = 'Test Employer 2', INT_OrganizationNumber__c = '973113632', NumberOfEmployees = 4);
         insert account2;
 
         NavUnit__c unit1 = new NavUnit__c(Name = 'Nav Unit 1', INT_UnitNumber__c = '0219');
@@ -115,6 +115,7 @@ public with sharing class TiltaksgjennomforingHandlerTest {
                 StartDate__c,
                 Status__c,
                 Type__c,
+                Type2__c,
                 TimeStampFromMessage__c
             FROM Workfare__c
         ];
@@ -143,6 +144,7 @@ public with sharing class TiltaksgjennomforingHandlerTest {
         System.assertEquals('2022-01-01', String.valueOf(agreements[0].StartDate__c));
         System.assertEquals('GJENNOMFØRES', agreements[0].Status__c);
         System.assertEquals('MIDLERTIDIG_LONNSTILSKUDD', agreements[0].Type__c);
+        System.assertEquals('MIDLERTIDIG_LONNSTILSKUDD', agreements[0].Type2__c);
         System.assertEquals(
             DateTime.newInstanceGMT(2022, 10, 26, 9, 54, 34),
             agreements[0].TimeStampFromMessage__c,
@@ -200,7 +202,8 @@ public with sharing class TiltaksgjennomforingHandlerTest {
                 OwnerId,
                 StartDate__c,
                 Status__c,
-                Type__c
+                Type__c,
+                Type2__c
             FROM Workfare__c
         ];
 
@@ -227,7 +230,8 @@ public with sharing class TiltaksgjennomforingHandlerTest {
         System.assertEquals(units[0].id, agreements[0].NavUnit__c);
         System.assertEquals('2022-01-01', String.valueOf(agreements[0].StartDate__c));
         System.assertEquals('AVSLUTTET', agreements[0].Status__c);
-        System.assertEquals('MENTOR', agreements[0].Type__c);
+        System.assertEquals(null, agreements[0].Type__c);
+        System.assertEquals('MENTOR', agreements[0].Type2__c);
     }
 
     @isTest
@@ -284,7 +288,8 @@ public with sharing class TiltaksgjennomforingHandlerTest {
                 OwnerId,
                 StartDate__c,
                 Status__c,
-                Type__c
+                Type__c,
+                Type2__c
             FROM Workfare__c
         ];
 
@@ -307,7 +312,8 @@ public with sharing class TiltaksgjennomforingHandlerTest {
         System.assertEquals(null, agreements[0].NavUnit__c);
         System.assertEquals(null, String.valueOf(agreements[0].StartDate__c));
         System.assertEquals('GJENNOMFØRES', agreements[0].Status__c);
-        System.assertEquals('MIDLERTIDIG_LONNSTILSKUDD', agreements[0].Type__c);
+        System.assertEquals(null, agreements[0].Type__c);
+        System.assertEquals('MIDLERTIDIG_LONNSTILSKUDD', agreements[0].Type2__c);
     }
 
     @isTest
