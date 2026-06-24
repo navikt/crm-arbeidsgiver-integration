@@ -76,7 +76,7 @@ public inherited sharing abstract class KafkaMessageProcessor {
     public Map<String, Account> getOrgNumberAccountMap() {
         Map<String, Account> accountMap = new Map<String, Account>();
         List<Account> accounts = [
-            SELECT Id, Name, INT_OrganizationNumber__c, INT_MunicipalityNumber__c
+            SELECT Id, Name, INT_OrganizationNumber__c, INT_MunicipalityNumber__c, NumberOfEmployees
             FROM Account
             WHERE INT_OrganizationNumber__c IN :orgNumbers AND IsPersonAccount = FALSE
         ];
