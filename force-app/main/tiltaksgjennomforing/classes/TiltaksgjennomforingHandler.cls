@@ -140,7 +140,7 @@ public without sharing class TiltaksgjennomforingHandler extends KafkaMessagePro
                 if (accountMap.get(model.bedriftnr).NumberOfEmployees > 4) {
                     w.Type__c = model.tiltakstype;
                 }else {
-                    w.Type__c = null;
+                    w.Type__c = 'Ikke tilgjengelig';
                 }
             }
 
