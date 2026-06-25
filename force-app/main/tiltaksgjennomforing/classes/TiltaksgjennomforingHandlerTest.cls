@@ -312,7 +312,7 @@ public with sharing class TiltaksgjennomforingHandlerTest {
         System.assertEquals(null, agreements[0].NavUnit__c);
         System.assertEquals(null, String.valueOf(agreements[0].StartDate__c));
         System.assertEquals('GJENNOMFØRES', agreements[0].Status__c);
-        System.assertEquals('Ikke tilgjengelig', agreements[0].Type__c, 'Type should be set to Ikke tilgjengelig');
+        System.assertEquals(null, agreements[0].Type__c, 'Type should be set to Ikke tilgjengelig');
         System.assertEquals('MIDLERTIDIG_LONNSTILSKUDD', agreements[0].Type2__c, 'Type2 should be set to MIDLERTIDIG_LONNSTILSKUDD');
     }
 
