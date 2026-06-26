@@ -230,7 +230,7 @@ public with sharing class TiltaksgjennomforingHandlerTest {
         System.assertEquals(units[0].id, agreements[0].NavUnit__c);
         System.assertEquals('2022-01-01', String.valueOf(agreements[0].StartDate__c));
         System.assertEquals('AVSLUTTET', agreements[0].Status__c);
-        System.assertEquals(null, agreements[0].Type__c);
+        System.assertEquals('Ikke tilgjengelig', agreements[0].Type__c, 'Type__c should be set to "Ikke tilgjengelig"');
         System.assertEquals('MENTOR', agreements[0].Type2__c);
     }
 
