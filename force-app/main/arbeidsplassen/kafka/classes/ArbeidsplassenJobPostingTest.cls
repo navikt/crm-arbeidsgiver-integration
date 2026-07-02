@@ -45,6 +45,10 @@ public with sharing class ArbeidsplassenJobPostingTest {
         '  ],\n' +
         '  "properties": [\n' +
         '    {\n' +
+        '      "key": "keywords",\n' +
+        '      "value": "seven carefully busy minerals small cover age wool above stock everyone thou pond remember attached unless range weather bone graph cow mission nation forgotregion impossible community strip action plant pie instance burst his rose in gift when equator mental hundred particularly worried transportation spring universe individual life"\n' +
+        '    },\n' +
+        '    {\n' +
         '      "key": "extent",\n' +
         '      "value": "Heltid"\n' +
         '    },\n' +
@@ -82,9 +86,30 @@ public with sharing class ArbeidsplassenJobPostingTest {
         '    "orgnr": "123456789",\n' +
         '    "parentOrgnr": "123456799",\n' +
         '    "orgform": "AS"\n' +
-        '  }\n' +
-        '  \n' +
-        '\n' +
+        '  },\n' +
+        '  "classifications": [\n' +
+        '    {\n' +
+        '      "janzzParentId": "",\n' +
+        '      "score": 1.0,\n' +
+        '      "name": "janzz_name",\n' +
+        '      "code": "1234",\n' +
+        '      "categoryType": "JANZZ"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "janzzParentId": "",\n' +
+        '      "score": 1.0,\n' +
+        '      "name": "esco_name",\n' +
+        '      "code": "1234",\n' +
+        '      "categoryType": "ESCO"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "janzzParentId": "",\n' +
+        '      "score": 1.0,\n' +
+        '      "name": "styrk_name",\n' +
+        '      "code": "1234",\n' +
+        '      "categoryType": "STYRK08"\n' +
+        '    }\n' +
+        '  ]\n' +
         '}';
 
     public static final String JSON_WITH_NULLS =
@@ -132,6 +157,10 @@ public with sharing class ArbeidsplassenJobPostingTest {
         '    {\n' +
         '      "key": "sourceur",\n' +
         '      "value": "https://www.finn.no/248749509"\n' +
+        '    },\n' +
+        '    {\n' +
+        '      "key": "workLanguage",\n' +
+        '      "value": "[]"\n' +
         '    }\n' +
         '  ],\n' +
         '  "contacts": [\n' +
@@ -149,7 +178,8 @@ public with sharing class ArbeidsplassenJobPostingTest {
         '    "orgnr": null,\n' +
         '    "parentOrgnr": null,\n' +
         '    "orgform": "AS"\n' +
-        '  }\n' +
+        '  },\n' +
+        '  "classifications": []\n' +
         '  \n' +
         '\n' +
         '}';
@@ -531,7 +561,7 @@ public with sharing class ArbeidsplassenJobPostingTest {
         System.assertEquals('SØR-AURDA', model.locations[0].municipal);
         System.assertEquals('3449', model.locations[0].municipal_code);
         System.assertEquals('3528', model.locations[0].postalCode);
-        System.assertEquals(4, model.properties.size());
+        System.assertEquals(5, model.properties.size());
         System.assertEquals(1, model.categories.size());
         System.assertEquals(1, model.contacts.size());
         System.assertEquals('kari@nav.no', model.contacts[0].email);
@@ -562,7 +592,7 @@ public with sharing class ArbeidsplassenJobPostingTest {
         System.assertEquals('248749509', model.reference);
         System.assertEquals('Hedda Hytter AS', model.businessName);
         System.assertEquals(1, model.locations.size());
-        System.assertEquals(4, model.properties.size());
+        System.assertEquals(5, model.properties.size());
         System.assert(model.categories == null);
         System.assertEquals(1, model.contacts.size());
         System.assertEquals('Hedda Hytter AS', model.employer.name);
@@ -687,7 +717,7 @@ public with sharing class ArbeidsplassenJobPostingTest {
 
         String value = model.getProperty('rekrutteringshjelp');
         String valuetlf = model.getProperty('rekrutteringshjelpTelefonnummer');
-        
+
         System.assertEquals('true', value);
         System.assertEquals('12312312', valuetlf);
     }
