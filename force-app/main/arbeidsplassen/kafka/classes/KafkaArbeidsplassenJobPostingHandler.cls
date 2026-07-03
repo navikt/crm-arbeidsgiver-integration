@@ -120,11 +120,16 @@ public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends Kafk
         return jobPosting;
     }
 
+    @TestVisible
     private static String convertJsonArrayToString(String propertyJson) {
         if (propertyJson != null) {
             try {
                 List<String> propertyList = (List<String>) JSON.deserialize(propertyJson, List<String>.class);
-                return String.join(propertyList, ', ');
+                if (!propertyList.isEmpty()) {
+                    return String.join(propertyList, ', ');
+                } else {
+                    return null;
+                }
             } catch (Exception e) {
                 return null;
             }
@@ -132,11 +137,9 @@ public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends Kafk
         return null;
     }
 
+    @TestVisible
     private static String truncate(String str) {
-        if (str != null && str.length() > 255) {
-            return str.abbreviate(255);
-        }
-        return str;
+        return str?.abbreviate(255);
     }
 
     @TestVisible

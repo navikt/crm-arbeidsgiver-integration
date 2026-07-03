@@ -496,4 +496,56 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
             );
         }
     }
+
+    @isTest
+    static void helper_methods_should_handle_unexpected_and_invalid_inputs() {
+        KafkaArbeidsplassenJobPostingHandler handler = new KafkaArbeidsplassenJobPostingHandler();
+        Assert.areEqual(
+            'Norsk, Engelsk',
+            KafkaArbeidsplassenJobPostingHandler.convertJsonArrayToString('[\"Norsk\",\"Engelsk\"]'),
+            'Should convert valid JSON array to string'
+        );
+        Assert.areEqual(
+            'Norsk, 42',
+            KafkaArbeidsplassenJobPostingHandler.convertJsonArrayToString('[\"Norsk\", 42]'),
+            'Should convert valid JSON array to string'
+        );
+        Assert.isNull(
+            KafkaArbeidsplassenJobPostingHandler.convertJsonArrayToString('[\"Value, some other value\",42,]'),
+            'Should return null for invalid JSON'
+        );
+        Assert.isNull(
+            KafkaArbeidsplassenJobPostingHandler.convertJsonArrayToString(null),
+            'Should return null for null input'
+        );
+        Assert.isNull(
+            KafkaArbeidsplassenJobPostingHandler.convertJsonArrayToString('invalid json'),
+            'Should return null for invalid JSON'
+        );
+        Assert.isNull(
+            KafkaArbeidsplassenJobPostingHandler.convertJsonArrayToString(''),
+            'Should return null for empty string'
+        );
+        Assert.isNull(
+            KafkaArbeidsplassenJobPostingHandler.convertJsonArrayToString('[]'),
+            'Should return null for empty JSON array'
+        );
+
+        Assert.isNull(KafkaArbeidsplassenJobPostingHandler.truncate(null), 'Should return null for null input');
+        Assert.areEqual(
+            '',
+            KafkaArbeidsplassenJobPostingHandler.truncate(''),
+            'Should return empty string for empty input'
+        );
+        Assert.areEqual(
+            'abc',
+            KafkaArbeidsplassenJobPostingHandler.truncate('abc'),
+            'Should return the same string if length is less than 255'
+        );
+        Assert.areEqual(
+            255,
+            KafkaArbeidsplassenJobPostingHandler.truncate('a'.repeat(300)).length(),
+            'Should truncate string to 255 characters'
+        );
+    }
 }
