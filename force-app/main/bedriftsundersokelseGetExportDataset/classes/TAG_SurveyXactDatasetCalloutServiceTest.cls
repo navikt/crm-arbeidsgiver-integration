@@ -1,0 +1,103 @@
+@IsTest
+private class TAG_SurveyXactDatasetCalloutServiceTest {
+    private class MockResponse implements HttpCalloutMock {
+        private Integer statusCode;
+        private String body;
+
+        MockResponse(Integer statusCode, String body) {
+            this.statusCode = statusCode;
+            this.body = body;
+        }
+
+        public HttpResponse respond(HttpRequest req) {
+            HttpResponse res = new HttpResponse();
+            res.setStatusCode(statusCode);
+            res.setBody(body);
+            return res;
+        }
+    }
+
+    @IsTest
+    static void getDatasetReturnsBodyOn200() {
+        Test.setMock(HttpCalloutMock.class, new MockResponse(200, 'respnokk;response\nABC;1\n'));
+
+        Test.startTest();
+        String body = TAG_SurveyXactDatasetCalloutService.getDataset(
+            '123456',
+            '[respondent/closeTime] > datetime("2026-07-19 00:00:00")'
+        );
+        Test.stopTest();
+
+        System.assert(body.contains('ABC;1'), 'CSV body returned');
+    }
+
+    @IsTest
+    static void getDatasetThrowsOnNon200() {
+        Test.setMock(HttpCalloutMock.class, new MockResponse(500, 'error'));
+
+        Test.startTest();
+        try {
+            TAG_SurveyXactDatasetCalloutService.getDataset('123456', null);
+            System.assert(false, 'Expected CalloutException');
+        } catch (TAG_SurveyXactDatasetCalloutService.CalloutException e) {
+            System.assert(e.getMessage().contains('500'), 'Message mentions status code');
+        }
+        Test.stopTest();
+    }
+
+    @IsTest
+    static void buildEndpointEncodesExpression() {
+        String expr = '[respondent/closeTime] > datetime("2026-07-19 00:00:00")';
+        String endpoint = TAG_SurveyXactDatasetCalloutService.buildEndpoint('123456', expr);
+
+        System.assert(
+            endpoint.startsWith('callout:SurveyXact/surveys/123456/export/dataset'),
+            'Uses named credential + path'
+        );
+        System.assert(endpoint.contains('format=EU'), 'Includes format');
+        System.assert(endpoint.contains('lang=en'), 'Includes lang');
+        System.assert(endpoint.contains('expression=[respondent'), 'Brackets are left literal');
+        System.assert(endpoint.contains('%2FcloseTime'), 'Slash is encoded');
+        System.assert(endpoint.contains('%20%3E%20'), 'Spaces and operator are encoded');
+        System.assert(endpoint.contains('datetime(%22'), 'Parentheses are literal, quote encoded');
+        System.assert(!endpoint.contains('+'), 'Spaces are %20, not +');
+    }
+
+    @IsTest
+    static void buildCloseTimeExpressionUsesWindow() {
+        String expr = TAG_SurveyXactDatasetCalloutService.buildCloseTimeExpression(3);
+
+        System.assert(expr.startsWith('[respondent/closeTime] > datetime("'), 'Expression shape');
+        Datetime expected = Datetime.now().addDays(-3);
+        System.assert(expr.contains(expected.format('yyyy-MM-dd')), 'Contains the cutoff date');
+    }
+
+    @IsTest
+    static void getRecentDatasetThrowsWhenSurveyIdMissing() {
+        TAG_SurveyXactDataset_Config__mdt config = new TAG_SurveyXactDataset_Config__mdt(LookbackDays__c = 3);
+
+        Test.startTest();
+        try {
+            TAG_SurveyXactDatasetCalloutService.getRecentDataset(config);
+            System.assert(false, 'Expected CalloutException for missing survey id');
+        } catch (TAG_SurveyXactDatasetCalloutService.CalloutException e) {
+            System.assert(e.getMessage().contains('survey id'), 'Message mentions survey id');
+        }
+        Test.stopTest();
+    }
+
+    @IsTest
+    static void getRecentDatasetPerformsCallout() {
+        Test.setMock(HttpCalloutMock.class, new MockResponse(200, 'respnokk;response\nABC;1\n'));
+        TAG_SurveyXactDataset_Config__mdt config = new TAG_SurveyXactDataset_Config__mdt(
+            SurveyId__c = '123456',
+            LookbackDays__c = 3
+        );
+
+        Test.startTest();
+        String body = TAG_SurveyXactDatasetCalloutService.getRecentDataset(config);
+        Test.stopTest();
+
+        System.assert(body.contains('ABC;1'), 'CSV body returned');
+    }
+}
