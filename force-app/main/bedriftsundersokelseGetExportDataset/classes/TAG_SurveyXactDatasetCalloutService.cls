@@ -58,10 +58,23 @@ public with sharing class TAG_SurveyXactDatasetCalloutService {
     }
 
     // Builds the SurveyXact filter expression for respondents closed within the window.
+    // The cutoff is set to midnight (00:00:00) of the day 'lookbackDays' ago, so
+    // respondents that closed early on the oldest day of the window are still included.
     @TestVisible
     private static String buildCloseTimeExpression(Integer lookbackDays) {
         Integer days = lookbackDays != null && lookbackDays > 0 ? lookbackDays : DEFAULT_LOOKBACK_DAYS;
-        String cutoff = Datetime.now().addDays(-days).format('yyyy-MM-dd HH:mm:ss');
+        Date cutoffDate = Date.today().addDays(-days);
+        String cutoff =
+            cutoffDate.year() +
+            '-' +
+            padTwo(cutoffDate.month()) +
+            '-' +
+            padTwo(cutoffDate.day()) +
+            ' 00:00:00';
         return '[respondent/closeTime] > datetime("' + cutoff + '")';
+    }
+
+    private static String padTwo(Integer value) {
+        return String.valueOf(value).leftPad(2, '0');
     }
 }

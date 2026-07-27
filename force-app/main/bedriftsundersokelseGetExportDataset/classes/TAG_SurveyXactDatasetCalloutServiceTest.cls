@@ -65,8 +65,15 @@ private class TAG_SurveyXactDatasetCalloutServiceTest {
         String expr = TAG_SurveyXactDatasetCalloutService.buildCloseTimeExpression(3);
 
         System.assert(expr.startsWith('[respondent/closeTime] > datetime("'), 'Expression shape');
-        Datetime expected = Datetime.now().addDays(-3);
-        System.assert(expr.contains(expected.format('yyyy-MM-dd')), 'Contains the cutoff date');
+        Date expected = Date.today().addDays(-3);
+        String expectedDate =
+            expected.year() +
+            '-' +
+            String.valueOf(expected.month()).leftPad(2, '0') +
+            '-' +
+            String.valueOf(expected.day()).leftPad(2, '0');
+        System.assert(expr.contains(expectedDate), 'Contains the cutoff date');
+        System.assert(expr.contains(expectedDate + ' 00:00:00'), 'Cutoff is floored to midnight');
     }
 
     @IsTest
