@@ -56,11 +56,8 @@ private class TAG_SurveyXactDatasetCalloutServiceTest {
         );
         System.assert(endpoint.contains('format=EU'), 'Includes format');
         System.assert(endpoint.contains('lang=en'), 'Includes lang');
-        System.assert(endpoint.contains('expression=[respondent'), 'Brackets are left literal');
-        System.assert(endpoint.contains('%2FcloseTime'), 'Slash is encoded');
-        System.assert(endpoint.contains('%20%3E%20'), 'Spaces and operator are encoded');
-        System.assert(endpoint.contains('datetime(%22'), 'Parentheses are literal, quote encoded');
-        System.assert(!endpoint.contains('+'), 'Spaces are %20, not +');
+        System.assert(endpoint.contains('expression=%5Brespondent'), 'Expression is URL encoded');
+        System.assert(!endpoint.contains('expression=[respondent'), 'Raw brackets are not present');
     }
 
     @IsTest

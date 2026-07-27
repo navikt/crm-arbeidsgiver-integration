@@ -2,6 +2,7 @@
  * Parses the XML response from the SurveyXact respondents endpoint
  * (GET /surveys/{surveyId}/respondents) into a list of respondent records
  * holding the external key and collect status.
+ * !! If GET Respondents will not be used (to favour GET Export Dataset), this class can be removed.
  */
 public with sharing class TAG_SurveyXactRespondentParser {
     // Collect status indicating a respondent has not answered. Any other value means answered.

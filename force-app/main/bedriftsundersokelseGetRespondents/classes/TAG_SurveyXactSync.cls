@@ -4,9 +4,10 @@
  * (collect status is anything other than 'no answers'). Any member that is not
  * already 'Gjennomført' is eligible; members that have not answered, or that are
  * already 'Gjennomført', are left untouched.
- *
- * Reserved for the GET Respondents approach. The active daily sync uses the
- * Export dataset pipeline.
+ * !! TODO: when confirmed responce when status "asnwered", change logic to update only
+ * when <collectstatus> is 'answered' (not just any no-answers value)
+ * !! TODO2: This is just a mockup class, to be replaced with the real implementation when
+ * the GET Respondents endpoint is confirmed to be used- callout service remains to be implemented.
  */
 public with sharing class TAG_SurveyXactSync {
     @TestVisible

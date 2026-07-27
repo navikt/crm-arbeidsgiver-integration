@@ -4,7 +4,7 @@
  * The host and Basic authentication are provided by the 'SurveyXact' Named
  * Credential. Example endpoint produced:
  *   callout:SurveyXact/surveys/123456/export/dataset?format=EU&lang=en
- *     &expression=%5Brespondent%2FcloseTime%5D%20%3E%20datetime(...)
+ *     &expression=%5Brespondent%2FcloseTime%5D+%3E+datetime(...)
  */
 public with sharing class TAG_SurveyXactDatasetCalloutService {
     public class CalloutException extends Exception {

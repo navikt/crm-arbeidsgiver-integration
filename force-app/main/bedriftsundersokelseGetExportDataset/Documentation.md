@@ -86,7 +86,7 @@ standard prosent-encoding.
 Eksempel på endepunkt:
 
 ```
-callout:SurveyXact/surveys/519190/export/dataset?format=EU&lang=en
+callout:SurveyXact/surveys/123456/export/dataset?format=EU&lang=en
   &expression=%5Brespondent%2FcloseTime%5D+%3E+datetime(...)
 ```
 
