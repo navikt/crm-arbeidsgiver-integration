@@ -19,7 +19,7 @@ private class TAG_SurveyXactDatasetCalloutServiceTest {
 
     @IsTest
     static void getDatasetReturnsBodyOn200() {
-        Test.setMock(HttpCalloutMock.class, new MockResponse(200, 'respnokk;response\nABC;1\n'));
+        Test.setMock(HttpCalloutMock.class, new MockResponse(200, 'respnokk;c_1\nABC;1\n'));
 
         Test.startTest();
         String body = TAG_SurveyXactDatasetCalloutService.getDataset(
@@ -92,7 +92,7 @@ private class TAG_SurveyXactDatasetCalloutServiceTest {
 
     @IsTest
     static void getRecentDatasetPerformsCallout() {
-        Test.setMock(HttpCalloutMock.class, new MockResponse(200, 'respnokk;response\nABC;1\n'));
+        Test.setMock(HttpCalloutMock.class, new MockResponse(200, 'respnokk;c_1\nABC;1\n'));
         TAG_SurveyXactDataset_Config__mdt config = new TAG_SurveyXactDataset_Config__mdt(
             SurveyId__c = '123456',
             LookbackDays__c = 3

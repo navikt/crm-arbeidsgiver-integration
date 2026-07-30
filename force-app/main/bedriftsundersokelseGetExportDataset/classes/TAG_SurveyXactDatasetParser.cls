@@ -2,28 +2,30 @@
  * Parses a SurveyXact "Export dataset" CSV export.
  *
  * The dataset contains one column per survey variable. We only need the
- * respondent key ('respnokk') and the response status ('response'), which are
+ * respondent key ('respnokk') and the completion status ('c_1'), which are
  * located by header name. The remaining columns are kept per row so any survey
  * variable stays accessible to callers.
  *
  * Handles quoted fields that contain the delimiter, line breaks or escaped
- * ("") quotes. The dataset is requested with shortVariableNames=true, so the
- * 8-character column names ('respnokk', 'response') are stable.
+ * ("") quotes.
  */
 public with sharing class TAG_SurveyXactDatasetParser {
     // format=EU uses a semicolon list separator.
     public static final String DEFAULT_DELIMITER = ';';
     public static final String KEY_COLUMN = 'respnokk';
-    public static final String RESPONSE_COLUMN = 'response';
+
+    // SurveyXact support advises using 'c_1' to determine completion:
+    // 1 = gjennomført, 2 = ikke gjennomført, 3 = frafalt/konkurs.
+    public static final String STATUS_COLUMN = 'c_1';
 
     public class Row {
         public String externalKey;
-        public String responseStatus;
+        public String completionStatus;
         public Map<String, String> values;
 
-        public Row(String externalKey, String responseStatus, Map<String, String> values) {
+        public Row(String externalKey, String completionStatus, Map<String, String> values) {
             this.externalKey = externalKey;
-            this.responseStatus = responseStatus;
+            this.completionStatus = completionStatus;
             this.values = values;
         }
     }
@@ -41,7 +43,7 @@ public with sharing class TAG_SurveyXactDatasetParser {
 
         List<String> headers = table[0];
         Integer keyIdx = indexOfHeader(headers, KEY_COLUMN);
-        Integer respIdx = indexOfHeader(headers, RESPONSE_COLUMN);
+        Integer statusIdx = indexOfHeader(headers, STATUS_COLUMN);
 
         for (Integer r = 1; r < table.size(); r++) {
             List<String> cols = table[r];
@@ -55,17 +57,17 @@ public with sharing class TAG_SurveyXactDatasetParser {
             }
 
             String key = valueAt(cols, keyIdx);
-            String resp = valueAt(cols, respIdx);
-            result.add(new Row(key, resp, values));
+            String status = valueAt(cols, statusIdx);
+            result.add(new Row(key, status, values));
         }
         return result;
     }
 
-    // Returns the distinct 'response' values across the parsed rows.
-    public static Set<String> distinctResponseValues(List<Row> rows) {
+    // Returns the distinct 'c_1' values across the parsed rows.
+    public static Set<String> distinctStatusValues(List<Row> rows) {
         Set<String> values = new Set<String>();
         for (Row row : rows) {
-            values.add(row.responseStatus);
+            values.add(row.completionStatus);
         }
         return values;
     }

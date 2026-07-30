@@ -14,11 +14,13 @@ respondenter som har fullført undersøkelsen.
 | `TAG_SurveyXactDatasetParser`         | Parser CSV-eksporten (RFC 4180)                                |
 | `TAG_SurveyXactDatasetSync`           | Oppdaterer `CustomCampaignMember__c`                           |
 | `TAG_SurveyXactDatasetSyncQueueable`  | Kjører callout + sync asynkront, logger feil                   |
-| `TAG_SurveyXactDatasetScheduler`      | Planlagt daglig kjøring                                        |
+| `TAG_SurveyXactDatasetScheduler`      | Planlagt kjøring hver time                                     |
 | `TAG_SurveyXactDataset_Config__mdt`   | Custom Metadata: `SurveyId__c`, `LookbackDays__c`, `Active__c` |
 
 -   **Named Credential:** `SurveyXact` → `https://rest.survey-xact.dk/rest`
 -   **Auth:** Basic Authentication via External Credential (ingen secrets i git)
+-   **Konfigurasjon:** én record på `TAG_SurveyXactDataset_Config__mdt` følger med
+    pakken og gjenbrukes fra år til år, se «Konfigurasjon» nedenfor
 
 ---
 
@@ -77,6 +79,49 @@ Callouten kjører som den innloggede brukeren.
 
 ---
 
+## Konfigurasjon
+
+Innstillingene ligger på Custom Metadata-typen
+`TAG_SurveyXactDataset_Config__mdt`. Recorden **Bedriftsundersøkelse 2026**
+følger med pakken og deployes automatisk:
+
+| Felt              | Verdi    | Forklaring                                                |
+| ----------------- | -------- | --------------------------------------------------------- |
+| `SurveyId__c`     | `519190` | Survey-ID i SurveyXact                                    |
+| `LookbackDays__c` | `1`      | Tilbakeblikk i dager – gir overlapp ved kjøring hver time |
+| `Active__c`       | `true`   | Kun aktive recorder synkroniseres                         |
+
+Alle årganger av bedriftsundersøkelsen ligger på **samme survey i SurveyXact**,
+så `SurveyId__c` er den samme hvert år. Sammen med `LookbackDays__c = 1` betyr
+det at **det ikke er nødvendig å opprette en ny record for hver ny årgang** –
+samme record gjenbrukes.
+
+Verdiene kan endres i org uten deploy:
+**Setup → Custom Metadata Types → SurveyXact Dataset Config → Manage Records**
+
+> Merk: feltene vises kun i Manage Records dersom de er lagt til på page layout.
+
+Hvis det senere skulle bli behov for flere recorder, kjører integrasjonen én
+callout per aktiv record. Sett da `Active__c = false` på recorder som ikke skal
+synkroniseres.
+
+---
+
+## Statuskoder fra SurveyXact
+
+Om en respondent har gjennomført avgjøres av kolonnen `c_1` i datauttrekket:
+
+| `c_1` | Betydning         | Handling i Salesforce                |
+| ----- | ----------------- | ------------------------------------ |
+| `1`   | Gjennomført       | `Status__c` settes til `Gjennomført` |
+| `2`   | Ikke gjennomført  | Ingen endring                        |
+| `3`   | Frafalt / konkurs | Ingen endring                        |
+
+SurveyXact-support anbefalte `c_1` (alternativt `stato_4`) framfor
+`response`-kolonnen, som ikke er egnet til dette formålet.
+
+---
+
 ## URL-encoding
 
 `expression`-parameteren URL-encodes med `EncodingUtil.urlEncode(...)` i
@@ -96,7 +141,7 @@ callout:SurveyXact/surveys/123456/export/dataset?format=EU&lang=en
 
 ### Test 1 — Bekreft callout via ekte metode (liten mengde)
 
-Filteret bruker `LookbackDays__c` (3 dager), så kun nylig lukkede respondenter hentes.
+Filteret bruker `LookbackDays__c` (1 dag), så kun nylig lukkede respondenter hentes.
 
 Eksporten har én kolonne per spørsmål, så header-raden alene kan være svært lang.
 Derfor parses CSV-en og antall rader telles i stedet for å skrive ut selve teksten.
@@ -114,7 +159,7 @@ System.debug(LoggingLevel.INFO, 'Antall rader: ' + rows.size());
 ```
 
 -   **CSV-lengde > 0 og rader > 0** → callout og parsing er OK.
--   **Rader = 0** → auth virker, men ingen respondenter lukket siste 3 dager.
+-   **Rader = 0** → auth virker, men ingen respondenter lukket siste døgn.
 
 ### Test 2 — Lag testdata (`CustomCampaignMember__c`)
 
@@ -127,10 +172,10 @@ insert new List<CustomCampaignMember__c>{
 };
 ```
 
-> Hvis ingen respondenter er lukket siste 3 dager: sett midlertidig
+> Hvis ingen respondenter er lukket siste døgn: sett midlertidig
 > `LookbackDays__c` til for eks. `14` på CMDT-recorden
 > (**Setup → Custom Metadata Types → SurveyXact Dataset Config → Manage Records**),
-> kjør testen, og sett tilbake til `3` etterpå.
+> kjør testen, og sett tilbake til `1` etterpå.
 
 ### Test 3 — Kjør hele synkroniseringen ende-til-ende
 
@@ -148,15 +193,27 @@ System.debug(LoggingLevel.INFO, [
 ]);
 ```
 
-Medlemmer som matcher en respondent med `response = 1` (innenfor tilbakeblikket)
+Medlemmer som matcher en respondent med `c_1 = 1` (innenfor tilbakeblikket)
 skal nå være `Gjennomført`. Sjekk også **Application_Log\_\_c** for eventuelle feil.
 
 ### Test 4 — Planlagt kjøring (kun når Test 1–3 virker)
 
+Integrasjonen kjøres én gang i timen mellom kl. 07 og 17 i responsperioden.
+Cron-uttrykket `0 0 7-17 * * ?` gir 11 kjøringer per dag (07:00, 08:00 … 17:00).
+
 ```apex
-System.schedule('SurveyXact Dataset Sync', '0 0 22 * * ?',
+System.schedule('SurveyXact Dataset Sync', '0 0 7-17 * * ?',
     new TAG_SurveyXactDatasetScheduler());
 ```
+
+Med `LookbackDays__c = 1` får hver kjøring litt overlapp, slik at ingen
+respondenter faller mellom to kjøringer. Oppdateringen er idempotent, så
+overlappen fører ikke til feil.
+
+> **Viktig:** jobben må kjøre **alle ukedager, inkludert lørdag og søndag**.
+> Med `LookbackDays__c = 1` dekker hver kjøring kun det siste døgnet, så en
+> jobb som kun kjørte mandag–fredag ville mistet respondenter som svarte i
+> helgen. `0 0 7-17 * * ?` kjører hver dag og dekker dette.
 
 Stopp planlagt jobb ved behov:
 **Setup → Scheduled Jobs → Del** ved siden av `SurveyXact Dataset Sync`.

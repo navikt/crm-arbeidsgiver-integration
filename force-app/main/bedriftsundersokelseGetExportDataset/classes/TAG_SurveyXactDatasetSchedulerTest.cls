@@ -4,7 +4,7 @@ private class TAG_SurveyXactDatasetSchedulerTest {
         public HttpResponse respond(HttpRequest req) {
             HttpResponse res = new HttpResponse();
             res.setStatusCode(200);
-            res.setBody('survey;respnokk;response\n');
+            res.setBody('survey;respnokk;c_1\n');
             return res;
         }
     }

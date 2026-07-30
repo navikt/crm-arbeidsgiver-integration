@@ -6,7 +6,7 @@ private class TAG_SurveyXactDatasetSyncQueueableTest {
         public HttpResponse respond(HttpRequest req) {
             HttpResponse res = new HttpResponse();
             res.setStatusCode(200);
-            res.setBody('survey;respnokk;response\n123456;' + KEY_DONE + ';1\n');
+            res.setBody('survey;respnokk;c_1\n123456;' + KEY_DONE + ';1\n');
             return res;
         }
     }

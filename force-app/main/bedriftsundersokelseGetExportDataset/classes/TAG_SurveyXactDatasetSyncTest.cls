@@ -10,7 +10,7 @@ private class TAG_SurveyXactDatasetSyncTest {
     private static final String KEY_NOT_DONE = 'NOT_DONE';
 
     private static String buildCsv() {
-        return 'survey;respnokk;response;offnavn\n' +
+        return 'survey;respnokk;c_1;offnavn\n' +
             '123456;' +
             KEY_DONE_BLANK +
             ';1;Acme\n' +
@@ -22,7 +22,7 @@ private class TAG_SurveyXactDatasetSyncTest {
             ';1;Gamma\n' +
             '123456;' +
             KEY_NOT_DONE +
-            ';0;Delta\n';
+            ';2;Delta\n';
     }
 
     @TestSetup
@@ -54,7 +54,7 @@ private class TAG_SurveyXactDatasetSyncTest {
 
     @IsTest
     static void noCompletedRespondentsDoesNothing() {
-        String csv = 'respnokk;response\n' + KEY_DONE_BLANK + ';0\n';
+        String csv = 'respnokk;c_1\n' + KEY_DONE_BLANK + ';2\n';
 
         Test.startTest();
         TAG_SurveyXactDatasetSync.SyncResult result = TAG_SurveyXactDatasetSync.syncFromCsv(csv);

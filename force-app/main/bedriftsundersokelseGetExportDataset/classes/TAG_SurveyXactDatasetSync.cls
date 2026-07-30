@@ -1,14 +1,15 @@
 /**
  * Updates CustomCampaignMember__c records from a SurveyXact dataset CSV export.
- * A respondent counts as completed when the 'response' column equals '1'. Such
+ * A respondent counts as completed when the 'c_1' column equals '1'. Such
  * members are promoted to 'Gjennomført'. Any member that is not already
  * 'Gjennomført' is eligible; members that have not completed, or that are
  * already 'Gjennomført', are left untouched. Running repeatedly is safe (idempotent).
  */
 public with sharing class TAG_SurveyXactDatasetSync {
-    // Value of the 'response' column that means the respondent completed the survey.
+    // Value of the 'c_1' column that means the respondent completed the survey.
+    // 2 = ikke gjennomført and 3 = frafalt/konkurs are ignored.
     @TestVisible
-    private static final String RESPONSE_COMPLETED = '1';
+    private static final String COMPLETED_CODE = '1';
 
     // Status set on members whose respondent has completed. Held as a constant because
     // CustomCampaignMember__c lives in a dependency package.
@@ -39,7 +40,7 @@ public with sharing class TAG_SurveyXactDatasetSync {
 
         Set<String> completedKeys = new Set<String>();
         for (TAG_SurveyXactDatasetParser.Row row : rows) {
-            if (RESPONSE_COMPLETED.equals(row.responseStatus) && String.isNotBlank(row.externalKey)) {
+            if (COMPLETED_CODE.equals(row.completionStatus) && String.isNotBlank(row.externalKey)) {
                 completedKeys.add(row.externalKey);
             }
         }
