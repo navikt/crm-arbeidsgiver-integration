@@ -40,7 +40,7 @@ public with sharing class TAG_SurveyXactDatasetSyncQueueable implements Queueabl
 
     private static List<TAG_SurveyXactDataset_Config__mdt> activeConfigs() {
         return [
-            SELECT SurveyId__c, LookbackDays__c, Active__c
+            SELECT SurveyId__c, LookbackDays__c, Ptype1__c, Active__c
             FROM TAG_SurveyXactDataset_Config__mdt
             WHERE Active__c = TRUE
         ];

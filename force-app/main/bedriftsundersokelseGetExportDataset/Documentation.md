@@ -8,19 +8,19 @@ respondenter som har fullført undersøkelsen.
 
 ## Arkitektur (kort)
 
-| Komponent                             | Ansvar                                                         |
-| ------------------------------------- | -------------------------------------------------------------- |
-| `TAG_SurveyXactDatasetCalloutService` | Bygger endepunkt + gjør callout mot SurveyXact                 |
-| `TAG_SurveyXactDatasetParser`         | Parser CSV-eksporten (RFC 4180)                                |
-| `TAG_SurveyXactDatasetSync`           | Oppdaterer `CustomCampaignMember__c`                           |
-| `TAG_SurveyXactDatasetSyncQueueable`  | Kjører callout + sync asynkront, logger feil                   |
-| `TAG_SurveyXactDatasetScheduler`      | Planlagt kjøring hver time                                     |
-| `TAG_SurveyXactDataset_Config__mdt`   | Custom Metadata: `SurveyId__c`, `LookbackDays__c`, `Active__c` |
+| Komponent                             | Ansvar                                                                      |
+| ------------------------------------- | --------------------------------------------------------------------------- |
+| `TAG_SurveyXactDatasetCalloutService` | Bygger endepunkt + gjør callout mot SurveyXact                              |
+| `TAG_SurveyXactDatasetParser`         | Parser CSV-eksporten (RFC 4180)                                             |
+| `TAG_SurveyXactDatasetSync`           | Oppdaterer `CustomCampaignMember__c`                                        |
+| `TAG_SurveyXactDatasetSyncQueueable`  | Kjører callout + sync asynkront, logger feil                                |
+| `TAG_SurveyXactDatasetScheduler`      | Planlagt kjøring hver time                                                  |
+| `TAG_SurveyXactDataset_Config__mdt`   | Custom Metadata: `SurveyId__c`, `LookbackDays__c`, `Ptype1__c`, `Active__c` |
 
 -   **Named Credential:** `SurveyXact` → `https://rest.survey-xact.dk/rest`
 -   **Auth:** Basic Authentication via External Credential (ingen secrets i git)
 -   **Konfigurasjon:** én record på `TAG_SurveyXactDataset_Config__mdt` følger med
-    pakken og gjenbrukes fra år til år, se «Konfigurasjon» nedenfor
+    pakken, se «Konfigurasjon» nedenfor – `Ptype1__c` må oppdateres for hver ny årgang
 
 ---
 
@@ -85,25 +85,40 @@ Innstillingene ligger på Custom Metadata-typen
 `TAG_SurveyXactDataset_Config__mdt`. Recorden **Bedriftsundersøkelse 2026**
 følger med pakken og deployes automatisk:
 
-| Felt              | Verdi    | Forklaring                                                |
-| ----------------- | -------- | --------------------------------------------------------- |
-| `SurveyId__c`     | `519190` | Survey-ID i SurveyXact                                    |
-| `LookbackDays__c` | `1`      | Tilbakeblikk i dager – gir overlapp ved kjøring hver time |
-| `Active__c`       | `true`   | Kun aktive recorder synkroniseres                         |
+| Felt              | Verdi       | Forklaring                                                |
+| ----------------- | ----------- | --------------------------------------------------------- |
+| `SurveyId__c`     | `519190`    | Survey-ID i SurveyXact                                    |
+| `LookbackDays__c` | `1`         | Tilbakeblikk i dager – gir overlapp ved kjøring hver time |
+| `Ptype1__c`       | `390264940` | Identifiserer årgangen – **endrer seg fra år til år**     |
+| `Active__c`       | `true`      | Kun aktive recorder synkroniseres                         |
 
 Alle årganger av bedriftsundersøkelsen ligger på **samme survey i SurveyXact**,
-så `SurveyId__c` er den samme hvert år. Sammen med `LookbackDays__c = 1` betyr
-det at **det ikke er nødvendig å opprette en ny record for hver ny årgang** –
-samme record gjenbrukes.
+så `SurveyId__c` er den samme hvert år. Det er `Ptype1__c` som skiller
+årgangene, og denne verdien må hentes fra SurveyXact for hver ny årgang.
+
+### Ny årgang
+
+Det er to måter å håndtere en ny årgang på:
+
+1. **Oppdatere eksisterende record** – endre `Ptype1__c` til årets verdi på
+   recorden som allerede finnes. Enklest, men historikken om hvilken verdi som
+   ble brukt tidligere går tapt.
+2. **Opprette ny record (anbefalt)** – lag en ny record, f.eks.
+   `Bedriftsundersøkelse 2027`, med samme `SurveyId__c` og `LookbackDays__c`,
+   men årets `Ptype1__c`. Sett `Active__c = true` på den nye og
+   **`Active__c = false` på fjorårets record**. Da beholdes historikken, og det
+   er lett å bytte tilbake om noe er feil.
+
+> **Viktig ved alternativ 2:** integrasjonen kjører én callout per aktiv record.
+> Hvis den gamle recorden ikke deaktiveres, hentes data for begge årgangene.
+
+Hvis `Ptype1__c` står tomt, utelates årsfilteret og eksporten inneholder
+respondenter fra alle årganger innenfor tilbakeblikket.
 
 Verdiene kan endres i org uten deploy:
 **Setup → Custom Metadata Types → SurveyXact Dataset Config → Manage Records**
 
 > Merk: feltene vises kun i Manage Records dersom de er lagt til på page layout.
-
-Hvis det senere skulle bli behov for flere recorder, kjører integrasjonen én
-callout per aktiv record. Sett da `Active__c = false` på recorder som ikke skal
-synkroniseres.
 
 ---
 
@@ -122,11 +137,21 @@ SurveyXact-support anbefalte `c_1` (alternativt `stato_4`) framfor
 
 ---
 
-## URL-encoding
+## Filter-expression og URL-encoding
 
-`expression`-parameteren URL-encodes med `EncodingUtil.urlEncode(...)` i
-`TAG_SurveyXactDatasetCalloutService.buildEndpoint()`. SurveyXact aksepterer
-standard prosent-encoding.
+`expression`-parameteren bygges i
+`TAG_SurveyXactDatasetCalloutService.buildExpression()` og kombinerer
+tilbakeblikket med årsfilteret:
+
+```
+[respondent/closeTime] > datetime("2026-07-30 00:00:00") and [background/ptype1]=390264940
+```
+
+Merk at `ptype1` må refereres som `[background/ptype1]` – ikke `ptype1` eller
+`[respondent/ptype1]`, som begge gir HTTP 500.
+
+Uttrykket URL-encodes med `EncodingUtil.urlEncode(...)` i
+`buildEndpoint()`. SurveyXact aksepterer standard prosent-encoding.
 
 Eksempel på endepunkt:
 
@@ -148,7 +173,7 @@ Derfor parses CSV-en og antall rader telles i stedet for å skrive ut selve teks
 
 ```apex
 TAG_SurveyXactDataset_Config__mdt cfg = [
-    SELECT SurveyId__c, LookbackDays__c
+    SELECT SurveyId__c, LookbackDays__c, Ptype1__c
     FROM TAG_SurveyXactDataset_Config__mdt
     WHERE Active__c = true LIMIT 1
 ];

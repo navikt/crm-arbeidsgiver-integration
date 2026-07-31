@@ -77,6 +77,21 @@ private class TAG_SurveyXactDatasetCalloutServiceTest {
     }
 
     @IsTest
+    static void buildExpressionAppendsPtype1WhenConfigured() {
+        String expr = TAG_SurveyXactDatasetCalloutService.buildExpression(3, '390264940');
+
+        System.assert(expr.startsWith('[respondent/closeTime] > datetime("'), 'Starts with closeTime filter');
+        System.assert(expr.endsWith(' and [background/ptype1]=390264940'), 'Appends ptype1 filter');
+    }
+
+    @IsTest
+    static void buildExpressionOmitsPtype1WhenBlank() {
+        String expr = TAG_SurveyXactDatasetCalloutService.buildExpression(3, '   ');
+
+        System.assert(!expr.contains('ptype1'), 'No ptype1 filter when blank');
+    }
+
+    @IsTest
     static void getRecentDatasetThrowsWhenSurveyIdMissing() {
         TAG_SurveyXactDataset_Config__mdt config = new TAG_SurveyXactDataset_Config__mdt(LookbackDays__c = 3);
 
@@ -95,7 +110,8 @@ private class TAG_SurveyXactDatasetCalloutServiceTest {
         Test.setMock(HttpCalloutMock.class, new MockResponse(200, 'respnokk;c_1\nABC;1\n'));
         TAG_SurveyXactDataset_Config__mdt config = new TAG_SurveyXactDataset_Config__mdt(
             SurveyId__c = '123456',
-            LookbackDays__c = 3
+            LookbackDays__c = 3,
+            Ptype1__c = '390264940'
         );
 
         Test.startTest();

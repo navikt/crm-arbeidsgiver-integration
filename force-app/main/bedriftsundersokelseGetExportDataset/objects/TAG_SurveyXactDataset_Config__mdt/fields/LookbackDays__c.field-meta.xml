@@ -2,9 +2,9 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>LookbackDays__c</fullName>
     <label>Lookback Days</label>
-    <type>Number</type>
     <precision>4</precision>
-    <scale>0</scale>
     <required>false</required>
+    <scale>0</scale>
+    <type>Number</type>
     <unique>false</unique>
 </CustomField>

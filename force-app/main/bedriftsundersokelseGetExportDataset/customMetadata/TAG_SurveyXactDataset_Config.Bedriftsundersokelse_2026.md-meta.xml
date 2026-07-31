@@ -11,6 +11,10 @@
         <value xsi:type="xsd:double">1.0</value>
     </values>
     <values>
+        <field>Ptype1__c</field>
+        <value xsi:type="xsd:string">390264940</value>
+    </values>
+    <values>
         <field>Active__c</field>
         <value xsi:type="xsd:boolean">true</value>
     </values>

@@ -21,12 +21,13 @@ public with sharing class TAG_SurveyXactDatasetCalloutService {
             ? Integer.valueOf(config.LookbackDays__c)
             : DEFAULT_LOOKBACK_DAYS;
         String surveyId = config != null ? config.SurveyId__c : null;
+        String ptype1 = config != null ? config.Ptype1__c : null;
 
         if (String.isBlank(surveyId)) {
             throw new CalloutException('SurveyXact survey id is not configured.');
         }
 
-        return getDataset(surveyId, buildCloseTimeExpression(lookbackDays));
+        return getDataset(surveyId, buildExpression(lookbackDays, ptype1));
     }
 
     // Performs the dataset export callout for the given survey and filter expression.
@@ -55,6 +56,18 @@ public with sharing class TAG_SurveyXactDatasetCalloutService {
             endpoint += '&expression=' + EncodingUtil.urlEncode(expression, 'UTF-8');
         }
         return endpoint;
+    }
+
+    // Combines the closeTime window with the ptype1 background variable, which
+    // limits the export to one survey year. The ptype1 clause is only added when
+    // configured, so an empty value simply means "no year filter".
+    @TestVisible
+    private static String buildExpression(Integer lookbackDays, String ptype1) {
+        String expression = buildCloseTimeExpression(lookbackDays);
+        if (String.isNotBlank(ptype1)) {
+            expression += ' and [background/ptype1]=' + ptype1.trim();
+        }
+        return expression;
     }
 
     // Builds the SurveyXact filter expression for respondents closed within the window.
