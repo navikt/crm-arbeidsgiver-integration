@@ -20,7 +20,11 @@ private class TAG_SurveyXactMemberImportServiceTest {
         NavUnit__c navUnit = new NavUnit__c(Name = 'NAV Testenhet', INT_UnitNumber__c = '1234');
         insert navUnit;
 
-        insert new CustomCampaign__c(Name = 'BU ' + Date.today().year() + ' NAV Testenhet', NAV_Unit__c = navUnit.Id);
+        insert new CustomCampaign__c(
+            Name = 'BU ' + Date.today().year() + ' NAV Testenhet',
+            NAV_Unit__c = navUnit.Id,
+            Type__c = 'Bedriftsundersøkelse'
+        );
 
         insert new List<Account>{
             new Account(Name = 'Matched', INT_OrganizationNumber__c = ORG_MATCHED, TAG_NavUnit__c = navUnit.Id),

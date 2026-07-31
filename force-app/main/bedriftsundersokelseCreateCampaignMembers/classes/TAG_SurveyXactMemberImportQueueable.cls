@@ -1,8 +1,8 @@
 /**
- * Importerer kampanjemedlemmer for én region av gangen og kjører seg selv videre
+ * Importerer kampanjemedlemmer for en region av gangen og kjører seg selv videre
  * til neste region (1-15).
  *
- * Hele uttrekket er for stort for én callout, så hver region hentes og
+ * Hele uttrekket er for stort for en callout, så hver region hentes og
  * behandles i sin egen transaksjon. Da holder heap, SOQL og DML seg godt
  * innenfor grensene uansett hvor mange respondenter det er totalt.
  *
