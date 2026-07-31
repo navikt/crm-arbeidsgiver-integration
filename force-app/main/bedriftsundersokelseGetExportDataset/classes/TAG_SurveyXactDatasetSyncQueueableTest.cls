@@ -47,8 +47,6 @@ private class TAG_SurveyXactDatasetSyncQueueableTest {
 
     @IsTest
     static void defaultConstructorReadsActiveConfigs() {
-        // Exercises the no-arg constructor path; no active CMDT records may exist in the org,
-        // so this simply verifies construction and enqueue do not fail.
         Test.setMock(HttpCalloutMock.class, new MockResponse());
 
         Test.startTest();

@@ -11,7 +11,7 @@ public with sharing class TAG_SurveyXactDatasetCalloutService {
     }
 
     private static final String NAMED_CREDENTIAL = 'callout:SurveyXact';
-    private static final Integer DEFAULT_LOOKBACK_DAYS = 3;
+    private static final Integer DEFAULT_LOOKBACK_DAYS = 1;
 
     // Fetches the dataset CSV for respondents whose closeTime is within the
     // configured look-back window, using the given survey configuration.

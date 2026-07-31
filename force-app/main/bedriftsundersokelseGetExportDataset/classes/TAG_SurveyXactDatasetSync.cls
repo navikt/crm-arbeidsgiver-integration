@@ -11,8 +11,6 @@ public with sharing class TAG_SurveyXactDatasetSync {
     @TestVisible
     private static final String COMPLETED_CODE = '1';
 
-    // Status set on members whose respondent has completed. Held as a constant because
-    // CustomCampaignMember__c lives in a dependency package.
     @TestVisible
     private static final String STATUS_COMPLETED = 'Gjennomført';
 
