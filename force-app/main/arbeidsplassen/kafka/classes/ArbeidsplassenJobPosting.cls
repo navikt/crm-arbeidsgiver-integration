@@ -1,4 +1,12 @@
+/**
+ * @description This class represents a job posting from Arbeidsplassen.
+ * The structure of the class is based on the Avro schema defined in the StillingEkstern.avdl file, which can be found in the following GitHub repository:
+ * https://github.com/navikt/pam-ad-broapplikasjoner/blob/main/pam-stilling-stilling-ekstern/src/main/avro/StillingEkstern.avdl
+ */
+@SuppressWarnings('PMD.ExcessivePublicCount,PMD.ApexDoc,PMD.PropertyNamingConventions')
 public with sharing class ArbeidsplassenJobPosting implements IKafkaMessageParser {
+    private static final String JANZZ_CATEGORY_TYPE = 'JANZZ';
+    public List<Classification> classifications { get; set; }
     public List<Property> properties { get; set; }
     public List<Location> locations { get; set; }
     public List<Contact> contacts { get; set; }
@@ -23,6 +31,13 @@ public with sharing class ArbeidsplassenJobPosting implements IKafkaMessageParse
     public String hash { get; set; }
     public String key { get; set; }
 
+    public class Classification {
+        public String janzzParentId { get; set; }
+        public Double score { get; set; }
+        public String name { get; set; }
+        public String code { get; set; }
+        public String categoryType { get; set; }
+    }
     public class Location {
         public String municipal_code { get; set; }
         public String county_code { get; set; }
@@ -62,12 +77,35 @@ public with sharing class ArbeidsplassenJobPosting implements IKafkaMessageParse
         public String name { get; set; }
     }
 
-     public class Admin {
+    public class Admin {
         public String status { get; set; }
         //public String remarks { get; set; } Ignore for now as it is not used. Can be re-added later if needed.
         public String comments { get; set; }
         public String reportee { get; set; }
         public String navIdent { get; set; }
+    }
+
+    public String getJanzzName() {
+        if (classifications == null) {
+            return null;
+        }
+        for (Classification c : classifications) {
+            if (c.categoryType == JANZZ_CATEGORY_TYPE) {
+                return c.name;
+            }
+        }
+        return null;
+    }
+    public String getJanzzCode() {
+        if (classifications == null) {
+            return null;
+        }
+        for (Classification c : classifications) {
+            if (c.categoryType == JANZZ_CATEGORY_TYPE) {
+                return c.code;
+            }
+        }
+        return null;
     }
 
     public String getProperty(String propertyName) {

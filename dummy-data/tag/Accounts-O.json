@@ -1,0 +1,36 @@
+{
+    "records": [
+        {
+            "attributes": {
+                "type": "Account",
+                "referenceId": "AccountRef7"
+            },
+            "Name": "SKI KOMMUNE PLEIE- OG OMSORGSETATEN",
+            "INT_Industry__c": "Offentlig administrasjon tilknyttet helsestell, sosial virksomhet, undervisning, kirke, kultur og miljøvern",
+            "INT_IndustryCode__c": "84.120",
+            "INT_OrganizationNumber__c": "960507889",
+            "INT_OrganizationalStructure__c": "ORGL",
+            "RecordTypeId": "$R{RecordType.Account.Employer}",
+            "ParentId": "@AccountRef15",
+            "CRM_AccountType__c": "O",
+            "INT_RegionNumber__c": "30",
+            "TAG_NavUnit__c": "@NavUnit__cRef1"
+        },
+        {
+            "attributes": {
+                "type": "Account",
+                "referenceId": "AccountRef11"
+            },
+            "Name": "SKI KOMMUNE ADMINISTRASJON",
+            "INT_Industry__c": "Generell offentlig administrasjon",
+            "INT_IndustryCode__c": "84.110",
+            "INT_OrganizationNumber__c": "960507893",
+            "INT_OrganizationalStructure__c": "ORGL",
+            "RecordTypeId": "$R{RecordType.Account.Employer}",
+            "ParentId": "@AccountRef15",
+            "CRM_AccountType__c": "O",
+            "INT_RegionNumber__c": "30",
+            "TAG_NavUnit__c": "@NavUnit__cRef1"
+        }
+    ]
+}

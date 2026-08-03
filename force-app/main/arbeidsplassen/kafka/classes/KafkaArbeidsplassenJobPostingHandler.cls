@@ -1,6 +1,15 @@
+/**
+ * @description Handler class to process inbound Kafka messages and create Job Posting records.
+ * Contains functions to parse data from messages, create records and upsert them.
+ */
 public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer {
     Map<String, ArbeidsplassenJobPosting> keyToJobPosting = new Map<String, ArbeidsplassenJobPosting>();
-    private static final Integer AGE_THRESHOLD_MINUTES = 15;
+    private static final Integer AGE_THRESHOLD_MINUTES = 15; //
+    public static Boolean enableTimeDeviationLogging = false;
+    /**
+     * @description Implementation of processMessages-method from IKafkaMessageConsumer
+     * @param messages List of kafka message records
+     */
     public void processMessages(List<KafkaMessage__c> messages) {
         for (KafkaMessage__c msg : messages) {
             try {
@@ -16,7 +25,9 @@ public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends Kafk
         }
 
         convertAndUpsertJobPostings(messages);
-        logTimeDeviations(keyToJobPosting);
+        if (enableTimeDeviationLogging) {
+            logTimeDeviations(keyToJobPosting);
+        }
         logger.publish();
     }
 
@@ -91,13 +102,44 @@ public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends Kafk
         if (model.getProperty('rekrutteringshjelp') == 'true') {
             jobPosting.RecruitmentAssistance__c = true;
             jobPosting.RecruitmentPhone__c = model.getProperty('rekrutteringshjelpTelefonnummer');
-        } 
+        }
 
-        if (model.getProperty('employerdescription') != null && model.getProperty('employerdescription').contains('Etterregistrering')) {
+        if (
+            model.getProperty('employerdescription') != null &&
+            model.getProperty('employerdescription').contains('Etterregistrering')
+        ) {
             jobPosting.TAG_EmploymentPlacement__c = true;
         }
 
+        jobPosting.JanzzName__c = model.getJanzzName();
+        jobPosting.JanzzCode__c = model.getJanzzCode();
+        jobPosting.WorkLanguage__c = truncate(convertJsonArrayToString(model.getProperty('workLanguage')));
+        jobPosting.JobTitle__c = truncate(model.getProperty('jobtitle'));
+        jobPosting.Keywords__c = truncate(model.getProperty('keywords'));
+
         return jobPosting;
+    }
+
+    @TestVisible
+    private static String convertJsonArrayToString(String propertyJson) {
+        if (propertyJson != null) {
+            try {
+                List<String> propertyList = (List<String>) JSON.deserialize(propertyJson, List<String>.class);
+                if (!propertyList.isEmpty()) {
+                    return String.join(propertyList, ', ');
+                } else {
+                    return null;
+                }
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    @TestVisible
+    private static String truncate(String str) {
+        return str?.abbreviate(255);
     }
 
     @TestVisible

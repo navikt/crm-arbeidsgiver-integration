@@ -1,0 +1,20 @@
+[
+    {
+        "sobject": "NavUnit__c",
+        "saveRefs": false,
+        "resolveRefs": true,
+        "files": ["NavUnits.json"]
+    },
+    {
+        "sobject": "Account",
+        "saveRefs": true,
+        "resolveRefs": true,
+        "files": ["Accounts-J.json", "Accounts-O.json", "Accounts-B.json"]
+    },
+    {
+        "sobject": "KafkaMessage__c",
+        "saveRefs": false,
+        "resolveRefs": true,
+        "files": ["KafkaMessage.json"]
+    }
+]
