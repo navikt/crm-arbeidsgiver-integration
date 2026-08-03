@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Ptype1__c</fullName>
+    <label>Ptype1</label>
+    <description>SurveyXact background variable ptype1, which identifies the survey year. Added to the export expression as [background/ptype1] so only the relevant year is returned. Changes from year to year.</description>
+    <type>Text</type>
+    <length>50</length>
+    <required>false</required>
+    <unique>false</unique>
+</CustomField>
