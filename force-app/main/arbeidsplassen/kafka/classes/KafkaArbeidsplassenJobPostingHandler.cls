@@ -113,19 +113,25 @@ public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends Kafk
 
         jobPosting.JanzzName__c = model.getJanzzName();
         jobPosting.JanzzCode__c = model.getJanzzCode();
-        jobPosting.WorkLanguage__c = truncate(convertJsonArrayToString(model.getProperty('workLanguage')));
+        jobPosting.WorkLanguage__c = truncate(convertJsonArrayToSortedString(model.getProperty('workLanguage')));
         jobPosting.JobTitle__c = truncate(model.getProperty('jobtitle'));
-        jobPosting.Keywords__c = truncate(model.getProperty('keywords'));
+        jobPosting.Keywords__c = truncate(formatKeywords(model.getProperty('keywords')));
 
         return jobPosting;
     }
 
+    /**
+     * @description Helper method to convert a JSON array string to a comma-separated string.
+     * @param propertyJson JSON array string to convert
+     * @return Comma-separated string, or null if the input is null or empty.
+     */
     @TestVisible
-    private static String convertJsonArrayToString(String propertyJson) {
+    private static String convertJsonArrayToSortedString(String propertyJson) {
         if (propertyJson != null) {
             try {
                 List<String> propertyList = (List<String>) JSON.deserialize(propertyJson, List<String>.class);
                 if (!propertyList.isEmpty()) {
+                    propertyList.sort();
                     return String.join(propertyList, ', ');
                 } else {
                     return null;
@@ -137,9 +143,38 @@ public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends Kafk
         return null;
     }
 
+    /**
+     * @description Helper method to truncate a string to 255 characters, or returns null if the string is null.
+     * @param str String to truncate
+     * @return Truncated string, or null if the string is null or blank.
+     */
     @TestVisible
     private static String truncate(String str) {
-        return str?.abbreviate(255);
+        if (String.isBlank(str)) {
+            return null;
+        }
+        return str.abbreviate(255);
+    }
+
+    /**
+     * @description Removes null from keywords. Some job posting data have one or more instances of "null" as a keyword, for instance "null;null".
+     * This method removes instances of "null" from the string, and returns null if the string is empty or only contains null.
+     * @param str String of keywords to format
+     * @return Formatted string with null removed, or null if the string is empty or only contains null
+     */
+    @TestVisible
+    private static String formatKeywords(String str) {
+        if (str == 'null' || String.isBlank(str)) {
+            return null;
+        }
+        List<String> keywords = str.split(';');
+        List<String> filteredKeywords = new List<String>();
+        for (String keyword : keywords) {
+            if (!keyword?.trim().equalsIgnoreCase('null')) {
+                filteredKeywords.add(keyword);
+            }
+        }
+        return filteredKeywords.isEmpty() ? null : String.join(filteredKeywords, ';');
     }
 
     @TestVisible

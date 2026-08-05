@@ -31,13 +31,22 @@ public with sharing class ArbeidsplassenJobPosting implements IKafkaMessageParse
     public String hash { get; set; }
     public String key { get; set; }
 
+    /**
+     * Classifications inneholder kodeverk for yrker. Beskrivelse av variablene fra StillingEkstern.avdl:
+     *  categoryType: STYRK08, STYRK08NAV, ESCO eller JANZZ
+     *  code: F.eks styrkkode eller esco kode. For janzz er det konseptid, i esco så er det en url
+     *  name: F.eks butikkmedarbeider
+     *  score: Score er mellom 0.0 og 1.0. En score på 1.0 antyder manuell bruk. F.eks av NKS eller SBL
+     *  janzzParentId: Janzz konseptid som er knyttet til klassifiseringen. For categoryType=JANZZ så bør dette vare det samme som code
+     */
     public class Classification {
-        public String janzzParentId { get; set; }
-        public Double score { get; set; }
-        public String name { get; set; }
-        public String code { get; set; }
         public String categoryType { get; set; }
+        public String code { get; set; }
+        public String name { get; set; }
+        public Double score { get; set; }
+        public String janzzParentId { get; set; }
     }
+
     public class Location {
         public String municipal_code { get; set; }
         public String county_code { get; set; }
@@ -85,6 +94,10 @@ public with sharing class ArbeidsplassenJobPosting implements IKafkaMessageParse
         public String navIdent { get; set; }
     }
 
+    /**
+     * @description Returns the name of the classification with categoryType JANZZ.
+     * @return Name of the classification with categoryType JANZZ, or null if not found.
+     */
     public String getJanzzName() {
         if (classifications == null) {
             return null;
@@ -96,6 +109,10 @@ public with sharing class ArbeidsplassenJobPosting implements IKafkaMessageParse
         }
         return null;
     }
+    /**
+     * @description Returns JANZZ code if present in classifications.
+     * @return Code of the classification with categoryType JANZZ, or null if not found.
+     */
     public String getJanzzCode() {
         if (classifications == null) {
             return null;
