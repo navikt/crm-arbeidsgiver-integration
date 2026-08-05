@@ -547,34 +547,26 @@ public with sharing class KafkaArbeidsplassenJobPostingHandlerTest {
     @isTest
     static void should_format_keywords() {
         Assert.areEqual(
-            'The word null as a part of text',
-            KafkaArbeidsplassenJobPostingHandler.formatKeywords('The word null as a part of text'),
-            'Should NOT remove null from keyword'
+            'square, track, sweet',
+            KafkaArbeidsplassenJobPostingHandler.formatKeywords('square;track;sweet'),
+            'Expected to return in format "value, value, value"'
         );
         Assert.areEqual(
-            'keyword1;keyword2;keyword3',
-            KafkaArbeidsplassenJobPostingHandler.formatKeywords('keyword1;null;keyword2;keyword3'),
-            'Should remove null from keyword'
+            'square, track, sweet',
+            KafkaArbeidsplassenJobPostingHandler.formatKeywords('square,track;,sweet'),
+            'Expected to return in format "value, value, value"'
         );
         Assert.areEqual(
-            null,
+            'square',
+            KafkaArbeidsplassenJobPostingHandler.formatKeywords(' square;,'),
+            'Expected to return in format "value, value, value"'
+        );
+
+        Assert.isNull(
             KafkaArbeidsplassenJobPostingHandler.formatKeywords('null;null;null'),
-            'Should remove null from keyword'
+            'Should remove "null" from keyword'
         );
-        Assert.areEqual(
-            null,
-            KafkaArbeidsplassenJobPostingHandler.formatKeywords('null'),
-            'Should remove null from keyword'
-        );
-        Assert.areEqual(
-            null,
-            KafkaArbeidsplassenJobPostingHandler.formatKeywords('null;'),
-            'Should remove null from keyword'
-        );
-        Assert.areEqual(
-            null,
-            KafkaArbeidsplassenJobPostingHandler.formatKeywords(''),
-            'Should remove null from keyword'
-        );
+        Assert.isNull(KafkaArbeidsplassenJobPostingHandler.formatKeywords('null'), 'Should remove "null" from keyword');
+        Assert.isNull(KafkaArbeidsplassenJobPostingHandler.formatKeywords(''), 'Should return null for empty string');
     }
 }
