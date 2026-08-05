@@ -535,6 +535,106 @@ public with sharing class ArbeidsplassenJobPostingTest {
         '  ]\n' +
         '}';
 
+    public static final String JSON_IMPORT_API =
+        '{\n' +
+        '  "uuid": "00000000-0000-0000-0000-000000000001",\n' +
+        '  "adnr": "1000001",\n' +
+        '  "title": "Testtittel for stillingsannonse",\n' +
+        '  "status": "ACTIVE",\n' +
+        '  "privacy": "SHOW_ALL",\n' +
+        '  "administration": {\n' +
+        '    "status": "DONE",\n' +
+        '    "remarks": [],\n' +
+        '    "comments": "Auto approved - 2026-08-03T09:07:21.674889407\\n",\n' +
+        '    "reportee": "Testesen, Test",\n' +
+        '    "navIdent": "T000000"\n' +
+        '  },\n' +
+        '  "published": "2026-08-03T00:00:00",\n' +
+        '  "expires": "2026-08-24T00:00:00",\n' +
+        '  "created": "2026-08-03T09:07:21.69599",\n' +
+        '  "updated": "2026-08-03T13:53:53.452609",\n' +
+        '  "employer": {\n' +
+        '    "name": "TEST OMSORGSENTER AS",\n' +
+        '    "publicName": "TEST OMSORGSENTER AS",\n' +
+        '    "orgnr": "123456789",\n' +
+        '    "parentOrgnr": "123456799",\n' +
+        '    "orgform": "BEDR"\n' +
+        '  },\n' +
+        '  "categories": [],\n' +
+        '  "source": "IMPORTAPI",\n' +
+        '  "medium": "test-medium",\n' +
+        '  "reference": "0000000_000000_no",\n' +
+        '  "publishedByAdmin": "2026-08-03T09:07:21.674949",\n' +
+        '  "businessName": "Test Omsorgsenter AS",\n' +
+        '  "locations": [\n' +
+        '    {\n' +
+        '      "address": "Testvegen 1",\n' +
+        '      "postalCode": "0000",\n' +
+        '      "county": "TESTFYLKE",\n' +
+        '      "municipal": "TESTKOMMUNE",\n' +
+        '      "city": "TESTBY",\n' +
+        '      "country": "NORGE",\n' +
+        '      "latitude": null,\n' +
+        '      "longitude": null,\n' +
+        '      "municipal_code": "0000",\n' +
+        '      "county_code": "00"\n' +
+        '    }\n' +
+        '  ],\n' +
+        '  "properties": [\n' +
+        '    { "key": "extent", "value": "Heltid" },\n' +
+        '    { "key": "keywords", "value": "null;null" },\n' +
+        '    { "key": "positioncount", "value": "2" },\n' +
+        '    { "key": "engagementtype", "value": "Fast" },\n' +
+        '    {\n' +
+        '      "key": "employerdescription",\n' +
+        '      "value": "Testkommune er en fiktiv kommune brukt til testformål.\\r\\n\\r\\nVi tilbyr spennende arbeidsoppgaver i et testmiljø."\n' +
+        '    },\n' +
+        '    { "key": "classification_styrk08_code", "value": "2223" },\n' +
+        '    {\n' +
+        '      "key": "applicationurl",\n' +
+        '      "value": "https://example.test/vacancy/application/0/0?channel=Test&iso=no"\n' +
+        '    },\n' +
+        '    { "key": "sector", "value": "Offentlig" },\n' +
+        '    { "key": "applicationdue", "value": "2026-08-24T00:00:00" },\n' +
+        '    { "key": "jobtitle", "value": "Sykepleier" },\n' +
+        '    { "key": "classification_styrk08_score", "value": "0.646515690225279" },\n' +
+        '    { "key": "workLanguage", "value": "[\\"Norsk\\"]" },\n' +
+        '    {\n' +
+        '      "key": "searchtags",\n' +
+        '      "value": "[{\\"label\\":\\"Sykepleier\\",\\"score\\":1.0},{\\"label\\":\\"Offentlig godkjent sykepleier\\",\\"score\\":0.8},{\\"label\\":\\"Sykepleier ved hjemmetjenesten\\",\\"score\\":0.8},{\\"label\\":\\"Fagsykepleier\\",\\"score\\":0.8}]"\n' +
+        '    },\n' +
+        '    { "key": "jobpercentage", "value": "100" },\n' +
+        '    { "key": "classification_input_source", "value": "jobtitle" }\n' +
+        '  ],\n' +
+        '  "contacts": [\n' +
+        '    {\n' +
+        '      "name": "Test Testesen",\n' +
+        '      "email": "test@example.test",\n' +
+        '      "phone": "+47 00000000 ",\n' +
+        '      "role": "",\n' +
+        '      "title": "Seksjonsleder"\n' +
+        '    }\n' +
+        '  ],\n' +
+        '  "classifications": [\n' +
+        '    { "categoryType": "JANZZ", "code": "21536", "name": "Sykepleier", "score": 1.0, "janzzParentId": "21536" },\n' +
+        '    {\n' +
+        '      "categoryType": "ESCO",\n' +
+        '      "code": "http://data.europa.eu/esco/occupation/00000000-0000-0000-0000-000000000000",\n' +
+        '      "name": "Sykepleier",\n' +
+        '      "score": 1.0,\n' +
+        '      "janzzParentId": "21536"\n' +
+        '    },\n' +
+        '    { "categoryType": "STYRK08", "code": "2223", "name": "Sykepleiere", "score": 1.0, "janzzParentId": "21536" }\n' +
+        '  ],\n' +
+        '  "eksperimentelleProperties": [\n' +
+        '    { "key": "education", "value": "[\\"Bachelor\\"]" },\n' +
+        '    { "key": "experience", "value": "[\\"Ingen\\",\\"Noe\\"]" },\n' +
+        '    { "key": "needDriversLicense", "value": "false" }\n' +
+        '  ]\n' +
+        '}';
+
+    /** */
+
     @IsTest
     static void parse_successNoNulls() {
         ArbeidsplassenJobPosting model = ArbeidsplassenJobPosting.parse(JSON, 'testkey', 'testhash');
@@ -700,6 +800,34 @@ public with sharing class ArbeidsplassenJobPostingTest {
         System.assertEquals(true, valueEmpDes);
         //  System.assert(model.categories == null);
         System.assertEquals(0, model.contacts.size());
+    }
+
+    @IsTest
+    static void parse_importApiFormat() {
+        ArbeidsplassenJobPosting model = ArbeidsplassenJobPosting.parse(JSON_IMPORT_API, 'testkey', 'testhash');
+        Assert.areEqual('00000000-0000-0000-0000-000000000001', model.uuid);
+        Assert.areEqual('IMPORTAPI', model.source);
+        Assert.areEqual('test-medium', model.medium);
+        Assert.areEqual('Test Omsorgsenter AS', model.businessName);
+        Assert.areEqual(
+            'null;null',
+            model.getProperty('keywords'),
+            'getProperty(\'keywords\') should return text from json'
+        );
+        Assert.areEqual(
+            '["Norsk"]',
+            model.getProperty('workLanguage'),
+            'getProperty(\'workLanguage\') should return text from json'
+        );
+        Assert.areEqual(
+            'Sykepleier',
+            model.getProperty('jobtitle'),
+            'getProperty(\'jobtitle\') should return text from json'
+        );
+        Assert.isNotNull(model.classifications, 'Classifications should not be null');
+        Assert.areEqual(3, model.classifications.size(), 'Classifications should have 3 items');
+        Assert.areEqual('21536', model.getJanzzCode(), 'Should return classification code for categoryType JANZZ');
+        Assert.areEqual('Sykepleier', model.getJanzzName(), 'Should return classification name for categoryType JANZZ');
     }
 
     @IsTest
