@@ -157,24 +157,25 @@ public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends Kafk
     }
 
     /**
-     * @description Removes null from keywords. Some job posting data have one or more instances of "null" as a keyword, for instance "null;null".
-     * This method removes instances of "null" from the string, and returns null if the string is empty or only contains null.
+     * @description Formats a string of keywords by replacing semicolons with commas, removing instances of "null"(sometimes occurs as a keyword), and adding whitespace after commas.
+     * This method replace semicolons with commas and adds whitespaces after commas. It also removes instances of "null" from the string, and returns null if the string is empty or only contains null.
      * @param str String of keywords to format
      * @return Formatted string with null removed, or null if the string is empty or only contains null
      */
     @TestVisible
     private static String formatKeywords(String str) {
-        if (str == 'null' || String.isBlank(str)) {
+        if (String.isBlank(str)) {
             return null;
         }
-        List<String> keywords = str.split(';');
-        List<String> filteredKeywords = new List<String>();
+        str = str.replace(';', ',');
+        List<String> keywords = str.split(',');
+        List<String> formattedKeywords = new List<String>();
         for (String keyword : keywords) {
-            if (!keyword?.trim().equalsIgnoreCase('null')) {
-                filteredKeywords.add(keyword);
+            if (!String.isBlank(keyword) && !keyword?.trim().equalsIgnoreCase('null')) {
+                formattedKeywords.add(keyword.trim());
             }
         }
-        return filteredKeywords.isEmpty() ? null : String.join(filteredKeywords, ';');
+        return formattedKeywords.isEmpty() ? null : String.join(formattedKeywords, ', ');
     }
 
     @TestVisible
