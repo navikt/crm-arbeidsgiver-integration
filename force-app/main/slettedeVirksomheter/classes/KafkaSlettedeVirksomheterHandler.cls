@@ -29,6 +29,6 @@ public without sharing class KafkaSlettedeVirksomheterHandler implements IKafkaM
             act.INT_HasEmployees__c = false;
         }
 
-        // update acts;
+        update acts;
     }
 }
