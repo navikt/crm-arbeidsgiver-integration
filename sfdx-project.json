@@ -4,7 +4,7 @@
             "path": "force-app",
             "default": true,
             "package": "crm-arbeidsgiver-integration",
-            "versionNumber": "1.160.0.NEXT",
+            "versionNumber": "1.164.0.NEXT",
             "dependencies": [
                 {
                     "package": "platform-data-model",
@@ -80,7 +80,7 @@
                 },
                 {
                     "package": "crm-arbeidsgiver-base",
-                    "versionNumber": "1.705.0.LATEST"
+                    "versionNumber": "1.708.0.LATEST"
                 }
             ]
         }

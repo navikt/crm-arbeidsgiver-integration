@@ -1,0 +1,55 @@
+{
+    "records": [
+        {
+            "attributes": {
+                "type": "Account",
+                "referenceId": "AccountRef2"
+            },
+            "Name": "SKI KOMMUNE ADMINISTRASJON OG IKT",
+            "INT_Industry__c": "Generell offentlig administrasjon",
+            "INT_IndustryCode__c": "84.110",
+            "INT_OrganizationNumber__c": "960507879",
+            "INT_OrganizationalStructure__c": "BEDR",
+            "RecordTypeId": "$R{RecordType.Account.Employer}",
+            "INT_MunicipalityNumber__c": "3003",
+            "ParentId": "@AccountRef11",
+            "CRM_AccountType__c": "B",
+            "INT_RegionNumber__c": "30",
+            "TAG_NavUnit__c": "@NavUnit__cRef1"
+        },
+        {
+            "attributes": {
+                "type": "Account",
+                "referenceId": "AccountRef12"
+            },
+            "Name": "LANGHUS BO- OG SERVICESENTER",
+            "INT_Industry__c": "Somatiske sykehjem",
+            "INT_IndustryCode__c": "87.102",
+            "INT_OrganizationNumber__c": "960507881",
+            "INT_OrganizationalStructure__c": "BEDR",
+            "RecordTypeId": "$R{RecordType.Account.Employer}",
+            "INT_MunicipalityNumber__c": "3003",
+            "ParentId": "@AccountRef7",
+            "CRM_AccountType__c": "B",
+            "INT_RegionNumber__c": "30",
+            "TAG_NavUnit__c": "@NavUnit__cRef1"
+        },
+        {
+            "attributes": {
+                "type": "Account",
+                "referenceId": "AccountRef19"
+            },
+            "Name": "MODERNE DINGSER & DUPPEDITTER AS",
+            "INT_Industry__c": "Detaljhandel med bredt vareutvalg ellers",
+            "INT_IndustryCode__c": "47.120",
+            "INT_OrganizationNumber__c": "960507886",
+            "INT_OrganizationalStructure__c": "BEDR",
+            "RecordTypeId": "$R{RecordType.Account.Employer}",
+            "INT_MunicipalityNumber__c": "3003",
+            "ParentId": "@AccountRef16",
+            "CRM_AccountType__c": "B",
+            "INT_RegionNumber__c": "30",
+            "TAG_NavUnit__c": "@NavUnit__cRef1"
+        }
+    ]
+}

@@ -1,4 +1,12 @@
+/**
+ * @description This class represents a job posting from Arbeidsplassen.
+ * The structure of the class is based on the Avro schema defined in the StillingEkstern.avdl file, which can be found in the following GitHub repository:
+ * https://github.com/navikt/pam-ad-broapplikasjoner/blob/main/pam-stilling-stilling-ekstern/src/main/avro/StillingEkstern.avdl
+ */
+@SuppressWarnings('PMD.ExcessivePublicCount,PMD.ApexDoc,PMD.PropertyNamingConventions')
 public with sharing class ArbeidsplassenJobPosting implements IKafkaMessageParser {
+    private static final String JANZZ_CATEGORY_TYPE = 'JANZZ';
+    public List<Classification> classifications { get; set; }
     public List<Property> properties { get; set; }
     public List<Location> locations { get; set; }
     public List<Contact> contacts { get; set; }
@@ -22,6 +30,22 @@ public with sharing class ArbeidsplassenJobPosting implements IKafkaMessageParse
     public String jsonPayload { get; set; }
     public String hash { get; set; }
     public String key { get; set; }
+
+    /**
+     * Classifications inneholder kodeverk for yrker. Beskrivelse av variablene fra StillingEkstern.avdl:
+     *  categoryType: STYRK08, STYRK08NAV, ESCO eller JANZZ
+     *  code: F.eks styrkkode eller esco kode. For janzz er det konseptid, i esco så er det en url
+     *  name: F.eks butikkmedarbeider
+     *  score: Score er mellom 0.0 og 1.0. En score på 1.0 antyder manuell bruk. F.eks av NKS eller SBL
+     *  janzzParentId: Janzz konseptid som er knyttet til klassifiseringen. For categoryType=JANZZ så bør dette vare det samme som code
+     */
+    public class Classification {
+        public String categoryType { get; set; }
+        public String code { get; set; }
+        public String name { get; set; }
+        public Double score { get; set; }
+        public String janzzParentId { get; set; }
+    }
 
     public class Location {
         public String municipal_code { get; set; }
@@ -62,12 +86,43 @@ public with sharing class ArbeidsplassenJobPosting implements IKafkaMessageParse
         public String name { get; set; }
     }
 
-     public class Admin {
+    public class Admin {
         public String status { get; set; }
         //public String remarks { get; set; } Ignore for now as it is not used. Can be re-added later if needed.
         public String comments { get; set; }
         public String reportee { get; set; }
         public String navIdent { get; set; }
+    }
+
+    /**
+     * @description Returns the name of the classification with categoryType JANZZ.
+     * @return Name of the classification with categoryType JANZZ, or null if not found.
+     */
+    public String getJanzzName() {
+        if (classifications == null) {
+            return null;
+        }
+        for (Classification c : classifications) {
+            if (c.categoryType == JANZZ_CATEGORY_TYPE) {
+                return c.name;
+            }
+        }
+        return null;
+    }
+    /**
+     * @description Returns JANZZ code if present in classifications.
+     * @return Code of the classification with categoryType JANZZ, or null if not found.
+     */
+    public String getJanzzCode() {
+        if (classifications == null) {
+            return null;
+        }
+        for (Classification c : classifications) {
+            if (c.categoryType == JANZZ_CATEGORY_TYPE) {
+                return c.code;
+            }
+        }
+        return null;
     }
 
     public String getProperty(String propertyName) {

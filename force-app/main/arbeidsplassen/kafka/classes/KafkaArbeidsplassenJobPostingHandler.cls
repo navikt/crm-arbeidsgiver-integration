@@ -1,6 +1,15 @@
+/**
+ * @description Handler class to process inbound Kafka messages and create Job Posting records.
+ * Contains functions to parse data from messages, create records and upsert them.
+ */
 public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends KafkaMessageProcessor implements IKafkaMessageConsumer {
     Map<String, ArbeidsplassenJobPosting> keyToJobPosting = new Map<String, ArbeidsplassenJobPosting>();
-    private static final Integer AGE_THRESHOLD_MINUTES = 15;
+    private static final Integer AGE_THRESHOLD_MINUTES = 15; //
+    public static Boolean enableTimeDeviationLogging = false;
+    /**
+     * @description Implementation of processMessages-method from IKafkaMessageConsumer
+     * @param messages List of kafka message records
+     */
     public void processMessages(List<KafkaMessage__c> messages) {
         for (KafkaMessage__c msg : messages) {
             try {
@@ -16,7 +25,9 @@ public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends Kafk
         }
 
         convertAndUpsertJobPostings(messages);
-        logTimeDeviations(keyToJobPosting);
+        if (enableTimeDeviationLogging) {
+            logTimeDeviations(keyToJobPosting);
+        }
         logger.publish();
     }
 
@@ -91,13 +102,80 @@ public inherited sharing class KafkaArbeidsplassenJobPostingHandler extends Kafk
         if (model.getProperty('rekrutteringshjelp') == 'true') {
             jobPosting.RecruitmentAssistance__c = true;
             jobPosting.RecruitmentPhone__c = model.getProperty('rekrutteringshjelpTelefonnummer');
-        } 
+        }
 
-        if (model.getProperty('employerdescription') != null && model.getProperty('employerdescription').contains('Etterregistrering')) {
+        if (
+            model.getProperty('employerdescription') != null &&
+            model.getProperty('employerdescription').contains('Etterregistrering')
+        ) {
             jobPosting.TAG_EmploymentPlacement__c = true;
         }
 
+        jobPosting.JanzzName__c = model.getJanzzName();
+        jobPosting.JanzzCode__c = model.getJanzzCode();
+        jobPosting.WorkLanguage__c = truncate(convertJsonArrayToSortedString(model.getProperty('workLanguage')));
+        jobPosting.JobTitle__c = truncate(model.getProperty('jobtitle'));
+        jobPosting.Keywords__c = truncate(formatKeywords(model.getProperty('keywords')));
+
         return jobPosting;
+    }
+
+    /**
+     * @description Helper method to convert a JSON array string to a comma-separated string.
+     * @param propertyJson JSON array string to convert
+     * @return Comma-separated string, or null if the input is null or empty.
+     */
+    @TestVisible
+    private static String convertJsonArrayToSortedString(String propertyJson) {
+        if (propertyJson != null) {
+            try {
+                List<String> propertyList = (List<String>) JSON.deserialize(propertyJson, List<String>.class);
+                if (!propertyList.isEmpty()) {
+                    propertyList.sort();
+                    return String.join(propertyList, ', ');
+                } else {
+                    return null;
+                }
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @description Helper method to truncate a string to 255 characters, or returns null if the string is null.
+     * @param str String to truncate
+     * @return Truncated string, or null if the string is null or blank.
+     */
+    @TestVisible
+    private static String truncate(String str) {
+        if (String.isBlank(str)) {
+            return null;
+        }
+        return str.abbreviate(255);
+    }
+
+    /**
+     * @description Formats a string of keywords by replacing semicolons with commas, removing instances of "null"(sometimes occurs as a keyword), and adding whitespace after commas.
+     * This method replace semicolons with commas and adds whitespaces after commas. It also removes instances of "null" from the string, and returns null if the string is empty or only contains null.
+     * @param str String of keywords to format
+     * @return Formatted string with null removed, or null if the string is empty or only contains null
+     */
+    @TestVisible
+    private static String formatKeywords(String str) {
+        if (String.isBlank(str)) {
+            return null;
+        }
+        str = str.replace(';', ',');
+        List<String> keywords = str.split(',');
+        List<String> formattedKeywords = new List<String>();
+        for (String keyword : keywords) {
+            if (!String.isBlank(keyword) && !keyword?.trim().equalsIgnoreCase('null')) {
+                formattedKeywords.add(keyword.trim());
+            }
+        }
+        return formattedKeywords.isEmpty() ? null : String.join(formattedKeywords, ', ');
     }
 
     @TestVisible
