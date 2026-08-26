@@ -19,10 +19,10 @@ private class TAG_SurveyXactRegionCalloutServiceTest {
 
     @IsTest
     static void buildExpressionCombinesPtype1AndRegion() {
-        String expr = TAG_SurveyXactRegionCalloutService.buildExpression('390264940', 1);
+        String expr = TAG_SurveyXactRegionCalloutService.buildExpression('390264940', '01 Østfold');
 
         System.assertEquals(
-            '[background/ptype1]=390264940 and [Fylkebg/region]=1',
+            '[background/ptype1]=390264940 and [background/ptype2t]="01 Østfold"',
             expr,
             'Combines survey year and region'
         );
@@ -30,16 +30,26 @@ private class TAG_SurveyXactRegionCalloutServiceTest {
 
     @IsTest
     static void buildExpressionOmitsBlankPtype1() {
-        String expr = TAG_SurveyXactRegionCalloutService.buildExpression('  ', 5);
+        String expr = TAG_SurveyXactRegionCalloutService.buildExpression('  ', '03 Oslo');
 
-        System.assertEquals('[Fylkebg/region]=5', expr, 'Only the region clause remains');
+        System.assertEquals('[background/ptype2t]="03 Oslo"', expr, 'Only the region clause remains');
+    }
+
+    @IsTest
+    static void regionsCoverEveryFylke() {
+        System.assertEquals(17, TAG_SurveyXactRegionCalloutService.REGIONS.size(), 'All ptype2t values are listed');
+        System.assertEquals(
+            '01 Østfold',
+            TAG_SurveyXactRegionCalloutService.REGIONS[0],
+            'The chain starts at the first fylke'
+        );
     }
 
     @IsTest
     static void buildEndpointEncodesExpression() {
         String endpoint = TAG_SurveyXactRegionCalloutService.buildEndpoint(
             '123456',
-            '[background/ptype1]=390264940 and [Fylkebg/region]=1'
+            '[background/ptype1]=390264940 and [background/ptype2t]="01 Østfold"'
         );
 
         System.assert(
@@ -60,7 +70,7 @@ private class TAG_SurveyXactRegionCalloutServiceTest {
         );
 
         Test.startTest();
-        String body = TAG_SurveyXactRegionCalloutService.getRegionDataset(config, 1);
+        String body = TAG_SurveyXactRegionCalloutService.getRegionDataset(config, '01 Østfold');
         Test.stopTest();
 
         System.assert(body.contains('ABC;123456789'), 'CSV body returned');
@@ -72,7 +82,7 @@ private class TAG_SurveyXactRegionCalloutServiceTest {
 
         Test.startTest();
         try {
-            TAG_SurveyXactRegionCalloutService.getRegionDataset(config, 1);
+            TAG_SurveyXactRegionCalloutService.getRegionDataset(config, '01 Østfold');
             System.assert(false, 'Expected CalloutException for missing survey id');
         } catch (TAG_SurveyXactRegionCalloutService.CalloutException e) {
             System.assert(e.getMessage().contains('survey id'), 'Message mentions survey id');
@@ -86,7 +96,7 @@ private class TAG_SurveyXactRegionCalloutServiceTest {
 
         Test.startTest();
         try {
-            TAG_SurveyXactRegionCalloutService.getDataset('123456', '[Fylkebg/region]=1');
+            TAG_SurveyXactRegionCalloutService.getDataset('123456', '[background/ptype2t]="01 Østfold"');
             System.assert(false, 'Expected CalloutException');
         } catch (TAG_SurveyXactRegionCalloutService.CalloutException e) {
             System.assert(e.getMessage().contains('500'), 'Message mentions status code');

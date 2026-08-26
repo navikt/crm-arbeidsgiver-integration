@@ -1,6 +1,6 @@
 /**
  * Importerer kampanjemedlemmer for en region av gangen og kjører seg selv videre
- * til neste region (1-15).
+ * til neste region i TAG_SurveyXactRegionCalloutService.REGIONS.
  *
  * Hele uttrekket er for stort for en callout, så hver region hentes og
  * behandles i sin egen transaksjon. Da holder heap, SOQL og DML seg godt
@@ -10,34 +10,35 @@
  *   System.enqueueJob(new TAG_SurveyXactMemberImportQueueable());
  */
 public with sharing class TAG_SurveyXactMemberImportQueueable implements Queueable, Database.AllowsCallouts {
-    private Integer region;
+    private Integer regionIndex;
     private Boolean updateExisting;
     private Integer campaignYear;
     private LoggerUtility logger;
 
     public TAG_SurveyXactMemberImportQueueable() {
-        this(TAG_SurveyXactRegionCalloutService.FIRST_REGION, false, Date.today().year());
+        this(0, false, Date.today().year());
     }
 
     public TAG_SurveyXactMemberImportQueueable(Boolean updateExisting) {
-        this(TAG_SurveyXactRegionCalloutService.FIRST_REGION, updateExisting, Date.today().year());
+        this(0, updateExisting, Date.today().year());
     }
 
-    public TAG_SurveyXactMemberImportQueueable(Integer region, Boolean updateExisting, Integer campaignYear) {
-        this.region = region;
+    public TAG_SurveyXactMemberImportQueueable(Integer regionIndex, Boolean updateExisting, Integer campaignYear) {
+        this.regionIndex = regionIndex;
         this.updateExisting = updateExisting;
         this.campaignYear = campaignYear;
         this.logger = new LoggerUtility();
     }
 
     public void execute(QueueableContext context) {
+        String region = TAG_SurveyXactRegionCalloutService.REGIONS[regionIndex];
         TAG_SurveyXactDataset_Config__mdt config = activeConfig();
 
         if (config == null) {
             logger.logMessage(
                 LoggerUtility.LogLevel.Error,
                 '',
-                String.valueOf(region),
+                region,
                 'SurveyXact member import: no active configuration found.',
                 null,
                 null,
@@ -61,7 +62,7 @@ public with sharing class TAG_SurveyXactMemberImportQueueable implements Queueab
                 logger.logMessage(
                     LoggerUtility.LogLevel.Warning,
                     '',
-                    'Region ' + region,
+                    region,
                     'SurveyXact member import skipped respondent. ' + reason,
                     null,
                     null,
@@ -72,8 +73,8 @@ public with sharing class TAG_SurveyXactMemberImportQueueable implements Queueab
             logger.logMessage(
                 LoggerUtility.LogLevel.Info,
                 '',
-                'Region ' + region,
-                'SurveyXact member import finished for region ' +
+                region,
+                'SurveyXact member import finished for ' +
                 region +
                 ': ' +
                 result,
@@ -85,8 +86,8 @@ public with sharing class TAG_SurveyXactMemberImportQueueable implements Queueab
             logger.logMessage(
                 LoggerUtility.LogLevel.Error,
                 '',
-                'Region ' + region,
-                'SurveyXact member import failed for region ' +
+                region,
+                'SurveyXact member import failed for ' +
                 region +
                 ': ' +
                 e.getMessage(),
@@ -103,13 +104,13 @@ public with sharing class TAG_SurveyXactMemberImportQueueable implements Queueab
     // En region som feiler stopper ikke kjeden, slik at én dårlig region ikke
     // blokkerer resten.
     private void chainNextRegion() {
-        if (region >= TAG_SurveyXactRegionCalloutService.LAST_REGION) {
+        if (regionIndex + 1 >= TAG_SurveyXactRegionCalloutService.REGIONS.size()) {
             return;
         }
         if (Test.isRunningTest()) {
             return;
         }
-        System.enqueueJob(new TAG_SurveyXactMemberImportQueueable(region + 1, updateExisting, campaignYear));
+        System.enqueueJob(new TAG_SurveyXactMemberImportQueueable(regionIndex + 1, updateExisting, campaignYear));
     }
 
     private static TAG_SurveyXactDataset_Config__mdt activeConfig() {

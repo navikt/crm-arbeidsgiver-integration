@@ -40,7 +40,7 @@ private class TAG_SurveyXactMemberImportQueueableTest {
         Test.setMock(HttpCalloutMock.class, new MockResponse());
 
         Test.startTest();
-        System.enqueueJob(new TAG_SurveyXactMemberImportQueueable(1, false, Date.today().year()));
+        System.enqueueJob(new TAG_SurveyXactMemberImportQueueable(0, false, Date.today().year()));
         Test.stopTest();
 
         System.assertEquals(
@@ -55,7 +55,7 @@ private class TAG_SurveyXactMemberImportQueueableTest {
         Test.setMock(HttpCalloutMock.class, new MockErrorResponse());
 
         Test.startTest();
-        System.enqueueJob(new TAG_SurveyXactMemberImportQueueable(1, false, Date.today().year()));
+        System.enqueueJob(new TAG_SurveyXactMemberImportQueueable(0, false, Date.today().year()));
         Test.stopTest();
 
         System.assertEquals(

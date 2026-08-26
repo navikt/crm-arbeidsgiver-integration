@@ -15,12 +15,11 @@ Custom Metadata, men er ellers uavhengige.
 ## Arkitektur (kort)
 
 | Komponent                             | Ansvar                                                   |
-| ------------------------------------- | -------------------------------------------------------- |
+| ------------------------------------- | -------------------------------------------------------- | --- | ------------------------------------- | ------------------------------- |
 | `TAG_SurveyXactRegionCalloutService`  | Bygger endepunkt + gjør callout, én region om gangen     |
 | `TAG_SurveyXactMemberImportParser`    | Parser CSV-en, plukker ut `respnokk` og `bedrnr`         |
 | `TAG_SurveyXactMemberImportService`   | Matcher mot Account/kampanje og oppretter medlemmer      |
-| `TAG_SurveyXactMemberImportQueueable` | Kjører callout + import asynkront per region, logger     |
-| `TAG_SurveyXactMemberImportScheduler` | Planlagt kjøring én gang i året                          |
+| `TAG_SurveyXactMemberImportQueueable` | Kjører callout + import asynkront per region, logger     |     | `TAG_SurveyXactMemberImportScheduler` | Planlagt kjøring én gang i året |
 | `TAG_SurveyXactDataset_Config__mdt`   | Custom Metadata: `SurveyId__c`, `Ptype1__c`, `Active__c` |
 
 -   **Named Credential:** `SurveyXact` → `https://rest.survey-xact.dk/rest`
@@ -295,15 +294,24 @@ delete [SELECT Id FROM CustomCampaignMember__c
         WHERE Campaign_type__c = 'Bedriftsundersøkelse'];
 ```
 
-### Test 4 — Hele kjeden (krever bekreftet regionfilter)
+### Test 4 — Hele kjeden
 
 ```apex
 System.enqueueJob(new TAG_SurveyXactMemberImportQueueable());
 ```
 
-Jobben går gjennom region 1–15, én transaksjon per region. Følg med i
-**Setup → Apex Jobs** mens den kjører, og sjekk **Application_Log\_\_c** etterpå.
-En region som feiler stopper ikke resten.
+Jobben går gjennom alle verdiene i `TAG_SurveyXactRegionCalloutService.REGIONS`,
+én transaksjon per region. Følg med i **Setup → Apex Jobs** mens den kjører, og
+sjekk **Application_Log\_\_c** etterpå. En region som feiler stopper ikke resten.
+
+Vil du teste én enkelt region først:
+
+```apex
+System.enqueueJob(new TAG_SurveyXactMemberImportQueueable(0, false, Date.today().year()));
+```
+
+Første parameter er indeksen i `REGIONS`. Merk at kjeden fortsetter videre
+derfra, så start på siste indeks (16) hvis du bare vil ha én kjøring.
 
 ### Test 5 — Planlagt kjøring
 
