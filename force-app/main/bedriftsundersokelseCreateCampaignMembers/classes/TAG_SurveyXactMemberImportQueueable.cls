@@ -1,12 +1,12 @@
 /**
- * Importerer kampanjemedlemmer for en region av gangen og kjører seg selv videre
- * til neste region i TAG_SurveyXactRegionCalloutService.REGIONS.
+ * Imports campaign members one region at a time and chains itself to the next
+ * region in TAG_SurveyXactRegionCalloutService.REGIONS.
  *
- * Hele uttrekket er for stort for en callout, så hver region hentes og
- * behandles i sin egen transaksjon. Da holder heap, SOQL og DML seg godt
- * innenfor grensene uansett hvor mange respondenter det er totalt.
+ * The full export is too large for one callout, so each region is fetched and
+ * processed in its own transaction. That keeps heap, SOQL and DML well within
+ * the limits no matter how many respondents there are in total.
  *
- * Startes fra Execute Anonymous:
+ * Start from Execute Anonymous:
  *   System.enqueueJob(new TAG_SurveyXactMemberImportQueueable());
  */
 public with sharing class TAG_SurveyXactMemberImportQueueable implements Queueable, Database.AllowsCallouts {
@@ -101,8 +101,8 @@ public with sharing class TAG_SurveyXactMemberImportQueueable implements Queueab
         chainNextRegion();
     }
 
-    // En region som feiler stopper ikke kjeden, slik at én dårlig region ikke
-    // blokkerer resten.
+    // A region that fails does not stop the chain, so one bad region cannot
+    // block the rest.
     private void chainNextRegion() {
         if (regionIndex + 1 >= TAG_SurveyXactRegionCalloutService.REGIONS.size()) {
             return;

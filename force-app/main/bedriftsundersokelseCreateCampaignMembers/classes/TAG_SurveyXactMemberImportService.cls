@@ -1,12 +1,12 @@
 /**
- * Oppretter CustomCampaignMember__c fra et SurveyXact-uttrekk.
+ * Creates CustomCampaignMember__c records from a SurveyXact dataset export.
  *
- * 'bedrnr' matches mot Account.INT_OrganizationNumber__c. Kampanjen finnes via
- * kontoens NAV-enhet, blant kampanjene 'BU {år} ...' som opprettes av
- * TAG_EmployerSurveyCampaignsBatch i crm-arbeidsgiver-base.
+ * 'bedrnr' is matched against Account.INT_OrganizationNumber__c. The campaign is
+ * found through the account's NAV unit, among the 'BU {year} ...' campaigns
+ * created by TAG_EmployerSurveyCampaignsBatch in crm-arbeidsgiver-base.
  *
- * Respondenter som ikke lar seg matche hoppes over og logges hver for seg.
- * Medlemmer som allerede finnes røres ikke med mindre updateExisting er satt.
+ * Respondents that cannot be matched are skipped and logged individually.
+ * Existing members are left alone unless updateExisting is set.
  */
 public with sharing class TAG_SurveyXactMemberImportService {
     @TestVisible
@@ -48,8 +48,8 @@ public with sharing class TAG_SurveyXactMemberImportService {
         }
     }
 
-    // Parser CSV-en og oppretter medlemmene som ikke finnes fra før.
-    // Respondenter som hoppes over legges i 'skipReasons' med respondentnøkkel.
+    // Parses the CSV and creates the members that do not already exist.
+    // Skipped respondents are added to 'skipReasons' with their respondent key.
     public static ImportResult importFromCsv(
         String csvBody,
         Integer campaignYear,
@@ -160,8 +160,9 @@ public with sharing class TAG_SurveyXactMemberImportService {
         return accountByOrgNumber;
     }
 
-    // Mapper NAV-enhet til årets kampanje. Kampanjene heter 'BU {år} {enhet}' og
-    // har oppslag til NAV-enheten, så oppslaget brukes til matching - ikke navnet.
+    // Maps NAV unit to this year's campaign. The campaigns are named
+    // 'BU {year} {unit}' and have a lookup to the NAV unit, so the lookup is used
+    // for matching - not the name.
     private static Map<Id, Id> fetchCampaigns(List<Account> accounts, Integer campaignYear) {
         Map<Id, Id> campaignByNavUnit = new Map<Id, Id>();
 

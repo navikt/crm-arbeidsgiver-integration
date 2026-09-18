@@ -1,9 +1,9 @@
 /**
- * Parser datauttrekket fra SurveyXact og plukker ut de to kolonnene importen
- * trenger: respondentnøkkel og organisasjonsnummer.
+ * Parses the SurveyXact dataset export and picks out the two columns the import
+ * needs: respondent key and organisation number.
  *
- * Uttrekket har rundt 295 kolonner. Å beholde alle ville brukt ca. ti ganger
- * mer heap enn nødvendig, så resten forkastes.
+ * The export has around 295 columns. Keeping all of them would use roughly ten
+ * times more heap than necessary, so the rest is discarded.
  */
 public with sharing class TAG_SurveyXactMemberImportParser {
     public static final String DEFAULT_DELIMITER = ';';
@@ -70,7 +70,7 @@ public with sharing class TAG_SurveyXactMemberImportParser {
         return true;
     }
 
-    // Splitter CSV-innholdet i rader og felter. Følger RFC 4180-quoting.
+    // Splits the CSV into rows and fields. Follows RFC 4180 quoting.
     private static List<List<String>> tokenize(String content, String delimiter) {
         List<List<String>> rows = new List<List<String>>();
         if (String.isBlank(content)) {

@@ -1,12 +1,13 @@
 /**
- * Starter den årlige importen av kampanjemedlemmer. Kjøres én gang - maks to -
- * i året, når respondentene er klare i SurveyXact.
+ * Starts the yearly campaign member import. Runs once - at most twice - a year,
+ * when the respondents are ready in SurveyXact.
  *
- * Planlegges fra Execute Anonymous, f.eks. 1. februar kl. 02:
+ * Schedule from Execute Anonymous, for example 1 February at 02:00:
  *   System.schedule('SurveyXact Member Import',
  *       '0 0 2 1 2 ?', new TAG_SurveyXactMemberImportScheduler());
  *
- * Husk å slette den planlagte jobben etterpå - den skal ikke gå kontinuerlig.
+ * Remember to delete the scheduled job afterwards - it is not meant to keep
+ * running.
  */
 public with sharing class TAG_SurveyXactMemberImportScheduler implements Schedulable {
     public void execute(SchedulableContext context) {
