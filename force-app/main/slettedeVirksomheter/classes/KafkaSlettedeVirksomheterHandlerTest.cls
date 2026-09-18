@@ -56,7 +56,7 @@ private without sharing class KafkaSlettedeVirksomheterHandlerTest {
             accts[0].CRM_NumberOfEmployeesGrouped__c,
             'Should clear number of employees group when deleted'
         );
-        Assert.areEqual(0, accts[0].NumberOfEmployees, 'Should clear number of employees when deleted');
+        Assert.areEqual(null, accts[0].NumberOfEmployees, 'Should clear number of employees when deleted');
         Assert.isFalse(accts[0].INT_HasEmployees__c, 'Should set has employees to false when deleted');
     }
 }
