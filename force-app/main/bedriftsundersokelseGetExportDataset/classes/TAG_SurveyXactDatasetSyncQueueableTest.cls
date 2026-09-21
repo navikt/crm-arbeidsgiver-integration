@@ -22,7 +22,19 @@ private class TAG_SurveyXactDatasetSyncQueueableTest {
 
     @TestSetup
     static void setup() {
-        insert new CustomCampaignMember__c(Key__c = KEY_DONE, Status__c = 'Ikke gjennomført');
+        // The sync only looks at members on a campaign starting this year.
+        CustomCampaign__c campaign = new CustomCampaign__c(
+            Name = 'BU ' + Date.today().year() + ' Test',
+            Type__c = 'Bedriftsundersøkelse',
+            StartDate__c = Date.newInstance(Date.today().year(), 1, 15)
+        );
+        insert campaign;
+
+        insert new CustomCampaignMember__c(
+            Key__c = KEY_DONE,
+            Status__c = 'Ikke gjennomført',
+            CustomCampaign__c = campaign.Id
+        );
     }
 
     @IsTest

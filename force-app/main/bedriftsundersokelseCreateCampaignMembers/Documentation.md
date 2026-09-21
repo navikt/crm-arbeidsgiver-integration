@@ -157,14 +157,31 @@ Hele årgangen er ca. **17 MB fordelt på rundt 18 000 respondenter**. Apex tål
 maksimalt 12 MB heap i asynkron kontekst, så uttrekket kan ikke hentes i én
 callout.
 
-Løsningen er å hente **én region om gangen** (1–15). Køen kjører seg selv videre
+Løsningen er å hente **én region om gangen**. Køen kjører seg selv videre
 til neste region etter hver kjøring, slik at hver transaksjon får sin egen
 heap-, SOQL- og DML-kvote.
 
-> **Status:** regionfilteret er **ikke bekreftet** av SurveyXact ennå.
-> `[Fylkebg/region]=1` gir HTTP 200, men uten datarader. Riktig syntaks for
-> single-choice-variabler er etterspurt hos support. Selve importlogikken er
-> testet mot ekte data med et `closeTime`-filter og fungerer.
+Regionene ligger i `TAG_SurveyXactRegionCalloutService.REGIONS` – 17 verdier:
+de 15 fylkene, pluss egne tilleggsutvalg for Østfold og Akershus.
+
+### Hvorfor ptype2t og ikke region
+
+Regionfilteret bruker **`ptype2t`**, tekstvarianten av `ptype2`. Verdiene er
+hele strenger som `01 Østfold`, og må stå i doble anførselstegn i uttrykket.
+
+Vi forsøkte først `[Fylkebg/region]=1`. Det ga HTTP 200, men uten datarader.
+`ptype2t` ble anbefalt av SurveyXact og er testet mot ekte data.
+
+To grunner til at det er `ptype2t` og ikke `ptype2`:
+
+-   `ptype2`-verdiene endrer seg fra årgang til årgang. `ptype2t` står stille,
+    så listen i Apex trenger ikke vedlikehold hvert år.
+-   Tilleggsutvalgene har egne `ptype2t`-verdier, og blir dermed egne kjøringer
+    i stedet for å blandes inn i fylket.
+
+> **Viktig:** `ptype1` må alltid være med i uttrykket. Det ligger testdata på
+> andre `ptype1`-verdier med de samme `ptype2t`-verdiene, så uten `ptype1` får
+> man med respondenter fra tidligere årganger.
 
 ---
 
@@ -174,7 +191,7 @@ heap-, SOQL- og DML-kvote.
 `TAG_SurveyXactRegionCalloutService.buildExpression()`:
 
 ```
-[background/ptype1]=390264940 and [Fylkebg/region]=1
+[background/ptype1]=390264940 and [background/ptype2t]="01 Østfold"
 ```
 
 Til forskjell fra statusoppdateringen brukes **ikke** `closeTime` her – importen
@@ -187,9 +204,12 @@ variabel som ligger hvor:
 | ----------- | ------------------------ | -------- |
 | `closeTime` | `[respondent/closeTime]` | dateTime |
 | `ptype1`    | `[background/ptype1]`    | double   |
-| `region`    | `[Fylkebg/region]`       | single   |
+| `ptype2t`   | `[background/ptype2t]`   | text     |
 | `bedrnr`    | `null/bedrnr`            | text     |
 | `respnokk`  | `calculated/respnokk`    | text     |
+
+`ptype2t` er tekst, så verdien må ha doble anførselstegn. `ptype1` er double og
+skal stå uten.
 
 Uttrykket URL-encodes med `EncodingUtil.urlEncode(...)` i `buildEndpoint()`.
 
@@ -213,10 +233,7 @@ TAG_SurveyXactDataset_Config__mdt cfg = [
     FROM TAG_SurveyXactDataset_Config__mdt
     WHERE Active__c = true LIMIT 1
 ];
-String csv = TAG_SurveyXactRegionCalloutService.getDataset(
-    cfg.SurveyId__c,
-    '[respondent/closeTime] > datetime("2026-03-07 00:00:00")'
-);
+String csv = TAG_SurveyXactRegionCalloutService.getRegionDataset(cfg, '15 Finnmark');
 List<TAG_SurveyXactMemberImportParser.Respondent> rows =
     TAG_SurveyXactMemberImportParser.parse(csv);
 System.debug(LoggingLevel.INFO, 'Antall respondenter: ' + rows.size());
@@ -226,10 +243,13 @@ for (TAG_SurveyXactMemberImportParser.Respondent r : rows) {
 ```
 
 -   **Rader > 0** → auth, callout og parsing er OK.
--   **Rader = 0** → sjekk survey-ID og filter før du går videre.
+-   **Rader = 0** → sjekk survey-ID, `ptype1` og at `ptype2t`-verdien er skrevet
+    nøyaktig som i `REGIONS`.
 
-> `closeTime`-filteret brukes her fordi det gir få rader. Ikke bruk et bredt
-> filter i Execute Anonymous – synkron kontekst har kun 6 MB heap.
+> Finnmark er brukt her fordi det er det minste fylket. Ikke kjør et stort fylke
+> i Execute Anonymous – synkron kontekst har kun 6 MB heap. Et `closeTime`-filter
+> som `'[respondent/closeTime] > datetime("2026-03-07 00:00:00")'` gir også få
+> rader hvis du heller vil teste på tvers av fylker.
 
 ### Test 2 — Lag testdata
 
@@ -256,11 +276,12 @@ update new Account(Id = acc.Id, TAG_NavUnit__c = unit.Id);
 ### Test 3 — Kjør importen mot ekte data
 
 ```apex
-String csv = TAG_SurveyXactRegionCalloutService.getDataset(
-    [SELECT SurveyId__c FROM TAG_SurveyXactDataset_Config__mdt
-     WHERE Active__c = true LIMIT 1].SurveyId__c,
-    '[respondent/closeTime] > datetime("2026-03-07 00:00:00")'
-);
+TAG_SurveyXactDataset_Config__mdt cfg = [
+    SELECT SurveyId__c, Ptype1__c
+    FROM TAG_SurveyXactDataset_Config__mdt
+    WHERE Active__c = true LIMIT 1
+];
+String csv = TAG_SurveyXactRegionCalloutService.getRegionDataset(cfg, '15 Finnmark');
 
 List<String> skipReasons = new List<String>();
 TAG_SurveyXactMemberImportService.ImportResult result =

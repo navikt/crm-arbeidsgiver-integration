@@ -4,6 +4,11 @@ Denne integrasjonen henter respondentstatus fra SurveyXact ("Export dataset")
 og oppdaterer `CustomCampaignMember__c.Status__c` til `Gjennomført` for
 respondenter som har fullført undersøkelsen.
 
+Uttrekket inneholder også respondentenes svar. Lagring av svarene er utviklet og
+testet, men **parkert** etter avklaring med forskningsseksjonen som eier BU.
+Koden ligger i `parked/bedriftsundersokelse-questions/` og er ikke en del av
+pakken.
+
 ---
 
 ## Arkitektur (kort)
@@ -134,6 +139,22 @@ Om en respondent har gjennomført avgjøres av kolonnen `c_1` i datauttrekket:
 
 SurveyXact-support anbefalte `c_1` (alternativt `stato_4`) framfor
 `response`-kolonnen, som ikke er egnet til dette formålet.
+
+### Årsgrense
+
+Bare medlemmer på en kampanje som starter i undersøkelsesåret oppdateres:
+
+```apex
+AND CustomCampaign__r.StartDate__c >= :yearStart
+AND CustomCampaign__r.StartDate__c <= :yearEnd
+```
+
+En respondentnøkkel kan dukke opp igjen i en senere undersøkelse. Uten denne
+grensen ville et medlem fra et tidligere år med samme nøkkel også blitt satt til
+`Gjennomført`.
+
+Konsekvensen er at et kampanjemedlem uten kampanje, eller på en kampanje uten
+`StartDate__c`, blir hoppet over. Kampanjene må derfor ha startdato.
 
 ---
 

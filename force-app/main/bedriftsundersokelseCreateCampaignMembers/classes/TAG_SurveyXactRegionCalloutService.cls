@@ -1,13 +1,12 @@
 /**
- * Henter datauttrekket fra SurveyXact for én region om gangen.
+ * Fetches the SurveyXact dataset export one region at a time.
  *
- * Hele årgangen er ca. 17 MB, som er for mye for én callout (grensen er 12 MB).
- * Uttrekket deles derfor per region.
+ * A full year is around 17 MB, well past the 12 MB heap limit for a single
+ * callout, so the export is split by region.
  *
- * Regionen filtreres på ptype2t. Det er tekstvarianten av ptype2, og til
- * forskjell fra ptype2 er verdiene de samme fra år til år. ptype1 må likevel
- * være med, fordi det ligger testdata på andre ptype1-verdier med de samme
- * ptype2t-verdiene.
+ * The region filter uses ptype2t, the text variant of ptype2. Unlike ptype2 the
+ * values stay the same from year to year. ptype1 is still required because test
+ * data exists on other ptype1 values with the same ptype2t values.
  */
 public with sharing class TAG_SurveyXactRegionCalloutService {
     public class CalloutException extends Exception {
@@ -15,8 +14,8 @@ public with sharing class TAG_SurveyXactRegionCalloutService {
 
     private static final String NAMED_CREDENTIAL = 'callout:SurveyXact';
 
-    // Verdiene til ptype2t, oppgitt av SurveyXact. Rekkefølgen bestemmer
-    // rekkefølgen på kjøringene. Tilleggsutvalgene er egne verdier.
+    // The ptype2t values, supplied by SurveyXact. This order decides the order
+    // the regions run in. Supplementary samples are separate values.
     public static final List<String> REGIONS = new List<String>{
         '01 Østfold',
         '01 Østfold tilleggsutvalg',
