@@ -19,6 +19,22 @@ public with sharing class TAG_SurveyXactDatasetSyncQueueable implements Queueabl
     }
 
     public void execute(QueueableContext context) {
+        System.attachFinalizer(new SyncFinalizer());
+
+        if (configs.isEmpty()) {
+            logger.logMessage(
+                LoggerUtility.LogLevel.Error,
+                '',
+                null,
+                'SurveyXact dataset sync: no active configuration found.',
+                null,
+                null,
+                CRM_ApplicationDomain.Domain.POAB
+            );
+            logger.publish();
+            return;
+        }
+
         for (TAG_SurveyXactDataset_Config__mdt config : configs) {
             try {
                 String csv = TAG_SurveyXactDatasetCalloutService.getRecentDataset(config);
@@ -44,5 +60,31 @@ public with sharing class TAG_SurveyXactDatasetSyncQueueable implements Queueabl
             FROM TAG_SurveyXactDataset_Config__mdt
             WHERE Active__c = TRUE
         ];
+    }
+
+    // Logs CPU/heap limits and other unhandled exceptions, which the job itself cannot catch.
+    @TestVisible
+    private class SyncFinalizer implements Finalizer {
+        public void execute(FinalizerContext context) {
+            if (context.getResult() != ParentJobResult.UNHANDLED_EXCEPTION) {
+                return;
+            }
+
+            Exception e = context.getException();
+            LoggerUtility finalizerLogger = new LoggerUtility();
+            finalizerLogger.logMessage(
+                LoggerUtility.LogLevel.Error,
+                context.getAsyncApexJobId(),
+                null,
+                'SurveyXact dataset sync failed with an unhandled exception: ' +
+                e.getTypeName() +
+                ' - ' +
+                e.getMessage(),
+                e.getStackTraceString(),
+                null,
+                CRM_ApplicationDomain.Domain.POAB
+            );
+            finalizerLogger.publish();
+        }
     }
 }

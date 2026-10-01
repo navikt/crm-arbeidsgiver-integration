@@ -32,6 +32,7 @@ public with sharing class TAG_SurveyXactMemberImportQueueable implements Queueab
 
     public void execute(QueueableContext context) {
         String region = TAG_SurveyXactRegionCalloutService.REGIONS[regionIndex];
+        System.attachFinalizer(new ImportFinalizer(regionIndex, region));
         TAG_SurveyXactDataset_Config__mdt config = activeConfig();
 
         if (config == null) {
@@ -121,5 +122,48 @@ public with sharing class TAG_SurveyXactMemberImportQueueable implements Queueab
             LIMIT 1
         ];
         return configs.isEmpty() ? null : configs[0];
+    }
+
+    // Logs CPU/heap limits and other unhandled exceptions, which the job itself cannot catch.
+    // The chain stops there, so the log says which regionIndex to restart from.
+    @TestVisible
+    private class ImportFinalizer implements Finalizer {
+        private Integer regionIndex;
+        private String region;
+
+        @TestVisible
+        private ImportFinalizer(Integer regionIndex, String region) {
+            this.regionIndex = regionIndex;
+            this.region = region;
+        }
+
+        public void execute(FinalizerContext context) {
+            if (context.getResult() != ParentJobResult.UNHANDLED_EXCEPTION) {
+                return;
+            }
+
+            Exception e = context.getException();
+            LoggerUtility finalizerLogger = new LoggerUtility();
+            finalizerLogger.logMessage(
+                LoggerUtility.LogLevel.Error,
+                context.getAsyncApexJobId(),
+                region,
+                'SurveyXact member import failed for ' +
+                region +
+                ' (regionIndex=' +
+                regionIndex +
+                ') with an unhandled exception: ' +
+                e.getTypeName() +
+                ' - ' +
+                e.getMessage() +
+                '. Later regions were not started - restart from regionIndex ' +
+                regionIndex +
+                '.',
+                e.getStackTraceString(),
+                null,
+                CRM_ApplicationDomain.Domain.POAB
+            );
+            finalizerLogger.publish();
+        }
     }
 }

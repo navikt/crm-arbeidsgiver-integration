@@ -20,6 +20,35 @@ private class TAG_SurveyXactDatasetSyncQueueableTest {
         }
     }
 
+    private class SimulatedLimitException extends Exception {
+    }
+
+    private class FinalizerContextMock implements FinalizerContext {
+        private ParentJobResult result;
+        private Exception error;
+
+        FinalizerContextMock(ParentJobResult result, Exception error) {
+            this.result = result;
+            this.error = error;
+        }
+
+        public Id getAsyncApexJobId() {
+            return null;
+        }
+
+        public Exception getException() {
+            return error;
+        }
+
+        public String getRequestId() {
+            return null;
+        }
+
+        public ParentJobResult getResult() {
+            return result;
+        }
+    }
+
     @TestSetup
     static void setup() {
         // The sync only looks at members on a campaign starting this year.
@@ -87,5 +116,53 @@ private class TAG_SurveyXactDatasetSyncQueueableTest {
             LIMIT 1
         ];
         System.assertEquals('Ikke gjennomført', member.Status__c, 'Member unchanged when callout fails');
+    }
+
+    @IsTest
+    static void missingConfigIsLogged() {
+        Test.startTest();
+        System.enqueueJob(new TAG_SurveyXactDatasetSyncQueueable(new List<TAG_SurveyXactDataset_Config__mdt>()));
+        Test.stopTest();
+        Test.getEventBus().deliver();
+
+        List<Application_Log__c> logs = [
+            SELECT Log_Level__c, Application_Domain__c, Log_Message__c
+            FROM Application_Log__c
+        ];
+        Assert.areEqual(1, logs.size(), 'One log entry for the missing configuration');
+        Assert.areEqual('Error', logs[0].Log_Level__c, 'Missing configuration is an error');
+        Assert.areEqual('POAB', logs[0].Application_Domain__c, 'Logged on the POAB domain');
+        Assert.isTrue(logs[0].Log_Message__c.contains('no active configuration'), 'Message explains the cause');
+    }
+
+    @IsTest
+    static void finalizerLogsUnhandledException() {
+        FinalizerContextMock context = new FinalizerContextMock(
+            ParentJobResult.UNHANDLED_EXCEPTION,
+            new SimulatedLimitException('Apex CPU time limit exceeded')
+        );
+
+        Test.startTest();
+        new TAG_SurveyXactDatasetSyncQueueable.SyncFinalizer().execute(context);
+        Test.stopTest();
+
+        List<Application_Log__c> logs = [
+            SELECT Log_Level__c, Application_Domain__c, Log_Message__c
+            FROM Application_Log__c
+        ];
+        Assert.areEqual(1, logs.size(), 'One log entry for the failed job');
+        Assert.areEqual('Error', logs[0].Log_Level__c, 'Unhandled exception is an error');
+        Assert.areEqual('POAB', logs[0].Application_Domain__c, 'Logged on the POAB domain');
+        Assert.isTrue(logs[0].Log_Message__c.contains('CPU time limit'), 'Message carries the exception');
+    }
+
+    @IsTest
+    static void finalizerIsSilentOnSuccess() {
+        Test.startTest();
+        new TAG_SurveyXactDatasetSyncQueueable.SyncFinalizer()
+            .execute(new FinalizerContextMock(ParentJobResult.SUCCESS, null));
+        Test.stopTest();
+
+        Assert.areEqual(0, [SELECT COUNT() FROM Application_Log__c], 'Nothing logged when the job succeeds');
     }
 }

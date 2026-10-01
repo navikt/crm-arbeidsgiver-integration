@@ -242,6 +242,15 @@ System.debug(LoggingLevel.INFO, [
 Medlemmer som matcher en respondent med `c_1 = 1` (innenfor tilbakeblikket)
 skal nå være `Gjennomført`. Sjekk også **Application_Log\_\_c** for eventuelle feil.
 
+All logging skjer på domenet **POAB**, nivå **Error**:
+
+-   ingen aktiv `TAG_SurveyXactDataset_Config__mdt`-record
+-   callout-, parse- eller DML-feil
+-   CPU-/heap-grense eller annen ufanget feil – logges av en Transaction Finalizer,
+    siden slike feil ikke kan fanges i selve jobben
+
+Vellykkede kjøringer logges ikke. Neste timeskjøring prøver uansett på nytt.
+
 ### Test 4 — Planlagt kjøring (kun når Test 1–3 virker)
 
 Integrasjonen kjøres én gang i timen mellom kl. 07 og 17 i responsperioden.

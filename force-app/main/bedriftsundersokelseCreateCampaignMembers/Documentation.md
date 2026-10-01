@@ -15,11 +15,12 @@ Custom Metadata, men er ellers uavhengige.
 ## Arkitektur (kort)
 
 | Komponent                             | Ansvar                                                   |
-| ------------------------------------- | -------------------------------------------------------- | --- | ------------------------------------- | ------------------------------- |
+| ------------------------------------- | -------------------------------------------------------- |
 | `TAG_SurveyXactRegionCalloutService`  | Bygger endepunkt + gjør callout, én region om gangen     |
 | `TAG_SurveyXactMemberImportParser`    | Parser CSV-en, plukker ut `respnokk` og `bedrnr`         |
 | `TAG_SurveyXactMemberImportService`   | Matcher mot Account/kampanje og oppretter medlemmer      |
-| `TAG_SurveyXactMemberImportQueueable` | Kjører callout + import asynkront per region, logger     |     | `TAG_SurveyXactMemberImportScheduler` | Planlagt kjøring én gang i året |
+| `TAG_SurveyXactMemberImportQueueable` | Kjører callout + import asynkront per region, logger     |
+| `TAG_SurveyXactMemberImportScheduler` | Planlagt kjøring én gang i året                          |
 | `TAG_SurveyXactDataset_Config__mdt`   | Custom Metadata: `SurveyId__c`, `Ptype1__c`, `Active__c` |
 
 -   **Named Credential:** `SurveyXact` → `https://rest.survey-xact.dk/rest`
@@ -323,7 +324,22 @@ System.enqueueJob(new TAG_SurveyXactMemberImportQueueable());
 
 Jobben går gjennom alle verdiene i `TAG_SurveyXactRegionCalloutService.REGIONS`,
 én transaksjon per region. Følg med i **Setup → Apex Jobs** mens den kjører, og
-sjekk **Application_Log\_\_c** etterpå. En region som feiler stopper ikke resten.
+sjekk **Application_Log\_\_c** etterpå.
+
+All logging skjer på domenet **POAB**:
+
+| Hendelse                                    | Nivå    | Kjeden fortsetter? |
+| ------------------------------------------- | ------- | ------------------ |
+| Ingen aktiv konfigurasjon                   | Error   | Nei                |
+| Callout-, parse- eller DML-feil i en region | Error   | Ja                 |
+| CPU-/heap-grense eller annen ufanget feil   | Error   | **Nei**            |
+| Respondent hoppet over                      | Warning | Ja                 |
+| Region ferdig, med opptelling               | Info    | Ja                 |
+
+Ufangede feil kan ikke fanges i selve jobben, så de logges av en Transaction
+Finalizer. Loggen oppgir `regionIndex`, og importen startes på nytt derfra:
+`new TAG_SurveyXactMemberImportQueueable(regionIndex, false, år)`. Regioner som
+allerede er kjørt havner i `skippedExisting` hvis de kjøres igjen.
 
 Vil du teste én enkelt region først:
 
