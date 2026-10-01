@@ -21,6 +21,35 @@ private class TAG_SurveyXactMemberImportQueueableTest {
         }
     }
 
+    private class SimulatedLimitException extends Exception {
+    }
+
+    private class FinalizerContextMock implements FinalizerContext {
+        private ParentJobResult result;
+        private Exception error;
+
+        FinalizerContextMock(ParentJobResult result, Exception error) {
+            this.result = result;
+            this.error = error;
+        }
+
+        public Id getAsyncApexJobId() {
+            return null;
+        }
+
+        public Exception getException() {
+            return error;
+        }
+
+        public String getRequestId() {
+            return null;
+        }
+
+        public ParentJobResult getResult() {
+            return result;
+        }
+    }
+
     @TestSetup
     static void setup() {
         NavUnit__c navUnit = new NavUnit__c(Name = 'NAV Testenhet', INT_UnitNumber__c = '1234');
@@ -85,5 +114,38 @@ private class TAG_SurveyXactMemberImportQueueableTest {
         Test.stopTest();
 
         System.assert(true, 'Constructor with updateExisting runs without error');
+    }
+
+    @IsTest
+    static void finalizerLogsUnhandledExceptionWithRegion() {
+        FinalizerContextMock context = new FinalizerContextMock(
+            ParentJobResult.UNHANDLED_EXCEPTION,
+            new SimulatedLimitException('Apex heap size too large')
+        );
+
+        Test.startTest();
+        new TAG_SurveyXactMemberImportQueueable.ImportFinalizer(4, '03 Oslo').execute(context);
+        Test.stopTest();
+
+        List<Application_Log__c> logs = [
+            SELECT Log_Level__c, Application_Domain__c, Log_Message__c, Referrence_Info__c
+            FROM Application_Log__c
+        ];
+        Assert.areEqual(1, logs.size(), 'One log entry for the failed region');
+        Assert.areEqual('Error', logs[0].Log_Level__c, 'Unhandled exception is an error');
+        Assert.areEqual('POAB', logs[0].Application_Domain__c, 'Logged on the POAB domain');
+        Assert.areEqual('03 Oslo', logs[0].Referrence_Info__c, 'Region is the reference');
+        Assert.isTrue(logs[0].Log_Message__c.contains('heap size'), 'Message carries the exception');
+        Assert.isTrue(logs[0].Log_Message__c.contains('restart from regionIndex 4'), 'Message says where to restart');
+    }
+
+    @IsTest
+    static void finalizerIsSilentOnSuccess() {
+        Test.startTest();
+        new TAG_SurveyXactMemberImportQueueable.ImportFinalizer(0, '01 Østfold')
+            .execute(new FinalizerContextMock(ParentJobResult.SUCCESS, null));
+        Test.stopTest();
+
+        Assert.areEqual(0, [SELECT COUNT() FROM Application_Log__c], 'Nothing logged when the region succeeds');
     }
 }
