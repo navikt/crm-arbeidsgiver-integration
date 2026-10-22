@@ -82,7 +82,7 @@ public without sharing class KafkaModiaDialogMoteHandler extends KafkaMessagePro
                 KafkaId__c = model.key
             );
 
-            if (model.statusEndringType != 'NYTT_TID_STED') {
+            if (model.statusEndringType != 'NYTT_TID_STED' && model.statusEndringType != 'ENDRET') {
                 dm.Status__c = model.statusEndringType;
             }
 
