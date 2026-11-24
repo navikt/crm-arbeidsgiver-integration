@@ -7,6 +7,10 @@ private class FiaCooperationHandlerTest {
         '{' +
         '    "orgnr": "987654001",' +
         '    "saksnummer": "X6mPvf2qYP7r42I",' +
+        '    "navEnhet": {' +
+        '        "enhetsnummer": "0219",' +
+        '        "enhetsnavn": "NAV Unit 1"' +
+        '    },' +
         '    "samarbeid": {' +
         '        "id": 142,' +
         '        "navn": "FYSIO-avdeling",' +
@@ -573,9 +577,92 @@ private class FiaCooperationHandlerTest {
         Assert.isTrue(true, 'Should handle empty list without errors');
     }
 
-    // ========================================
-    // INTEGRATION TESTS - Happy Path
-    // ========================================
+    @isTest
+    static void processMessages_should_resolve_nav_units_in_bulk() {
+        List<NAVUnit__c> units = new List<NAVUnit__c>{
+            new NAVUnit__c(Name = 'NAV Unit 1', INT_UnitNumber__c = '0219'),
+            new NAVUnit__c(Name = 'NAV Unit 2', INT_UnitNumber__c = '0301')
+        };
+        insert units;
+        List<String> unitNumbers = new List<String>{ '0219', '0301', '9999', null };
+        List<KafkaMessage__c> messages = new List<KafkaMessage__c>();
+        for (Integer i = 0; i < unitNumbers.size(); i++) {
+            String cooperationId = String.valueOf(100 + i);
+            String navEnhetJson = unitNumbers[i] == null
+                ? 'null'
+                : '{"enhetsnummer":"' + unitNumbers[i] + '","enhetsnavn":"NAV Unit"}';
+            String payload = buildMinimalCooperationJson(cooperationId, 'AKTIV')
+                .replace('"samarbeid":', '"navEnhet":' + navEnhetJson + ',"samarbeid":');
+            messages.add(
+                new KafkaMessage__c(
+                    CRM_Topic__c = TOPIC,
+                    CRM_Key__c = 'test-key-' + cooperationId,
+                    CRM_Value__c = EncodingUtil.base64Encode(Blob.valueOf(payload))
+                )
+            );
+        }
+        messages.add(createKafkaMessage('104', 'AKTIV'));
+
+        Test.startTest();
+        new FiaCooperationHandler().processMessages(messages);
+        Test.stopTest();
+
+        Map<String, IACooperation__c> cooperations = new Map<String, IACooperation__c>();
+        for (IACooperation__c cooperation : [
+            SELECT CooperationId__c, TAG_NavUnit__c
+            FROM IACooperation__c
+            WHERE CooperationId__c IN ('100', '101', '102', '103', '104')
+        ]) {
+            cooperations.put(cooperation.CooperationId__c, cooperation);
+        }
+        Assert.areEqual(5, cooperations.size(), 'Should save all cooperations');
+        Assert.areEqual(units[0].Id, cooperations.get('100').TAG_NavUnit__c, 'Should resolve first NAV unit');
+        Assert.areEqual(units[1].Id, cooperations.get('101').TAG_NavUnit__c, 'Should resolve second NAV unit');
+        Assert.isNull(cooperations.get('102').TAG_NavUnit__c, 'Unknown NAV unit should leave lookup unset');
+        Assert.isNull(cooperations.get('103').TAG_NavUnit__c, 'Null NAV unit should leave lookup unset');
+        Assert.isNull(cooperations.get('104').TAG_NavUnit__c, 'Missing NAV unit should leave lookup unset');
+        for (KafkaMessage__c message : messages) {
+            Assert.areEqual(KafkaMessageService.STATUS_PROCESSED, message.CRM_Status__c);
+        }
+    }
+
+    @isTest
+    static void processMessages_should_update_nav_unit_on_same_cooperation_and_preserve_when_missing() {
+        List<NAVUnit__c> units = new List<NAVUnit__c>{
+            new NAVUnit__c(Name = 'NAV Unit 1', INT_UnitNumber__c = '0219'),
+            new NAVUnit__c(Name = 'NAV Unit 2', INT_UnitNumber__c = '0301')
+        };
+        insert units;
+        IACooperation__c existing = [SELECT Id FROM IACooperation__c WHERE CooperationId__c = '500'];
+        existing.TAG_NavUnit__c = units[0].Id;
+        update existing;
+
+        String payload = buildMinimalCooperationJson('500', 'AKTIV')
+            .replace('"samarbeid":', '"navEnhet":{"enhetsnummer":"0301"},"samarbeid":');
+        KafkaMessage__c navUnitUpdate = new KafkaMessage__c(
+            CRM_Topic__c = TOPIC,
+            CRM_Key__c = 'test-key-500-nav-unit',
+            CRM_Value__c = EncodingUtil.base64Encode(Blob.valueOf(payload))
+        );
+
+        Test.startTest();
+        new FiaCooperationHandler().processMessages(new List<KafkaMessage__c>{ navUnitUpdate });
+        IACooperation__c updated = [
+            SELECT Id, TAG_NavUnit__c
+            FROM IACooperation__c
+            WHERE CooperationId__c = '500'
+        ];
+        Assert.areEqual(existing.Id, updated.Id, 'Should update the existing cooperation');
+        Assert.areEqual(units[1].Id, updated.TAG_NavUnit__c, 'Should replace lookup with matching NAV unit');
+
+        new FiaCooperationHandler().processMessages(new List<KafkaMessage__c>{ createKafkaMessage('500', 'AKTIV') });
+        Test.stopTest();
+
+        updated = [SELECT Id, TAG_NavUnit__c FROM IACooperation__c WHERE CooperationId__c = '500'];
+        Assert.areEqual(existing.Id, updated.Id, 'Should keep the same cooperation');
+        Assert.areEqual(units[1].Id, updated.TAG_NavUnit__c, 'Missing NAV unit should preserve existing lookup');
+    }
+
     @isTest
     static void processMessages_should_merge_multiple_updates_and_create_cooperation_with_themes() {
         String message1 =
@@ -798,6 +885,8 @@ private class FiaCooperationHandlerTest {
 
     @IsTest
     static void processMessages_should_create_cooperation_with_themes_and_subthemes_from_kafka_message() {
+        NAVUnit__c navUnit = new NAVUnit__c(Name = 'NAV Unit 1', INT_UnitNumber__c = '0219');
+        insert navUnit;
         List<KafkaMessage__c> messages = new List<KafkaMessage__c>{
             new KafkaMessage__c(
                 CRM_Topic__c = TOPIC,
@@ -818,6 +907,7 @@ private class FiaCooperationHandlerTest {
                 IACase__r.Name,
                 Account__r.INT_OrganizationNumber__c,
                 PlanId__c,
+                TAG_NavUnit__c,
                 IncludedPartssamarbeid__c,
                 IncludedSykefravaersarbeid__c,
                 IncludedArbeidsmiljo__c,
@@ -831,6 +921,7 @@ private class FiaCooperationHandlerTest {
         ];
 
         IACooperation__c cooperationRecord = cooperationRecords[0];
+        Assert.areEqual(navUnit.Id, cooperationRecord.TAG_NavUnit__c, 'Should resolve NAV unit from JSON payload');
         Assert.areEqual('142', cooperationRecord.CooperationId__c, 'Id on record should match.');
         Assert.areEqual('FYSIO-avdeling', cooperationRecord.Name, 'Name on record should match.');
         Assert.areEqual('9220e758-d84c-4d33-8375-c0e55b4b0f49', cooperationRecord.PlanId__c, 'Plan Id should match.');

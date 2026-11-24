@@ -10,6 +10,7 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
     public String saksnummer;
     public Samarbeid samarbeid;
     public Plan plan;
+    public NavEnhet navEnhet;
     public String jsonPayload;
     public String hash;
     public String key;
@@ -57,6 +58,11 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
         public String status;
         public Date startDato;
         public Date sluttDato;
+    }
+
+    public class NavEnhet {
+        public String enhetsnummer;
+        public String enhetsnavn;
     }
 
     // =============================================================================
