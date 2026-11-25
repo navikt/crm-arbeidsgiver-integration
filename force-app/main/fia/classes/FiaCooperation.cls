@@ -10,7 +10,6 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
     public String saksnummer;
     public Samarbeid samarbeid;
     public Plan plan;
-    public NavEnhet navEnhet;
     public String jsonPayload;
     public String hash;
     public String key;
@@ -25,6 +24,7 @@ public with sharing class FiaCooperation implements IKafkaMessageParser {
         public Date startDato;
         public Date sluttDato;
         public String endretTidspunkt; // Timestamp is sent in user timezone. Store as string for later conversion. "2025-09-04T10:28:29.106545"
+        public NavEnhet navEnhet;
 
         public Datetime getLastModifiedDate() {
             return SharedIntegrationFunctions.convertNorwegianTimeToGmt(endretTidspunkt);
