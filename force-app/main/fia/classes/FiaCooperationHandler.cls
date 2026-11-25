@@ -53,7 +53,7 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
         for (KafkaMessage__c kafkaMessage : kafkaMessages) {
             try {
                 FiaCooperation fiaCooperation = (FiaCooperation) parse(FiaCooperation.class, kafkaMessage);
-                addNavUnit(fiaCooperation.navEnhet?.enhetsnummer);
+                addNavUnit(fiaCooperation.samarbeid?.navEnhet?.enhetsnummer);
                 allFiaCooperationUpdates.add(fiaCooperation);
                 keyToKafkaMessageMap.put(kafkaMessage.CRM_Key__c, kafkaMessage);
                 kafkaMessage.CRM_Status__c = KafkaMessageService.STATUS_PROCESSED;
@@ -166,9 +166,6 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
                 : new FiaCooperation();
             fiaData.orgnr = fiaUpdate.orgnr;
             fiaData.saksnummer = fiaUpdate.saksnummer;
-            if (fiaUpdate.navEnhet != null) {
-                fiaData.navEnhet = fiaUpdate.navEnhet;
-            }
             fiaData.key = fiaUpdate.key;
             fiaData.jsonPayload = mergeTrackingField(fiaData.jsonPayload, fiaUpdate.jsonPayload);
             fiaData.hash = mergeTrackingField(fiaData.hash, fiaUpdate.hash);
@@ -219,6 +216,7 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
         stashed.startDato = newData.startDato != null ? newData.startDato : stashed.startDato;
         stashed.sluttDato = newData.sluttDato != null ? newData.sluttDato : stashed.sluttDato;
         stashed.endretTidspunkt = newData.endretTidspunkt != null ? newData.endretTidspunkt : stashed.endretTidspunkt;
+        stashed.navEnhet = newData.navEnhet != null ? newData.navEnhet : stashed.navEnhet;
         return stashed;
     }
     private FiaCooperation.Plan mergePlanFields(FiaCooperation.Plan stashed, FiaCooperation.Plan newData) {
@@ -298,9 +296,10 @@ public without sharing class FiaCooperationHandler extends KafkaMessageProcessor
                 }
 
                 IACooperation__c iaCooperation = createIACooperation(fiaCooperation);
-                String unitNumber = fiaCooperation.navEnhet?.enhetsnummer;
+                String unitNumber = fiaCooperation.samarbeid?.navEnhet?.enhetsnummer;
                 if (navUnitMap.containsKey(unitNumber)) {
                     iaCooperation.TAG_NavUnit__c = navUnitMap.get(unitNumber).Id;
+                    iaCooperation.TAG_NavUnitNr__c = unitNumber;
                 }
                 iaCooperationsToUpsert.add(iaCooperation);
                 if (fiaCooperation.plan?.temaer == null || isPlanDeleted(fiaCooperation)) {

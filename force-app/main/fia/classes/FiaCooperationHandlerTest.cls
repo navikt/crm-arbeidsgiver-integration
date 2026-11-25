@@ -7,15 +7,15 @@ private class FiaCooperationHandlerTest {
         '{' +
         '    "orgnr": "987654001",' +
         '    "saksnummer": "X6mPvf2qYP7r42I",' +
-        '    "navEnhet": {' +
-        '        "enhetsnummer": "0219",' +
-        '        "enhetsnavn": "NAV Unit 1"' +
-        '    },' +
         '    "samarbeid": {' +
         '        "id": 142,' +
         '        "navn": "FYSIO-avdeling",' +
         '        "status": "AKTIV",' +
         '        "endretTidspunkt": "2024-09-20T11:37:35.150172",' +
+        '    "navEnhet": {' +
+        '        "enhetsnummer": "0219",' +
+        '        "enhetsnavn": "NAV Unit 1"' +
+        '    },' +
         '        "startDato": "2024-09-01",' +
         '        "sluttDato": "2024-12-01"' +
         '    },' +
@@ -592,7 +592,7 @@ private class FiaCooperationHandlerTest {
                 ? 'null'
                 : '{"enhetsnummer":"' + unitNumbers[i] + '","enhetsnavn":"NAV Unit"}';
             String payload = buildMinimalCooperationJson(cooperationId, 'AKTIV')
-                .replace('"samarbeid":', '"navEnhet":' + navEnhetJson + ',"samarbeid":');
+                .replace('"samarbeid":{', '"samarbeid":{"navEnhet":' + navEnhetJson + ',');
             messages.add(
                 new KafkaMessage__c(
                     CRM_Topic__c = TOPIC,
@@ -638,7 +638,7 @@ private class FiaCooperationHandlerTest {
         update existing;
 
         String payload = buildMinimalCooperationJson('500', 'AKTIV')
-            .replace('"samarbeid":', '"navEnhet":{"enhetsnummer":"0301"},"samarbeid":');
+            .replace('"samarbeid":{', '"samarbeid":{"navEnhet":{"enhetsnummer":"0301"},');
         KafkaMessage__c navUnitUpdate = new KafkaMessage__c(
             CRM_Topic__c = TOPIC,
             CRM_Key__c = 'test-key-500-nav-unit',
@@ -948,6 +948,61 @@ private class FiaCooperationHandlerTest {
             cooperationRecord.IncludedArbeidsmiljo__c,
             'Should be false since theme name not present in json'
         );
+    }
+
+    @IsTest
+    static void processMessages_should_create_cooperation_from_payload_without_plan() {
+         List<NAVUnit__c> unit = new List<NAVUnit__c>{
+            new NAVUnit__c(Name = 'NAV Unit 1', INT_UnitNumber__c = '0219')
+        };
+        insert unit;
+        
+        String payload = '{"orgnr":"311577166","saksnummer":"01J14G875DDCWT1PJZTGSN0NMD","samarbeid":{"id":998,"navn":"Test til Salesforce","status":"AKTIV","endretTidspunkt":"2026-11-24T22:17:18.737899","navEnhet":{"enhetsnummer":"0219","enhetsnavn":"NAV IKT DRIFT"}}}';
+        Account account = new Account(Name = 'Test Account', INT_OrganizationNumber__c = '311577166');
+        insert account;
+        IACase__c iaCase = new IACase__c(Name = '01J14G875DDCWT1PJZTGSN0NMD', Account__c = account.Id);
+        insert iaCase;
+        KafkaMessage__c message = new KafkaMessage__c(
+            CRM_Topic__c = TOPIC,
+            CRM_Key__c = '01J14G875DDCWT1PJZTGSN0NMD-998',
+            CRM_Status__c = 'Pending',
+            CRM_Value__c = EncodingUtil.base64Encode(Blob.valueOf(payload))
+        );
+
+        Test.startTest();
+        new FiaCooperationHandler().processMessages(new List<KafkaMessage__c>{ message });
+        Test.stopTest();
+
+        Assert.areEqual(KafkaMessageService.STATUS_PROCESSED, message.CRM_Status__c, 'Should process the message');
+        List<IACooperation__c> cooperations = [
+            SELECT
+                Name,
+                Status__c,
+                Account__c,
+                IACase__c,
+                TAG_NAVUnit__c,
+                TAG_NAVUnitNr__c,
+                CooperationLastModified__c,
+                PlanId__c,
+                (SELECT Id FROM IA_Themes__r)
+            FROM IACooperation__c
+            WHERE CooperationId__c = '998'
+        ];
+        Assert.areEqual(1, cooperations.size(), 'Should create one cooperation');
+        IACooperation__c cooperation = cooperations[0];
+        Assert.areEqual('Test til Salesforce', cooperation.Name, 'Should use the cooperation name from the payload');
+        Assert.areEqual('AKTIV', cooperation.Status__c, 'Should use the cooperation status from the payload');
+        Assert.areEqual(account.Id, cooperation.Account__c, 'Should link to the account from the payload');
+        Assert.areEqual(iaCase.Id, cooperation.IACase__c, 'Should link to the IA case from the payload');
+        Assert.areEqual(
+            Datetime.newInstanceGmt(2026, 11, 24, 21, 17, 18),
+            cooperation.CooperationLastModified__c,
+            'Should convert the Norwegian timestamp to GMT'
+        );
+        Assert.isNull(cooperation.PlanId__c, 'Should not create a plan when none is provided');
+        Assert.areEqual(0, cooperation.IA_Themes__r.size(), 'Should not create themes when no plan is provided');
+        Assert.areEqual('0219', cooperation.TAG_NavUnitNr__c, 'Should set the NAV unit number from the payload');
+        Assert.areEqual(unit[0].Id, cooperation.TAG_NavUnit__c, 'Should set the NAV unit reference from the payload');
     }
 
     @IsTest
